@@ -23,6 +23,13 @@
   --rp-color-red-600: #a33a2e;
   --rp-color-red-100: #f3ded9;
 
+  /* Тёмный изумруд — панель каллиграфии на лендинге (вариант C, "Лендинг - новый фон.html") */
+  --rp-color-emerald-900: #14261c;
+  --rp-color-emerald-700: #20402f;
+  --rp-color-gold-400: #c09330;
+  --rp-color-gold-200: #e6c983;
+  --rp-color-sand-600: #5c5138;
+
   --rp-font-heading: 'Spectral', 'Georgia', serif;
   --rp-font-body: 'Mulish', -apple-system, BlinkMacSystemFont, sans-serif;
   --rp-font-arabic: 'Scheherazade New', 'Amiri', 'Noto Naskh Arabic', serif;
@@ -63,6 +70,12 @@
   --rp-ayah-card-bg: var(--rp-color-ink-900);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
   --rp-ayah-card-accent: var(--rp-color-gold-500);
+
+  /* Панель каллиграфии — hero-сплит на лендинге (project.md, "Лендинг - новый фон.html" вариант C) */
+  --rp-hero-panel-gradient: linear-gradient(155deg, var(--rp-color-emerald-700), var(--rp-color-emerald-900));
+  --rp-hero-panel-text: var(--rp-color-parchment-50);
+  --rp-hero-panel-accent: var(--rp-color-gold-200);
+  --rp-hero-brand-mark: var(--rp-color-gold-400);
 
   --rp-status-success: var(--rp-color-green-700);
   --rp-status-danger: var(--rp-color-red-600);
