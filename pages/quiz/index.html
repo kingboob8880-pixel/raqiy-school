@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Тест — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=6">
-<link rel="stylesheet" href="../../design/base.css?v=10">
+<link rel="stylesheet" href="../../design/base.css?v=11">
 </head>
 <body data-zone="learn">
   <div id="site-header"></div>
@@ -15,10 +15,10 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=6";
-    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=7";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=7";
+    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=8";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
-    import { BOOK_QUIZZES } from "../js/book-quiz-data.js?v=7";
+    import { loadExamDoc } from "../js/exam-loader.js?v=6";
     import { watchAuth } from "../../integration/auth.js?v=6";
     import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=8";
 
@@ -27,34 +27,49 @@
 
     const params = new URLSearchParams(location.search);
     const params_moduleId = Number(params.get("module"));
-    const docPath = params.get("doc");
+    const examPath = params.get("exam");
     const root = document.getElementById("quiz-root");
 
-    // Тест по книге (?doc=...) — экзамен по одному уроку, project.md §5.
-    // Тест по модулю (?module=N) — прежний итоговый тест по всему модулю.
-    const isBookQuiz = !!docPath;
-    let mod, questions, quizTitle, resultKey;
-
-    if (isBookQuiz) {
-      const owner = MODULES.find((m) => m.lessons.some((l) => l.doc === docPath));
-      const lesson = owner?.lessons.find((l) => l.doc === docPath);
-      mod = owner;
-      questions = BOOK_QUIZZES[docPath];
-      quizTitle = lesson?.title || "Книга";
-      resultKey = bookKey(docPath);
-    } else {
-      mod = getModule(params_moduleId);
-      questions = QUIZZES[params_moduleId];
-      quizTitle = mod ? `Модуль ${mod.id}. ${mod.title}` : "";
-      resultKey = mod?.id;
-    }
+    // Экзамен по книге (?exam=<content/exams/....md>) — markdown-контент,
+    // project.md §5. Тест по модулю (?module=N) — прежний JS-банк вопросов
+    // по всему модулю целиком.
+    const isBookQuiz = !!examPath;
 
     let currentUser = null;
     watchAuth((user) => { currentUser = user; });
 
-    if (!mod || !questions) {
-      root.innerHTML = `<p>Тест для ${isBookQuiz ? "этой книги" : "этого модуля"} пока не готов.</p>`;
-    } else {
+    async function init() {
+      let mod, questions, quizTitle, resultKey;
+
+      if (isBookQuiz) {
+        const owner = MODULES.find((m) => m.lessons.some((l) => l.exam === examPath));
+        const lesson = owner?.lessons.find((l) => l.exam === examPath);
+        if (!owner || !lesson) {
+          root.innerHTML = `<p>Экзамен не найден.</p>`;
+          return;
+        }
+        try {
+          const exam = await loadExamDoc(examPath);
+          mod = owner;
+          questions = exam.questions;
+          quizTitle = exam.meta.title || lesson.title;
+          resultKey = bookKey(lesson.doc);
+        } catch (err) {
+          root.innerHTML = `<p class="field-error">${err.message}</p>`;
+          return;
+        }
+      } else {
+        mod = getModule(params_moduleId);
+        questions = QUIZZES[params_moduleId];
+        quizTitle = mod ? `Модуль ${mod.id}. ${mod.title}` : "";
+        resultKey = mod?.id;
+      }
+
+      if (!mod || !questions || !questions.length) {
+        root.innerHTML = `<p>Тест для ${isBookQuiz ? "этой книги" : "этого модуля"} пока не готов.</p>`;
+        return;
+      }
+
       let current = 0;
       const answers = new Array(questions.length).fill(null);
 
@@ -116,6 +131,8 @@
 
       render();
     }
+
+    init();
   </script>
 </body>
 </html>

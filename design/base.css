@@ -175,6 +175,10 @@ p { margin: 0 0 var(--rp-space-4); }
   background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text);
   border: 1px solid var(--rp-learn-badge-border);
 }
+/* Бейджи прохождения теста/экзамена (страница "Тесты", pages/tests/) — не путать
+   со статусом контента выше (certified/draft/archive/author), это про ученика. */
+.badge-passed { background: var(--rp-color-green-100); color: var(--rp-color-green-800); }
+.badge-pending { background: var(--rp-color-gold-100); color: var(--rp-color-gold-600); }
 
 /* ---------- Карточки-фичи (лендинг) — красятся полностью через --rp-learn-* ---------- */
 .feature-row { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-5); }
@@ -362,5 +366,17 @@ p { margin: 0 0 var(--rp-space-4); }
 .quiz-option.is-wrong { border-color: var(--rp-status-danger); background: var(--rp-status-danger-bg); }
 
 .skeleton-loading { padding: var(--rp-space-6) 0; text-align: center; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
+
+/* ---------- Список тестов/экзаменов (pages/tests/index.html) ---------- */
+.test-list { list-style: none; margin: 0 0 var(--rp-space-4); padding: 0; }
+.test-list li { margin-bottom: var(--rp-space-2); }
+.test-item {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-3);
+  padding: var(--rp-space-3) var(--rp-space-4); border-radius: var(--rp-radius-md);
+  border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface);
+  text-decoration: none; color: inherit;
+}
+.test-item:hover { background: var(--rp-color-parchment-200); }
+.test-item--module { border-style: dashed; font-weight: 700; }
 
 .footer { padding: var(--rp-space-6) 0; text-align: center; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
