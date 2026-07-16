@@ -1,0 +1,148 @@
+/* Три темы лендинга — из "Лендинг - новый фон.html" (варианты A/B/C, project.md).
+   Область действия — только #landing-theme-zone (шапка+хиро+3 карточки на
+   главной странице), остальной сайт (кабинеты, страницы книг) не затронут. */
+
+#landing-theme-zone .site-header { transition: background 0.2s ease, color 0.2s ease; }
+
+/* ---------- A. Тёмный изумруд · геометрический свет ---------- */
+[data-landing-theme="emerald"] .site-header,
+[data-landing-theme="emerald"] .landing-hero,
+[data-landing-theme="emerald"] .landing-features {
+  background: radial-gradient(130% 70% at 50% -10%, #245038, #16281d 65%);
+  color: var(--rp-color-parchment-50);
+  border-color: rgba(230, 201, 131, 0.25);
+}
+[data-landing-theme="emerald"] .site-header__nav a,
+[data-landing-theme="emerald"] .landing-hero__lead { color: var(--rp-color-sage-300); }
+[data-landing-theme="emerald"] .site-header__brand { color: var(--rp-color-parchment-50); }
+[data-landing-theme="emerald"] .badge {
+  background: rgba(230, 201, 131, 0.16); color: var(--rp-color-gold-200);
+  border: 1px solid rgba(230, 201, 131, 0.4);
+}
+[data-landing-theme="emerald"] .landing-hero .btn-primary,
+[data-landing-theme="emerald"] .site-header .btn-primary,
+[data-landing-theme="emerald"] .site-header__actions .btn-outline {
+  background: linear-gradient(135deg, var(--rp-color-gold-400), var(--rp-color-gold-600));
+  color: var(--rp-color-ink-900); border-color: transparent;
+}
+[data-landing-theme="emerald"] .landing-hero .btn-outline {
+  border-color: rgba(250, 246, 236, 0.4); color: var(--rp-color-parchment-50); background: transparent;
+}
+[data-landing-theme="emerald"] .feature-item { border-color: rgba(230, 201, 131, 0.18); }
+[data-landing-theme="emerald"] .feature-item h3 { color: var(--rp-color-parchment-50); }
+[data-landing-theme="emerald"] .feature-item p { color: var(--rp-color-sage-300); }
+[data-landing-theme="emerald"] .feature-item__icon {
+  background: rgba(230, 201, 131, 0.14); color: var(--rp-color-gold-200); border-color: rgba(230,201,131,0.3);
+}
+
+/* ---------- B. Светлый · тонкий геометрический паттерн ---------- */
+[data-landing-theme="pattern"] .site-header,
+[data-landing-theme="pattern"] .landing-hero,
+[data-landing-theme="pattern"] .landing-features {
+  background-color: #fbf7ee;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23b0842c' stroke-opacity='0.22' stroke-width='1.2'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z'/%3E%3C/g%3E%3C/svg%3E");
+  color: var(--rp-color-ink-900);
+}
+[data-landing-theme="pattern"] .site-header__nav a { color: var(--rp-color-ink-700); }
+[data-landing-theme="pattern"] .landing-hero__lead { color: var(--rp-color-sand-600); }
+[data-landing-theme="pattern"] .badge {
+  background: rgba(47, 106, 74, 0.1); color: var(--rp-color-green-700);
+  border: 1px solid rgba(47, 106, 74, 0.28);
+}
+[data-landing-theme="pattern"] .landing-hero .btn-primary,
+[data-landing-theme="pattern"] .site-header .btn-primary,
+[data-landing-theme="pattern"] .site-header__actions .btn-outline {
+  background: var(--rp-color-green-700); color: #ffffff; border-color: transparent;
+}
+[data-landing-theme="pattern"] .landing-hero .btn-outline {
+  background: #ffffff; color: #9a6d1f; border-color: #d8c290;
+}
+[data-landing-theme="pattern"] .feature-item { border-color: rgba(176, 132, 44, 0.2); background: rgba(255,255,255,0.55); }
+[data-landing-theme="pattern"] .feature-item h3 { color: var(--rp-color-ink-900); }
+[data-landing-theme="pattern"] .feature-item p { color: var(--rp-color-sand-600); }
+[data-landing-theme="pattern"] .feature-item__icon {
+  background: rgba(47, 106, 74, 0.12); color: var(--rp-color-green-700); border-color: rgba(47,106,74,0.25);
+}
+
+/* ---------- C. Раскладка-сплит · каллиграфия как арт (текущий выбор по умолчанию содержимого модулей) ---------- */
+[data-landing-theme="split"] .site-header,
+[data-landing-theme="split"] .landing-hero,
+[data-landing-theme="split"] .landing-features {
+  background: var(--rp-learn-surface-raised); color: var(--rp-learn-text);
+}
+[data-landing-theme="split"] .site-header__nav a { color: var(--rp-learn-text); }
+[data-landing-theme="split"] .landing-hero__lead { color: var(--rp-color-sand-600); }
+[data-landing-theme="split"] .badge { background: #ffffff; color: var(--rp-color-gold-600); border: 1px solid rgba(43,36,23,0.15); }
+[data-landing-theme="split"] .landing-hero .btn-primary,
+[data-landing-theme="split"] .site-header .btn-primary,
+[data-landing-theme="split"] .site-header__actions .btn-outline {
+  background: var(--rp-color-gold-600); color: #ffffff; border-color: transparent;
+}
+[data-landing-theme="split"] .landing-hero .btn-outline {
+  background: transparent; color: var(--rp-learn-text); border-color: rgba(43,36,23,0.2);
+}
+[data-landing-theme="split"] .feature-item { border-color: var(--rp-learn-border); background: var(--rp-learn-surface); }
+[data-landing-theme="split"] .feature-item h3 { color: var(--rp-learn-text); }
+[data-landing-theme="split"] .feature-item p { color: var(--rp-learn-text-muted); }
+[data-landing-theme="split"] .feature-item__icon {
+  background: var(--rp-color-gold-100); color: var(--rp-color-gold-600); border-color: var(--rp-learn-border);
+}
+
+/* ---------- Общая структура (одинаковая для всех тем) ---------- */
+/* Шапка сайта (#site-header) остаётся обычной верхней полосой, как на всех
+   страницах — тема лишь перекрашивает её. Хиро+карточки образуют один
+   скруглённый блок под шапкой. */
+#landing-theme-zone { margin-block: var(--rp-space-6); border-radius: var(--rp-radius-xl); overflow: hidden; box-shadow: var(--rp-shadow-card); }
+.landing-hero { padding: var(--rp-space-7) var(--rp-space-6); text-align: center; }
+.landing-hero__inner { max-width: 44rem; margin-inline: auto; }
+.landing-hero h1 { font-size: var(--rp-fs-2xl); margin-block: var(--rp-space-4); }
+.landing-hero__lead { font-size: var(--rp-fs-md); max-width: 34rem; margin-inline: auto; }
+.hero-actions { display: flex; gap: var(--rp-space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--rp-space-5); }
+
+/* Сплит (C) — двухколоночная раскладка */
+.hero-split { display: grid; grid-template-columns: 1fr; text-align: left; }
+@media (min-width: 56rem) { .hero-split { grid-template-columns: 1fr 1fr; align-items: center; gap: var(--rp-space-6); } }
+.hero-split__copy { max-width: none; }
+.hero-split__panel {
+  background: var(--rp-hero-panel-gradient); color: var(--rp-hero-panel-text);
+  padding: var(--rp-space-6); border-radius: var(--rp-radius-lg); display: flex; flex-direction: column;
+  justify-content: center; min-height: 18rem; text-align: center; margin-top: var(--rp-space-6);
+}
+@media (min-width: 56rem) { .hero-split__panel { margin-top: 0; } }
+.hero-split__panel .arabic {
+  font-family: var(--rp-font-arabic); direction: rtl; line-height: 1.9;
+  font-size: clamp(1.75rem, 1.3rem + 2.5vw, 3rem); color: var(--rp-hero-panel-accent);
+}
+.hero-split__panel .translation { font-style: italic; opacity: 0.85; margin-top: var(--rp-space-5); font-size: var(--rp-fs-base); }
+.hero-split__panel .source {
+  margin-top: var(--rp-space-3); padding-top: var(--rp-space-3);
+  border-top: 1px solid rgba(251,246,236,0.2); font-size: var(--rp-fs-sm);
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--rp-hero-panel-accent);
+}
+
+.landing-features { padding: var(--rp-space-6); }
+.feature-row { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-5); }
+@media (min-width: 48rem) { .feature-row { grid-template-columns: repeat(3, 1fr); } }
+.feature-item { padding-inline: var(--rp-space-4); border-inline-start: 1px solid transparent; }
+@media (min-width: 48rem) { .feature-item:first-child { border-inline-start: none; padding-inline-start: 0; } }
+.feature-item__icon {
+  width: 2.75rem; height: 2.75rem; border-radius: var(--rp-radius-md); border: 1px solid transparent;
+  display: flex; align-items: center; justify-content: center; margin-bottom: var(--rp-space-3); font-size: 1.25rem;
+}
+.feature-item h3 { font-size: var(--rp-fs-md); margin-bottom: var(--rp-space-2); }
+.feature-item p { font-size: var(--rp-fs-sm); margin: 0; }
+
+/* ---------- Переключатель тем ---------- */
+.theme-switcher {
+  display: flex; align-items: center; gap: var(--rp-space-2); justify-content: center;
+  margin: var(--rp-space-5) auto 0; flex-wrap: wrap;
+}
+.theme-switcher__label { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+.theme-switcher__btn {
+  font: inherit; font-size: var(--rp-fs-sm); font-weight: 700; cursor: pointer;
+  padding: 0.4rem 0.9rem; border-radius: var(--rp-radius-pill);
+  border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text);
+}
+.theme-switcher__btn[aria-pressed="true"] {
+  background: var(--rp-learn-accent-strong); color: #fff; border-color: var(--rp-learn-accent-strong);
+}
