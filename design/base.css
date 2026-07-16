@@ -276,7 +276,7 @@ p { margin: 0 0 var(--rp-space-4); }
 /* ---------- Квиз ---------- */
 .quiz-progress { height: 0.5rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); overflow: hidden; margin-bottom: var(--rp-space-5); }
 .quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.3s ease; }
-.quiz-option { display: block; width: 100%; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); cursor: pointer; font: inherit; }
+.quiz-option { display: block; width: 100%; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; }
 .quiz-option[aria-pressed="true"] { border-color: var(--rp-learn-accent); background: var(--rp-color-gold-100); }
 .quiz-option.is-correct { border-color: var(--rp-status-success); background: var(--rp-color-green-100); }
 .quiz-option.is-wrong { border-color: var(--rp-status-danger); background: var(--rp-status-danger-bg); }
