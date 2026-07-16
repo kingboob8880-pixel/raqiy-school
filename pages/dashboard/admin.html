@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Кабинет админа — Онлайн-школа рукии</title>
-<link rel="stylesheet" href="../../design/tokens.css?v=4">
-<link rel="stylesheet" href="../../design/base.css?v=4">
+<link rel="stylesheet" href="../../design/tokens.css?v=5">
+<link rel="stylesheet" href="../../design/base.css?v=5">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -49,12 +49,12 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=4";
-    import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=4";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=5";
+    import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=5";
     import {
       listStudents, setStudentPaid, sendMessage, daysSince,
       computeOverallProgress, computeAverageScore,
-    } from "../../integration/firestore.js?v=4";
+    } from "../../integration/firestore.js?v=5";
 
     renderHeader("admin");
     renderFooter();

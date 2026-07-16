@@ -11,6 +11,23 @@ body {
   background: var(--rp-zone-bg, var(--rp-learn-bg));
   color: var(--rp-zone-text, var(--rp-learn-text));
 }
+/* Живой фон — мягкий плавающий градиент (project.md §21). Цвета из
+   --rp-zone-accent — подстраивается под любую активную тему/зону сама,
+   отдельного CSS-блока на тему не нужно. Лежит позади всего контента
+   (карточки/шапка непрозрачны — виден только в промежутках, как фон и был). */
+#bg-ambient {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(46rem 32rem at 12% 8%, color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 16%, transparent), transparent 60%),
+    radial-gradient(40rem 30rem at 88% 92%, color-mix(in srgb, var(--rp-zone-accent-strong, var(--rp-learn-accent-strong)) 13%, transparent), transparent 60%);
+  background-repeat: no-repeat;
+  animation: rp-bg-drift 32s ease-in-out infinite alternate;
+}
+@keyframes rp-bg-drift {
+  from { background-position: 0% 0%, 100% 100%; }
+  to   { background-position: 7% 5%, 93% 95%; }
+}
+
 img, video { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
 h1, h2, h3, h4 { font-family: var(--rp-font-heading); line-height: 1.25; margin: 0 0 var(--rp-space-3); }

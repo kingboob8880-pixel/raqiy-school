@@ -2,13 +2,24 @@
 // каждый .html файл. Подключается: <div id="site-header"></div> + этот скрипт.
 // Внедряется в страницы на разной глубине вложенности, поэтому все ссылки —
 // через withBase() (см. base-path.js), а не относительные.
-import { withBase } from "./base-path.js?v=4";
-import { initSiteTheme } from "./theme.js?v=4";
+import { withBase } from "./base-path.js?v=5";
+import { initSiteTheme } from "./theme.js?v=5";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
   if (!root) return;
   document.documentElement.setAttribute("data-zone", zone);
+
+  // Живой фон (project.md §21) — мягкий плавающий градиент поверх фона
+  // страницы, один на весь сайт. Цвета берутся из --rp-zone-accent, поэтому
+  // сами подстраиваются под активную тему/зону, отдельно красить не нужно.
+  // prefers-reduced-motion уже глобально отключает анимации в tokens.css.
+  if (!document.getElementById("bg-ambient")) {
+    const ambient = document.createElement("div");
+    ambient.id = "bg-ambient";
+    ambient.setAttribute("aria-hidden", "true");
+    document.body.prepend(ambient);
+  }
 
   // Переключатель тем (project.md, решение 2026-07-16) — только в зоне
   // "learn" (лендинг/модули/книги/вход): кабинеты ученика/админа живут в

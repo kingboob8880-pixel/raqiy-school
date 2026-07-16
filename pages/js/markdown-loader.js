@@ -3,7 +3,7 @@
 // и рендерит остальное как markdown через marked.js (подключается в каждой
 // странице отдельным <script> из CDN — см. pages/book.html/module.html).
 
-import { withBase } from "./base-path.js?v=4";
+import { withBase } from "./base-path.js?v=5";
 
 function parseFrontMatter(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
