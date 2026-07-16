@@ -43,7 +43,7 @@ p { margin: 0 0 var(--rp-space-4); }
 .site-header__brand-mark {
   width: 2rem; height: 2rem; border-radius: var(--rp-radius-pill);
   background: var(--rp-zone-accent, var(--rp-learn-accent));
-  color: var(--rp-learn-surface-raised);
+  color: var(--rp-zone-accent-contrast, var(--rp-learn-accent-contrast));
   display: flex; align-items: center; justify-content: center;
   font-family: var(--rp-font-arabic); font-size: 1.1rem;
 }
@@ -65,7 +65,7 @@ p { margin: 0 0 var(--rp-space-4); }
 .btn:active { transform: translateY(1px); }
 .btn-primary {
   background: var(--rp-zone-accent, var(--rp-learn-accent));
-  color: var(--rp-learn-surface-raised);
+  color: var(--rp-zone-accent-contrast, var(--rp-learn-accent-contrast));
 }
 .btn-primary:hover { opacity: 0.92; }
 .btn-outline {
@@ -118,6 +118,25 @@ p { margin: 0 0 var(--rp-space-4); }
 .badge-certified { background: var(--rp-color-green-100); color: var(--rp-color-green-800); }
 .badge-draft { background: var(--rp-color-gold-100); color: var(--rp-color-gold-600); }
 .badge-archive { background: var(--rp-color-graphite-100); color: var(--rp-color-graphite-800); }
+/* Бейдж, окрашенный по теме зоны (а не по статусу контента) — для лендинга и т.п. */
+.badge-tinted {
+  background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text);
+  border: 1px solid var(--rp-learn-badge-border);
+}
+
+/* ---------- Карточки-фичи (лендинг) — красятся полностью через --rp-learn-* ---------- */
+.feature-row { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-5); }
+@media (min-width: 48rem) { .feature-row { grid-template-columns: repeat(3, 1fr); } }
+.feature-item { padding-inline-start: var(--rp-space-4); border-inline-start: 1px solid var(--rp-learn-border); }
+@media (max-width: 47.99rem) { .feature-item { border-inline-start: none; padding-inline-start: 0; } }
+.feature-item:first-child { border-inline-start: none; padding-inline-start: 0; }
+.feature-item__icon {
+  width: 2.75rem; height: 2.75rem; border-radius: var(--rp-radius-md);
+  background: var(--rp-learn-icon-bg); color: var(--rp-learn-icon-text);
+  display: flex; align-items: center; justify-content: center; margin-bottom: var(--rp-space-3); font-size: 1.25rem;
+}
+.feature-item h3 { font-size: var(--rp-fs-md); margin-bottom: var(--rp-space-2); color: var(--rp-learn-text); }
+.feature-item p { font-size: var(--rp-fs-sm); margin: 0; color: var(--rp-learn-text-muted); }
 
 /* ---------- Оглавление модулей — "дорожка-путь" (1b, §16а) ---------- */
 .path { display: flex; flex-direction: column; gap: var(--rp-space-4); padding: var(--rp-space-4) 0; position: relative; }

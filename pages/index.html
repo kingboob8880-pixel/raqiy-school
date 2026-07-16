@@ -22,7 +22,6 @@
         <div class="feature-row" id="feature-row"></div>
       </div>
     </div>
-    <div class="theme-switcher" id="theme-switcher"></div>
   </section>
 
   <section class="container">
@@ -49,11 +48,9 @@
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js";
     import { MODULES } from "./js/modules-data.js";
-    import { initThemeSwitcher } from "./js/landing-themes.js";
 
     renderHeader("learn");
     renderFooter();
-    initThemeSwitcher();
 
     const root = document.getElementById("path-preview");
     root.innerHTML = MODULES.slice(0, 4).map((m) => `

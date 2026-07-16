@@ -3,11 +3,20 @@
 // Внедряется в страницы на разной глубине вложенности, поэтому все ссылки —
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js";
+import { initSiteTheme } from "./theme.js";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
   if (!root) return;
   document.documentElement.setAttribute("data-zone", zone);
+
+  // Переключатель тем (project.md, решение 2026-07-16) — только в зоне
+  // "learn" (лендинг/модули/книги/вход): кабинеты ученика/админа живут в
+  // своих палитрах (§16а) и темами лендинга не управляются.
+  const themeSwitcherHtml = zone === "learn"
+    ? `<div class="theme-switcher" id="theme-switcher"></div>`
+    : "";
+
   root.innerHTML = `
     <header class="site-header">
       <div class="container site-header__row">
@@ -21,11 +30,14 @@ export function renderHeader(zone = "learn") {
           <a href="${withBase("/pages/dashboard/student.html")}">Кабинет</a>
         </nav>
         <div class="site-header__actions">
+          ${themeSwitcherHtml}
           <a class="btn btn-outline btn-sm" href="${withBase("/pages/auth/login.html")}">Войти</a>
         </div>
       </div>
     </header>
   `;
+
+  initSiteTheme();
 }
 
 export function renderFooter() {
