@@ -4,7 +4,7 @@
 //   students/{uid}/messages/{id} — { from: 'admin'|'student', text, createdAt, read }
 //   admins/{uid}               — { name } — присутствие документа = права админа
 import {
-  doc, getDoc, setDoc, updateDoc, collection, getDocs, addDoc,
+  doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, addDoc,
   serverTimestamp, query, orderBy,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { db } from "./firebase-init.js";
@@ -31,6 +31,13 @@ export async function listStudents() {
 
 export async function setStudentPaid(uid, paid) {
   await updateDoc(doc(db, "students", uid), { paid });
+}
+
+/** Удаляет только запись ученика в Firestore (прогресс/сообщения/статус
+ * оплаты) — учётную запись Firebase Auth это не трогает, для этого нужен
+ * Admin SDK, недоступный из клиентского кода (project.md §16). */
+export async function deleteStudent(uid) {
+  await deleteDoc(doc(db, "students", uid));
 }
 
 export async function sendMessage(uid, from, text) {
