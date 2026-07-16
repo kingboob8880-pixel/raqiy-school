@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кабинет админа — Онлайн-школа рукии</title>
+<link rel="stylesheet" href="/design/tokens.css">
+<link rel="stylesheet" href="/design/base.css">
+<style>
+  .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+  .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
+</style>
+</head>
+<body data-zone="admin">
+  <div id="site-header"></div>
+  <main class="container" style="padding-block: var(--rp-space-6);">
+    <div id="gate" class="skeleton-loading">Проверка входа…</div>
+    <div id="dashboard" hidden>
+      <h1>Кабинет администратора</h1>
+      <div class="stat-grid" style="margin-bottom: var(--rp-space-6);">
+        <div class="card stat-card"><div class="stat-card__value" id="stat-total">—</div><div class="stat-card__label">Всего учеников</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-paid">—</div><div class="stat-card__label">Оплатили</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-silent">—</div><div class="stat-card__label">Молчат &gt;7 дней</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom: var(--rp-space-5);">
+        <h3>Массовая рассылка</h3>
+        <form id="broadcast-form" style="display:flex; gap: var(--rp-space-2);">
+          <input type="text" id="broadcast-text" placeholder="Сообщение всем ученикам…" style="flex:1; padding: 0.65rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
+          <button class="btn btn-primary btn-sm" type="submit">Отправить всем</button>
+        </form>
+      </div>
+
+      <h2>Ученики</h2>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>Имя</th><th>Email</th><th>Прогресс</th><th>Балл</th><th>Молчит</th><th>Оплачено</th></tr>
+          </thead>
+          <tbody id="students-body">
+            <tr><td colspan="6" class="form-note">Загрузка…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <button id="logout-btn" class="btn btn-outline btn-sm" style="margin-top: var(--rp-space-6);">Выйти</button>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter } from "/pages/js/layout.js";
+    import { watchAuth, isAdmin, logout } from "/integration/auth.js";
+    import {
+      listStudents, setStudentPaid, sendMessage, daysSince,
+      computeOverallProgress, computeAverageScore,
+    } from "/integration/firestore.js";
+
+    renderHeader("admin");
+    renderFooter();
+
+    const gate = document.getElementById("gate");
+    const dashboard = document.getElementById("dashboard");
+
+    async function loadStudents() {
+      const students = await listStudents();
+      const body = document.getElementById("students-body");
+      let paidCount = 0, silentCount = 0;
+
+      body.innerHTML = students.map((s) => {
+        if (s.paid) paidCount++;
+        const silent = daysSince(s.lastSeenAt);
+        const isSilent = silent !== null && silent > 7;
+        if (isSilent) silentCount++;
+        const avg = computeAverageScore(s.progress);
+        return `
+          <tr>
+            <td>${s.name || "—"}</td>
+            <td>${s.email || "—"}</td>
+            <td>${computeOverallProgress(s.progress)}%</td>
+            <td>${avg === null ? "—" : avg + "%"}</td>
+            <td class="${isSilent ? "silent-flag" : ""}">${silent === null ? "—" : silent + " дн."}</td>
+            <td>
+              <label class="toggle">
+                <input type="checkbox" data-uid="${s.uid}" ${s.paid ? "checked" : ""}>
+                ${s.paid ? "Да" : "Нет"}
+              </label>
+            </td>
+          </tr>`;
+      }).join("") || `<tr><td colspan="6" class="form-note">Учеников пока нет.</td></tr>`;
+
+      document.getElementById("stat-total").textContent = students.length;
+      document.getElementById("stat-paid").textContent = paidCount;
+      document.getElementById("stat-silent").textContent = silentCount;
+
+      body.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+        cb.addEventListener("change", async () => {
+          await setStudentPaid(cb.dataset.uid, cb.checked);
+          loadStudents();
+        });
+      });
+
+      return students;
+    }
+
+    watchAuth(async (user) => {
+      if (!user) { location.href = "/pages/auth/login.html"; return; }
+      if (!(await isAdmin(user.uid))) {
+        location.href = "/pages/dashboard/student.html";
+        return;
+      }
+      gate.hidden = true;
+      dashboard.hidden = false;
+      const students = await loadStudents();
+
+      document.getElementById("broadcast-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const input = document.getElementById("broadcast-text");
+        const text = input.value.trim();
+        if (!text) return;
+        await Promise.all(students.map((s) => sendMessage(s.uid, "admin", text)));
+        input.value = "";
+        alert("Отправлено " + students.length + " ученикам.");
+      });
+
+      document.getElementById("logout-btn").addEventListener("click", async () => {
+        await logout();
+        location.href = "/pages/index.html";
+      });
+    });
+  </script>
+</body>
+</html>

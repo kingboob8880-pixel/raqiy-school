@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Онлайн-школа рукии</title>
+<link rel="stylesheet" href="/design/tokens.css">
+<link rel="stylesheet" href="/design/base.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  .doc-meta { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-bottom: var(--rp-space-5); }
+  .doc-body h2 { margin-top: var(--rp-space-6); }
+  .doc-body table { width: 100%; border-collapse: collapse; margin: var(--rp-space-4) 0; }
+  .doc-body th, .doc-body td { border: 1px solid var(--rp-learn-border); padding: var(--rp-space-2) var(--rp-space-3); text-align: left; font-size: var(--rp-fs-sm); }
+  .doc-body th { background: var(--rp-color-parchment-200); }
+</style>
+</head>
+<body data-zone="learn">
+  <div id="site-header"></div>
+  <main class="container" style="padding-block: var(--rp-space-6);">
+    <a href="javascript:history.back()" class="btn btn-ghost btn-sm">← Назад</a>
+    <div id="doc-root" class="card" style="margin-top: var(--rp-space-4);">
+      <p class="skeleton-loading">Загрузка…</p>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter } from "/pages/js/layout.js";
+    import { loadMarkdownDoc, renderDocInto } from "/pages/js/markdown-loader.js";
+
+    renderHeader("learn");
+    renderFooter();
+
+    const params = new URLSearchParams(location.search);
+    const docPath = params.get("doc");
+    const root = document.getElementById("doc-root");
+
+    if (!docPath) {
+      root.innerHTML = "<p>Не указан документ (параметр ?doc=).</p>";
+    } else {
+      loadMarkdownDoc(docPath)
+        .then((doc) => renderDocInto(root, doc))
+        .catch((err) => {
+          root.innerHTML = `<p class="field-error">Не удалось загрузить материал: ${err.message}</p>`;
+        });
+    }
+  </script>
+</body>
+</html>

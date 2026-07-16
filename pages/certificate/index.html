@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сертификат — Онлайн-школа рукии</title>
+<link rel="stylesheet" href="/design/tokens.css">
+<link rel="stylesheet" href="/design/base.css">
+<style>
+  .cert { max-width: 40rem; margin: var(--rp-space-7) auto; padding: var(--rp-space-7);
+    background: var(--rp-color-parchment-50); border: 3px double var(--rp-color-gold-500);
+    border-radius: var(--rp-radius-lg); text-align: center; }
+  .cert h1 { font-size: var(--rp-fs-xl); }
+  .cert__name { font-family: var(--rp-font-heading); font-size: var(--rp-fs-2xl); margin: var(--rp-space-5) 0; color: var(--rp-color-gold-600); }
+  .cert__seal { width: 4rem; height: 4rem; border-radius: 50%; background: var(--rp-color-green-700); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-family: var(--rp-font-arabic); font-size: 2rem; margin: 0 auto var(--rp-space-4); }
+  @media print { .no-print { display: none; } }
+</style>
+</head>
+<body data-zone="learn">
+  <div id="site-header" class="no-print"></div>
+  <main class="container">
+    <div id="cert-root" class="skeleton-loading">Проверка прогресса…</div>
+  </main>
+  <div id="site-footer" class="no-print"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter } from "/pages/js/layout.js";
+    import { MODULES } from "/pages/js/modules-data.js";
+    import { watchAuth, getStudentProfile } from "/integration/auth.js";
+
+    renderHeader("learn");
+    renderFooter();
+
+    const root = document.getElementById("cert-root");
+
+    watchAuth(async (user) => {
+      if (!user) { location.href = "/pages/auth/login.html"; return; }
+      const profile = await getStudentProfile(user.uid);
+      const done = MODULES.filter((m) => profile?.progress?.[m.id]?.status === "done").length;
+      const allDone = done === MODULES.length;
+
+      if (!allDone) {
+        root.innerHTML = `
+          <div class="card" style="max-width: 32rem; margin: 0 auto; text-align:center;">
+            <h2>Сертификат ещё не готов</h2>
+            <p>Пройдено модулей: ${done} из ${MODULES.length}. Сертификат выдаётся
+               после завершения всех модулей и прохождения всех тестов.</p>
+            <a class="btn btn-primary" href="/pages/modules/index.html">Продолжить обучение</a>
+          </div>`;
+        return;
+      }
+
+      root.innerHTML = `
+        <div class="cert">
+          <div class="cert__seal">ش</div>
+          <p class="form-note">Онлайн-школа рукии</p>
+          <h1>Сертификат об окончании курса</h1>
+          <p>настоящим подтверждается, что</p>
+          <div class="cert__name">${profile.name || "Ученик"}</div>
+          <p>прошёл(-ла) полный курс подготовки заклинателя (раки) — от основ
+             убеждённости до итоговой практики под супервизией</p>
+          <p style="margin-top: var(--rp-space-6);">Абу Мухаммад · Основатель школы</p>
+        </div>
+        <div class="container no-print" style="text-align:center; margin-top: var(--rp-space-4);">
+          <button class="btn btn-outline" onclick="window.print()">Распечатать / сохранить PDF</button>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>

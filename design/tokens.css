@@ -1,0 +1,113 @@
+/* Скомпилировано из tokens.json вручную — при правке палитры менять оба файла.
+   Масштаб шрифта — только через --rp-fs (rem), паттерн из RUKYA Pro (§8.2 project.md). */
+:root {
+  /* primitive */
+  --rp-color-parchment-50: #fbf6ec;
+  --rp-color-parchment-100: #faf5ea;
+  --rp-color-parchment-200: #f3ead3;
+  --rp-color-parchment-300: #e0d3b6;
+  --rp-color-parchment-400: #d3c6ab;
+  --rp-color-sand-500: #8a7c5a;
+  --rp-color-ink-900: #221c11;
+  --rp-color-ink-700: #3a3021;
+  --rp-color-gold-500: #b0842c;
+  --rp-color-gold-600: #8f6a22;
+  --rp-color-gold-100: #f1e2bc;
+  --rp-color-green-700: #2f6a4a;
+  --rp-color-green-800: #234f38;
+  --rp-color-green-100: #e2ede6;
+  --rp-color-graphite-900: #22262b;
+  --rp-color-graphite-800: #2b3036;
+  --rp-color-graphite-700: #3a4048;
+  --rp-color-graphite-100: #e8eaec;
+  --rp-color-red-600: #a33a2e;
+  --rp-color-red-100: #f3ded9;
+
+  --rp-font-heading: 'Spectral', 'Georgia', serif;
+  --rp-font-body: 'Mulish', -apple-system, BlinkMacSystemFont, sans-serif;
+  --rp-font-arabic: 'Scheherazade New', 'Amiri', 'Noto Naskh Arabic', serif;
+
+  --rp-radius-sm: 0.375rem;
+  --rp-radius-md: 0.75rem;
+  --rp-radius-lg: 1.25rem;
+  --rp-radius-xl: 2rem;
+  --rp-radius-pill: 999px;
+
+  --rp-space-1: 0.25rem;
+  --rp-space-2: 0.5rem;
+  --rp-space-3: 0.75rem;
+  --rp-space-4: 1rem;
+  --rp-space-5: 1.5rem;
+  --rp-space-6: 2rem;
+  --rp-space-7: 3rem;
+  --rp-space-8: 4rem;
+
+  /* fluid type scale — rem, не px (§8.2) */
+  --rp-fs-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
+  --rp-fs-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
+  --rp-fs-md: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  --rp-fs-lg: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --rp-fs-xl: clamp(1.625rem, 1.4rem + 1vw, 2rem);
+  --rp-fs-2xl: clamp(2rem, 1.7rem + 1.5vw, 2.75rem);
+  --rp-fs-arabic: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem);
+
+  /* semantic — зона "учебный контент" (золото/пергамент), зона по умолчанию */
+  --rp-learn-bg: var(--rp-color-parchment-400);
+  --rp-learn-surface: var(--rp-color-parchment-100);
+  --rp-learn-surface-raised: var(--rp-color-parchment-50);
+  --rp-learn-border: var(--rp-color-gold-500);
+  --rp-learn-text: var(--rp-color-ink-900);
+  --rp-learn-text-muted: var(--rp-color-sand-500);
+  --rp-learn-accent: var(--rp-color-gold-500);
+  --rp-learn-accent-strong: var(--rp-color-gold-600);
+  --rp-ayah-card-bg: var(--rp-color-ink-900);
+  --rp-ayah-card-text: var(--rp-color-parchment-50);
+  --rp-ayah-card-accent: var(--rp-color-gold-500);
+
+  --rp-status-success: var(--rp-color-green-700);
+  --rp-status-danger: var(--rp-color-red-600);
+  --rp-status-danger-bg: var(--rp-color-red-100);
+
+  --rp-shadow-card: 0 6px 24px rgba(34, 28, 17, 0.14);
+  --rp-shadow-pop: 0 12px 40px rgba(34, 28, 17, 0.22);
+}
+
+/* Зона "кабинет ученика" — зелёная палитра (§16а) */
+[data-zone="student"] {
+  --rp-zone-bg: var(--rp-color-green-100);
+  --rp-zone-surface: #ffffff;
+  --rp-zone-border: var(--rp-color-green-700);
+  --rp-zone-text: var(--rp-color-ink-900);
+  --rp-zone-accent: var(--rp-color-green-700);
+  --rp-zone-accent-strong: var(--rp-color-green-800);
+}
+
+/* Зона "кабинет админа" — графит, тёмная (§16а) */
+[data-zone="admin"] {
+  --rp-zone-bg: var(--rp-color-graphite-900);
+  --rp-zone-surface: var(--rp-color-graphite-800);
+  --rp-zone-surface-raised: var(--rp-color-graphite-700);
+  --rp-zone-border: var(--rp-color-graphite-100);
+  --rp-zone-text: var(--rp-color-graphite-100);
+  --rp-zone-accent: var(--rp-color-gold-500);
+}
+
+/* Зона "учебный контент" по умолчанию, явно тоже через [data-zone] для единообразия */
+[data-zone="learn"] {
+  --rp-zone-bg: var(--rp-learn-bg);
+  --rp-zone-surface: var(--rp-learn-surface);
+  --rp-zone-surface-raised: var(--rp-learn-surface-raised);
+  --rp-zone-border: var(--rp-learn-border);
+  --rp-zone-text: var(--rp-learn-text);
+  --rp-zone-accent: var(--rp-learn-accent);
+  --rp-zone-accent-strong: var(--rp-learn-accent-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

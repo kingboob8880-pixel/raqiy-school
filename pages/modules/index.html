@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Модули курса — Онлайн-школа рукии</title>
+<link rel="stylesheet" href="/design/tokens.css">
+<link rel="stylesheet" href="/design/base.css">
+</head>
+<body data-zone="learn">
+  <div id="site-header"></div>
+  <main class="container" style="padding-block: var(--rp-space-6);">
+    <h1>Путь ученика</h1>
+    <p class="form-note">11 этапов — от основ убеждённости до самостоятельного приёма пациентов в RUKYA Pro.</p>
+    <div id="path-root" class="path"></div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter } from "/pages/js/layout.js";
+    import { MODULES } from "/pages/js/modules-data.js";
+    import { statusBadgeHtml } from "/pages/js/markdown-loader.js";
+
+    renderHeader("learn");
+    renderFooter();
+
+    const root = document.getElementById("path-root");
+    root.innerHTML = MODULES.map((m) => `
+      <a class="path-step" href="/pages/modules/module.html?id=${m.id}">
+        <span class="path-step__marker">${m.id}</span>
+        <span class="path-step__body">
+          <span class="path-step__title">${m.title}</span>
+          <span class="path-step__meta">${m.level}</span>
+          <div style="margin-top: 0.4rem;">${statusBadgeHtml(m.status)}</div>
+        </span>
+      </a>
+    `).join("");
+  </script>
+</body>
+</html>
