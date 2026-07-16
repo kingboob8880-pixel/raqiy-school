@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<script>document.write('<base href="' + (location.hostname.endsWith('github.io') ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/') + '">');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Модуль — Онлайн-школа рукии</title>
-<link rel="stylesheet" href="./design/tokens.css">
-<link rel="stylesheet" href="./design/base.css">
+<link rel="stylesheet" href="../../design/tokens.css">
+<link rel="stylesheet" href="../../design/base.css">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   .doc-body table { width: 100%; border-collapse: collapse; margin: var(--rp-space-4) 0; }
@@ -23,15 +22,16 @@
 <body data-zone="learn">
   <div id="site-header"></div>
   <main class="container" style="padding-block: var(--rp-space-6);">
-    <a href="./pages/modules/index.html" class="btn btn-ghost btn-sm">← Все модули</a>
+    <a href="index.html" class="btn btn-ghost btn-sm">← Все модули</a>
     <div id="module-root" class="skeleton-loading">Загрузка…</div>
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./pages/js/layout.js";
-    import { getModule } from "./pages/js/modules-data.js";
-    import { loadMarkdownDoc, statusBadgeHtml } from "./pages/js/markdown-loader.js";
+    import { renderHeader, renderFooter } from "../js/layout.js";
+    import { getModule } from "../js/modules-data.js";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto } from "../js/markdown-loader.js";
+    import { withBase } from "../js/base-path.js";
 
     renderHeader("learn");
     renderFooter();
@@ -47,7 +47,7 @@
       document.title = `Модуль ${mod.id}. ${mod.title} — Онлайн-школа рукии`;
       const lessonsHtml = mod.lessons.length
         ? `<ul class="lesson-list">${mod.lessons.map((l) => `
-            <li><a class="lesson-link" href="./pages/book.html?doc=${encodeURIComponent(l.doc)}">
+            <li><a class="lesson-link" href="../book.html?doc=${encodeURIComponent(l.doc)}">
               <span>${l.title}</span><span aria-hidden="true">→</span>
             </a></li>`).join("")}</ul>`
         : `<p class="form-note">Отдельных уроков-первоисточников нет — весь текст модуля на его собственной странице ниже.</p>`;
@@ -57,21 +57,19 @@
           <p class="form-note">Модуль ${mod.id} · ${mod.level}</p>
           <h1>${mod.title}</h1>
           ${statusBadgeHtml(mod.status)}
-          ${mod.intro_video ? `<video controls preload="none" style="margin-top: var(--rp-space-4); border-radius: var(--rp-radius-md);" src="${mod.intro_video}"></video>` : ""}
+          ${mod.intro_video ? `<video controls preload="none" style="margin-top: var(--rp-space-4); border-radius: var(--rp-radius-md);" src="${withBase(mod.intro_video)}"></video>` : ""}
         </div>
         <h2>Уроки</h2>
         ${lessonsHtml}
         <h2 style="margin-top: var(--rp-space-6);">Текст модуля</h2>
         <div id="module-doc" class="card skeleton-loading">Загрузка…</div>
         <div style="margin-top: var(--rp-space-6);">
-          <a class="btn btn-primary" href="./pages/quiz/index.html?module=${mod.id}">Пройти тест по модулю →</a>
+          <a class="btn btn-primary" href="../quiz/index.html?module=${mod.id}">Пройти тест по модулю →</a>
         </div>
       `;
 
       loadMarkdownDoc(mod.doc).then((doc) => {
-        import("./pages/js/markdown-loader.js").then(({ renderDocInto }) => {
-          renderDocInto(document.getElementById("module-doc"), doc, { showTitle: false });
-        });
+        renderDocInto(document.getElementById("module-doc"), doc, { showTitle: false });
       }).catch((err) => {
         document.getElementById("module-doc").innerHTML = `<p class="field-error">${err.message}</p>`;
       });

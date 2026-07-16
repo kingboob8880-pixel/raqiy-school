@@ -3,6 +3,8 @@
 // и рендерит остальное как markdown через marked.js (подключается в каждой
 // странице отдельным <script> из CDN — см. pages/book.html/module.html).
 
+import { withBase } from "./base-path.js";
+
 function parseFrontMatter(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (!match) return { meta: {}, body: raw };
@@ -15,7 +17,7 @@ function parseFrontMatter(raw) {
 }
 
 export async function loadMarkdownDoc(path) {
-  const res = await fetch(path);
+  const res = await fetch(withBase(path));
   if (!res.ok) throw new Error(`Не удалось загрузить ${path}: HTTP ${res.status}`);
   const raw = await res.text();
   return parseFrontMatter(raw);
