@@ -40,19 +40,3 @@
   border-top: 1px solid rgba(251,246,236,0.2); font-size: var(--rp-fs-sm);
   letter-spacing: 0.05em; text-transform: uppercase; color: var(--rp-hero-panel-accent);
 }
-
-/* ---------- Переключатель тем (в шапке сайта, доступен на любой странице) ---------- */
-.theme-switcher {
-  display: flex; align-items: center; gap: var(--rp-space-2);
-}
-.theme-switcher__label { font-size: var(--rp-fs-sm); color: var(--rp-zone-text, var(--rp-learn-text)); opacity: 0.7; display: none; }
-@media (min-width: 64rem) { .theme-switcher__label { display: inline; } }
-.theme-switcher__btn {
-  font: inherit; font-size: var(--rp-fs-sm); font-weight: 700; cursor: pointer;
-  width: 1.6rem; height: 1.6rem; padding: 0; border-radius: var(--rp-radius-pill);
-  border: 2px solid transparent; box-shadow: 0 0 0 1px var(--rp-zone-border, var(--rp-learn-border));
-}
-.theme-switcher__btn[aria-pressed="true"] { border-color: var(--rp-zone-accent, var(--rp-learn-accent)); }
-.theme-switcher__btn[data-theme="emerald"] { background: linear-gradient(135deg, #245038, #16281d); }
-.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #fbf6ec, #e8dcc0); }
-.theme-switcher__btn[data-theme="split"] { background: linear-gradient(135deg, #faf6ec, #b0842c); }
