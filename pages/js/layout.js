@@ -2,8 +2,8 @@
 // каждый .html файл. Подключается: <div id="site-header"></div> + этот скрипт.
 // Внедряется в страницы на разной глубине вложенности, поэтому все ссылки —
 // через withBase() (см. base-path.js), а не относительные.
-import { withBase } from "./base-path.js";
-import { initSiteTheme } from "./theme.js";
+import { withBase } from "./base-path.js?v=4";
+import { initSiteTheme } from "./theme.js?v=4";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
