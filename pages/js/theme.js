@@ -73,8 +73,8 @@ const HERO_COPY = {
 function heroActionsHtml() {
   return `
     <div class="hero-actions">
-      <a class="btn btn-primary" href="auth/register.html">Начать бесплатный уровень</a>
-      <a class="btn btn-outline" href="https://t.me/ruqoq" target="_blank" rel="noopener">Купить продвинутый уровень</a>
+      <a class="btn btn-primary" href="auth/register.html">Читать бесплатные отрывки</a>
+      <a class="btn btn-outline" href="https://t.me/ruqoq" target="_blank" rel="noopener">Купить курс — 30 000 ₽</a>
     </div>
   `;
 }

@@ -3,7 +3,7 @@
 // Внедряется в страницы на разной глубине вложенности, поэтому все ссылки —
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
-import { initSiteTheme } from "./theme.js?v=6";
+import { initSiteTheme } from "./theme.js?v=7";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
