@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../design/tokens.css?v=6">
-<link rel="stylesheet" href="../design/base.css?v=11">
+<link rel="stylesheet" href="../design/base.css?v=12">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   .doc-meta { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-bottom: var(--rp-space-5); }
@@ -32,7 +32,7 @@
     import { loadMarkdownDoc, renderDocInto } from "./js/markdown-loader.js?v=7";
     import { bookKey, MODULES } from "./js/modules-data.js?v=8";
     import { withBase } from "./js/base-path.js?v=6";
-    import { watchAuth, getStudentProfile } from "../integration/auth.js?v=6";
+    import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=6";
 
     renderHeader("learn");
     renderFooter();
@@ -47,6 +47,38 @@
         if (lesson) return lesson;
       }
       return null;
+    }
+
+    /** Полный текст — только оплатившим/админу (project.md §18, решение
+     * 2026-07-16). Неоплатившим — часть блоков + предложение купить курс.
+     * Это программная защита "для честных" — сам файл в content/ всё равно
+     * читается напрямую через публичный GitHub-репозиторий, без сервера
+     * скрыть статический .md технически нельзя (см. решение в project.md). */
+    function applyPaywall(bodyEl) {
+      const children = Array.from(bodyEl.children);
+      if (children.length <= 2) return; // нечего резать без потери смысла
+      const cutIndex = Math.max(2, Math.ceil(children.length * 0.35));
+      if (cutIndex >= children.length) return;
+      for (let i = cutIndex; i < children.length; i++) children[i].remove();
+
+      const fade = document.createElement("div");
+      fade.className = "paywall-fade";
+      fade.setAttribute("aria-hidden", "true");
+      bodyEl.after(fade);
+
+      const paywall = document.createElement("div");
+      paywall.className = "card paywall-card";
+      paywall.innerHTML = `
+        <h3>Это бесплатный ознакомительный отрывок</h3>
+        <p class="form-note">Полный текст этой книги, экзамен по ней и весь курс целиком —
+          11 модулей от основ якына до практики под супервизией наставника —
+          открываются после приобретения курса.</p>
+        <p class="paywall-card__price">30 000 ₽</p>
+        <div class="book-exam-cta__actions">
+          <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать лекарю в Telegram</a>
+          <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже оплатили? Войти</a>
+        </div>`;
+      fade.after(paywall);
     }
 
     function examCtaHtml(progress) {
@@ -71,12 +103,20 @@
       loadMarkdownDoc(docPath)
         .then((doc) => {
           renderDocInto(root, doc);
+          const bodyEl = root.querySelector(".doc-body");
           const ctaRoot = document.createElement("div");
           root.after(ctaRoot);
           watchAuth(async (user) => {
-            if (!user) { ctaRoot.innerHTML = examCtaHtml(null); return; }
-            const profile = await getStudentProfile(user.uid);
-            ctaRoot.innerHTML = examCtaHtml(profile?.progress);
+            if (!user) {
+              if (bodyEl) applyPaywall(bodyEl);
+              return;
+            }
+            const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
+            const unlocked = admin || !!profile?.paid;
+            if (bodyEl && !unlocked) applyPaywall(bodyEl);
+            // Экзамен по книге — только после полного текста (project.md §18):
+            // нет смысла сдавать тест по книге, которую не дали дочитать.
+            if (unlocked) ctaRoot.innerHTML = examCtaHtml(profile?.progress);
           });
         })
         .catch((err) => {
