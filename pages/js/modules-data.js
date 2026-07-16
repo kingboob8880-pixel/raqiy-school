@@ -10,8 +10,8 @@ export const MODULES = [
     doc: "/content/module-1/index.md",
     cover: "/assets/images/covers/molba-lekarya.jpg",
     lessons: [
-      { title: "Учебник якына — убеждённости", doc: "/content/module-1/yakyn.md" },
-      { title: "Мольба заклинателя", doc: "/content/module-1/molba-zaklinatelya.md" },
+      { title: "Учебник якына — убеждённости", doc: "/content/module-1/yakyn.md", exam: "/content/exams/module-1-yakyn.md" },
+      { title: "Мольба заклинателя", doc: "/content/module-1/molba-zaklinatelya.md", exam: "/content/exams/module-1-molba-zaklinatelya.md" },
     ],
     intro_video: "/assets/video/rukya-intro.mp4",
   },
@@ -23,9 +23,9 @@ export const MODULES = [
     doc: "/content/module-2/index.md",
     cover: "/assets/images/covers/zaklinanie-organy-koldovstvo.jpg",
     lessons: [
-      { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md" },
-      { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md" },
-      { title: "Классификация недугов (Справочник)", doc: "/content/reference/classification.md" },
+      { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md", exam: "/content/exams/module-2-ya-zaklinayu.md" },
+      { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md", exam: "/content/exams/module-2-obshchee-ponyatie-zaklinanie.md" },
+      { title: "Классификация недугов (Справочник)", doc: "/content/reference/classification.md", exam: "/content/exams/reference-classification.md" },
     ],
   },
   {
@@ -36,7 +36,7 @@ export const MODULES = [
     doc: "/content/module-3/index.md",
     cover: "/assets/images/covers/organy-tela.jpg",
     lessons: [
-      { title: "Словарь органов тела (Справочник)", doc: "/content/reference/organs.md" },
+      { title: "Словарь органов тела (Справочник)", doc: "/content/reference/organs.md", exam: "/content/exams/reference-organs.md" },
     ],
   },
   {
@@ -63,7 +63,7 @@ export const MODULES = [
     doc: "/content/module-6/index.md",
     cover: "/assets/images/covers/krepost-veruyushchego.jpg",
     lessons: [
-      { title: "Базовые азкары и дуа защиты (Справочник)", doc: "/content/reference/azkar.md" },
+      { title: "Базовые азкары и дуа защиты (Справочник)", doc: "/content/reference/azkar.md", exam: "/content/exams/reference-azkar.md" },
     ],
   },
   {

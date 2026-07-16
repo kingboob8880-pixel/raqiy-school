@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../design/tokens.css?v=6">
-<link rel="stylesheet" href="../design/base.css?v=10">
+<link rel="stylesheet" href="../design/base.css?v=11">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   .doc-meta { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-bottom: var(--rp-space-5); }
@@ -14,6 +14,7 @@
   .doc-body th, .doc-body td { border: 1px solid var(--rp-learn-border); padding: var(--rp-space-2) var(--rp-space-3); text-align: left; font-size: var(--rp-fs-sm); }
   .doc-body th { background: var(--rp-color-parchment-200); }
   .book-exam-cta { margin-top: var(--rp-space-6); padding: var(--rp-space-5); text-align: center; }
+  .book-exam-cta__actions { display: flex; gap: var(--rp-space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--rp-space-4); }
 </style>
 </head>
 <body data-zone="learn">
@@ -27,10 +28,10 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/layout.js?v=6";
-    import { loadMarkdownDoc, renderDocInto } from "./js/markdown-loader.js?v=6";
-    import { bookKey } from "./js/modules-data.js?v=7";
-    import { BOOK_QUIZZES } from "./js/book-quiz-data.js?v=7";
+    import { renderHeader, renderFooter } from "./js/layout.js?v=7";
+    import { loadMarkdownDoc, renderDocInto } from "./js/markdown-loader.js?v=7";
+    import { bookKey, MODULES } from "./js/modules-data.js?v=8";
+    import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile } from "../integration/auth.js?v=6";
 
     renderHeader("learn");
@@ -40,20 +41,27 @@
     const docPath = params.get("doc");
     const root = document.getElementById("doc-root");
 
-    function examCtaHtml(progress) {
-      if (!BOOK_QUIZZES[docPath]) return "";
-      const state = progress?.books?.[bookKey(docPath)];
-      if (state?.status === "done") {
-        return `
-          <div class="card book-exam-cta" style="border-color: var(--rp-status-success);">
-            <p style="margin:0;">✓ Экзамен по этой книге сдан — ${Math.round(state.quizScore * 100)}%</p>
-          </div>`;
+    function findLesson(doc) {
+      for (const m of MODULES) {
+        const lesson = m.lessons.find((l) => l.doc === doc);
+        if (lesson) return lesson;
       }
+      return null;
+    }
+
+    function examCtaHtml(progress) {
+      const lesson = findLesson(docPath);
+      if (!lesson?.exam) return "";
+      const state = progress?.books?.[bookKey(docPath)];
+      const done = state?.status === "done";
       return `
-        <div class="card book-exam-cta">
-          <h3>Прочитали книгу?</h3>
-          <p class="form-note">Сдайте короткий экзамен по ней — порог 70%.</p>
-          <a class="btn btn-primary" href="quiz/index.html?doc=${encodeURIComponent(docPath)}">Сдать экзамен по книге →</a>
+        <div class="card book-exam-cta" ${done ? `style="border-color: var(--rp-status-success);"` : ""}>
+          <h3>${done ? "Экзамен по этой книге сдан" : "Прочитали книгу?"}</h3>
+          <p class="form-note">${done ? `Результат — ${Math.round(state.quizScore * 100)}%. Можно пересдать, если хотите улучшить.` : "Сдайте короткий экзамен по ней — порог 70%."}</p>
+          <div class="book-exam-cta__actions">
+            <a class="btn btn-outline" href="${withBase("/pages/tests/index.html")}">Перейти к тестам</a>
+            <a class="btn btn-primary" href="quiz/index.html?exam=${encodeURIComponent(lesson.exam)}">${done ? "Пересдать экзамен →" : "Перейти к экзамену →"}</a>
+          </div>
         </div>`;
     }
 
@@ -66,7 +74,7 @@
           const ctaRoot = document.createElement("div");
           root.after(ctaRoot);
           watchAuth(async (user) => {
-            if (!user) { ctaRoot.innerHTML = BOOK_QUIZZES[docPath] ? examCtaHtml(null) : ""; return; }
+            if (!user) { ctaRoot.innerHTML = examCtaHtml(null); return; }
             const profile = await getStudentProfile(user.uid);
             ctaRoot.innerHTML = examCtaHtml(profile?.progress);
           });

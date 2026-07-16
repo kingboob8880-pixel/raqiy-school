@@ -36,6 +36,7 @@ export function renderHeader(zone = "learn") {
         </a>
         <nav class="site-header__nav">
           <a href="${withBase("/pages/modules/index.html")}">Модули</a>
+          <a href="${withBase("/pages/tests/index.html")}">Тесты</a>
           <a href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}">Архив</a>
           <a href="${withBase("/pages/dashboard/student.html")}">Кабинет</a>
         </nav>

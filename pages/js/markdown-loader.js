@@ -5,7 +5,7 @@
 
 import { withBase } from "./base-path.js?v=6";
 
-function parseFrontMatter(raw) {
+export function parseFrontMatter(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (!match) return { meta: {}, body: raw };
   const meta = {};
