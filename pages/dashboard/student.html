@@ -18,11 +18,18 @@
   <main class="container" style="padding-block: var(--rp-space-6);">
     <div id="gate" class="skeleton-loading">Проверка входа…</div>
     <div id="dashboard" hidden>
-      <h1>Кабинет ученика</h1>
+      <div class="dash-hero">
+        <div class="avatar" id="dash-avatar">؟</div>
+        <div>
+          <p class="dash-hero__eyebrow">Ассаляму алейкум ва рахматуллах</p>
+          <h1 id="dash-name">Кабинет ученика</h1>
+        </div>
+      </div>
+
       <div class="stat-grid" style="margin-bottom: var(--rp-space-6);">
-        <div class="card stat-card"><div class="stat-card__value" id="stat-progress">—</div><div class="stat-card__label">Прогресс курса</div></div>
-        <div class="card stat-card"><div class="stat-card__value" id="stat-score">—</div><div class="stat-card__label">Средний балл тестов</div></div>
-        <div class="card stat-card"><div class="stat-card__value" id="stat-status">—</div><div class="stat-card__label">Статус оплаты</div></div>
+        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">📈</span><div class="stat-card__value" id="stat-progress">—</div><div class="stat-card__label">Прогресс курса</div></div>
+        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🎯</span><div class="stat-card__value" id="stat-score">—</div><div class="stat-card__label">Средний балл тестов</div></div>
+        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🕊️</span><div class="stat-card__value" id="stat-status">—</div><div class="stat-card__label">Статус оплаты</div></div>
       </div>
 
       <div id="unpaid-notice" class="card" style="border-color: var(--rp-status-danger);" hidden>
@@ -34,7 +41,10 @@
       </div>
 
       <h2>Продолжить обучение</h2>
-      <a id="continue-link" class="btn btn-primary" href="../modules/index.html">Открыть модули</a>
+      <a id="continue-link" class="btn btn-primary" href="../modules/index.html" style="margin-bottom: var(--rp-space-6);">Открыть путь модулей</a>
+
+      <h2>Книги курса</h2>
+      <div id="book-grid" class="book-grid"><p class="form-note">Загрузка…</p></div>
 
       <h2 style="margin-top: var(--rp-space-6);">Сообщения от наставника</h2>
       <div class="card">
@@ -54,6 +64,8 @@
     import { renderHeader, renderFooter } from "../js/layout.js?v=6";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=6";
     import { computeOverallProgress, computeAverageScore, listMessages, sendMessage } from "../../integration/firestore.js?v=6";
+    import { MODULES } from "../js/modules-data.js?v=6";
+    import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("student");
     renderFooter();
@@ -69,6 +81,27 @@
       const profile = await getStudentProfile(user.uid);
       gate.hidden = true;
       dashboard.hidden = false;
+
+      const displayName = profile?.name?.trim() || user.email;
+      document.getElementById("dash-name").textContent = profile?.name ? `Здравствуйте, ${profile.name}!` : "Кабинет ученика";
+      document.getElementById("dash-avatar").textContent = displayName.charAt(0).toUpperCase();
+
+      const bookGrid = document.getElementById("book-grid");
+      bookGrid.innerHTML = MODULES.map((m) => {
+        const moduleProgress = profile?.progress?.[m.id];
+        const done = moduleProgress?.status === "done";
+        const locked = m.level !== "Начальный" && !profile?.paid;
+        const stateLabel = done ? "Пройден" : moduleProgress?.status === "in_progress" ? "В процессе" : "Не начат";
+        return `
+          <a class="book-card ${done ? "book-card--done" : ""} ${locked ? "book-card--locked" : ""}" href="${withBase("/pages/modules/module.html")}?id=${m.id}">
+            <span class="book-card__marker">${done ? "✓" : m.id}</span>
+            <span class="book-card__body">
+              <span class="book-card__title">${m.title}</span>
+              <span class="book-card__meta">${m.level} · ${stateLabel}${locked ? " · 🔒 после оплаты" : ""}</span>
+            </span>
+            <span class="book-card__arrow" aria-hidden="true">→</span>
+          </a>`;
+      }).join("");
 
       document.getElementById("stat-progress").textContent = computeOverallProgress(profile?.progress) + "%";
       const avg = computeAverageScore(profile?.progress);
