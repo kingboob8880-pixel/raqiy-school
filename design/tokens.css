@@ -68,6 +68,12 @@
   --rp-learn-text-muted: var(--rp-color-sand-500);
   --rp-learn-accent: var(--rp-color-gold-500);
   --rp-learn-accent-strong: var(--rp-color-gold-600);
+  --rp-learn-accent-contrast: var(--rp-color-parchment-50);
+  --rp-learn-icon-bg: var(--rp-color-gold-100);
+  --rp-learn-icon-text: var(--rp-color-gold-600);
+  --rp-learn-badge-bg: #ffffff;
+  --rp-learn-badge-text: var(--rp-color-gold-600);
+  --rp-learn-badge-border: rgba(43, 36, 23, 0.15);
   --rp-ayah-card-bg: var(--rp-color-ink-900);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
   --rp-ayah-card-accent: var(--rp-color-gold-500);
@@ -115,6 +121,60 @@
   --rp-zone-text: var(--rp-learn-text);
   --rp-zone-accent: var(--rp-learn-accent);
   --rp-zone-accent-strong: var(--rp-learn-accent-strong);
+  --rp-zone-accent-contrast: var(--rp-learn-accent-contrast);
+}
+
+/* ============================================================
+   Темы сайта (публичная зона "learn") — переопределяют примитивы
+   --rp-learn-* на уровне <html>, поэтому распространяются на ВСЕ
+   страницы зоны learn (лендинг, модули, книги, вход/регистрация),
+   а не только на блок героя. Переключаются pages/js/theme.js,
+   выбор — data-site-theme на <html>, хранится в localStorage.
+   project.md — решения 2026-07-16 (варианты A/B/C из
+   "Лендинг - новый фон.html"). "split" не переопределяется — это
+   исходная золото/пергаментная палитра выше, тема-baseline. ========== */
+
+/* A — Тёмный изумруд */
+html[data-site-theme="emerald"] {
+  --rp-learn-bg: var(--rp-color-emerald-900);
+  --rp-learn-surface: var(--rp-color-emerald-700);
+  --rp-learn-surface-raised: #26492f;
+  --rp-learn-border: rgba(230, 201, 131, 0.25);
+  --rp-learn-text: var(--rp-color-parchment-50);
+  --rp-learn-text-muted: var(--rp-color-sage-300);
+  --rp-learn-accent: var(--rp-color-gold-400);
+  --rp-learn-accent-strong: var(--rp-color-gold-600);
+  --rp-learn-accent-contrast: var(--rp-color-ink-900);
+  --rp-learn-icon-bg: rgba(230, 201, 131, 0.14);
+  --rp-learn-icon-text: var(--rp-color-gold-200);
+  --rp-learn-badge-bg: rgba(230, 201, 131, 0.16);
+  --rp-learn-badge-text: var(--rp-color-gold-200);
+  --rp-learn-badge-border: rgba(230, 201, 131, 0.4);
+  --rp-ayah-card-bg: var(--rp-color-emerald-700);
+  --rp-ayah-card-text: var(--rp-color-parchment-50);
+  --rp-ayah-card-accent: var(--rp-color-gold-200);
+  --rp-hero-panel-gradient: radial-gradient(130% 70% at 50% -10%, #245038, var(--rp-color-emerald-900) 65%);
+}
+
+/* B — Светлый с тонким геометрическим паттерном */
+html[data-site-theme="pattern"] {
+  --rp-learn-bg: var(--rp-color-parchment-50) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23b0842c' stroke-opacity='0.22' stroke-width='1.2'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  --rp-learn-surface: #ffffff;
+  --rp-learn-surface-raised: #ffffff;
+  --rp-learn-border: rgba(176, 132, 44, 0.3);
+  --rp-learn-text: var(--rp-color-ink-900);
+  --rp-learn-text-muted: var(--rp-color-sand-600);
+  --rp-learn-accent: var(--rp-color-green-700);
+  --rp-learn-accent-strong: var(--rp-color-green-800);
+  --rp-learn-accent-contrast: #ffffff;
+  --rp-learn-icon-bg: rgba(47, 106, 74, 0.12);
+  --rp-learn-icon-text: var(--rp-color-green-700);
+  --rp-learn-badge-bg: rgba(47, 106, 74, 0.1);
+  --rp-learn-badge-text: var(--rp-color-green-700);
+  --rp-learn-badge-border: rgba(47, 106, 74, 0.28);
+  --rp-ayah-card-bg: var(--rp-color-ink-900);
+  --rp-ayah-card-text: var(--rp-color-parchment-50);
+  --rp-ayah-card-accent: var(--rp-color-green-700);
 }
 
 @media (prefers-reduced-motion: reduce) {

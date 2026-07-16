@@ -1,18 +1,70 @@
-// Три темы лендинга (project.md, "Лендинг - новый фон.html"). Тема A выбрана
-// по умолчанию (2026-07-16), переключатель позволяет попробовать B/C и
-// запоминает выбор в localStorage — только для главной страницы.
-const STORAGE_KEY = "raqiy-landing-theme";
+// Единая тема-система сайта (зона "learn" — публичные страницы: лендинг,
+// модули, книги, вход/регистрация). Переключает --rp-learn-* токены
+// глобально через html[data-site-theme] (design/tokens.css), поэтому
+// действует на ЛЮБОЙ странице, не только на лендинге (project.md,
+// решение 2026-07-16 — "темы должны применяться ко всей системе").
+// Кабинеты ученика/админа (data-zone="student"/"admin") используют свои
+// собственные палитры (§16а) и этой темой не затрагиваются.
+const STORAGE_KEY = "raqiy-site-theme";
 const DEFAULT_THEME = "emerald";
 
-export const LANDING_THEMES = [
+export const SITE_THEMES = [
   { key: "emerald", label: "Тёмный изумруд", layout: "centered" },
   { key: "pattern", label: "Светлый паттерн", layout: "centered" },
   { key: "split", label: "Сплит с каллиграфией", layout: "split" },
 ];
 
 function getTheme(key) {
-  return LANDING_THEMES.find((t) => t.key === key) || LANDING_THEMES[0];
+  return SITE_THEMES.find((t) => t.key === key) || SITE_THEMES[0];
 }
+
+function readSavedTheme() {
+  try { return localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME; }
+  catch (e) { return DEFAULT_THEME; }
+}
+
+function saveTheme(key) {
+  try { localStorage.setItem(STORAGE_KEY, key); } catch (e) { /* приватный режим — не критично */ }
+}
+
+/** Красит html[data-site-theme] +, если на странице есть лендинг-хиро, перерисовывает его структуру. */
+export function applySiteTheme(themeKey) {
+  const theme = getTheme(themeKey);
+  document.documentElement.setAttribute("data-site-theme", theme.key);
+  saveTheme(theme.key);
+
+  document.querySelectorAll(".theme-switcher__btn").forEach((btn) => {
+    btn.setAttribute("aria-pressed", String(btn.dataset.theme === theme.key));
+  });
+
+  const onThemeChange = document.getElementById("hero-content") ? renderLandingHero : null;
+  if (onThemeChange) onThemeChange(theme);
+}
+
+/** Вызывается на КАЖДОЙ странице (из layout.js) — применяет сохранённую тему и строит переключатель в шапке. */
+export function initSiteTheme() {
+  document.documentElement.setAttribute("data-site-theme", readSavedTheme());
+
+  const switcherRoot = document.getElementById("theme-switcher");
+  if (switcherRoot) {
+    switcherRoot.innerHTML = `
+      <span class="theme-switcher__label">Тема:</span>
+      ${SITE_THEMES.map((t) => `<button type="button" class="theme-switcher__btn" data-theme="${t.key}" title="${t.label}" aria-label="${t.label}"></button>`).join("")}
+    `;
+    switcherRoot.querySelectorAll(".theme-switcher__btn").forEach((btn) => {
+      btn.addEventListener("click", () => applySiteTheme(btn.dataset.theme));
+    });
+  }
+
+  const current = getTheme(readSavedTheme());
+  switcherRoot?.querySelectorAll(".theme-switcher__btn").forEach((btn) => {
+    btn.setAttribute("aria-pressed", String(btn.dataset.theme === current.key));
+  });
+
+  if (document.getElementById("hero-content")) renderLandingHero(current);
+}
+
+// ---------- Лендинг-хиро: структура меняется вместе с темой (только index.html) ----------
 
 const HERO_COPY = {
   badge: "Курс от лекаря Абу Мухаммада",
@@ -32,7 +84,7 @@ function heroActionsHtml() {
 function renderCenteredHero() {
   return `
     <div class="landing-hero__inner">
-      <span class="badge">${HERO_COPY.badge}</span>
+      <span class="badge badge-tinted">${HERO_COPY.badge}</span>
       <h1>${HERO_COPY.title}</h1>
       <p class="landing-hero__lead">${HERO_COPY.lead}</p>
       ${heroActionsHtml()}
@@ -44,7 +96,7 @@ function renderSplitHero() {
   return `
     <div class="hero-split">
       <div class="hero-split__copy">
-        <span class="badge">${HERO_COPY.badge}</span>
+        <span class="badge badge-tinted">${HERO_COPY.badge}</span>
         <h1>${HERO_COPY.title}</h1>
         <p class="landing-hero__lead">${HERO_COPY.lead}</p>
         ${heroActionsHtml()}
@@ -74,39 +126,9 @@ function renderFeatures() {
   `).join("");
 }
 
-export function applyLandingTheme(themeKey) {
-  const theme = getTheme(themeKey);
-  // На <body>, а не на обёртке хиро — так тема окрашивает и #site-header
-  // (обычная неподвижная полоса сайта, не участвует в скруглённой карточке
-  // хиро/фич, чтобы не ломать position: sticky через overflow:hidden предка).
-  document.body.setAttribute("data-landing-theme", theme.key);
-
+function renderLandingHero(theme) {
   const heroRoot = document.getElementById("hero-content");
   if (heroRoot) heroRoot.innerHTML = theme.layout === "split" ? renderSplitHero() : renderCenteredHero();
-
   const featuresRoot = document.getElementById("feature-row");
   if (featuresRoot) featuresRoot.innerHTML = renderFeatures();
-
-  document.querySelectorAll(".theme-switcher__btn").forEach((btn) => {
-    btn.setAttribute("aria-pressed", String(btn.dataset.theme === theme.key));
-  });
-
-  try { localStorage.setItem(STORAGE_KEY, theme.key); } catch (e) { /* приватный режим — не критично */ }
-}
-
-export function initThemeSwitcher(switcherRootId = "theme-switcher") {
-  const root = document.getElementById(switcherRootId);
-  if (root) {
-    root.innerHTML = `
-      <span class="theme-switcher__label">Оформление:</span>
-      ${LANDING_THEMES.map((t) => `<button type="button" class="theme-switcher__btn" data-theme="${t.key}">${t.label}</button>`).join("")}
-    `;
-    root.querySelectorAll(".theme-switcher__btn").forEach((btn) => {
-      btn.addEventListener("click", () => applyLandingTheme(btn.dataset.theme));
-    });
-  }
-
-  let saved = DEFAULT_THEME;
-  try { saved = localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME; } catch (e) { /* приватный режим */ }
-  applyLandingTheme(saved);
 }
