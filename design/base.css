@@ -263,6 +263,17 @@ p { margin: 0 0 var(--rp-space-4); }
 .book-card__meta { display: block; font-size: var(--rp-fs-sm); color: var(--rp-zone-text); opacity: 0.65; }
 .book-card--locked { opacity: 0.6; }
 .book-card__arrow { flex: none; opacity: 0.5; }
+.book-card__marker[style*="background-image"] { background-size: cover; background-position: center; border: none; }
+
+/* ---------- Баннер обложки над секцией (кабинет ученика) ---------- */
+.section-banner { position: relative; border-radius: var(--rp-radius-lg); overflow: hidden; margin-bottom: var(--rp-space-4); min-height: 6rem; display: flex; align-items: flex-end; }
+.section-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.section-banner h2 { position: relative; z-index: 1; margin: 0; padding: var(--rp-space-4); color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.6); background: linear-gradient(0deg, rgba(0,0,0,0.55), transparent); width: 100%; }
+
+/* ---------- Карточка "Продолжить обучение" — обложка + точный следующий урок ---------- */
+.continue-card { display: flex; gap: var(--rp-space-4); align-items: center; flex-wrap: wrap; }
+.continue-card__cover { width: 5.5rem; height: 5.5rem; object-fit: cover; border-radius: var(--rp-radius-md); flex: none; }
+.continue-card__body { flex: 1; min-width: 12rem; }
 
 .data-table { width: 100%; border-collapse: collapse; font-size: var(--rp-fs-sm); }
 .data-table th, .data-table td { text-align: left; padding: var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border); }

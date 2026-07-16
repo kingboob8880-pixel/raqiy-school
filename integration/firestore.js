@@ -24,6 +24,16 @@ export async function recordQuizResult(uid, moduleId, scoreRatio) {
   });
 }
 
+/** Экзамен по отдельной книге (не по модулю целиком, project.md §5) —
+ * bookKey — плоский ключ из pages/js/modules-data.js#bookKey(doc). */
+export async function recordBookQuizResult(uid, bookKey, scoreRatio) {
+  await updateDoc(doc(db, "students", uid), {
+    [`progress.books.${bookKey}.quizScore`]: scoreRatio,
+    [`progress.books.${bookKey}.status`]: scoreRatio >= 0.7 ? "done" : "in_progress",
+    lastSeenAt: serverTimestamp(),
+  });
+}
+
 export async function listStudents() {
   const snap = await getDocs(collection(db, "students"));
   return snap.docs.map((d) => ({ uid: d.id, ...d.data() }));
