@@ -27,6 +27,7 @@ const STATUS_BADGE = {
   certified: { cls: "badge-certified", label: "Подтверждено шейхом" },
   draft: { cls: "badge-draft", label: "Черновик, ждёт подтверждения шейха" },
   archive: { cls: "badge-archive", label: "Вне сертифицируемой программы" },
+  author: { cls: "badge-author", label: "Авторская методика — не Сунна" },
 };
 
 export function statusBadgeHtml(status) {

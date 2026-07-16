@@ -22,6 +22,7 @@ export const MODULES = [
     doc: "/content/module-2/index.md",
     lessons: [
       { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md" },
+      { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md" },
       { title: "Классификация недугов (Справочник)", doc: "/content/reference/classification.md" },
     ],
   },
