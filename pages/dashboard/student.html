@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Кабинет ученика — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=6">
-<link rel="stylesheet" href="../../design/base.css?v=8">
+<link rel="stylesheet" href="../../design/base.css?v=9">
 </head>
 <body data-zone="student">
   <div id="site-header"></div>
@@ -35,9 +35,12 @@
       </div>
 
       <h2>Продолжить обучение</h2>
-      <a id="continue-link" class="btn btn-primary" href="../modules/index.html" style="margin-bottom: var(--rp-space-6);">Открыть путь модулей</a>
+      <div id="continue-card" class="card continue-card" style="margin-bottom: var(--rp-space-6);"><p class="form-note">Загрузка…</p></div>
 
-      <h2>Книги курса</h2>
+      <div class="section-banner">
+        <img id="books-banner-img" alt="" loading="lazy">
+        <h2>Книги курса</h2>
+      </div>
       <div id="book-grid" class="book-grid"><p class="form-note">Загрузка…</p></div>
 
       <h2 style="margin-top: var(--rp-space-6);">Сообщения от наставника</h2>
@@ -57,8 +60,8 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=6";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=6";
-    import { computeOverallProgress, computeAverageScore, listMessages, sendMessage } from "../../integration/firestore.js?v=7";
-    import { MODULES } from "../js/modules-data.js?v=6";
+    import { computeOverallProgress, computeAverageScore, listMessages, sendMessage } from "../../integration/firestore.js?v=8";
+    import { MODULES, bookKey, findNextLesson } from "../js/modules-data.js?v=7";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("student");
@@ -80,15 +83,18 @@
       document.getElementById("dash-name").textContent = profile?.name ? `Здравствуйте, ${profile.name}!` : "Кабинет ученика";
       document.getElementById("dash-avatar").textContent = displayName.charAt(0).toUpperCase();
 
+      document.getElementById("books-banner-img").src = withBase("/assets/images/covers/knigi-dlya-obucheniya.jpg");
+
       const bookGrid = document.getElementById("book-grid");
       bookGrid.innerHTML = MODULES.map((m) => {
         const moduleProgress = profile?.progress?.[m.id];
         const done = moduleProgress?.status === "done";
         const locked = m.level !== "Начальный" && !profile?.paid;
         const stateLabel = done ? "Пройден" : moduleProgress?.status === "in_progress" ? "В процессе" : "Не начат";
+        const thumb = m.cover ? withBase(m.cover.replace(/\.jpg$/, "-thumb.jpg")) : null;
         return `
           <a class="book-card ${done ? "book-card--done" : ""} ${locked ? "book-card--locked" : ""}" href="${withBase("/pages/modules/module.html")}?id=${m.id}">
-            <span class="book-card__marker">${done ? "✓" : m.id}</span>
+            <span class="book-card__marker" ${thumb ? `style="background-image:url('${thumb}')"` : ""}>${thumb ? "" : (done ? "✓" : m.id)}</span>
             <span class="book-card__body">
               <span class="book-card__title">${m.title}</span>
               <span class="book-card__meta">${m.level} · ${stateLabel}${locked ? " · 🔒 после оплаты" : ""}</span>
@@ -96,6 +102,25 @@
             <span class="book-card__arrow" aria-hidden="true">→</span>
           </a>`;
       }).join("");
+
+      const continueRoot = document.getElementById("continue-card");
+      const next = findNextLesson(profile?.progress);
+      if (next) {
+        const cover = next.module.cover ? withBase(next.module.cover) : null;
+        continueRoot.innerHTML = `
+          ${cover ? `<img class="continue-card__cover" src="${cover}" alt="" loading="lazy">` : ""}
+          <div class="continue-card__body">
+            <p class="form-note" style="margin-bottom:0.2rem;">Модуль ${next.module.id} · ${next.module.title}</p>
+            <h3 style="margin-bottom: var(--rp-space-3);">${next.lesson.title}</h3>
+            <a class="btn btn-primary" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent(next.lesson.doc)}">Продолжить чтение →</a>
+          </div>`;
+      } else {
+        continueRoot.innerHTML = `
+          <div class="continue-card__body">
+            <h3 style="margin-bottom: var(--rp-space-3);">Все книги с экзаменами пройдены 🎉</h3>
+            <a class="btn btn-primary" href="${withBase("/pages/modules/index.html")}">Открыть путь модулей</a>
+          </div>`;
+      }
 
       document.getElementById("stat-progress").textContent = computeOverallProgress(profile?.progress) + "%";
       const avg = computeAverageScore(profile?.progress);

@@ -8,6 +8,7 @@ export const MODULES = [
     level: "Начальный",
     status: "certified",
     doc: "/content/module-1/index.md",
+    cover: "/assets/images/covers/molba-lekarya.jpg",
     lessons: [
       { title: "Учебник якына — убеждённости", doc: "/content/module-1/yakyn.md" },
       { title: "Мольба заклинателя", doc: "/content/module-1/molba-zaklinatelya.md" },
@@ -20,6 +21,7 @@ export const MODULES = [
     level: "Начальный",
     status: "certified",
     doc: "/content/module-2/index.md",
+    cover: "/assets/images/covers/zaklinanie-organy-koldovstvo.jpg",
     lessons: [
       { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md" },
       { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md" },
@@ -32,6 +34,7 @@ export const MODULES = [
     level: "Начальный",
     status: "draft",
     doc: "/content/module-3/index.md",
+    cover: "/assets/images/covers/organy-tela.jpg",
     lessons: [
       { title: "Словарь органов тела (Справочник)", doc: "/content/reference/organs.md" },
     ],
@@ -58,6 +61,7 @@ export const MODULES = [
     level: "Средний",
     status: "certified",
     doc: "/content/module-6/index.md",
+    cover: "/assets/images/covers/krepost-veruyushchego.jpg",
     lessons: [
       { title: "Базовые азкары и дуа защиты (Справочник)", doc: "/content/reference/azkar.md" },
     ],
@@ -68,6 +72,7 @@ export const MODULES = [
     level: "Продвинутый",
     status: "draft",
     doc: "/content/module-7/index.md",
+    cover: "/assets/images/covers/ubivanie-dzhinnov.jpg",
     lessons: [],
   },
   {
@@ -106,6 +111,26 @@ export const MODULES = [
 
 export function getModule(id) {
   return MODULES.find((m) => m.id === Number(id));
+}
+
+/** doc-путь ("/content/module-1/yakyn.md") -> плоский ключ, безопасный для
+ * Firestore dot-notation в updateDoc (точки/слэши в doc-пути иначе читались
+ * бы как вложенные поля). Используется для прогресса по отдельной книге. */
+export function bookKey(docPath) {
+  return docPath.replace(/[/.]/g, "_");
+}
+
+/** Первый непройденный урок в порядке модулей — цель кнопки "Продолжить
+ * обучение" в кабинете ученика. Возвращает { module, lesson } или null,
+ * если пройдены все уроки всех модулей (или ни у одного модуля нет lessons). */
+export function findNextLesson(progress) {
+  for (const m of MODULES) {
+    for (const lesson of m.lessons) {
+      const done = progress?.books?.[bookKey(lesson.doc)]?.status === "done";
+      if (!done) return { module: m, lesson };
+    }
+  }
+  return null;
 }
 
 export const QUIZ_PASS_THRESHOLD = 0.7;
