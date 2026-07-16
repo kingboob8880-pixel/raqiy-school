@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script>document.write('<base href="' + (location.hostname.endsWith('github.io') ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/') + '">');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Вход — Онлайн-школа рукии</title>
-<link rel="stylesheet" href="/design/tokens.css">
-<link rel="stylesheet" href="/design/base.css">
+<link rel="stylesheet" href="./design/tokens.css">
+<link rel="stylesheet" href="./design/base.css">
 <style>
   .auth-wrap { max-width: 26rem; margin: var(--rp-space-7) auto; padding-inline: var(--rp-space-4); }
 </style>
@@ -29,14 +30,14 @@
         <p id="form-error" class="field-error" hidden></p>
         <button type="submit" class="btn btn-primary btn-block">Войти</button>
       </form>
-      <p class="form-note" style="margin-top: var(--rp-space-4);">Нет аккаунта? <a href="/pages/auth/register.html">Зарегистрироваться</a></p>
+      <p class="form-note" style="margin-top: var(--rp-space-4);">Нет аккаунта? <a href="./pages/auth/register.html">Зарегистрироваться</a></p>
     </div>
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "/pages/js/layout.js";
-    import { loginWithEmail, resolveRole } from "/integration/auth.js";
+    import { renderHeader, renderFooter } from "./pages/js/layout.js";
+    import { loginWithEmail, resolveRole } from "./integration/auth.js";
     renderHeader("learn");
     renderFooter();
 
@@ -51,8 +52,8 @@
         const user = await loginWithEmail(email, password);
         const role = await resolveRole(user);
         location.href = role === "admin"
-          ? "/pages/dashboard/admin.html"
-          : "/pages/dashboard/student.html";
+          ? "./pages/dashboard/admin.html"
+          : "./pages/dashboard/student.html";
       } catch (err) {
         errorEl.textContent = "Не удалось войти: " + (err.message || err);
         errorEl.hidden = false;
