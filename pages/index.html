@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<script>document.write('<base href="' + (location.hostname.endsWith('github.io') ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/') + '">');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Онлайн-школа рукии — лечение Кораном и Сунной</title>
 <meta name="description" content="Курс подготовки заклинателя (раки): от основ убеждённости до самостоятельного приёма пациентов через RUKYA Pro.">
-<link rel="stylesheet" href="./design/tokens.css">
-<link rel="stylesheet" href="./design/base.css">
+<link rel="stylesheet" href="../design/tokens.css">
+<link rel="stylesheet" href="../design/base.css">
 <style>
   .hero { padding-block: var(--rp-space-7); text-align: center; }
   .hero h1 { max-width: 40rem; margin-inline: auto; }
@@ -27,7 +26,7 @@
     <p>11 модулей: от основ якына и подлинных хадисов о рукье до итоговой практики под
        супервизией наставника и работы в системе диагностики и лечения RUKYA Pro.</p>
     <div class="hero-actions">
-      <a class="btn btn-primary" href="./pages/auth/register.html">Начать бесплатный уровень</a>
+      <a class="btn btn-primary" href="auth/register.html">Начать бесплатный уровень</a>
       <a class="btn btn-outline" href="https://t.me/ruqoq" target="_blank" rel="noopener">Купить продвинутый уровень</a>
     </div>
   </section>
@@ -56,7 +55,7 @@
     <h2 style="text-align:center;">Путь ученика</h2>
     <div id="path-preview" class="path"></div>
     <div style="text-align:center; margin-top: var(--rp-space-4);">
-      <a class="btn btn-outline" href="./pages/modules/index.html">Смотреть все модули</a>
+      <a class="btn btn-outline" href="modules/index.html">Смотреть все модули</a>
     </div>
   </section>
 
@@ -74,13 +73,13 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./pages/js/layout.js";
-    import { MODULES } from "./pages/js/modules-data.js";
+    import { renderHeader, renderFooter } from "./js/layout.js";
+    import { MODULES } from "./js/modules-data.js";
     renderHeader("learn");
     renderFooter();
     const root = document.getElementById("path-preview");
     root.innerHTML = MODULES.slice(0, 4).map((m) => `
-      <a class="path-step" href="./pages/modules/module.html?id=${m.id}">
+      <a class="path-step" href="modules/module.html?id=${m.id}">
         <span class="path-step__marker">${m.id}</span>
         <span class="path-step__body">
           <span class="path-step__title">${m.title}</span>

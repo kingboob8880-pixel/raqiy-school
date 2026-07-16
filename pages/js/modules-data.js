@@ -7,22 +7,22 @@ export const MODULES = [
     title: "Основа основ",
     level: "Начальный",
     status: "certified",
-    doc: "./content/module-1/index.md",
+    doc: "/content/module-1/index.md",
     lessons: [
-      { title: "Учебник якына — убеждённости", doc: "./content/module-1/yakyn.md" },
-      { title: "Мольба заклинателя", doc: "./content/module-1/molba-zaklinatelya.md" },
+      { title: "Учебник якына — убеждённости", doc: "/content/module-1/yakyn.md" },
+      { title: "Мольба заклинателя", doc: "/content/module-1/molba-zaklinatelya.md" },
     ],
-    intro_video: "./assets/video/rukya-intro.mp4",
+    intro_video: "/assets/video/rukya-intro.mp4",
   },
   {
     id: 2,
     title: "Основы заклинания",
     level: "Начальный",
     status: "certified",
-    doc: "./content/module-2/index.md",
+    doc: "/content/module-2/index.md",
     lessons: [
-      { title: "Я заклинаю", doc: "./content/module-2/ya-zaklinayu.md" },
-      { title: "Классификация недугов (Справочник)", doc: "./content/reference/classification.md" },
+      { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md" },
+      { title: "Классификация недугов (Справочник)", doc: "/content/reference/classification.md" },
     ],
   },
   {
@@ -30,9 +30,9 @@ export const MODULES = [
     title: "Основы применения",
     level: "Начальный",
     status: "draft",
-    doc: "./content/module-3/index.md",
+    doc: "/content/module-3/index.md",
     lessons: [
-      { title: "Словарь органов тела (Справочник)", doc: "./content/reference/organs.md" },
+      { title: "Словарь органов тела (Справочник)", doc: "/content/reference/organs.md" },
     ],
   },
   {
@@ -40,7 +40,7 @@ export const MODULES = [
     title: "Диагностика — протокол безопасности",
     level: "Средний",
     status: "draft",
-    doc: "./content/module-4/index.md",
+    doc: "/content/module-4/index.md",
     lessons: [],
   },
   {
@@ -48,7 +48,7 @@ export const MODULES = [
     title: "Направленное применение",
     level: "Средний",
     status: "draft",
-    doc: "./content/module-5/index.md",
+    doc: "/content/module-5/index.md",
     lessons: [],
   },
   {
@@ -56,9 +56,9 @@ export const MODULES = [
     title: "Основы защиты",
     level: "Средний",
     status: "certified",
-    doc: "./content/module-6/index.md",
+    doc: "/content/module-6/index.md",
     lessons: [
-      { title: "Базовые азкары и дуа защиты (Справочник)", doc: "./content/reference/azkar.md" },
+      { title: "Базовые азкары и дуа защиты (Справочник)", doc: "/content/reference/azkar.md" },
     ],
   },
   {
@@ -66,7 +66,7 @@ export const MODULES = [
     title: "Изгнание духовных сущностей",
     level: "Продвинутый",
     status: "draft",
-    doc: "./content/module-7/index.md",
+    doc: "/content/module-7/index.md",
     lessons: [],
   },
   {
@@ -74,7 +74,7 @@ export const MODULES = [
     title: "Итоговая практика под супервизией",
     level: "Продвинутый",
     status: "draft",
-    doc: "./content/module-8/index.md",
+    doc: "/content/module-8/index.md",
     lessons: [],
   },
   {
@@ -82,7 +82,7 @@ export const MODULES = [
     title: "Истинное vs ложное заклинание",
     level: "Продвинутый",
     status: "certified",
-    doc: "./content/module-9/index.md",
+    doc: "/content/module-9/index.md",
     lessons: [],
   },
   {
@@ -90,7 +90,7 @@ export const MODULES = [
     title: "Истинный ракый vs лжеракый",
     level: "Продвинутый",
     status: "certified",
-    doc: "./content/module-10/index.md",
+    doc: "/content/module-10/index.md",
     lessons: [],
   },
   {
@@ -98,7 +98,7 @@ export const MODULES = [
     title: "Работа в системе RUKYA Pro",
     level: "Продвинутый",
     status: "draft",
-    doc: "./content/module-11/index.md",
+    doc: "/content/module-11/index.md",
     lessons: [],
   },
 ];
