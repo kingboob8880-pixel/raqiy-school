@@ -90,26 +90,50 @@
 
   --rp-shadow-card: 0 6px 24px rgba(34, 28, 17, 0.14);
   --rp-shadow-pop: 0 12px 40px rgba(34, 28, 17, 0.22);
+
+  /* Примитивы зон "кабинет ученика/админа" (§16а) — baseline ("split"-тема).
+     Индирекция через отдельные --rp-student-*, --rp-admin-* переменные (не
+     напрямую в [data-zone=...]) — по тому же паттерну, что --rp-learn-*:
+     тема переопределяет их ТОЛЬКО на <html> (ниже), а зонное правило просто
+     читает их через var(), поэтому корректно наследуется на <body> даже
+     притом, что у <body> тоже статически стоит свой data-zone. */
+  --rp-student-bg: var(--rp-color-green-100);
+  --rp-student-surface: #ffffff;
+  --rp-student-surface-raised: #ffffff;
+  --rp-student-border: var(--rp-color-green-700);
+  --rp-student-text: var(--rp-color-ink-900);
+  --rp-student-accent: var(--rp-color-green-700);
+  --rp-student-accent-strong: var(--rp-color-green-800);
+
+  --rp-admin-bg: var(--rp-color-graphite-900);
+  --rp-admin-surface: var(--rp-color-graphite-800);
+  --rp-admin-surface-raised: var(--rp-color-graphite-700);
+  --rp-admin-border: var(--rp-color-graphite-100);
+  --rp-admin-text: var(--rp-color-graphite-100);
+  --rp-admin-accent: var(--rp-color-gold-500);
+  --rp-admin-accent-strong: var(--rp-color-gold-600);
 }
 
-/* Зона "кабинет ученика" — зелёная палитра (§16а) */
+/* Зона "кабинет ученика" (§16а) — читает --rp-student-*, которые переключаются темой на <html> */
 [data-zone="student"] {
-  --rp-zone-bg: var(--rp-color-green-100);
-  --rp-zone-surface: #ffffff;
-  --rp-zone-border: var(--rp-color-green-700);
-  --rp-zone-text: var(--rp-color-ink-900);
-  --rp-zone-accent: var(--rp-color-green-700);
-  --rp-zone-accent-strong: var(--rp-color-green-800);
+  --rp-zone-bg: var(--rp-student-bg);
+  --rp-zone-surface: var(--rp-student-surface);
+  --rp-zone-surface-raised: var(--rp-student-surface-raised);
+  --rp-zone-border: var(--rp-student-border);
+  --rp-zone-text: var(--rp-student-text);
+  --rp-zone-accent: var(--rp-student-accent);
+  --rp-zone-accent-strong: var(--rp-student-accent-strong);
 }
 
-/* Зона "кабинет админа" — графит, тёмная (§16а) */
+/* Зона "кабинет админа" (§16а) — читает --rp-admin-*, которые переключаются темой на <html> */
 [data-zone="admin"] {
-  --rp-zone-bg: var(--rp-color-graphite-900);
-  --rp-zone-surface: var(--rp-color-graphite-800);
-  --rp-zone-surface-raised: var(--rp-color-graphite-700);
-  --rp-zone-border: var(--rp-color-graphite-100);
-  --rp-zone-text: var(--rp-color-graphite-100);
-  --rp-zone-accent: var(--rp-color-gold-500);
+  --rp-zone-bg: var(--rp-admin-bg);
+  --rp-zone-surface: var(--rp-admin-surface);
+  --rp-zone-surface-raised: var(--rp-admin-surface-raised);
+  --rp-zone-border: var(--rp-admin-border);
+  --rp-zone-text: var(--rp-admin-text);
+  --rp-zone-accent: var(--rp-admin-accent);
+  --rp-zone-accent-strong: var(--rp-admin-accent-strong);
 }
 
 /* Зона "учебный контент" по умолчанию, явно тоже через [data-zone] для единообразия */
@@ -175,6 +199,56 @@ html[data-site-theme="pattern"] {
   --rp-ayah-card-bg: var(--rp-color-ink-900);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
   --rp-ayah-card-accent: var(--rp-color-green-700);
+}
+
+/* ============================================================
+   Темы применяются и к кабинетам ученика/админа (project.md §16а,
+   решение 2026-07-16 — по прямой команде владельца школы, отменяет
+   прежнее ограничение "кабинеты не участвуют в теме лендинга").
+   Переопределяют --rp-student-*, --rp-admin-* ТОЛЬКО на <html> — так же,
+   как выше --rp-learn-* — потому что <body> дополнительно несёт свой
+   собственный статический data-zone (для отсутствия FOUC до JS) и составной
+   селектор вида [data-zone][data-site-theme] на body бы не сработал: он
+   требует оба атрибута на одном элементе, а data-site-theme стоит только
+   на <html>. "split" — не переопределяется, это исходный baseline. ====== */
+
+/* A — Тёмный изумруд: кабинет ученика в тёмно-зелёной гамме */
+html[data-site-theme="emerald"] {
+  --rp-student-bg: var(--rp-color-emerald-900);
+  --rp-student-surface: var(--rp-color-emerald-700);
+  --rp-student-surface-raised: #26492f;
+  --rp-student-border: rgba(230, 201, 131, 0.25);
+  --rp-student-text: var(--rp-color-parchment-50);
+  --rp-student-accent: var(--rp-color-gold-400);
+  --rp-student-accent-strong: var(--rp-color-gold-600);
+
+  /* кабинет админа — та же гамма, но глубже (он и так тёмный по умолчанию) */
+  --rp-admin-bg: #0f1f16;
+  --rp-admin-surface: var(--rp-color-emerald-900);
+  --rp-admin-surface-raised: var(--rp-color-emerald-700);
+  --rp-admin-border: rgba(230, 201, 131, 0.25);
+  --rp-admin-text: var(--rp-color-parchment-50);
+  --rp-admin-accent: var(--rp-color-gold-400);
+  --rp-admin-accent-strong: var(--rp-color-gold-600);
+}
+
+/* B — Светлый паттерн: оба кабинета — светлый режим */
+html[data-site-theme="pattern"] {
+  --rp-student-bg: var(--rp-color-parchment-200);
+  --rp-student-surface: #ffffff;
+  --rp-student-surface-raised: #ffffff;
+  --rp-student-border: var(--rp-color-gold-500);
+  --rp-student-text: var(--rp-color-ink-900);
+  --rp-student-accent: var(--rp-color-green-700);
+  --rp-student-accent-strong: var(--rp-color-green-800);
+
+  --rp-admin-bg: var(--rp-color-graphite-100);
+  --rp-admin-surface: #ffffff;
+  --rp-admin-surface-raised: #f6f6f7;
+  --rp-admin-border: var(--rp-color-graphite-700);
+  --rp-admin-text: var(--rp-color-graphite-900);
+  --rp-admin-accent: var(--rp-color-green-700);
+  --rp-admin-accent-strong: var(--rp-color-green-800);
 }
 
 @media (prefers-reduced-motion: reduce) {

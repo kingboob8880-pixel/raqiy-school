@@ -21,12 +21,11 @@ export function renderHeader(zone = "learn") {
     document.body.prepend(ambient);
   }
 
-  // Переключатель тем (project.md, решение 2026-07-16) — только в зоне
-  // "learn" (лендинг/модули/книги/вход): кабинеты ученика/админа живут в
-  // своих палитрах (§16а) и темами лендинга не управляются.
-  const themeSwitcherHtml = zone === "learn"
-    ? `<div class="theme-switcher" id="theme-switcher"></div>`
-    : "";
+  // Переключатель тем (project.md §16а, решение 2026-07-16) — виден на любой
+  // зоне, включая кабинеты ученика/админа: у каждой зоны свои комбинации
+  // палитр на тему (design/tokens.css), поэтому переключение реально влияет
+  // и на кабинеты, а не только на лендинг/модули/книги.
+  const themeSwitcherHtml = `<div class="theme-switcher" id="theme-switcher"></div>`;
 
   root.innerHTML = `
     <header class="site-header">
