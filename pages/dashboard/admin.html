@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Кабинет админа — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=6">
-<link rel="stylesheet" href="../../design/base.css?v=7">
+<link rel="stylesheet" href="../../design/base.css?v=8">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -39,14 +39,23 @@
       </div>
 
       <h2>Ученики</h2>
+      <div class="admin-toolbar">
+        <input type="search" id="student-search" placeholder="Поиск по имени или email…">
+        <select id="student-filter">
+          <option value="all">Все ученики</option>
+          <option value="paid">Оплатили</option>
+          <option value="unpaid">Не оплатили</option>
+          <option value="silent">Молчат &gt;7 дней</option>
+        </select>
+      </div>
       <div class="card" style="padding: 0; overflow: hidden;">
         <div class="table-scroll">
           <table class="data-table">
             <thead>
-              <tr><th>Имя</th><th>Email</th><th>Прогресс</th><th>Балл</th><th>Молчит</th><th>Оплачено</th></tr>
+              <tr><th>Имя</th><th>Email</th><th>Прогресс</th><th>Балл</th><th>Молчит</th><th>Оплачено</th><th></th></tr>
             </thead>
             <tbody id="students-body">
-              <tr><td colspan="6" class="form-note">Загрузка…</td></tr>
+              <tr><td colspan="7" class="form-note">Загрузка…</td></tr>
             </tbody>
           </table>
         </div>
@@ -61,55 +70,132 @@
     import { renderHeader, renderFooter } from "../js/layout.js?v=6";
     import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=6";
     import {
-      listStudents, setStudentPaid, sendMessage, daysSince,
+      listStudents, setStudentPaid, deleteStudent, sendMessage, listMessages, daysSince,
       computeOverallProgress, computeAverageScore,
-    } from "../../integration/firestore.js?v=6";
+    } from "../../integration/firestore.js?v=7";
 
     renderHeader("admin");
     renderFooter();
 
     const gate = document.getElementById("gate");
     const dashboard = document.getElementById("dashboard");
+    const body = document.getElementById("students-body");
+    let allStudents = [];
+    let openThreadUid = null;
 
-    async function loadStudents() {
-      const students = await listStudents();
-      const body = document.getElementById("students-body");
-      let paidCount = 0, silentCount = 0;
+    function studentRowHtml(s) {
+      const silent = daysSince(s.lastSeenAt);
+      const isSilent = silent !== null && silent > 7;
+      const avg = computeAverageScore(s.progress);
+      const isOpen = openThreadUid === s.uid;
+      const row = `
+        <tr>
+          <td>${s.name || "—"}</td>
+          <td>${s.email || "—"}</td>
+          <td>${computeOverallProgress(s.progress)}%</td>
+          <td>${avg === null ? "—" : avg + "%"}</td>
+          <td class="${isSilent ? "silent-flag" : ""}">${silent === null ? "—" : silent + " дн."}</td>
+          <td>
+            <label class="toggle">
+              <input type="checkbox" data-uid="${s.uid}" ${s.paid ? "checked" : ""}>
+              <span class="status-pill ${s.paid ? "status-pill--paid" : "status-pill--unpaid"}">${s.paid ? "Оплачено" : "Не оплачено"}</span>
+            </label>
+          </td>
+          <td>
+            <div class="row-actions">
+              <button type="button" class="thread-toggle ${isOpen ? "is-active" : ""}" data-uid="${s.uid}" title="Переписка">💬</button>
+              <button type="button" class="student-delete" data-uid="${s.uid}" data-name="${s.name || s.email || "ученика"}" title="Удалить">🗑</button>
+            </div>
+          </td>
+        </tr>`;
+      const thread = isOpen ? `
+        <tr class="thread-row" data-thread-for="${s.uid}">
+          <td colspan="7">
+            <div class="thread-panel">
+              <div class="msg-list" id="thread-msgs-${s.uid}"><p class="form-note">Загрузка…</p></div>
+              <form class="thread-reply" data-uid="${s.uid}" style="display:flex; gap: var(--rp-space-2);">
+                <input type="text" placeholder="Ответить ${s.name || "ученику"}…" style="flex:1; padding: 0.55rem 0.8rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
+                <button class="btn btn-primary btn-sm" type="submit">Отправить</button>
+              </form>
+            </div>
+          </td>
+        </tr>` : "";
+      return row + thread;
+    }
 
-      body.innerHTML = students.map((s) => {
-        if (s.paid) paidCount++;
-        const silent = daysSince(s.lastSeenAt);
-        const isSilent = silent !== null && silent > 7;
-        if (isSilent) silentCount++;
-        const avg = computeAverageScore(s.progress);
-        return `
-          <tr>
-            <td>${s.name || "—"}</td>
-            <td>${s.email || "—"}</td>
-            <td>${computeOverallProgress(s.progress)}%</td>
-            <td>${avg === null ? "—" : avg + "%"}</td>
-            <td class="${isSilent ? "silent-flag" : ""}">${silent === null ? "—" : silent + " дн."}</td>
-            <td>
-              <label class="toggle">
-                <input type="checkbox" data-uid="${s.uid}" ${s.paid ? "checked" : ""}>
-                <span class="status-pill ${s.paid ? "status-pill--paid" : "status-pill--unpaid"}">${s.paid ? "Оплачено" : "Не оплачено"}</span>
-              </label>
-            </td>
-          </tr>`;
-      }).join("") || `<tr><td colspan="6" class="form-note">Учеников пока нет.</td></tr>`;
+    async function loadThread(uid) {
+      const root = document.getElementById(`thread-msgs-${uid}`);
+      if (!root) return;
+      const msgs = await listMessages(uid);
+      root.innerHTML = msgs.length
+        ? msgs.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${m.text}</div>`).join("")
+        : `<p class="form-note">Сообщений пока нет.</p>`;
+      root.scrollTop = root.scrollHeight;
+    }
 
-      document.getElementById("stat-total").textContent = students.length;
-      document.getElementById("stat-paid").textContent = paidCount;
-      document.getElementById("stat-silent").textContent = silentCount;
+    function matchesFilter(s, query, filter) {
+      const q = query.trim().toLowerCase();
+      if (q && !((s.name || "").toLowerCase().includes(q) || (s.email || "").toLowerCase().includes(q))) return false;
+      if (filter === "paid") return !!s.paid;
+      if (filter === "unpaid") return !s.paid;
+      if (filter === "silent") { const d = daysSince(s.lastSeenAt); return d !== null && d > 7; }
+      return true;
+    }
+
+    function renderTable() {
+      const query = document.getElementById("student-search").value;
+      const filter = document.getElementById("student-filter").value;
+      const filtered = allStudents.filter((s) => matchesFilter(s, query, filter));
+
+      body.innerHTML = filtered.map(studentRowHtml).join("")
+        || `<tr><td colspan="7" class="form-note">Ничего не найдено.</td></tr>`;
 
       body.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
         cb.addEventListener("change", async () => {
           await setStudentPaid(cb.dataset.uid, cb.checked);
-          loadStudents();
+          await refreshStudents();
         });
       });
 
-      return students;
+      body.querySelectorAll(".thread-toggle").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          openThreadUid = openThreadUid === btn.dataset.uid ? null : btn.dataset.uid;
+          renderTable();
+          if (openThreadUid) loadThread(openThreadUid);
+        });
+      });
+
+      body.querySelectorAll(".student-delete").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (!confirm(`Удалить запись ${btn.dataset.name} из школы? Прогресс и переписка будут потеряны.`)) return;
+          await deleteStudent(btn.dataset.uid);
+          if (openThreadUid === btn.dataset.uid) openThreadUid = null;
+          await refreshStudents();
+        });
+      });
+
+      body.querySelectorAll(".thread-reply").forEach((form) => {
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const input = form.querySelector("input");
+          const text = input.value.trim();
+          if (!text) return;
+          await sendMessage(form.dataset.uid, "admin", text);
+          input.value = "";
+          await loadThread(form.dataset.uid);
+        });
+      });
+    }
+
+    async function refreshStudents() {
+      allStudents = await listStudents();
+      document.getElementById("stat-total").textContent = allStudents.length;
+      document.getElementById("stat-paid").textContent = allStudents.filter((s) => s.paid).length;
+      document.getElementById("stat-silent").textContent = allStudents.filter((s) => {
+        const d = daysSince(s.lastSeenAt);
+        return d !== null && d > 7;
+      }).length;
+      renderTable();
     }
 
     watchAuth(async (user) => {
@@ -120,16 +206,19 @@
       }
       gate.hidden = true;
       dashboard.hidden = false;
-      const students = await loadStudents();
+      await refreshStudents();
+
+      document.getElementById("student-search").addEventListener("input", renderTable);
+      document.getElementById("student-filter").addEventListener("change", renderTable);
 
       document.getElementById("broadcast-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const input = document.getElementById("broadcast-text");
         const text = input.value.trim();
         if (!text) return;
-        await Promise.all(students.map((s) => sendMessage(s.uid, "admin", text)));
+        await Promise.all(allStudents.map((s) => sendMessage(s.uid, "admin", text)));
         input.value = "";
-        alert("Отправлено " + students.length + " ученикам.");
+        alert("Отправлено " + allStudents.length + " ученикам.");
       });
 
       document.getElementById("logout-btn").addEventListener("click", async () => {
