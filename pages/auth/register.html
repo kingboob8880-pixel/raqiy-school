@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script>document.write('<base href="' + (location.hostname.endsWith('github.io') ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/') + '">');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Регистрация — Онлайн-школа рукии</title>
-<link rel="stylesheet" href="/design/tokens.css">
-<link rel="stylesheet" href="/design/base.css">
+<link rel="stylesheet" href="./design/tokens.css">
+<link rel="stylesheet" href="./design/base.css">
 <style>
   .auth-wrap { max-width: 26rem; margin: var(--rp-space-7) auto; padding-inline: var(--rp-space-4); }
 </style>
@@ -33,14 +34,14 @@
         <p id="form-error" class="field-error" hidden></p>
         <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
       </form>
-      <p class="form-note" style="margin-top: var(--rp-space-4);">Уже есть аккаунт? <a href="/pages/auth/login.html">Войти</a></p>
+      <p class="form-note" style="margin-top: var(--rp-space-4);">Уже есть аккаунт? <a href="./pages/auth/login.html">Войти</a></p>
     </div>
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "/pages/js/layout.js";
-    import { registerStudent } from "/integration/auth.js";
+    import { renderHeader, renderFooter } from "./pages/js/layout.js";
+    import { registerStudent } from "./integration/auth.js";
     renderHeader("learn");
     renderFooter();
 
@@ -54,7 +55,7 @@
       const password = document.getElementById("password").value;
       try {
         await registerStudent({ name, email, password });
-        location.href = "/pages/dashboard/student.html";
+        location.href = "./pages/dashboard/student.html";
       } catch (err) {
         errorEl.textContent = "Не удалось зарегистрироваться: " + (err.message || err);
         errorEl.hidden = false;

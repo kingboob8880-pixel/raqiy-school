@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script>document.write('<base href="' + (location.hostname.endsWith('github.io') ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/') + '">');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Сертификат — Онлайн-школа рукии</title>
-<link rel="stylesheet" href="/design/tokens.css">
-<link rel="stylesheet" href="/design/base.css">
+<link rel="stylesheet" href="./design/tokens.css">
+<link rel="stylesheet" href="./design/base.css">
 <style>
   .cert { max-width: 40rem; margin: var(--rp-space-7) auto; padding: var(--rp-space-7);
     background: var(--rp-color-parchment-50); border: 3px double var(--rp-color-gold-500);
@@ -25,9 +26,9 @@
   <div id="site-footer" class="no-print"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "/pages/js/layout.js";
-    import { MODULES } from "/pages/js/modules-data.js";
-    import { watchAuth, getStudentProfile } from "/integration/auth.js";
+    import { renderHeader, renderFooter } from "./pages/js/layout.js";
+    import { MODULES } from "./pages/js/modules-data.js";
+    import { watchAuth, getStudentProfile } from "./integration/auth.js";
 
     renderHeader("learn");
     renderFooter();
@@ -35,7 +36,7 @@
     const root = document.getElementById("cert-root");
 
     watchAuth(async (user) => {
-      if (!user) { location.href = "/pages/auth/login.html"; return; }
+      if (!user) { location.href = "./pages/auth/login.html"; return; }
       const profile = await getStudentProfile(user.uid);
       const done = MODULES.filter((m) => profile?.progress?.[m.id]?.status === "done").length;
       const allDone = done === MODULES.length;
@@ -46,7 +47,7 @@
             <h2>Сертификат ещё не готов</h2>
             <p>Пройдено модулей: ${done} из ${MODULES.length}. Сертификат выдаётся
                после завершения всех модулей и прохождения всех тестов.</p>
-            <a class="btn btn-primary" href="/pages/modules/index.html">Продолжить обучение</a>
+            <a class="btn btn-primary" href="./pages/modules/index.html">Продолжить обучение</a>
           </div>`;
         return;
       }

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script>document.write('<base href="' + (location.hostname.endsWith('github.io') ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/') + '">');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Тест — Онлайн-школа рукии</title>
-<link rel="stylesheet" href="/design/tokens.css">
-<link rel="stylesheet" href="/design/base.css">
+<link rel="stylesheet" href="./design/tokens.css">
+<link rel="stylesheet" href="./design/base.css">
 </head>
 <body data-zone="learn">
   <div id="site-header"></div>
@@ -15,11 +16,11 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "/pages/js/layout.js";
-    import { getModule, QUIZ_PASS_THRESHOLD } from "/pages/js/modules-data.js";
-    import { QUIZZES } from "/pages/js/quiz-data.js";
-    import { watchAuth } from "/integration/auth.js";
-    import { recordQuizResult } from "/integration/firestore.js";
+    import { renderHeader, renderFooter } from "./pages/js/layout.js";
+    import { getModule, QUIZ_PASS_THRESHOLD } from "./pages/js/modules-data.js";
+    import { QUIZZES } from "./pages/js/quiz-data.js";
+    import { watchAuth } from "./integration/auth.js";
+    import { recordQuizResult } from "./integration/firestore.js";
 
     renderHeader("learn");
     renderFooter();
@@ -83,7 +84,7 @@
             <p style="font-size: var(--rp-fs-2xl); font-family: var(--rp-font-heading);">${Math.round(ratio * 100)}%</p>
             <p class="form-note">Порог прохождения — ${Math.round(QUIZ_PASS_THRESHOLD * 100)}%.</p>
             ${passed
-              ? `<a class="btn btn-primary" href="/pages/dashboard/student.html">Вернуться в кабинет</a>`
+              ? `<a class="btn btn-primary" href="./pages/dashboard/student.html">Вернуться в кабинет</a>`
               : `<button class="btn btn-outline" onclick="location.reload()">Пройти ещё раз</button>`}
           </div>
         `;

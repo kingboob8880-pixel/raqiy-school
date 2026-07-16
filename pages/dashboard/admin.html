@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<script>document.write('<base href="' + (location.hostname.endsWith('github.io') ? '/' + (location.pathname.split('/')[1] || '') + '/' : '/') + '">');</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Кабинет админа — Онлайн-школа рукии</title>
-<link rel="stylesheet" href="/design/tokens.css">
-<link rel="stylesheet" href="/design/base.css">
+<link rel="stylesheet" href="./design/tokens.css">
+<link rel="stylesheet" href="./design/base.css">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -49,12 +50,12 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "/pages/js/layout.js";
-    import { watchAuth, isAdmin, logout } from "/integration/auth.js";
+    import { renderHeader, renderFooter } from "./pages/js/layout.js";
+    import { watchAuth, isAdmin, logout } from "./integration/auth.js";
     import {
       listStudents, setStudentPaid, sendMessage, daysSince,
       computeOverallProgress, computeAverageScore,
-    } from "/integration/firestore.js";
+    } from "./integration/firestore.js";
 
     renderHeader("admin");
     renderFooter();
@@ -104,9 +105,9 @@
     }
 
     watchAuth(async (user) => {
-      if (!user) { location.href = "/pages/auth/login.html"; return; }
+      if (!user) { location.href = "./pages/auth/login.html"; return; }
       if (!(await isAdmin(user.uid))) {
-        location.href = "/pages/dashboard/student.html";
+        location.href = "./pages/dashboard/student.html";
         return;
       }
       gate.hidden = true;
@@ -125,7 +126,7 @@
 
       document.getElementById("logout-btn").addEventListener("click", async () => {
         await logout();
-        location.href = "/pages/index.html";
+        location.href = "./pages/index.html";
       });
     });
   </script>
