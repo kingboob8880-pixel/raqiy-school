@@ -35,10 +35,10 @@ export function renderHeader(zone = "learn") {
           Онлайн-школа рукии
         </a>
         <nav class="site-header__nav">
-          <a href="${withBase("/pages/modules/index.html")}">Модули</a>
-          <a href="${withBase("/pages/tests/index.html")}">Тесты</a>
-          <a href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}">Архив</a>
-          <a href="${withBase("/pages/dashboard/student.html")}">Кабинет</a>
+          <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>Модули</a>
+          <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>Тесты</a>
+          <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}"><span aria-hidden="true">🗃</span>Архив</a>
+          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>Кабинет</a>
         </nav>
         <div class="site-header__actions">
           ${themeSwitcherHtml}
@@ -47,6 +47,20 @@ export function renderHeader(zone = "learn") {
       </div>
     </header>
   `;
+
+  // Подсветка активного пункта меню — по сегменту пути, не по точному URL
+  // (страница книги/модуля живёт под /pages/modules/ или /pages/book.html,
+  // поэтому сравниваем сегмент, а не href целиком).
+  const path = location.pathname;
+  const navMatch = {
+    modules: path.includes("/pages/modules/"),
+    tests: path.includes("/pages/tests/"),
+    archive: path.includes("/pages/book.html") && location.search.includes("archive"),
+    dashboard: path.includes("/pages/dashboard/"),
+  };
+  root.querySelectorAll(".site-header__nav a[data-nav]").forEach((a) => {
+    if (navMatch[a.dataset.nav]) a.classList.add("is-active");
+  });
 
   initSiteTheme();
 }
