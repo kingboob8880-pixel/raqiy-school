@@ -56,3 +56,26 @@ export async function resolveRole(user) {
   if (!profile) return "student-unpaid";
   return profile.paid ? "student-paid" : "student-unpaid";
 }
+
+/** Человеко-читаемые сообщения об ошибках входа/регистрации на русском —
+ * Firebase SDK по умолчанию отдаёт сырой английский текст ("Firebase: The
+ * email address is already in use... (auth/email-already-in-use).") — это
+ * известная точка потери пользователей на форме регистрации (план улучшения
+ * курса, 2026-07-18, четвёртый проход). Неизвестные коды — нейтральный
+ * fallback вместо необработанного текста. */
+const AUTH_ERROR_MESSAGES = {
+  "auth/email-already-in-use": "Этот email уже зарегистрирован — попробуйте войти вместо регистрации.",
+  "auth/invalid-email": "Проверьте формат email.",
+  "auth/weak-password": "Пароль слишком простой — минимум 6 символов.",
+  "auth/user-not-found": "Ученик с таким email не найден — проверьте адрес или зарегистрируйтесь.",
+  "auth/wrong-password": "Неверный пароль.",
+  "auth/invalid-credential": "Неверный email или пароль.",
+  "auth/invalid-login-credentials": "Неверный email или пароль.",
+  "auth/too-many-requests": "Слишком много попыток — подождите немного и попробуйте снова.",
+  "auth/network-request-failed": "Нет связи с сервером — проверьте интернет-соединение.",
+};
+
+export function friendlyAuthError(err) {
+  const code = err?.code || "";
+  return AUTH_ERROR_MESSAGES[code] || "Что-то пошло не так. Попробуйте ещё раз чуть позже.";
+}

@@ -3,10 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Онлайн-школа рукии — лечение Кораном и Сунной</title>
 <meta name="description" content="Курс подготовки заклинателя (раки): от основ убеждённости до самостоятельного приёма пациентов через RUKYA Pro.">
+<!-- Open Graph/Twitter — превью ссылки при пересылке в Telegram и др.
+     (план улучшения курса, 2026-07-18, седьмой/финальный проход). -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Онлайн-школа рукии — лечение Кораном и Сунной">
+<meta property="og:description" content="Курс подготовки заклинателя (раки): 11 модулей, 25 книг, от основ убеждённости до самостоятельного приёма пациентов через RUKYA Pro.">
+<meta property="og:image" content="https://kingboob8880-pixel.github.io/raqiy-school/assets/images/covers/knigi-dlya-obucheniya.jpg">
+<meta property="og:url" content="https://kingboob8880-pixel.github.io/raqiy-school/pages/index.html">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="../design/tokens.css?v=7">
-<link rel="stylesheet" href="../design/base.css?v=16">
+<link rel="stylesheet" href="../design/base.css?v=17">
 <link rel="stylesheet" href="../design/landing-themes.css?v=7">
 <style>
   .price-card { max-width: 28rem; margin: var(--rp-space-6) auto; text-align: center; }
@@ -15,6 +24,7 @@
 <body data-zone="learn">
   <div id="site-header"></div>
 
+  <main>
   <section class="container">
     <div id="landing-theme-zone">
       <div class="landing-hero" id="hero-content"></div>
@@ -122,11 +132,12 @@
       <a class="btn btn-primary btn-block" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать в Telegram</a>
     </div>
   </section>
+  </main>
 
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/layout.js?v=8";
+    import { renderHeader, renderFooter } from "./js/layout.js?v=9";
     import { MODULES } from "./js/modules-data.js?v=10";
 
     renderHeader("learn");

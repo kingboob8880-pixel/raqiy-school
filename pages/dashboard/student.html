@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет ученика — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=7">
-<link rel="stylesheet" href="../../design/base.css?v=16">
+<link rel="stylesheet" href="../../design/base.css?v=17">
 </head>
 <body data-zone="student">
   <div id="site-header"></div>
@@ -75,8 +76,8 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=8";
-    import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=6";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=9";
+    import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=7";
     import { computeOverallProgress, computeAverageScore, computeStreak, listMessages, sendMessage } from "../../integration/firestore.js?v=9";
     import { MODULES, bookKey, findNextLesson, computeLevelBadges } from "../js/modules-data.js?v=10";
     import { withBase } from "../js/base-path.js?v=6";
@@ -97,12 +98,30 @@
       return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     }
 
+    // Без этого при обрыве сети/Firestore экран навсегда оставался на
+    // "Проверка входа…" без объяснения — классический "вечный спиннер"
+    // (план улучшения курса, 2026-07-18, пятый проход). Кнопка "Повторить"
+    // вместо автоповтора — не спамим Firestore тихими ретраями.
+    function showGateError() {
+      gate.innerHTML = `
+        <p class="field-error">Не удалось загрузить кабинет — проверьте связь с интернетом.</p>
+        <button id="gate-retry" class="btn btn-outline btn-sm" type="button">Повторить</button>`;
+      document.getElementById("gate-retry").addEventListener("click", () => location.reload());
+    }
+
     watchAuth(async (user) => {
       if (!user) {
         location.href = "../auth/login.html";
         return;
       }
-      const profile = await getStudentProfile(user.uid);
+      let profile;
+      try {
+        profile = await getStudentProfile(user.uid);
+      } catch (err) {
+        console.warn(err);
+        showGateError();
+        return;
+      }
       gate.hidden = true;
       dashboard.hidden = false;
 
@@ -187,12 +206,17 @@
         });
       }
 
-      const msgs = await listMessages(user.uid);
       const msgRoot = document.getElementById("messages");
-      msgRoot.innerHTML = msgs.length
-        ? msgs.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${escapeHtml(m.text)}</div>`).join("")
-        : `<p class="form-note">Сообщений пока нет.</p>`;
-      msgRoot.scrollTop = msgRoot.scrollHeight;
+      try {
+        const msgs = await listMessages(user.uid);
+        msgRoot.innerHTML = msgs.length
+          ? msgs.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${escapeHtml(m.text)}</div>`).join("")
+          : `<p class="form-note">Сообщений пока нет.</p>`;
+        msgRoot.scrollTop = msgRoot.scrollHeight;
+      } catch (err) {
+        console.warn(err);
+        msgRoot.innerHTML = `<p class="field-error">Не удалось загрузить сообщения.</p>`;
+      }
 
       document.getElementById("message-form").addEventListener("submit", async (e) => {
         e.preventDefault();

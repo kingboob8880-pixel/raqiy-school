@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет админа — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=7">
-<link rel="stylesheet" href="../../design/base.css?v=16">
+<link rel="stylesheet" href="../../design/base.css?v=17">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -67,8 +68,8 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=8";
-    import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=6";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=9";
+    import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=7";
     import {
       listStudents, setStudentPaid, deleteStudent, sendMessage, listMessages, daysSince,
       computeOverallProgress, computeAverageScore,
@@ -195,7 +196,14 @@
     }
 
     async function refreshStudents() {
-      allStudents = await listStudents();
+      try {
+        allStudents = await listStudents();
+      } catch (err) {
+        console.warn(err);
+        body.innerHTML = `<tr><td colspan="7" class="field-error">Не удалось загрузить список учеников. <button id="students-retry" class="btn btn-outline btn-sm" type="button">Повторить</button></td></tr>`;
+        document.getElementById("students-retry").addEventListener("click", refreshStudents);
+        return;
+      }
       document.getElementById("stat-total").textContent = allStudents.length;
       document.getElementById("stat-paid").textContent = allStudents.filter((s) => s.paid).length;
       document.getElementById("stat-silent").textContent = allStudents.filter((s) => {
@@ -207,7 +215,21 @@
 
     watchAuth(async (user) => {
       if (!user) { location.href = "../auth/login.html"; return; }
-      if (!(await isAdmin(user.uid))) {
+      // Без try/catch тут провал isAdmin() (обрыв сети) навсегда оставлял
+      // экран на "Проверка входа…" без объяснения (план улучшения курса,
+      // 2026-07-18, пятый проход).
+      let admin;
+      try {
+        admin = await isAdmin(user.uid);
+      } catch (err) {
+        console.warn(err);
+        gate.innerHTML = `
+          <p class="field-error">Не удалось проверить права доступа — проверьте связь с интернетом.</p>
+          <button id="gate-retry" class="btn btn-outline btn-sm" type="button">Повторить</button>`;
+        document.getElementById("gate-retry").addEventListener("click", () => location.reload());
+        return;
+      }
+      if (!admin) {
         location.href = "student.html";
         return;
       }
