@@ -62,7 +62,7 @@
     import { renderHeader, renderFooter } from "../js/layout.js?v=8";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=6";
     import { computeOverallProgress, computeAverageScore, listMessages, sendMessage } from "../../integration/firestore.js?v=8";
-    import { MODULES, bookKey, findNextLesson } from "../js/modules-data.js?v=8";
+    import { MODULES, bookKey, findNextLesson } from "../js/modules-data.js?v=9";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("student");
@@ -70,6 +70,10 @@
 
     const gate = document.getElementById("gate");
     const dashboard = document.getElementById("dashboard");
+
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
 
     watchAuth(async (user) => {
       if (!user) {
@@ -106,7 +110,7 @@
 
       const continueRoot = document.getElementById("continue-card");
       const next = findNextLesson(profile?.progress);
-      if (next) {
+      if (next && next.lesson) {
         const cover = next.module.cover ? withBase(next.module.cover) : null;
         continueRoot.innerHTML = `
           ${cover ? `<img class="continue-card__cover" src="${cover}" alt="" loading="lazy">` : ""}
@@ -115,11 +119,20 @@
             <h3 style="margin-bottom: var(--rp-space-3);">${next.lesson.title}</h3>
             <a class="btn btn-primary" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent(next.lesson.doc)}">Продолжить чтение →</a>
           </div>`;
+      } else if (next) {
+        const cover = next.module.cover ? withBase(next.module.cover) : null;
+        continueRoot.innerHTML = `
+          ${cover ? `<img class="continue-card__cover" src="${cover}" alt="" loading="lazy">` : ""}
+          <div class="continue-card__body">
+            <span class="continue-card__eyebrow">Дальше в программе · Модуль ${next.module.id}</span>
+            <h3 style="margin-bottom: var(--rp-space-3);">${next.module.title}</h3>
+            <a class="btn btn-primary" href="${withBase("/pages/modules/module.html")}?id=${next.module.id}">Открыть модуль →</a>
+          </div>`;
       } else {
         continueRoot.innerHTML = `
           <div class="continue-card__body">
-            <h3 style="margin-bottom: var(--rp-space-3);">Все книги с экзаменами пройдены 🎉</h3>
-            <a class="btn btn-primary" href="${withBase("/pages/modules/index.html")}">Открыть путь модулей</a>
+            <h3 style="margin-bottom: var(--rp-space-3);">Все модули курса пройдены 🎉</h3>
+            <a class="btn btn-primary" href="${withBase("/pages/certificate/index.html")}">Получить сертификат</a>
           </div>`;
       }
 
@@ -135,16 +148,22 @@
       const msgs = await listMessages(user.uid);
       const msgRoot = document.getElementById("messages");
       msgRoot.innerHTML = msgs.length
-        ? msgs.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${m.text}</div>`).join("")
+        ? msgs.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${escapeHtml(m.text)}</div>`).join("")
         : `<p class="form-note">Сообщений пока нет.</p>`;
+      msgRoot.scrollTop = msgRoot.scrollHeight;
 
       document.getElementById("message-form").addEventListener("submit", async (e) => {
         e.preventDefault();
         const input = document.getElementById("message-text");
-        if (!input.value.trim()) return;
-        await sendMessage(user.uid, "student", input.value.trim());
+        const text = input.value.trim();
+        if (!text) return;
+        await sendMessage(user.uid, "student", text);
         input.value = "";
-        location.reload();
+        const updated = await listMessages(user.uid);
+        msgRoot.innerHTML = updated.length
+          ? updated.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${escapeHtml(m.text)}</div>`).join("")
+          : `<p class="form-note">Сообщений пока нет.</p>`;
+        msgRoot.scrollTop = msgRoot.scrollHeight;
       });
 
       document.getElementById("logout-btn").addEventListener("click", async () => {

@@ -20,7 +20,7 @@
 <body data-zone="learn">
   <div id="site-header"></div>
   <main class="container" style="padding-block: var(--rp-space-6);">
-    <a href="javascript:history.back()" class="btn btn-ghost btn-sm">← Назад</a>
+    <a id="back-link" href="#" class="btn btn-ghost btn-sm">← Назад</a>
     <div id="doc-root" class="card" style="margin-top: var(--rp-space-4);">
       <p class="skeleton-loading">Загрузка…</p>
     </div>
@@ -30,7 +30,7 @@
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=8";
     import { loadMarkdownDoc, renderDocInto } from "./js/markdown-loader.js?v=7";
-    import { bookKey, MODULES } from "./js/modules-data.js?v=8";
+    import { bookKey, MODULES } from "./js/modules-data.js?v=9";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=6";
 
@@ -47,6 +47,22 @@
         if (lesson) return lesson;
       }
       return null;
+    }
+
+    // Ссылка "Назад" всегда ведёт на страницу модуля-владельца книги (реальный
+    // href, работает даже без JS/истории). Если видно, что пришли с этого же
+    // сайта (document.referrer) — используем history.back() для более точного
+    // "назад", иначе обычный переход по href.
+    const backLink = document.getElementById("back-link");
+    const owningModule = MODULES.find((m) => m.lessons.some((l) => l.doc === docPath));
+    const fallbackHref = owningModule
+      ? withBase(`/pages/modules/module.html?id=${owningModule.id}`)
+      : withBase("/pages/modules/index.html");
+    backLink.href = fallbackHref;
+    let sameOriginReferrer = false;
+    try { sameOriginReferrer = document.referrer && new URL(document.referrer).origin === location.origin; } catch { /* invalid referrer URL */ }
+    if (sameOriginReferrer) {
+      backLink.addEventListener("click", (e) => { e.preventDefault(); history.back(); });
     }
 
     /** Три уровня доступа (project.md §18, решение 2026-07-17):
