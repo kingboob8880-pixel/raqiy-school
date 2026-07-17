@@ -1,0 +1,11 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions — уведомление в Telegram о новом ученике",
+  "engines": { "node": "20" },
+  "main": "index.js",
+  "private": true,
+  "dependencies": {
+    "firebase-functions": "^6.0.1",
+    "firebase-admin": "^12.6.0"
+  }
+}
