@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../design/tokens.css?v=7">
-<link rel="stylesheet" href="../design/base.css?v=16">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="../design/base.css?v=17">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
 <style>
   .doc-meta { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-bottom: var(--rp-space-5); }
   .doc-body h2 { margin-top: var(--rp-space-6); }
@@ -23,24 +24,32 @@
   .doc-toc li { margin-bottom: var(--rp-space-1); }
   .doc-toc a { text-decoration: none; color: var(--rp-learn-accent-strong); }
   .doc-toc a:hover { text-decoration: underline; }
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #fff; }
+    .doc-body { color: #000; }
+  }
 </style>
 </head>
 <body data-zone="learn">
-  <div id="site-header"></div>
+  <div id="site-header" class="no-print"></div>
   <main class="container" style="padding-block: var(--rp-space-6);">
-    <a id="back-link" href="#" class="btn btn-ghost btn-sm">← Назад</a>
+    <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; gap: var(--rp-space-3); flex-wrap: wrap;">
+      <a id="back-link" href="#" class="btn btn-ghost btn-sm">← Назад</a>
+      <button id="print-btn" class="btn btn-outline btn-sm" type="button" hidden>🖨️ Распечатать / сохранить PDF</button>
+    </div>
     <div id="doc-root" class="card" style="margin-top: var(--rp-space-4);">
       <p class="skeleton-loading">Загрузка…</p>
     </div>
   </main>
-  <div id="site-footer"></div>
+  <div id="site-footer" class="no-print"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/layout.js?v=8";
+    import { renderHeader, renderFooter } from "./js/layout.js?v=9";
     import { loadMarkdownDoc, renderDocInto } from "./js/markdown-loader.js?v=7";
     import { bookKey, MODULES } from "./js/modules-data.js?v=10";
     import { withBase } from "./js/base-path.js?v=6";
-    import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=6";
+    import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=7";
 
     renderHeader("learn");
     renderFooter();
@@ -182,7 +191,11 @@
           renderDocInto(root, doc);
           const bodyEl = root.querySelector(".doc-body");
           const ctaRoot = document.createElement("div");
+          ctaRoot.className = "no-print";
           root.after(ctaRoot);
+          const printBtn = document.getElementById("print-btn");
+          printBtn.hidden = false;
+          printBtn.addEventListener("click", () => window.print());
           watchAuth(async (user) => {
             if (!user) {
               if (bodyEl) applyRegisterWall(bodyEl);

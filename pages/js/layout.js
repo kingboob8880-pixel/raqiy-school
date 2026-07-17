@@ -10,6 +10,23 @@ export function renderHeader(zone = "learn") {
   if (!root) return;
   document.documentElement.setAttribute("data-zone", zone);
 
+  // Skip-link (WCAG 2.4.1, "Bypass Blocks") — первый элемент на странице,
+  // невидим, пока не получит фокус с клавиатуры; позволяет не пролистывать
+  // шапку/навигацию Tab'ом на каждой странице (план улучшения курса,
+  // 2026-07-18, шестой проход). <main> получает id/tabindex динамически,
+  // если их ещё нет — у большинства страниц сайта своего id на <main> нет.
+  const mainEl = document.querySelector("main");
+  if (mainEl && !document.getElementById("skip-link")) {
+    if (!mainEl.id) mainEl.id = "main-content";
+    mainEl.setAttribute("tabindex", "-1");
+    const skipLink = document.createElement("a");
+    skipLink.id = "skip-link";
+    skipLink.className = "skip-link";
+    skipLink.href = `#${mainEl.id}`;
+    skipLink.textContent = "Перейти к содержимому";
+    document.body.prepend(skipLink);
+  }
+
   // Живой фон (project.md §21) — мягкий плавающий градиент поверх фона
   // страницы, один на весь сайт. Цвета берутся из --rp-zone-accent, поэтому
   // сами подстраиваются под активную тему/зону, отдельно красить не нужно.

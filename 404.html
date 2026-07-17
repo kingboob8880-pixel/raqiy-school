@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Страница не найдена — Онлайн-школа рукии</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
+<style>
+  /* Автономная страница без внешнего CSS — GitHub Pages отдаёт 404.html по
+     любому несовпавшему пути на любой глубине, относительные пути к
+     design/*.css там ненадёжны (план улучшения курса, 2026-07-18, седьмой/
+     финальный проход). */
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #14261c; color: #fbf6ec; text-align: center; padding: 2rem;
+  }
+  .mark {
+    width: 3.5rem; height: 3.5rem; border-radius: 999px; background: #b0842c; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.5rem;
+  }
+  h1 { font-size: 1.5rem; margin: 0 0 0.75rem; }
+  p { color: #c2d0c6; margin: 0 0 1.5rem; }
+  a.btn {
+    display: inline-block; background: #b0842c; color: #fff; text-decoration: none;
+    padding: 0.75rem 1.5rem; border-radius: 999px; font-weight: 700;
+  }
+</style>
+</head>
+<body>
+  <div>
+    <div class="mark">ش</div>
+    <h1>Страница не найдена</h1>
+    <p>Такой страницы нет — возможно, ссылка устарела или в адресе опечатка.</p>
+    <a class="btn" id="home-link" href="/">На главную</a>
+  </div>
+  <script>
+    // Тот же приём, что withBase() в pages/js/base-path.js — на GitHub Pages
+    // проектный сайт живёт в подпапке /имя-репозитория/, локально/на будущем
+    // домене подпапки нет.
+    var basePath = location.hostname.endsWith("github.io")
+      ? "/" + (location.pathname.split("/").filter(Boolean)[0] || "")
+      : "";
+    document.getElementById("home-link").href = basePath + "/pages/index.html";
+  </script>
+</body>
+</html>
