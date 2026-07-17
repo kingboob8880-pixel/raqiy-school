@@ -5,33 +5,66 @@
 //   admins/{uid}               — { name } — присутствие документа = права админа
 import {
   doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, addDoc,
-  serverTimestamp, query, orderBy,
+  serverTimestamp, query, orderBy, arrayUnion,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { db } from "./firebase-init.js";
+
+/** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
+ * журнала активности (стрики, project.md, решение 2026-07-18). */
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
 
 export async function markModuleProgress(uid, moduleId, status) {
   await updateDoc(doc(db, "students", uid), {
     [`progress.${moduleId}.status`]: status,
     lastSeenAt: serverTimestamp(),
+    "progress.activityDates": arrayUnion(todayKey()),
   });
 }
 
 export async function recordQuizResult(uid, moduleId, scoreRatio) {
-  await updateDoc(doc(db, "students", uid), {
+  const passed = scoreRatio >= 0.7;
+  const update = {
     [`progress.${moduleId}.quizScore`]: scoreRatio,
-    [`progress.${moduleId}.status`]: scoreRatio >= 0.7 ? "done" : "in_progress",
+    [`progress.${moduleId}.status`]: passed ? "done" : "in_progress",
     lastSeenAt: serverTimestamp(),
-  });
+    "progress.activityDates": arrayUnion(todayKey()),
+  };
+  if (passed) update[`progress.${moduleId}.passedAt`] = serverTimestamp();
+  await updateDoc(doc(db, "students", uid), update);
 }
 
 /** Экзамен по отдельной книге (не по модулю целиком, project.md §5) —
  * bookKey — плоский ключ из pages/js/modules-data.js#bookKey(doc). */
 export async function recordBookQuizResult(uid, bookKey, scoreRatio) {
-  await updateDoc(doc(db, "students", uid), {
+  const passed = scoreRatio >= 0.7;
+  const update = {
     [`progress.books.${bookKey}.quizScore`]: scoreRatio,
-    [`progress.books.${bookKey}.status`]: scoreRatio >= 0.7 ? "done" : "in_progress",
+    [`progress.books.${bookKey}.status`]: passed ? "done" : "in_progress",
     lastSeenAt: serverTimestamp(),
-  });
+    "progress.activityDates": arrayUnion(todayKey()),
+  };
+  if (passed) update[`progress.books.${bookKey}.passedAt`] = serverTimestamp();
+  await updateDoc(doc(db, "students", uid), update);
+}
+
+/** Дней подряд с активностью (тест сдавался/пересдавался), включая сегодня
+ * или вчера — так стрик не "обнуляется" мгновенно в полночь, пока ученик
+ * ещё может позаниматься сегодня (project.md, решение 2026-07-18). */
+export function computeStreak(activityDates) {
+  if (!activityDates || !activityDates.length) return 0;
+  const set = new Set(activityDates);
+  const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const cursor = new Date();
+  if (!set.has(fmt(cursor))) cursor.setDate(cursor.getDate() - 1);
+  let streak = 0;
+  while (set.has(fmt(cursor))) {
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
 }
 
 export async function listStudents() {

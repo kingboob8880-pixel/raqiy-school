@@ -139,3 +139,15 @@ export function findNextLesson(progress) {
 }
 
 export const QUIZ_PASS_THRESHOLD = 0.7;
+
+/** Бейджи за завершённый уровень (Начальный/Средний/Продвинутый) — считаются
+ * из уже имеющегося прогресса по модулям, без новой схемы Firestore
+ * (project.md, решение 2026-07-18, план улучшения курса). */
+export function computeLevelBadges(progress) {
+  const levels = [...new Set(MODULES.map((m) => m.level))];
+  return levels.map((level) => {
+    const modules = MODULES.filter((m) => m.level === level);
+    const doneCount = modules.filter((m) => progress?.[m.id]?.status === "done").length;
+    return { level, doneCount, total: modules.length, complete: doneCount === modules.length };
+  });
+}

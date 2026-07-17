@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Кабинет ученика — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=7">
-<link rel="stylesheet" href="../../design/base.css?v=14">
+<link rel="stylesheet" href="../../design/base.css?v=16">
 </head>
 <body data-zone="student">
   <div id="site-header"></div>
@@ -20,11 +20,17 @@
         </div>
       </div>
 
-      <div class="stat-grid" style="margin-bottom: var(--rp-space-6);">
-        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">📈</span><div class="stat-card__value" id="stat-progress">—</div><div class="stat-card__label">Прогресс курса</div></div>
+      <div class="stat-grid" style="margin-bottom: var(--rp-space-4);">
+        <div class="card stat-card">
+          <div class="progress-ring" id="progress-ring"><div class="progress-ring__hole" id="stat-progress">—</div></div>
+          <div class="stat-card__label">Прогресс курса</div>
+        </div>
         <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🎯</span><div class="stat-card__value" id="stat-score">—</div><div class="stat-card__label">Средний балл тестов</div></div>
+        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🔥</span><div class="stat-card__value" id="stat-streak">—</div><div class="stat-card__label">Дней подряд</div></div>
         <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🕊️</span><div class="stat-card__value" id="stat-status">—</div><div class="stat-card__label">Статус оплаты</div></div>
       </div>
+
+      <div id="badge-row" class="badge-row"></div>
 
       <div id="unpaid-notice" class="card" style="border-color: var(--rp-status-danger);" hidden>
         <h3>Полный доступ ещё не открыт</h3>
@@ -33,6 +39,16 @@
            напишите лекарю Абу Мухаммаду в Telegram, доступ откроется вручную
            после оплаты.</p>
         <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать в Telegram</a>
+      </div>
+
+      <div id="onboarding-card" class="card onboarding-card" hidden>
+        <h3>Как устроено обучение</h3>
+        <div class="onboarding-card__steps">
+          <div class="onboarding-card__step"><span class="onboarding-card__num">1</span><span>Читайте бесплатные ознакомительные отрывки любой книги ниже — без оплаты.</span></div>
+          <div class="onboarding-card__step"><span class="onboarding-card__num">2</span><span>Готовы продолжить полным курсом — напишите в Telegram, лекарь откроет доступ вручную.</span></div>
+          <div class="onboarding-card__step"><span class="onboarding-card__num">3</span><span>После каждой книги — короткий экзамен (порог 70%), после каждого модуля — итоговый тест.</span></div>
+        </div>
+        <button id="onboarding-dismiss" class="btn btn-outline btn-sm" type="button">Понятно, скрыть</button>
       </div>
 
       <h2>Продолжить обучение</h2>
@@ -46,7 +62,7 @@
 
       <h2 style="margin-top: var(--rp-space-6);">Сообщения от наставника</h2>
       <div class="card">
-        <div id="messages" class="msg-list"><p class="form-note">Загрузка…</p></div>
+        <div id="messages" class="msg-list" role="log" aria-live="polite"><p class="form-note">Загрузка…</p></div>
         <form id="message-form" style="display:flex; gap: var(--rp-space-2);">
           <input type="text" id="message-text" placeholder="Написать сообщение…" style="flex:1; padding: 0.65rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border);">
           <button class="btn btn-primary btn-sm" type="submit">Отправить</button>
@@ -61,9 +77,15 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=8";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=6";
-    import { computeOverallProgress, computeAverageScore, listMessages, sendMessage } from "../../integration/firestore.js?v=8";
-    import { MODULES, bookKey, findNextLesson } from "../js/modules-data.js?v=9";
+    import { computeOverallProgress, computeAverageScore, computeStreak, listMessages, sendMessage } from "../../integration/firestore.js?v=9";
+    import { MODULES, bookKey, findNextLesson, computeLevelBadges } from "../js/modules-data.js?v=10";
     import { withBase } from "../js/base-path.js?v=6";
+
+    const REVIEW_AFTER_DAYS = 30;
+    function daysSincePassed(passedAt) {
+      if (!passedAt?.toMillis) return null;
+      return Math.floor((Date.now() - passedAt.toMillis()) / (1000 * 60 * 60 * 24));
+    }
 
     renderHeader("student");
     renderFooter();
@@ -97,12 +119,14 @@
         const locked = !profile?.paid;
         const stateLabel = done ? "Пройден" : moduleProgress?.status === "in_progress" ? "В процессе" : "Не начат";
         const thumb = m.cover ? withBase(m.cover.replace(/\.jpg$/, "-thumb.jpg")) : null;
+        const staleDays = done ? daysSincePassed(moduleProgress?.passedAt) : null;
+        const needsReview = staleDays !== null && staleDays >= REVIEW_AFTER_DAYS;
         return `
           <a class="book-card ${done ? "book-card--done" : ""} ${locked ? "book-card--locked" : ""}" href="${withBase("/pages/modules/module.html")}?id=${m.id}">
             <span class="book-card__marker" ${thumb ? `style="background-image:url('${thumb}')"` : ""}>${thumb ? "" : (done ? "✓" : m.id)}</span>
             <span class="book-card__body">
               <span class="book-card__title">${m.title}</span>
-              <span class="book-card__meta">${m.level} · ${stateLabel}${locked ? " · 🔒 после оплаты" : ""}</span>
+              <span class="book-card__meta">${m.level} · ${stateLabel}${locked ? " · 🔒 после оплаты" : ""}${needsReview ? `<span class="review-flag" title="Пройден ${staleDays} дн. назад">🔄 Стоит повторить</span>` : ""}</span>
             </span>
             <span class="book-card__arrow" aria-hidden="true">→</span>
           </a>`;
@@ -136,13 +160,31 @@
           </div>`;
       }
 
-      document.getElementById("stat-progress").textContent = computeOverallProgress(profile?.progress) + "%";
+      const overallProgress = computeOverallProgress(profile?.progress);
+      document.getElementById("stat-progress").textContent = overallProgress + "%";
+      document.getElementById("progress-ring").style.setProperty("--rp-progress", overallProgress);
       const avg = computeAverageScore(profile?.progress);
       document.getElementById("stat-score").textContent = avg === null ? "—" : avg + "%";
+      document.getElementById("stat-streak").textContent = computeStreak(profile?.progress?.activityDates);
       document.getElementById("stat-status").textContent = profile?.paid ? "Оплачено" : "Ознакомительный";
+
+      document.getElementById("badge-row").innerHTML = computeLevelBadges(profile?.progress).map((b) => `
+        <span class="level-badge ${b.complete ? "level-badge--complete" : ""}">${b.complete ? "🏅" : "⏳"} ${b.level} ${b.doneCount}/${b.total}</span>
+      `).join("");
 
       if (!profile?.paid) {
         document.getElementById("unpaid-notice").hidden = false;
+      }
+
+      const ONBOARDING_KEY = "raqiy-onboarding-dismissed";
+      const hasAnyProgress = !!profile?.progress && Object.keys(profile.progress).some((k) => k !== "activityDates");
+      if (!hasAnyProgress && !localStorage.getItem(ONBOARDING_KEY)) {
+        const onboardingCard = document.getElementById("onboarding-card");
+        onboardingCard.hidden = false;
+        document.getElementById("onboarding-dismiss").addEventListener("click", () => {
+          localStorage.setItem(ONBOARDING_KEY, "1");
+          onboardingCard.hidden = true;
+        });
       }
 
       const msgs = await listMessages(user.uid);

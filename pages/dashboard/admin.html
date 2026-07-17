@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Кабинет админа — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=7">
-<link rel="stylesheet" href="../../design/base.css?v=14">
+<link rel="stylesheet" href="../../design/base.css?v=16">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -72,7 +72,7 @@
     import {
       listStudents, setStudentPaid, deleteStudent, sendMessage, listMessages, daysSince,
       computeOverallProgress, computeAverageScore,
-    } from "../../integration/firestore.js?v=8";
+    } from "../../integration/firestore.js?v=9";
 
     renderHeader("admin");
     renderFooter();
@@ -119,7 +119,7 @@
         <tr class="thread-row" data-thread-for="${s.uid}">
           <td colspan="7">
             <div class="thread-panel">
-              <div class="msg-list" id="thread-msgs-${s.uid}"><p class="form-note">Загрузка…</p></div>
+              <div class="msg-list" id="thread-msgs-${s.uid}" role="log" aria-live="polite"><p class="form-note">Загрузка…</p></div>
               <form class="thread-reply" data-uid="${s.uid}" style="display:flex; gap: var(--rp-space-2);">
                 <input type="text" placeholder="Ответить ${escapeHtml(s.name || "ученику")}…" style="flex:1; padding: 0.55rem 0.8rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
                 <button class="btn btn-primary btn-sm" type="submit">Отправить</button>
