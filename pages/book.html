@@ -14,6 +14,13 @@
   .doc-body table { width: 100%; border-collapse: collapse; margin: var(--rp-space-4) 0; }
   .doc-body th, .doc-body td { border: 1px solid var(--rp-learn-border); padding: var(--rp-space-2) var(--rp-space-3); text-align: left; font-size: var(--rp-fs-sm); }
   .doc-body th { background: var(--rp-color-parchment-200); }
+  /* Богословские/предупредительные примечания в тексте книги (⚠️) — раньше
+     рендерились как обычный blockquote без стиля, визуально не отличались
+     от прозы (независимая проверка, 2026-07-19). */
+  .doc-body blockquote { margin: var(--rp-space-5) 0; padding: var(--rp-space-4);
+    border-left: 4px solid var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 10%, var(--rp-learn-surface));
+    border-radius: 0 var(--rp-radius-sm) var(--rp-radius-sm) 0; }
+  .doc-body blockquote p:last-child { margin-bottom: 0; }
   .book-exam-cta { margin-top: var(--rp-space-6); padding: var(--rp-space-5); text-align: center; }
   .book-exam-cta__actions { display: flex; gap: var(--rp-space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--rp-space-4); }
   .doc-toc { background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
