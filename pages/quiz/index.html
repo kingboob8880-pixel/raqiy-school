@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Тест — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=7">
-<link rel="stylesheet" href="../../design/base.css?v=14">
+<link rel="stylesheet" href="../../design/base.css?v=16">
 </head>
 <body data-zone="learn">
   <div id="site-header"></div>
@@ -16,11 +16,11 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=8";
-    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=9";
+    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=10";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
     import { loadExamDoc } from "../js/exam-loader.js?v=6";
     import { watchAuth } from "../../integration/auth.js?v=6";
-    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=8";
+    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=9";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
@@ -81,23 +81,41 @@
           <div class="quiz-progress"><div class="quiz-progress__bar" style="width:${(current / questions.length) * 100}%"></div></div>
           <h2>${q.q}</h2>
           <div id="options"></div>
+          <p id="quiz-feedback" class="quiz-feedback" role="status" aria-live="polite"></p>
           <button id="next-btn" class="btn btn-primary" disabled>Далее</button>
         `;
         const optionsRoot = document.getElementById("options");
+        const feedbackEl = document.getElementById("quiz-feedback");
+        const nextBtn = document.getElementById("next-btn");
+        let answered = false;
+
+        // Мгновенная обратная связь сразу после ответа (retrieval practice —
+        // план улучшения курса, 2026-07-18, второй проход): сначала попытка
+        // вспомнить (клик), затем сразу видно верно/неверно и правильный
+        // вариант — так материал закрепляется лучше, чем узнав % только в конце.
         q.options.forEach((opt, i) => {
           const btn = document.createElement("button");
           btn.className = "quiz-option";
           btn.type = "button";
           btn.textContent = opt;
+          btn.setAttribute("aria-pressed", "false");
           btn.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
             answers[current] = i;
-            [...optionsRoot.children].forEach((c) => c.setAttribute("aria-pressed", "false"));
+            const isCorrect = i === q.correct;
             btn.setAttribute("aria-pressed", "true");
-            document.getElementById("next-btn").disabled = false;
+            btn.classList.add(isCorrect ? "is-correct" : "is-wrong");
+            if (!isCorrect) optionsRoot.children[q.correct].classList.add("is-correct");
+            [...optionsRoot.children].forEach((c) => { c.disabled = true; });
+            feedbackEl.textContent = isCorrect ? "✅ Верно!" : "❌ Неверно — правильный ответ отмечен выше.";
+            nextBtn.disabled = false;
+            nextBtn.textContent = current < questions.length - 1 ? "Далее" : "Завершить";
+            nextBtn.focus();
           });
           optionsRoot.appendChild(btn);
         });
-        document.getElementById("next-btn").addEventListener("click", () => {
+        nextBtn.addEventListener("click", () => {
           if (current < questions.length - 1) { current++; render(); }
           else finish();
         });

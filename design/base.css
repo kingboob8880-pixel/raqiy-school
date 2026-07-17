@@ -3,6 +3,15 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
+/* Видимый фокус клавиатуры на всех темах (WCAG 2.4.7) — единое кольцо через
+   :focus-visible, не полагаемся на браузерный дефолт (плохо виден на цветных
+   кнопках/пилюлях). План улучшения курса, 2026-07-18, доступность. */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid var(--rp-zone-accent, var(--rp-learn-accent));
+  outline-offset: 2px;
+  border-radius: var(--rp-radius-sm);
+}
 body {
   margin: 0;
   font-family: var(--rp-font-body);
@@ -290,11 +299,47 @@ p { margin: 0 0 var(--rp-space-4); }
 .dash-hero h1 { margin: 0; }
 
 .stat-grid { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-4); }
-@media (min-width: 40rem) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 40rem) { .stat-grid { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); } }
 .stat-card { text-align: center; }
 .stat-card__icon { display: block; font-size: 1.4rem; margin-bottom: var(--rp-space-2); }
 .stat-card__value { font-family: var(--rp-font-heading); font-size: var(--rp-fs-2xl); }
 .stat-card__label { font-size: var(--rp-fs-sm); color: var(--rp-zone-text); opacity: 0.7; }
+
+/* Кольцо прогресса — вместо голого числа (план улучшения курса, 2026-07-18) */
+.progress-ring {
+  width: 4.5rem; height: 4.5rem; border-radius: var(--rp-radius-pill); margin: 0 auto var(--rp-space-2);
+  display: flex; align-items: center; justify-content: center;
+  background: conic-gradient(var(--rp-zone-accent) calc(var(--rp-progress, 0) * 1%), color-mix(in srgb, var(--rp-zone-accent) 16%, transparent) 0);
+}
+.progress-ring__hole {
+  width: 3.4rem; height: 3.4rem; border-radius: var(--rp-radius-pill); background: var(--rp-zone-surface-raised, var(--rp-zone-surface));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); font-weight: 700;
+}
+
+/* Бейджи за уровень + мягкое напоминание "повторить" (план улучшения курса,
+   2026-07-18). Состояния различаются заливкой/иконкой, не прозрачностью
+   текста — opacity на тексте у "незавершённых" бейджей проваливала контраст
+   на тёмных темах (1.74:1 у review-flag на emerald, ниже порога WCAG AA
+   4.5:1) — второй проход плана, доступность. */
+.badge-row { display: flex; flex-wrap: wrap; gap: var(--rp-space-2); margin-bottom: var(--rp-space-6); }
+.level-badge {
+  display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.9rem;
+  border-radius: var(--rp-radius-pill); font-size: var(--rp-fs-sm); border: 1px solid var(--rp-zone-border);
+  color: var(--rp-zone-text);
+}
+.level-badge--complete { background: var(--rp-zone-accent); color: var(--rp-zone-accent-contrast, #fff); border-color: transparent; font-weight: 700; }
+.review-flag { display: inline-block; margin-left: 0.4rem; font-size: var(--rp-fs-sm); font-weight: 700; color: var(--rp-zone-text); }
+
+/* Приветственная карточка для новичка без прогресса (план улучшения курса, 2026-07-18) */
+.onboarding-card { border-color: var(--rp-zone-accent); margin-bottom: var(--rp-space-6); }
+.onboarding-card__steps { display: grid; gap: var(--rp-space-3); margin: var(--rp-space-4) 0; }
+.onboarding-card__step { display: flex; gap: var(--rp-space-3); align-items: flex-start; }
+.onboarding-card__num {
+  flex: none; width: 1.75rem; height: 1.75rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-zone-accent); color: var(--rp-zone-accent-contrast, #fff);
+  display: flex; align-items: center; justify-content: center; font-size: var(--rp-fs-sm); font-weight: 700;
+}
 
 /* ---------- Пейвол — обрезанная бесплатная версия книги (book.html) ---------- */
 .paywall-fade {
@@ -422,8 +467,19 @@ p { margin: 0 0 var(--rp-space-4); }
 .quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.3s ease; }
 .quiz-option { display: block; width: 100%; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; }
 .quiz-option[aria-pressed="true"] { border-color: var(--rp-learn-accent); background: var(--rp-color-gold-100); }
-.quiz-option.is-correct { border-color: var(--rp-status-success); background: var(--rp-color-green-100); }
-.quiz-option.is-wrong { border-color: var(--rp-status-danger); background: var(--rp-status-danger-bg); }
+/* Мгновенная обратная связь по вопросу (план улучшения курса, 2026-07-18,
+   второй проход — retrieval practice). Фон смешан с текущим --rp-learn-surface
+   через color-mix, а не жёстко-светлый цвет — иначе на тёмной теме "изумруд"
+   светлый текст становился нечитаемым (было 1.1:1, ниже WCAG AA 4.5:1),
+   смешивание сохраняет контраст ~9-10:1 на всех темах. */
+.quiz-option.is-correct { border-color: var(--rp-status-success); background: color-mix(in srgb, var(--rp-status-success) 18%, var(--rp-learn-surface)); font-weight: 700; }
+.quiz-option.is-wrong { border-color: var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 18%, var(--rp-learn-surface)); }
+.quiz-option:disabled { cursor: default; }
+/* Цвет текста — var(--rp-learn-text), не --rp-status-success/danger: та пара
+   калибрована под светлую зону по умолчанию и на тёмной теме "изумруд" как
+   текст даёт ~2.4:1 (ниже WCAG AA). Правильно/неправильно различаем иконкой
+   (✅/❌ в тексте), не только цветом — так же надёжнее для дальтоников. */
+.quiz-feedback { font-size: var(--rp-fs-sm); font-weight: 700; margin: var(--rp-space-2) 0 var(--rp-space-4); min-height: 1.2em; color: var(--rp-learn-text); }
 
 .skeleton-loading { padding: var(--rp-space-6) 0; text-align: center; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
 
