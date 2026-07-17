@@ -6,7 +6,7 @@
 <title>Онлайн-школа рукии — лечение Кораном и Сунной</title>
 <meta name="description" content="Курс подготовки заклинателя (раки): от основ убеждённости до самостоятельного приёма пациентов через RUKYA Pro.">
 <link rel="stylesheet" href="../design/tokens.css?v=6">
-<link rel="stylesheet" href="../design/base.css?v=12">
+<link rel="stylesheet" href="../design/base.css?v=13">
 <link rel="stylesheet" href="../design/landing-themes.css?v=7">
 <style>
   .price-card { max-width: 28rem; margin: var(--rp-space-6) auto; text-align: center; }
@@ -25,10 +25,89 @@
   </section>
 
   <section class="container">
-    <h2 style="text-align:center;">Путь ученика</h2>
+    <div class="card">
+      <div class="stats-strip">
+        <div class="stats-strip__item"><div class="stats-strip__value">11</div><div class="stats-strip__label">модулей курса</div></div>
+        <div class="stats-strip__item"><div class="stats-strip__value">7</div><div class="stats-strip__label">книг с отдельным экзаменом</div></div>
+        <div class="stats-strip__item"><div class="stats-strip__value">100%</div><div class="stats-strip__label">контента промаркировано по источнику</div></div>
+        <div class="stats-strip__item"><div class="stats-strip__value">30 000 ₽</div><div class="stats-strip__label">один платёж за весь курс</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 style="text-align:center;">Как проходит обучение</h2>
+    <div class="process-steps">
+      <div class="card process-step"><div class="process-step__num"></div><h3>Регистрация</h3><p>Бесплатно, за минуту — email и пароль.</p></div>
+      <div class="card process-step"><div class="process-step__num"></div><h3>Читаете отрывки</h3><p>Бесплатный ознакомительный кусок каждой книги — без оплаты, сразу после регистрации.</p></div>
+      <div class="card process-step"><div class="process-step__num"></div><h3>Открываете курс целиком</h3><p>30 000 ₽ — пишете лекарю в Telegram, он высылает реквизиты и вручную подтверждает доступ.</p></div>
+      <div class="card process-step"><div class="process-step__num"></div><h3>Экзамен за экзаменом</h3><p>Тест после каждой книги и итоговый тест по модулю — до сертификата.</p></div>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 style="text-align:center;">Путь ученика — все 11 модулей</h2>
     <div id="path-preview" class="path"></div>
-    <div style="text-align:center; margin-top: var(--rp-space-4);">
-      <a class="btn btn-outline" href="modules/index.html">Смотреть все модули</a>
+  </section>
+
+  <section class="container">
+    <div class="card">
+      <h2>Экзамены и сертификат</h2>
+      <p>После каждой прочитанной книги — короткий экзамен по ней самой (порог
+         70%), не общий тест «по всему сразу». После каждого модуля —
+         итоговый тест. Все экзамены и их статус собраны на одной странице —
+         «Тесты». Когда пройдены все 11 модулей, в кабинете открывается
+         сертификат «Практик рукии» за подписью Абу Мухаммада — можно
+         распечатать или сохранить как PDF.</p>
+      <div class="hero-actions">
+        <a class="btn btn-outline" href="tests/index.html">Посмотреть все тесты</a>
+        <a class="btn btn-outline" href="certificate/index.html">Как выглядит сертификат</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="card author-card">
+      <div class="author-card__portrait" aria-hidden="true">ش</div>
+      <div>
+        <h3>Лекарь Абу Мухаммад</h3>
+        <p class="author-card__role">Основатель школы</p>
+        <p>Составил курс из проверенных источников — 23 книги прошли триаж по
+           критерию подлинности, прежде чем попасть в программу. Каждую книгу
+           отмечает как прямую цитату Корана/Сунны, устоявшуюся практику или
+           собственную методику — открыто, без выдачи одного за другое.
+           Оплату каждого ученика подтверждает лично.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <h2 style="text-align:center;">Частые вопросы</h2>
+    <div class="faq-list">
+      <details class="card faq-item">
+        <summary>Нужна ли предыдущая подготовка?</summary>
+        <p>Нет. Курс начинается с основ убеждённости (якына) — с нуля, без предварительных знаний фикха рукьи.</p>
+      </details>
+      <details class="card faq-item">
+        <summary>Можно ли начать бесплатно?</summary>
+        <p>Да. Регистрация и ознакомительные отрывки всех книг курса — бесплатны, без ограничения по времени.</p>
+      </details>
+      <details class="card faq-item">
+        <summary>Как устроена оплата?</summary>
+        <p>Через личные сообщения в Telegram (t.me/ruqoq) — лекарь высылает реквизиты лично и подтверждает доступ вручную после оплаты. Отдельного платёжного шлюза на сайте нет.</p>
+      </details>
+      <details class="card faq-item">
+        <summary>Сколько длится курс?</summary>
+        <p>Курс самостоятельный — проходите в своём темпе, жёстких дедлайнов нет.</p>
+      </details>
+      <details class="card faq-item">
+        <summary>Можно ли пересдать экзамен?</summary>
+        <p>Да, экзамен по книге и тест по модулю можно пересдавать столько раз, сколько нужно, чтобы набрать порог 70%.</p>
+      </details>
+      <details class="card faq-item">
+        <summary>Что будет после завершения курса?</summary>
+        <p>Доступ к системе RUKYA Pro — там выпускник ведёт приём настоящих пациентов, лично проверяя каждый диагноз и подписывая итоговое заключение.</p>
+      </details>
     </div>
   </section>
 
@@ -53,7 +132,7 @@
     renderFooter();
 
     const root = document.getElementById("path-preview");
-    root.innerHTML = MODULES.slice(0, 4).map((m) => `
+    root.innerHTML = MODULES.map((m) => `
       <a class="path-step" href="modules/module.html?id=${m.id}">
         <span class="path-step__marker">${m.id}</span>
         <span class="path-step__body">
@@ -61,7 +140,7 @@
           <span class="path-step__meta">${m.level}</span>
         </span>
       </a>
-    `).join("") + `<div style="padding-left:3.4rem; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted);">…и ещё 7 модулей</div>`;
+    `).join("");
   </script>
 </body>
 </html>
