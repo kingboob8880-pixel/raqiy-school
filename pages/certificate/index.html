@@ -98,7 +98,7 @@
     // Показываем образец сразу всем, без входа — так лендинг может честно
     // показать, что получит ученик в конце (project.md, решение 2026-07-17).
     introEl.textContent = "Так будет выглядеть ваш сертификат после завершения курса — это пример, не настоящий документ.";
-    root.innerHTML = certHtml({ name: "Ваше Имя", sample: true, dateStr: new Date().toLocaleDateString("ru-RU") });
+    root.innerHTML = certHtml({ name: "Абдуллах", sample: true, dateStr: new Date().toLocaleDateString("ru-RU") });
     statusRoot.innerHTML = `<a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Начать бесплатно →</a>`;
 
     watchAuth(async (user) => {
