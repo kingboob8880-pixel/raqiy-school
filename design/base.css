@@ -12,6 +12,15 @@ textarea:focus-visible, [tabindex]:focus-visible {
   outline-offset: 2px;
   border-radius: var(--rp-radius-sm);
 }
+/* Skip-link (WCAG 2.4.1) — за экраном, пока не в фокусе; план улучшения
+   курса, 2026-07-18, шестой проход. */
+.skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 1000;
+  background: var(--rp-zone-accent, var(--rp-learn-accent)); color: #fff;
+  padding: 0.75rem 1.25rem; border-radius: 0 0 var(--rp-radius-sm) 0;
+  font-weight: 700; text-decoration: none;
+}
+.skip-link:focus { left: 0; }
 body {
   margin: 0;
   font-family: var(--rp-font-body);
@@ -281,7 +290,21 @@ p { margin: 0 0 var(--rp-space-4); }
   border: 1px solid var(--rp-zone-border, var(--rp-learn-border)); background: var(--rp-zone-surface, #fff);
   color: inherit; min-height: 2.75rem;
 }
-.field-error { color: var(--rp-status-danger); font-size: var(--rp-fs-sm); margin-top: 0.25rem; }
+/* Показать/скрыть пароль — снижает опечатки на самом "отвально-опасном"
+   поле формы (план улучшения курса, 2026-07-18, шестой проход). */
+.password-field { position: relative; }
+.password-field input { padding-right: 2.75rem; }
+.password-toggle {
+  position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+  width: 2.5rem; height: 2.5rem; background: none; border: none; cursor: pointer;
+  font-size: 1.1rem; line-height: 1; color: var(--rp-learn-text-muted, inherit);
+}
+/* var(--rp-zone-text), не --rp-status-danger — тот же провал контраста
+   найден и здесь (2.4:1 на тёмной теме "изумруд"), что и у review-flag в
+   первом проходе плана; иконка вместо цвета сигналит "ошибка" одинаково
+   надёжно на всех темах (план улучшения курса, 2026-07-18, шестой проход). */
+.field-error { color: var(--rp-zone-text, var(--rp-learn-text)); font-weight: 700; font-size: var(--rp-fs-sm); margin-top: 0.25rem; }
+.field-error::before { content: "⚠ "; }
 .form-note { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
 
 /* ---------- Дашборд ---------- */
