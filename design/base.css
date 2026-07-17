@@ -194,6 +194,49 @@ p { margin: 0 0 var(--rp-space-4); }
 .feature-item h3 { font-size: var(--rp-fs-md); margin-bottom: var(--rp-space-2); color: var(--rp-learn-text); }
 .feature-item p { font-size: var(--rp-fs-sm); margin: 0; color: var(--rp-learn-text-muted); }
 
+/* ---------- Полоса цифр (лендинг) ---------- */
+.stats-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--rp-space-4); text-align: center; }
+@media (min-width: 40rem) { .stats-strip { grid-template-columns: repeat(4, 1fr); } }
+.stats-strip__item { padding: var(--rp-space-4); }
+.stats-strip__value { font-family: var(--rp-font-heading); font-size: var(--rp-fs-xl); color: var(--rp-learn-accent); }
+.stats-strip__label { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+
+/* ---------- Шаги процесса обучения (лендинг) ---------- */
+.process-steps { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-4); counter-reset: step; }
+@media (min-width: 56rem) { .process-steps { grid-template-columns: repeat(4, 1fr); } }
+.process-step { position: relative; padding: var(--rp-space-5); }
+.process-step__num {
+  counter-increment: step; display: flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-learn-accent); color: var(--rp-learn-accent-contrast);
+  font-family: var(--rp-font-heading); font-weight: 700; margin-bottom: var(--rp-space-3);
+}
+.process-step__num::before { content: counter(step); }
+.process-step h3 { font-size: var(--rp-fs-md); margin-bottom: var(--rp-space-2); }
+.process-step p { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; }
+
+/* ---------- Карточка автора курса (лендинг) ---------- */
+.author-card { display: flex; flex-direction: column; gap: var(--rp-space-4); align-items: center; text-align: center; padding: var(--rp-space-6); }
+@media (min-width: 40rem) { .author-card { flex-direction: row; text-align: left; } }
+.author-card__portrait {
+  flex: none; width: 5rem; height: 5rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-learn-accent); color: var(--rp-learn-accent-contrast);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--rp-font-arabic); font-size: 2rem;
+}
+.author-card h3 { margin-bottom: 0.2rem; }
+.author-card__role { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-bottom: var(--rp-space-3); }
+.author-card p:last-child { margin-bottom: 0; }
+
+/* ---------- FAQ (лендинг) ---------- */
+.faq-list { display: flex; flex-direction: column; gap: var(--rp-space-3); }
+.faq-item { padding: var(--rp-space-4) var(--rp-space-5); }
+.faq-item summary { cursor: pointer; font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: var(--rp-space-3); }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; font-size: 1.5rem; color: var(--rp-learn-accent); flex: none; transition: transform 0.2s ease; }
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item p { margin: var(--rp-space-3) 0 0; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
+
 /* ---------- Оглавление модулей — "дорожка-путь" (1b, §16а) ---------- */
 .path { display: flex; flex-direction: column; gap: var(--rp-space-4); padding: var(--rp-space-4) 0; position: relative; }
 .path::before {
