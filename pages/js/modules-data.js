@@ -120,15 +120,20 @@ export function bookKey(docPath) {
   return docPath.replace(/[/.]/g, "_");
 }
 
-/** Первый непройденный урок в порядке модулей — цель кнопки "Продолжить
- * обучение" в кабинете ученика. Возвращает { module, lesson } или null,
- * если пройдены все уроки всех модулей (или ни у одного модуля нет lessons). */
+/** Первая непройденная точка программы в порядке модулей — цель кнопки
+ * "Продолжить обучение" в кабинете ученика. Сначала непройденные книги
+ * модуля (lessons), затем — если книги пройдены или их нет — тест по
+ * самому модулю. Возвращает { module, lesson } (lesson === null значит
+ * "иди на страницу модуля и сдай тест по нему") или null, если пройдены
+ * все модули целиком. */
 export function findNextLesson(progress) {
   for (const m of MODULES) {
     for (const lesson of m.lessons) {
       const done = progress?.books?.[bookKey(lesson.doc)]?.status === "done";
       if (!done) return { module: m, lesson };
     }
+    const moduleDone = progress?.[m.id]?.status === "done";
+    if (!moduleDone) return { module: m, lesson: null };
   }
   return null;
 }

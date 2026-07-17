@@ -31,7 +31,10 @@ service cloud.firestore {
 
       match /messages/{messageId} {
         allow read: if isOwner(uid) || isAdmin();
-        allow create: if isOwner(uid) || isAdmin();
+        // from обязан совпадать с реальной ролью пишущего — иначе ученик
+        // может подделать сообщение "от админа" в своей же переписке.
+        allow create: if (isOwner(uid) && request.resource.data.from == 'student')
+                      || (isAdmin() && request.resource.data.from == 'admin');
         allow update, delete: if isAdmin();
       }
     }

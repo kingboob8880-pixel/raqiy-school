@@ -16,11 +16,12 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=8";
-    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=8";
+    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=9";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
     import { loadExamDoc } from "../js/exam-loader.js?v=6";
     import { watchAuth } from "../../integration/auth.js?v=6";
     import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=8";
+    import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
     renderFooter();
@@ -107,11 +108,12 @@
         const ratio = correctCount / questions.length;
         const passed = ratio >= QUIZ_PASS_THRESHOLD;
 
+        let saveFailed = false;
         if (currentUser) {
           try {
             if (isBookQuiz) await recordBookQuizResult(currentUser.uid, resultKey, ratio);
             else await recordQuizResult(currentUser.uid, resultKey, ratio);
-          } catch (e) { console.warn(e); }
+          } catch (e) { console.warn(e); saveFailed = true; }
         }
 
         const backHref = isBookQuiz ? `../modules/module.html?id=${mod.id}` : "../dashboard/student.html";
@@ -122,6 +124,8 @@
             <h2>${passed ? "Тест пройден" : "Тест не пройден"}</h2>
             <p style="font-size: var(--rp-fs-2xl); font-family: var(--rp-font-heading);">${Math.round(ratio * 100)}%</p>
             <p class="form-note">Порог прохождения — ${Math.round(QUIZ_PASS_THRESHOLD * 100)}%.</p>
+            ${saveFailed ? `<p class="field-error">Не удалось сохранить результат (нет связи). Прогресс в кабинете не обновится — попробуйте пройти тест ещё раз позже.</p>` : ""}
+            ${!currentUser ? `<p class="form-note">Вы не вошли в кабинет — результат не сохранён. <a href="${withBase("/pages/auth/login.html")}">Войдите</a>, чтобы прогресс учитывался.</p>` : ""}
             ${passed
               ? `<a class="btn btn-primary" href="${backHref}">${backLabel}</a>`
               : `<button class="btn btn-outline" onclick="location.reload()">Пройти ещё раз</button>`}
