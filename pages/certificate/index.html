@@ -7,20 +7,30 @@
 <link rel="stylesheet" href="../../design/tokens.css?v=6">
 <link rel="stylesheet" href="../../design/base.css?v=14">
 <style>
-  .cert { max-width: 40rem; margin: var(--rp-space-7) auto; padding: var(--rp-space-7);
+  .cert { position: relative; overflow: hidden; max-width: 40rem; margin: var(--rp-space-6) auto; padding: var(--rp-space-7);
     background: var(--rp-color-parchment-50); border: 3px double var(--rp-color-gold-500);
     border-radius: var(--rp-radius-lg); text-align: center; }
   .cert h1 { font-size: var(--rp-fs-xl); }
   .cert__name { font-family: var(--rp-font-heading); font-size: var(--rp-fs-2xl); margin: var(--rp-space-5) 0; color: var(--rp-color-gold-600); }
   .cert__seal { width: 4rem; height: 4rem; border-radius: 50%; background: var(--rp-color-green-700); color: #fff;
     display: flex; align-items: center; justify-content: center; font-family: var(--rp-font-arabic); font-size: 2rem; margin: 0 auto var(--rp-space-4); }
+  .cert__watermark {
+    position: absolute; top: var(--rp-space-4); right: var(--rp-space-4);
+    font-family: var(--rp-font-body); font-size: var(--rp-fs-sm); font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #fff; background: var(--rp-color-gold-500);
+    border-radius: var(--rp-radius-pill); padding: 0.35rem 0.9rem;
+    pointer-events: none; user-select: none; z-index: 2; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .cert > * { position: relative; z-index: 1; }
   @media print { .no-print { display: none; } }
 </style>
 </head>
 <body data-zone="learn">
   <div id="site-header" class="no-print"></div>
   <main class="container">
-    <div id="cert-root" class="skeleton-loading">Проверка прогресса…</div>
+    <p class="form-note" id="cert-intro" style="text-align:center; max-width: 32rem; margin: var(--rp-space-5) auto;">Загрузка…</p>
+    <div id="cert-root"></div>
+    <div id="cert-status" class="no-print" style="text-align:center; margin-top: var(--rp-space-5);"></div>
   </main>
   <div id="site-footer" class="no-print"></div>
 
@@ -28,44 +38,56 @@
     import { renderHeader, renderFooter } from "../js/layout.js?v=8";
     import { MODULES } from "../js/modules-data.js?v=8";
     import { watchAuth, getStudentProfile } from "../../integration/auth.js?v=6";
+    import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
     renderFooter();
 
+    const introEl = document.getElementById("cert-intro");
     const root = document.getElementById("cert-root");
+    const statusRoot = document.getElementById("cert-status");
+
+    function certHtml({ name, sample }) {
+      return `
+        <div class="cert">
+          ${sample ? `<span class="cert__watermark" aria-hidden="true">Пример</span>` : ""}
+          <div class="cert__seal">ش</div>
+          <p class="form-note">Онлайн-школа рукии</p>
+          <h1>Сертификат об окончании курса</h1>
+          <p>настоящим подтверждается, что</p>
+          <div class="cert__name">${name}</div>
+          <p>прошёл(-ла) полный курс подготовки заклинателя (раки) — от основ
+             убеждённости до итоговой практики под супервизией</p>
+          <p style="margin-top: var(--rp-space-6);">Абу Мухаммад · Основатель школы</p>
+        </div>`;
+    }
+
+    // Показываем образец сразу всем, без входа — так лендинг может честно
+    // показать, что получит ученик в конце (project.md, решение 2026-07-17).
+    introEl.textContent = "Так будет выглядеть ваш сертификат после завершения курса — это пример, не настоящий документ.";
+    root.innerHTML = certHtml({ name: "Ваше Имя", sample: true });
+    statusRoot.innerHTML = `<a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Начать бесплатно →</a>`;
 
     watchAuth(async (user) => {
-      if (!user) { location.href = "../auth/login.html"; return; }
+      if (!user) return; // гость уже видит образец выше, дальше ничего не грузим
       const profile = await getStudentProfile(user.uid);
       const done = MODULES.filter((m) => profile?.progress?.[m.id]?.status === "done").length;
       const allDone = done === MODULES.length;
 
       if (!allDone) {
-        root.innerHTML = `
+        statusRoot.innerHTML = `
           <div class="card" style="max-width: 32rem; margin: 0 auto; text-align:center;">
-            <h2>Сертификат ещё не готов</h2>
-            <p>Пройдено модулей: ${done} из ${MODULES.length}. Сертификат выдаётся
-               после завершения всех модулей и прохождения всех тестов.</p>
-            <a class="btn btn-primary" href="../modules/index.html">Продолжить обучение</a>
+            <h3 style="margin-bottom: var(--rp-space-2);">Ваш сертификат ещё не готов</h3>
+            <p class="form-note">Пройдено модулей: ${done} из ${MODULES.length}. Сертификат
+               выдаётся после завершения всех модулей и прохождения всех тестов.</p>
+            <a class="btn btn-primary" href="${withBase("/pages/modules/index.html")}">Продолжить обучение</a>
           </div>`;
         return;
       }
 
-      root.innerHTML = `
-        <div class="cert">
-          <div class="cert__seal">ش</div>
-          <p class="form-note">Онлайн-школа рукии</p>
-          <h1>Сертификат об окончании курса</h1>
-          <p>настоящим подтверждается, что</p>
-          <div class="cert__name">${profile.name || "Ученик"}</div>
-          <p>прошёл(-ла) полный курс подготовки заклинателя (раки) — от основ
-             убеждённости до итоговой практики под супервизией</p>
-          <p style="margin-top: var(--rp-space-6);">Абу Мухаммад · Основатель школы</p>
-        </div>
-        <div class="container no-print" style="text-align:center; margin-top: var(--rp-space-4);">
-          <button class="btn btn-outline" onclick="window.print()">Распечатать / сохранить PDF</button>
-        </div>
-      `;
+      introEl.textContent = "Поздравляем — курс пройден полностью. Вот ваш сертификат:";
+      root.innerHTML = certHtml({ name: profile.name || "Ученик", sample: false });
+      statusRoot.innerHTML = `<button class="btn btn-outline" onclick="window.print()">Распечатать / сохранить PDF</button>`;
     });
   </script>
 </body>
