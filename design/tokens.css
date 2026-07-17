@@ -183,7 +183,12 @@ html[data-site-theme="emerald"] {
   --rp-ayah-card-bg: var(--rp-color-emerald-700);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
   --rp-ayah-card-accent: var(--rp-color-gold-200);
-  --rp-hero-panel-gradient: radial-gradient(130% 70% at 50% -10%, #245038, var(--rp-color-emerald-900) 65%);
+  /* Два слоя — мягкий золотой блик в углу поверх базового радиального
+     градиента — иначе на центрированной раскладке (эта тема) карточка
+     героя выглядела плоской заливкой (план улучшения курса, 2026-07-19). */
+  --rp-hero-panel-gradient:
+    radial-gradient(60% 80% at 12% 0%, rgba(230, 201, 131, 0.12), transparent 60%),
+    radial-gradient(130% 70% at 50% -10%, #245038, var(--rp-color-emerald-900) 65%);
 }
 
 /* B — Светлый с тонким геометрическим паттерном */
@@ -205,6 +210,11 @@ html[data-site-theme="pattern"] {
   --rp-ayah-card-bg: var(--rp-color-ink-900);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
   --rp-ayah-card-accent: var(--rp-color-green-700);
+  --rp-hero-panel-gradient:
+    radial-gradient(60% 80% at 88% 0%, rgba(47, 106, 74, 0.08), transparent 60%),
+    radial-gradient(130% 70% at 50% -10%, #fdf9ef, var(--rp-color-parchment-200) 65%);
+  --rp-hero-panel-text: var(--rp-color-ink-900);
+  --rp-hero-panel-accent: var(--rp-color-green-700);
 }
 
 /* ============================================================

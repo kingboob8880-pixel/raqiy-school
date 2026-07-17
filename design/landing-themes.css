@@ -12,11 +12,18 @@
   overflow: hidden; box-shadow: var(--rp-shadow-card);
   background: var(--rp-learn-surface-raised);
 }
-.landing-hero { padding: var(--rp-space-7) var(--rp-space-6); text-align: center; }
+/* Центрированная раскладка (A/B) — раньше фон брался из родителя
+   (--rp-learn-surface-raised), плоская однотонная заливка; теперь та же
+   двухслойная градиентная "панель", что уже была определена для сплит-темы,
+   просто не использовалась здесь (план улучшения курса, 2026-07-19). */
+.landing-hero {
+  padding: var(--rp-space-7) var(--rp-space-6); text-align: center;
+  background: var(--rp-hero-panel-gradient); color: var(--rp-hero-panel-text);
+}
 .landing-features { padding: var(--rp-space-6); background: var(--rp-learn-surface); }
 .landing-hero__inner { max-width: 44rem; margin-inline: auto; }
-.landing-hero h1 { font-size: var(--rp-fs-2xl); margin-block: var(--rp-space-4); color: var(--rp-learn-text); }
-.landing-hero__lead { font-size: var(--rp-fs-md); max-width: 34rem; margin-inline: auto; color: var(--rp-learn-text-muted); }
+.landing-hero h1 { font-size: var(--rp-fs-2xl); margin-block: var(--rp-space-4); color: var(--rp-hero-panel-text); }
+.landing-hero__lead { font-size: var(--rp-fs-md); max-width: 34rem; margin-inline: auto; color: var(--rp-hero-panel-text); opacity: 0.82; }
 .hero-actions { display: flex; gap: var(--rp-space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--rp-space-5); }
 
 /* Сплит (C) — двухколоночная раскладка с калиграфией */
