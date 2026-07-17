@@ -27,7 +27,7 @@
       <div class="stat-grid" style="margin-bottom: var(--rp-space-6);">
         <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">👥</span><div class="stat-card__value" id="stat-total">—</div><div class="stat-card__label">Всего учеников</div></div>
         <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">💳</span><div class="stat-card__value" id="stat-paid">—</div><div class="stat-card__label">Оплатили</div></div>
-        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🔕</span><div class="stat-card__value" id="stat-silent">—</div><div class="stat-card__label">Молчат &gt;7 дней</div></div>
+        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🔕</span><div class="stat-card__value" id="stat-silent">—</div><div class="stat-card__label">Молчат &gt;14 дней</div></div>
       </div>
 
       <div class="card" style="margin-bottom: var(--rp-space-5);">
@@ -45,7 +45,7 @@
           <option value="all">Все ученики</option>
           <option value="paid">Оплатили</option>
           <option value="unpaid">Не оплатили</option>
-          <option value="silent">Молчат &gt;7 дней</option>
+          <option value="silent">Молчат &gt;14 дней</option>
         </select>
       </div>
       <div class="card" style="padding: 0; overflow: hidden;">
@@ -83,15 +83,22 @@
     let allStudents = [];
     let openThreadUid = null;
 
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
     function studentRowHtml(s) {
       const silent = daysSince(s.lastSeenAt);
-      const isSilent = silent !== null && silent > 7;
+      const isSilent = silent !== null && silent > 14;
       const avg = computeAverageScore(s.progress);
       const isOpen = openThreadUid === s.uid;
+      const name = escapeHtml(s.name || "—");
+      const email = escapeHtml(s.email || "—");
+      const nameAttr = escapeHtml(s.name || s.email || "ученика");
       const row = `
         <tr>
-          <td>${s.name || "—"}</td>
-          <td>${s.email || "—"}</td>
+          <td>${name}</td>
+          <td>${email}</td>
           <td>${computeOverallProgress(s.progress)}%</td>
           <td>${avg === null ? "—" : avg + "%"}</td>
           <td class="${isSilent ? "silent-flag" : ""}">${silent === null ? "—" : silent + " дн."}</td>
@@ -104,7 +111,7 @@
           <td>
             <div class="row-actions">
               <button type="button" class="thread-toggle ${isOpen ? "is-active" : ""}" data-uid="${s.uid}" title="Переписка">💬</button>
-              <button type="button" class="student-delete" data-uid="${s.uid}" data-name="${s.name || s.email || "ученика"}" title="Удалить">🗑</button>
+              <button type="button" class="student-delete" data-uid="${s.uid}" data-name="${nameAttr}" title="Удалить">🗑</button>
             </div>
           </td>
         </tr>`;
@@ -114,7 +121,7 @@
             <div class="thread-panel">
               <div class="msg-list" id="thread-msgs-${s.uid}"><p class="form-note">Загрузка…</p></div>
               <form class="thread-reply" data-uid="${s.uid}" style="display:flex; gap: var(--rp-space-2);">
-                <input type="text" placeholder="Ответить ${s.name || "ученику"}…" style="flex:1; padding: 0.55rem 0.8rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
+                <input type="text" placeholder="Ответить ${escapeHtml(s.name || "ученику")}…" style="flex:1; padding: 0.55rem 0.8rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
                 <button class="btn btn-primary btn-sm" type="submit">Отправить</button>
               </form>
             </div>
@@ -128,7 +135,7 @@
       if (!root) return;
       const msgs = await listMessages(uid);
       root.innerHTML = msgs.length
-        ? msgs.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${m.text}</div>`).join("")
+        ? msgs.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${escapeHtml(m.text)}</div>`).join("")
         : `<p class="form-note">Сообщений пока нет.</p>`;
       root.scrollTop = root.scrollHeight;
     }
@@ -138,7 +145,7 @@
       if (q && !((s.name || "").toLowerCase().includes(q) || (s.email || "").toLowerCase().includes(q))) return false;
       if (filter === "paid") return !!s.paid;
       if (filter === "unpaid") return !s.paid;
-      if (filter === "silent") { const d = daysSince(s.lastSeenAt); return d !== null && d > 7; }
+      if (filter === "silent") { const d = daysSince(s.lastSeenAt); return d !== null && d > 14; }
       return true;
     }
 
@@ -167,7 +174,7 @@
 
       body.querySelectorAll(".student-delete").forEach((btn) => {
         btn.addEventListener("click", async () => {
-          if (!confirm(`Удалить запись ${btn.dataset.name} из школы? Прогресс и переписка будут потеряны.`)) return;
+          if (!confirm(`Удалить запись ${btn.dataset.name} из школы? Прогресс и переписка будут потеряны безвозвратно. Учётная запись входа (email/пароль) при этом не удаляется — если человек снова войдёт, для него откроется чистый неоплаченный кабинет.`)) return;
           await deleteStudent(btn.dataset.uid);
           if (openThreadUid === btn.dataset.uid) openThreadUid = null;
           await refreshStudents();
@@ -193,7 +200,7 @@
       document.getElementById("stat-paid").textContent = allStudents.filter((s) => s.paid).length;
       document.getElementById("stat-silent").textContent = allStudents.filter((s) => {
         const d = daysSince(s.lastSeenAt);
-        return d !== null && d > 7;
+        return d !== null && d > 14;
       }).length;
       renderTable();
     }
@@ -216,6 +223,7 @@
         const input = document.getElementById("broadcast-text");
         const text = input.value.trim();
         if (!text) return;
+        if (!confirm(`Отправить это сообщение всем ученикам (${allStudents.length})?`)) return;
         await Promise.all(allStudents.map((s) => sendMessage(s.uid, "admin", text)));
         input.value = "";
         alert("Отправлено " + allStudents.length + " ученикам.");
