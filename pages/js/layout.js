@@ -51,7 +51,7 @@ export function renderHeader(zone = "learn") {
           <span class="site-header__brand-mark">ش</span>
           Онлайн-школа рукии
         </a>
-        <nav class="site-header__nav">
+        <nav class="site-header__nav" id="site-nav">
           <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>Модули</a>
           <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>Тесты</a>
           <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}"><span aria-hidden="true">🗃</span>Архив</a>
@@ -60,6 +60,9 @@ export function renderHeader(zone = "learn") {
         <div class="site-header__actions">
           ${themeSwitcherHtml}
           <a class="btn btn-outline btn-sm" href="${withBase("/pages/auth/login.html")}">Войти</a>
+          <button type="button" class="site-header__menu-btn" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню">
+            <span aria-hidden="true">☰</span>
+          </button>
         </div>
       </div>
     </header>
@@ -78,6 +81,26 @@ export function renderHeader(zone = "learn") {
   root.querySelectorAll(".site-header__nav a[data-nav]").forEach((a) => {
     if (navMatch[a.dataset.nav]) a.classList.add("is-active");
   });
+
+  // Мобильное меню (< 56rem, доработка UI/UX 2026-07-18) — до этого пункты
+  // навигации были недостижимы на телефоне (.site-header__nav имел
+  // display:none без замены ниже breakpoint'а). Кнопка видна только на
+  // мобильном (CSS скрывает её на десктопе), поэтому здесь не нужно
+  // проверять ширину экрана отдельно.
+  const navToggle = root.querySelector("#site-nav-toggle");
+  const navEl = root.querySelector("#site-nav");
+  if (navToggle && navEl) {
+    const closeNav = () => { navEl.classList.remove("is-open"); navToggle.setAttribute("aria-expanded", "false"); };
+    navToggle.addEventListener("click", () => {
+      const open = navEl.classList.toggle("is-open");
+      navToggle.setAttribute("aria-expanded", String(open));
+    });
+    navEl.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeNav));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeNav(); });
+    document.addEventListener("click", (e) => {
+      if (navEl.classList.contains("is-open") && !navEl.contains(e.target) && !navToggle.contains(e.target)) closeNav();
+    });
+  }
 
   initSiteTheme();
 }
