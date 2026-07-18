@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет админа — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=10">
-<link rel="stylesheet" href="../../design/base.css?v=19">
+<link rel="stylesheet" href="../../design/base.css?v=21">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -34,15 +34,15 @@
       <div class="card" style="margin-bottom: var(--rp-space-5);">
         <h3>Массовая рассылка</h3>
         <form id="broadcast-form" style="display:flex; gap: var(--rp-space-2);">
-          <input type="text" id="broadcast-text" placeholder="Сообщение всем ученикам…" style="flex:1; padding: 0.65rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
+          <input type="text" id="broadcast-text" aria-label="Текст рассылки всем ученикам" placeholder="Сообщение всем ученикам…" style="flex:1; padding: 0.65rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
           <button class="btn btn-primary btn-sm" type="submit">Отправить всем</button>
         </form>
       </div>
 
       <h2>Ученики</h2>
       <div class="admin-toolbar">
-        <input type="search" id="student-search" placeholder="Поиск по имени или email…">
-        <select id="student-filter">
+        <input type="search" id="student-search" aria-label="Поиск ученика по имени или email" placeholder="Поиск по имени или email…">
+        <select id="student-filter" aria-label="Фильтр списка учеников">
           <option value="all">Все ученики</option>
           <option value="paid">Оплатили</option>
           <option value="unpaid">Не оплатили</option>
@@ -68,7 +68,7 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=10";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=11";
     import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=7";
     import {
       listStudents, setStudentPaid, deleteStudent, sendMessage, listMessages, daysSince,
@@ -111,8 +111,8 @@
           </td>
           <td>
             <div class="row-actions">
-              <button type="button" class="thread-toggle ${isOpen ? "is-active" : ""}" data-uid="${s.uid}" title="Переписка">💬</button>
-              <button type="button" class="student-delete" data-uid="${s.uid}" data-name="${nameAttr}" title="Удалить">🗑</button>
+              <button type="button" class="thread-toggle ${isOpen ? "is-active" : ""}" data-uid="${s.uid}" title="Переписка" aria-label="Переписка с учеником">💬</button>
+              <button type="button" class="student-delete is-danger" data-uid="${s.uid}" data-name="${nameAttr}" title="Удалить" aria-label="Удалить ученика">🗑</button>
             </div>
           </td>
         </tr>`;
@@ -122,7 +122,7 @@
             <div class="thread-panel">
               <div class="msg-list" id="thread-msgs-${s.uid}" role="log" aria-live="polite"><p class="form-note">Загрузка…</p></div>
               <form class="thread-reply" data-uid="${s.uid}" style="display:flex; gap: var(--rp-space-2);">
-                <input type="text" placeholder="Ответить ${escapeHtml(s.name || "ученику")}…" style="flex:1; padding: 0.55rem 0.8rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
+                <input type="text" aria-label="Ответ ученику ${escapeHtml(s.name || "")}" placeholder="Ответить ${escapeHtml(s.name || "ученику")}…" style="flex:1; padding: 0.55rem 0.8rem; border-radius: var(--rp-radius-sm); border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);">
                 <button class="btn btn-primary btn-sm" type="submit">Отправить</button>
               </form>
             </div>

@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Модули курса — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=10">
-<link rel="stylesheet" href="../../design/base.css?v=19">
+<link rel="stylesheet" href="../../design/base.css?v=21">
 </head>
 <body data-zone="learn">
   <div id="site-header"></div>
@@ -22,9 +22,9 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=10";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=11";
     import { MODULES } from "../js/modules-data.js?v=13";
-    import { statusBadgeHtml } from "../js/markdown-loader.js?v=8";
+    import { statusBadgeHtml } from "../js/markdown-loader.js?v=9";
 
     renderHeader("learn");
     renderFooter();
@@ -35,13 +35,18 @@
     // Поиск по модулям И вложенным книгам (25 книг не видны на этой странице
     // напрямую, только через модуль) — план улучшения курса, 2026-07-18,
     // третий проход, "findability". Чисто клиентская фильтрация, без бэкенда.
+    // Уровень раньше был обычным текстом в приглушённом meta-цвете — на
+    // глаз неотличим от статус-бейджа рядом (независимая проверка,
+    // 2026-07-19). Иконка + текст, не просто цвет — доступно и дальтоникам.
+    const LEVEL_ICON = { "Начальный": "○", "Средний": "◐", "Продвинутый": "●" };
+
     function moduleCardHtml(m, matchedLesson) {
       return `
         <a class="path-step" href="module.html?id=${m.id}">
           <span class="path-step__marker">${m.id}</span>
           <span class="path-step__body">
             <span class="path-step__title">${m.title}</span>
-            <span class="path-step__meta">${m.level}${matchedLesson ? ` · содержит книгу «${matchedLesson}»` : ""}</span>
+            <span class="path-step__meta"><span class="level-tag" aria-hidden="true">${LEVEL_ICON[m.level] || ""}</span> ${m.level}${matchedLesson ? ` · содержит книгу «${matchedLesson}»` : ""}</span>
             <div style="margin-top: 0.4rem;">${statusBadgeHtml(m.status)}</div>
           </span>
         </a>`;

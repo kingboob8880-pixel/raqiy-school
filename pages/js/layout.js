@@ -72,10 +72,13 @@ export function renderHeader(zone = "learn") {
   // (страница книги/модуля живёт под /pages/modules/ или /pages/book.html,
   // поэтому сравниваем сегмент, а не href целиком).
   const path = location.pathname;
+  // Урок (book.html) без "archive" в query — часть раздела "Модули", просто
+  // не подсвечивалось раньше (независимая проверка, 2026-07-19).
+  const isArchiveDoc = path.includes("/pages/book.html") && location.search.includes("archive");
   const navMatch = {
-    modules: path.includes("/pages/modules/"),
+    modules: path.includes("/pages/modules/") || (path.includes("/pages/book.html") && !isArchiveDoc),
     tests: path.includes("/pages/tests/"),
-    archive: path.includes("/pages/book.html") && location.search.includes("archive"),
+    archive: isArchiveDoc,
     dashboard: path.includes("/pages/dashboard/"),
   };
   root.querySelectorAll(".site-header__nav a[data-nav]").forEach((a) => {

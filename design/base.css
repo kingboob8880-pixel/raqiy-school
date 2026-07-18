@@ -314,13 +314,22 @@ p { margin: 0 0 var(--rp-space-4); }
 .path-step__body { flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md); padding: var(--rp-space-4); }
 .path-step__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); margin-bottom: 0.2rem; }
 .path-step__meta { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+.level-tag { color: var(--rp-learn-accent-strong); font-weight: 700; }
 
 /* ---------- Формы ---------- */
 .field { margin-bottom: var(--rp-space-4); }
 .field label { display: block; font-size: var(--rp-fs-sm); font-weight: 700; margin-bottom: 0.35rem; }
 .field input, .field select, .field textarea {
-  width: 100%; font: inherit; padding: 0.65rem 0.85rem; border-radius: var(--rp-radius-sm);
-  border: 1px solid var(--rp-zone-border, var(--rp-learn-border)); background: var(--rp-zone-surface, #fff);
+  /* font-size явно >= 16px (не просто font: inherit) — на iOS Safari поле
+     с вычисленным размером шрифта < 16px зумит всю страницу при фокусе
+     (независимая проверка, 2026-07-19). */
+  width: 100%; font: inherit; font-size: max(1rem, var(--rp-fs-base)); padding: 0.65rem 0.85rem; border-radius: var(--rp-radius-sm);
+  /* Обводка полей подмешивает цвет текста зоны — просто --rp-zone-border
+     на тёмной теме "изумруд" даёт ~1.74:1 контраста к фону (ниже WCAG
+     1.4.11 3:1 для границ UI-компонентов), поле сливается с карточкой
+     (независимая проверка, 2026-07-19). */
+  border: 1px solid color-mix(in srgb, var(--rp-zone-border, var(--rp-learn-border)) 55%, var(--rp-zone-text, var(--rp-learn-text)) 45%);
+  background: var(--rp-zone-surface, #fff);
   color: inherit; min-height: 2.75rem;
 }
 /* Показать/скрыть пароль — снижает опечатки на самом "отвально-опасном"
@@ -338,7 +347,14 @@ p { margin: 0 0 var(--rp-space-4); }
    надёжно на всех темах (план улучшения курса, 2026-07-18, шестой проход). */
 .field-error { color: var(--rp-zone-text, var(--rp-learn-text)); font-weight: 700; font-size: var(--rp-fs-sm); margin-top: 0.25rem; }
 .field-error::before { content: "⚠ "; }
-.form-note { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+/* var(--rp-zone-text) + opacity, не --rp-learn-text-muted напрямую — тот же
+   провал контраста, что уже чинили у review-flag/quiz-feedback: фиксированный
+   токен зоны "learn" не переопределяется в кабинетах ученика/админа, поэтому
+   в них .form-note давал 3.4-3.7:1 (ниже WCAG AA 4.5:1). Паттерн
+   var(--rp-zone-text)+opacity уже используется в .dash-hero__eyebrow/
+   .stat-card__label и проходит AA во всех зонах/темах (независимая проверка,
+   2026-07-19). */
+.form-note { font-size: var(--rp-fs-sm); color: var(--rp-zone-text, var(--rp-learn-text-muted)); opacity: 0.7; }
 
 /* ---------- Дашборд ---------- */
 .dash-hero {
@@ -511,17 +527,22 @@ p { margin: 0 0 var(--rp-space-4); }
   border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);
 }
 .admin-toolbar input { flex: 1; min-width: 12rem; }
-.row-actions { display: flex; gap: var(--rp-space-2); }
-.row-actions button { font: inherit; cursor: pointer; border: 1px solid var(--rp-zone-border); background: transparent; color: var(--rp-zone-text); border-radius: var(--rp-radius-sm); padding: 0.35rem 0.6rem; font-size: var(--rp-fs-sm); }
+/* min-width/height 2.5rem (40px) + больше зазора — иконки-кнопки были
+   ~30-39px и стояли впритык (8px), деструктивная (удалить) — самая мелкая
+   и ближе всего к соседней (независимая проверка, 2026-07-19). */
+.row-actions { display: flex; gap: var(--rp-space-3); }
+.row-actions button { font: inherit; cursor: pointer; border: 1px solid var(--rp-zone-border); background: transparent; color: var(--rp-zone-text); border-radius: var(--rp-radius-sm); padding: 0.35rem 0.6rem; font-size: var(--rp-fs-sm); min-width: 2.5rem; min-height: 2.5rem; }
 .row-actions button:hover { background: color-mix(in srgb, var(--rp-zone-accent) 10%, transparent); }
 .row-actions button.is-active { border-color: var(--rp-zone-accent); color: var(--rp-zone-accent); }
+.row-actions button.is-danger { border-color: color-mix(in srgb, var(--rp-status-danger) 50%, var(--rp-zone-border)); }
+.row-actions button.is-danger:hover { background: color-mix(in srgb, var(--rp-status-danger) 12%, transparent); }
 .thread-row td { background: color-mix(in srgb, var(--rp-zone-accent) 5%, transparent); }
 .thread-panel { padding: var(--rp-space-4); }
 
 /* ---------- Квиз ---------- */
 .quiz-progress { height: 0.5rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); overflow: hidden; margin-bottom: var(--rp-space-5); }
 .quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.3s ease; }
-.quiz-option { display: block; width: 100%; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; }
+.quiz-option { display: block; width: 100%; min-height: 2.75rem; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; }
 .quiz-option[aria-pressed="true"] { border-color: var(--rp-learn-accent); background: var(--rp-color-gold-100); }
 /* Мгновенная обратная связь по вопросу (план улучшения курса, 2026-07-18,
    второй проход — retrieval practice). Фон смешан с текущим --rp-learn-surface
