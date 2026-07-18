@@ -23,6 +23,7 @@ export const MODULES = [
     doc: "/content/module-2/index.md",
     cover: "/assets/images/covers/zaklinanie-organy-koldovstvo.jpg",
     lessons: [
+      { title: "Дозволенность заклинания — где проходит граница", doc: "/content/module-2/dozvolennost-zaklinaniya.md", exam: "/content/exams/module-2-dozvolennost-zaklinaniya.md" },
       { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md", exam: "/content/exams/module-2-ya-zaklinayu.md" },
       { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md", exam: "/content/exams/module-2-obshchee-ponyatie-zaklinanie.md" },
       { title: "Инструменты заклинателя: дозволенные практики", doc: "/content/module-2/instrumenty-zaklinatelya.md", exam: "/content/exams/module-2-instrumenty-zaklinatelya.md" },
@@ -91,7 +92,9 @@ export const MODULES = [
     level: "Продвинутый",
     status: "certified",
     doc: "/content/module-9/index.md",
-    lessons: [],
+    lessons: [
+      { title: "Границы веры — единственность Истины и вопрос заступничества", doc: "/content/module-9/granitsy-very-i-zastupnichestvo.md", exam: "/content/exams/module-9-granitsy-very-i-zastupnichestvo.md" },
+    ],
   },
   {
     id: 10,
