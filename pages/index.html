@@ -19,6 +19,12 @@
 <link rel="stylesheet" href="../design/landing-themes.css?v=8">
 <style>
   .price-card { max-width: 28rem; margin: var(--rp-space-6) auto; text-align: center; }
+  .rukya-pro-card { display: flex; flex-direction: column; gap: var(--rp-space-5); padding: var(--rp-space-6); }
+  @media (min-width: 48rem) { .rukya-pro-card { flex-direction: row; align-items: center; } }
+  .rukya-pro-card__media { flex: 1 1 55%; min-width: 0; }
+  .rukya-pro-card__media img { width: 100%; border-radius: var(--rp-radius-md); box-shadow: var(--rp-shadow-pop); display: block; }
+  .rukya-pro-card__caption { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-top: var(--rp-space-2); text-align: center; }
+  .rukya-pro-card__body { flex: 1 1 45%; }
 </style>
 </head>
 <body data-zone="learn">
@@ -73,6 +79,32 @@
       <div class="hero-actions">
         <a class="btn btn-outline" href="tests/index.html">Посмотреть все тесты</a>
         <a class="btn btn-outline" href="certificate/index.html">Как выглядит сертификат</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="card rukya-pro-card">
+      <div class="rukya-pro-card__media">
+        <img src="../assets/images/rukya-pro/dashboard.jpg" alt="Панель управления системы RUKYA Pro — карточки пациентов, планы исцеления, диагностика" loading="lazy">
+        <p class="rukya-pro-card__caption">Реальный интерфейс RUKYA Pro — панель управления приёмом пациентов</p>
+      </div>
+      <div class="rukya-pro-card__body">
+        <span class="badge badge-tinted">Выдаётся только выпускникам курса</span>
+        <h2>Что вы получите вместе с сертификатом — система RUKYA Pro</h2>
+        <p>После завершения всех 11 модулей и сдачи всех экзаменов выпускник
+           получает не только сертификат, но и рабочий инструмент для приёма
+           настоящих пациентов: карточки пациентов, план исцеления по каждому
+           случаю, библиотеку из проверенных по источнику формул (Коран/Сунна)
+           и 99 имён Аллаха, автоматический разбор симптомов — как черновик
+           для проверки, не готовое решение (окончательный диагноз всегда
+           пишет и подписывает сам раки, см. Модуль 11). Приложение работает
+           офлайн — данные пациентов хранятся на устройстве самого раки, не в
+           облаке. Не продаётся и не выдаётся отдельно от курса — только тем,
+           кто прошёл обучение полностью.</p>
+        <div class="hero-actions">
+          <a class="btn btn-outline" href="modules/module.html?id=11">Подробнее о работе в системе</a>
+        </div>
       </div>
     </div>
   </section>
