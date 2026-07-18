@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../design/tokens.css?v=10">
-<link rel="stylesheet" href="../design/base.css?v=19">
+<link rel="stylesheet" href="../design/base.css?v=21">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
 <style>
   .doc-meta { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-bottom: var(--rp-space-5); }
@@ -52,8 +52,8 @@
   <div id="site-footer" class="no-print"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/layout.js?v=10";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall } from "./js/markdown-loader.js?v=8";
+    import { renderHeader, renderFooter } from "./js/layout.js?v=11";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall } from "./js/markdown-loader.js?v=9";
     import { bookKey, MODULES } from "./js/modules-data.js?v=13";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=7";
@@ -152,7 +152,6 @@
           ctaRoot.className = "no-print";
           root.after(ctaRoot);
           const printBtn = document.getElementById("print-btn");
-          printBtn.hidden = false;
           printBtn.addEventListener("click", () => window.print());
           watchAuth(async (user) => {
             if (!user) {
@@ -163,6 +162,10 @@
             const unlocked = admin || !!profile?.paid;
             if (bodyEl && !unlocked) applyPaywall(bodyEl);
             if (bodyEl && unlocked) addReadingAids(root);
+            // Кнопка печати — только когда есть что печатать (независимая
+            // проверка, 2026-07-19): раньше показывалась сразу всем, включая
+            // гостя за стеной регистрации.
+            if (unlocked) printBtn.hidden = false;
             // Экзамен по книге — только после полного текста (project.md §18):
             // нет смысла сдавать тест по книге, которую не дали дочитать.
             if (unlocked) ctaRoot.innerHTML = examCtaHtml(profile?.progress);

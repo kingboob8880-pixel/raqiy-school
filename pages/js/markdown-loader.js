@@ -48,6 +48,16 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
     </div>
     <div class="doc-body">${html}</div>
   `;
+  // Таблицы контента (напр. таблицы классификации в Справочнике) не имели
+  // защиты от горизонтального overflow на мобильном — оборачиваем в тот же
+  // .table-scroll, что уже используют таблицы кабинетов (независимая
+  // проверка, 2026-07-19).
+  container.querySelectorAll(".doc-body table").forEach((table) => {
+    const wrap = document.createElement("div");
+    wrap.className = "table-scroll";
+    table.replaceWith(wrap);
+    wrap.appendChild(table);
+  });
 }
 
 /** Три уровня доступа к тексту книги/модуля (project.md §18): гость — текста
