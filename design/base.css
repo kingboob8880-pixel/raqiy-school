@@ -97,19 +97,44 @@ p { margin: 0 0 var(--rp-space-4); }
   display: flex; align-items: center; justify-content: center;
   font-family: var(--rp-font-arabic); font-size: 1.1rem;
 }
-.site-header__nav { display: none; gap: var(--rp-space-2); font-size: var(--rp-fs-sm); }
+/* Мобильное меню (< 56rem) — раньше .site-header__nav было просто display:none
+   без замены, т.е. пункты "Модули/Тесты/Архив/Кабинет" были физически
+   недостижимы с телефона нигде в шапке (доработка UI/UX, 2026-07-18). Теперь
+   на мобильном это выпадающая панель, открываемая .site-header__menu-btn;
+   на десктопе — как раньше, обычная строка ссылок. */
+.site-header__nav {
+  display: none; flex-direction: column; gap: var(--rp-space-1);
+  position: absolute; left: 0; right: 0; top: 100%;
+  background: var(--rp-zone-surface, var(--rp-learn-surface));
+  border-bottom: 1px solid var(--rp-zone-border, var(--rp-learn-border));
+  padding: var(--rp-space-3) var(--rp-space-4);
+  box-shadow: var(--rp-shadow-card);
+  font-size: var(--rp-fs-sm);
+}
+.site-header__nav.is-open { display: flex; }
 .site-header__nav a {
-  display: inline-flex; align-items: center; gap: 0.45rem;
-  padding: 0.5rem 0.9rem; border-radius: var(--rp-radius-pill);
+  display: flex; align-items: center; gap: 0.45rem;
+  padding: 0.7rem 0.9rem; border-radius: var(--rp-radius-md);
   text-decoration: none; font-weight: 700; color: var(--rp-learn-text); opacity: 0.75;
   transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 .site-header__nav a span { font-size: 0.95em; }
 .site-header__nav a:hover { opacity: 1; background: var(--rp-learn-icon-bg); }
 .site-header__nav a.is-active { opacity: 1; background: var(--rp-learn-icon-bg); color: var(--rp-learn-accent-strong); }
+.site-header__menu-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; flex: none; padding: 0;
+  border-radius: var(--rp-radius-md); border: 1px solid var(--rp-zone-border, var(--rp-learn-border));
+  background: transparent; color: var(--rp-zone-text, var(--rp-learn-text));
+  font-size: 1.2rem; line-height: 1; cursor: pointer;
+}
 .site-header__actions { display: flex; align-items: center; gap: var(--rp-space-2); }
 @media (min-width: 56rem) {
-  .site-header__nav { display: flex; }
+  .site-header__nav {
+    display: flex !important; position: static; flex-direction: row;
+    background: none; border: none; box-shadow: none; padding: 0; gap: var(--rp-space-2);
+  }
+  .site-header__menu-btn { display: none; }
 }
 
 /* ---------- Переключатель тем (в шапке, на любой странице зоны "learn") ---------- */
