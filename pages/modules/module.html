@@ -36,9 +36,9 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=10";
     import { getModule, bookKey } from "../js/modules-data.js?v=13";
-    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto } from "../js/markdown-loader.js?v=7";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall } from "../js/markdown-loader.js?v=8";
     import { withBase } from "../js/base-path.js?v=6";
-    import { watchAuth, getStudentProfile } from "../../integration/auth.js?v=7";
+    import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=7";
 
     renderHeader("learn");
     renderFooter();
@@ -101,19 +101,27 @@
         </div>
       `;
 
+      // Тот же паввол, что на странице отдельного урока (book.html) — раньше
+      // здесь его не было вообще, и текст модуля (у модулей без отдельных
+      // уроков-книг это ВЕСЬ текст, не превью) отдавался анонимному гостю
+      // целиком (независимая проверка, 2026-07-19).
       loadMarkdownDoc(mod.doc).then((doc) => {
-        renderDocInto(document.getElementById("module-doc"), doc, { showTitle: false });
+        const docRoot = document.getElementById("module-doc");
+        renderDocInto(docRoot, doc, { showTitle: false });
+        const bodyEl = docRoot.querySelector(".doc-body");
+        watchAuth(async (user) => {
+          if (!user) {
+            if (bodyEl) applyRegisterWall(bodyEl);
+            return;
+          }
+          const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
+          const unlocked = admin || !!profile?.paid;
+          if (bodyEl && !unlocked) applyPaywall(bodyEl);
+          if (mod.lessons.length) renderLessons(profile?.progress);
+        });
       }).catch((err) => {
         document.getElementById("module-doc").innerHTML = `<p class="field-error">${err.message}</p>`;
       });
-
-      if (mod.lessons.length) {
-        watchAuth(async (user) => {
-          if (!user) return;
-          const profile = await getStudentProfile(user.uid);
-          renderLessons(profile?.progress);
-        });
-      }
     }
   </script>
 </body>

@@ -53,7 +53,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=10";
-    import { loadMarkdownDoc, renderDocInto } from "./js/markdown-loader.js?v=7";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall } from "./js/markdown-loader.js?v=8";
     import { bookKey, MODULES } from "./js/modules-data.js?v=13";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=7";
@@ -89,59 +89,10 @@
       backLink.addEventListener("click", (e) => { e.preventDefault(); history.back(); });
     }
 
-    /** Три уровня доступа (project.md §18, решение 2026-07-17):
-     * гость (не зарегистрирован) — текста книги не видит вообще, только
-     * призыв зарегистрироваться; зарегистрированный, но неоплативший —
-     * совсем небольшой отрывок (иначе регистрация не даёт разницы в
-     * доступе — сама книга открыта и так); оплативший/админ — полный текст.
-     * Это программная защита "для честных" — сам файл в content/ всё равно
-     * читается напрямую через публичный GitHub-репозиторий, без сервера
-     * скрыть статический .md технически нельзя (см. решение в project.md). */
-    function applyPaywall(bodyEl) {
-      const children = Array.from(bodyEl.children);
-      if (children.length <= 1) return; // нечего резать без потери смысла
-      const cutIndex = Math.max(1, Math.ceil(children.length * 0.12));
-      if (cutIndex >= children.length) return;
-      for (let i = cutIndex; i < children.length; i++) children[i].remove();
-
-      const fade = document.createElement("div");
-      fade.className = "paywall-fade";
-      fade.setAttribute("aria-hidden", "true");
-      bodyEl.after(fade);
-
-      const paywall = document.createElement("div");
-      paywall.className = "card paywall-card";
-      paywall.innerHTML = `
-        <h3>Это лишь небольшой бесплатный отрывок</h3>
-        <p class="form-note">Полный текст этой книги, экзамен по ней и весь курс целиком —
-          11 модулей от основ якына до практики под супервизией наставника —
-          открываются только после покупки курса.</p>
-        <p class="paywall-card__price">30 000 ₽</p>
-        <div class="book-exam-cta__actions">
-          <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать лекарю в Telegram</a>
-          <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже оплатили? Войти</a>
-        </div>`;
-      fade.after(paywall);
-    }
-
-    /** Гость без регистрации — текст книги не показываем вообще, только
-     * призыв зарегистрироваться. Иначе регистрация не даёт никакой разницы
-     * в доступе по сравнению с обычным посетителем сайта. */
-    function applyRegisterWall(bodyEl) {
-      Array.from(bodyEl.children).forEach((el) => el.remove());
-      const wall = document.createElement("div");
-      wall.className = "card paywall-card";
-      wall.innerHTML = `
-        <h3>Зарегистрируйтесь, чтобы прочитать бесплатный отрывок</h3>
-        <p class="form-note">Регистрация бесплатна и займёт меньше минуты.
-          После входа откроется небольшой отрывок этой книги — полный текст,
-          экзамены и весь курс целиком — 30 000 ₽.</p>
-        <div class="book-exam-cta__actions">
-          <a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Зарегистрироваться бесплатно</a>
-          <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже есть аккаунт? Войти</a>
-        </div>`;
-      bodyEl.after(wall);
-    }
+    /** Три уровня доступа (project.md §18, решение 2026-07-17) — сама
+     * логика applyPaywall/applyRegisterWall теперь в markdown-loader.js
+     * (общая для этой страницы и modules/module.html, независимая проверка
+     * 2026-07-19). */
 
     /** Оглавление + оценка времени чтения — ориентиры для длинного текста
      * (план улучшения курса, 2026-07-18, "chunking"): не режем сам текст

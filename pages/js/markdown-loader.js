@@ -49,3 +49,59 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
     <div class="doc-body">${html}</div>
   `;
 }
+
+/** Три уровня доступа к тексту книги/модуля (project.md §18): гость — текста
+ * не видит вообще, только призыв зарегистрироваться; зарегистрированный, но
+ * неоплативший — небольшой бесплатный отрывок; оплативший/админ — полный
+ * текст. Общая логика для book.html (отдельные уроки) и modules/module.html
+ * (текст модуля у тех модулей, где нет отдельных уроков-книг) — раньше была
+ * только в book.html, из-за чего страница модуля отдавала полный текст
+ * анонимному гостю без проверки (независимая проверка, 2026-07-19). Это
+ * программная защита "для честных" — сам файл в content/ всё равно читается
+ * напрямую через публичный GitHub-репозиторий, без сервера скрыть статический
+ * .md технически нельзя (см. project.md). */
+export function applyPaywall(bodyEl) {
+  const children = Array.from(bodyEl.children);
+  if (children.length <= 1) return; // нечего резать без потери смысла
+  const cutIndex = Math.max(1, Math.ceil(children.length * 0.12));
+  if (cutIndex >= children.length) return;
+  for (let i = cutIndex; i < children.length; i++) children[i].remove();
+
+  const fade = document.createElement("div");
+  fade.className = "paywall-fade";
+  fade.setAttribute("aria-hidden", "true");
+  bodyEl.after(fade);
+
+  const paywall = document.createElement("div");
+  paywall.className = "card paywall-card";
+  paywall.innerHTML = `
+    <h3>Это лишь небольшой бесплатный отрывок</h3>
+    <p class="form-note">Полный текст, экзамен по нему и весь курс целиком —
+      11 модулей от основ якына до практики под супервизией наставника —
+      открываются только после покупки курса.</p>
+    <p class="paywall-card__price">30 000 ₽</p>
+    <div class="book-exam-cta__actions">
+      <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать лекарю в Telegram</a>
+      <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже оплатили? Войти</a>
+    </div>`;
+  fade.after(paywall);
+}
+
+/** Гость без регистрации — текст не показываем вообще, только призыв
+ * зарегистрироваться. Иначе регистрация не даёт никакой разницы в доступе
+ * по сравнению с обычным посетителем сайта. */
+export function applyRegisterWall(bodyEl) {
+  Array.from(bodyEl.children).forEach((el) => el.remove());
+  const wall = document.createElement("div");
+  wall.className = "card paywall-card";
+  wall.innerHTML = `
+    <h3>Зарегистрируйтесь, чтобы прочитать бесплатный отрывок</h3>
+    <p class="form-note">Регистрация бесплатна и займёт меньше минуты.
+      После входа откроется небольшой отрывок — полный текст, экзамены и
+      весь курс целиком — 30 000 ₽.</p>
+    <div class="book-exam-cta__actions">
+      <a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Зарегистрироваться бесплатно</a>
+      <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже есть аккаунт? Войти</a>
+    </div>`;
+  bodyEl.after(wall);
+}
