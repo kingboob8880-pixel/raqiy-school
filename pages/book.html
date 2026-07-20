@@ -53,11 +53,11 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=12";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall } from "./js/markdown-loader.js?v=9";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupNoteCard } from "./js/markdown-loader.js?v=10";
     import { bookKey, MODULES } from "./js/modules-data.js?v=14";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=8";
-    import { getFullBookContent } from "../integration/firestore.js?v=12";
+    import { getFullBookContent, saveBookNote } from "../integration/firestore.js?v=13";
 
     renderHeader("learn");
     renderFooter();
@@ -149,9 +149,12 @@
         .then((doc) => {
           renderDocInto(root, doc);
           const bodyEl = root.querySelector(".doc-body");
+          const noteRoot = document.createElement("div");
+          noteRoot.style.marginTop = "var(--rp-space-4)";
+          root.after(noteRoot);
           const ctaRoot = document.createElement("div");
           ctaRoot.className = "no-print";
-          root.after(ctaRoot);
+          noteRoot.after(ctaRoot);
           const printBtn = document.getElementById("print-btn");
           printBtn.addEventListener("click", () => window.print());
           watchAuth(async (user) => {
@@ -162,6 +165,10 @@
             const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
             const unlocked = admin || !!profile?.paid;
             if (bodyEl && !unlocked) applyPaywall(bodyEl);
+            // Заметки — любому вошедшему, вне зависимости от оплаты
+            // (setupNoteCard — общая с modules/module.html, js/markdown-loader.js).
+            setupNoteCard(noteRoot, profile?.progress?.books?.[bookKey(docPath)]?.note,
+              (text) => saveBookNote(user.uid, bookKey(docPath), text));
             if (bodyEl && unlocked) {
               // Полный текст — из Firestore (реальная защита, не то, что уже
               // лежит в открытом content/*.md). Пока миграция

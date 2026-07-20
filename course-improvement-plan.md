@@ -376,3 +376,98 @@ media (`offsetParent === null`), текст книги остаётся види
 богословский контент модулей не менялся ни разу. Всё проверено Playwright
 на реальном рендере (мобайл+десктоп, где применимо — все 3 темы сайта)
 перед тем, как считаться готовым.
+
+## Восьмой проход (2026-07-20) — по запросу автора: «зайди в топовые сайты, бери гайды»
+
+Автор явно попросил повторить этот же цикл (веб-исследование → сверка с тем,
+что уже сделано → реализация) для обучающей системы в целом, разрешив
+использовать любые доступные инструменты. Прежде чем искать новое, целиком
+перечитал этот файл (7 прошлых проходов) — почти всё, что обычно всплывает
+в таких гайдах (стрики, бейджи, кольцо прогресса, онбординг, spaced-review
+через 30 дней, retrieval-practice в тесте, оглавление/время чтения, WCAG,
+skip-link, поиск по модулям/книгам, печать/PDF, дружелюбные ошибки формы,
+устранение "вечного спиннера"), уже реализовано. Смысл этого прохода —
+не повторять уже сделанное, а найти то, что ещё не покрыто.
+
+Источники:
+- [UX Best Practices for Modern E-Learning Platforms — Pinlearn](https://pinlearn.com/ux-best-practices-for-e-learning-platforms/)
+- [Online Course Completion Statistics — Skillademia](https://www.skillademia.com/statistics/online-course-completion-statistics/)
+- [Gamification in EdTech — Lessons from Duolingo, Khan Academy — Prodwrks](https://prodwrks.com/gamification-in-edtech-lessons-from-duolingo-khan-academy-ixl-and-kahoot/)
+- [Duolingo gamification explained — StriveCloud](https://www.strivecloud.io/blog/gamification-examples-boost-user-retention-duolingo)
+- [Benefits of Combining Spaced Repetition and Retrieval Practice — eLearning Industry](https://elearningindustry.com/benefits-of-combining-spaced-repetition-and-retrieval-practice-for-online-learners)
+- [How Spaced Repetition, Review, and Microlearning Boost Knowledge Retention — LearnDash](https://www.learndash.com/blog/how-spaced-repetition-and-microlearning-boost-knowledge-retention/)
+- [LMS Dashboard — Essential Best Practices — Multipurpose Themes](https://multipurposethemes.com/blog/lms-dashboard-essential-best-practices-for-designing-an-effective-interface/)
+- [Student Retention Email Strategy for Online Courses — Excelohunt](https://www.excelohunt.com/blog/edtech-email-student-retention/)
+- [Interactive TOCs, Bookmarks, and Notes: UX Patterns Readers Actually Use — 3D Issue](https://www.3dissue.com/interactive-tocs-bookmarks-and-notes-ux-patterns-readers-actually-use/)
+
+**Ключевые выводы (что нового по сравнению с прошлыми 7 проходами):**
+1. **Напоминание при возврате после паузы** — один из самых цитируемых
+   рычагов против отсева (до 50% отсева приходится на первые недели
+   простоя). У нас уже был признак "молчит >14 дней", но **только на
+   экране админа** — сам ученик, вернувшись, не получал никакого сигнала
+   "мы заметили, вот тут продолжить". У нас нет бэкенда для писем (Cloud
+   Functions не подняты — project.md §11/§16), поэтому email-нуджи из
+   источников неприменимы буквально, но тот же принцип реализуем на
+   клиенте: сравнить `lastSeenAt` с текущей датой при заходе в кабинет.
+2. **Заметки/аннотации к тексту** — паттерн, общий почти для всех крупных
+   читалок и курсов (выделения, заметки, синхронизация); у нас текст
+   книги был чисто read-only, ученик никак не мог оставить себе пометку
+   рядом с текстом внутри самой системы.
+3. **Комьюнити/сравнение между учениками** (16x выше завершаемость у
+   курсов с сообществом) — сознательно **не делаю повторно**: тот же
+   вывод, что и по лидерборду в первом проходе (курс о личной духовной
+   практике, а не о собственной эффективности; публичное сравнение
+   неуместно предмету и небезопасно для чувствительного контента).
+4. **Full-text поиск по телу уроков** (не только по названиям, как
+   сейчас) — рассмотрел и **отложил в backlog**: пришлось бы либо грузить
+   все 25 markdown-документов на клиенте разом (лишний трафик на
+   статичном хостинге), либо строить поисковый индекс — непропорционально
+   тяжело относительно пользы при 25 книгах, которые и так находятся за
+   1-2 клика через уже существующий поиск по названиям/уровням/книгам.
+5. **AI-персонализация путей обучения, предиктивная аналитика оттока** —
+   те же пункты backlog, что в исходном первом проходе (№7/№8) — требуют
+   сервер, у нас его нет.
+
+**Реализовано:**
+- **`saveBookNote()`** (`integration/firestore.js`) — личная заметка
+  ученика, хранится в уже существующей структуре
+  `progress.books.{bookKey}.note` (та же ветка, что и статус/балл теста) —
+  новой коллекции или правил Firestore не потребовалось, `firestore.rules`
+  уже разрешает ученику править свой `progress` (кроме поля `paid`).
+- **`setupNoteCard()`** (`pages/js/markdown-loader.js`, общая функция) —
+  карточка "Мои заметки" с textarea и кнопкой ручного сохранения (не
+  автосейв на каждый символ — меньше записей в Firestore, понятнее момент
+  "сохранено"). Подключена и на `pages/book.html` (после текста урока,
+  перед CTA на экзамен), и на `pages/modules/module.html` (после текста
+  модуля) — видна любому вошедшему ученику, не только оплатившему: заметку
+  можно делать и к бесплатному отрывку.
+- **Баннер "С возвращением!"** (`pages/dashboard/student.html`) —
+  если `daysSince(lastSeenAt) >= 7`, над блоком "Продолжить обучение"
+  появляется тёплая карточка с числом дней простоя и указанием, что
+  прогресс сохранён — без обвинения, направляет сразу к кнопке
+  продолжения. Порог 7 дней (не 14, как у админского "молчит") — здесь
+  это не тревожный сигнал для админа, а мягкая, более ранняя забота о
+  самом ученике.
+
+**Не реализовано (сознательно) и почему:**
+- Email/push-нуджи по расписанию — нет бэкенда, отправляющего письма
+  (Blaze-план заблокирован проблемой с картой, project.md).
+- Лидерборд/сообщество/сравнение учеников — предмет курса не располагает
+  к публичному соревнованию (решение подтверждено повторно, см. вывод 3).
+- Full-text поиск по телу уроков — see вывод 4, непропорционально
+  тяжело для статичного хостинга относительно пользы при 25 книгах.
+
+Изменено: `integration/firestore.js` (`saveBookNote`), `pages/js/markdown-loader.js`
+(`setupNoteCard`), `pages/book.html`, `pages/modules/module.html`,
+`pages/dashboard/student.html`. Кэш-бастинг: `firestore.js` v12→v13,
+`markdown-loader.js` v9→v10 (везде, где импортируются).
+
+Проверено: `node --check` на `integration/firestore.js`, `pages/js/markdown-loader.js`
+и извлечённые `<script type="module">` из всех трёх изменённых HTML-страниц;
+баланс `<div>`/`<section>` в каждом файле; локальный `http.server` — все
+изменённые файлы отдают 200. Реальную запись заметки в Firestore и приход
+баннера "С возвращением" на живом аккаунте не проверял — нет тестового
+аккаунта с историей `lastSeenAt` старше 7 дней в песочнице; логика
+(`daysSince()`, `updateDoc` с вложенным путём) — тот же самый паттерн,
+что уже используется и проверен в других частях кода (`markModuleProgress`,
+админский признак "молчит").

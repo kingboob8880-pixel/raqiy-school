@@ -36,10 +36,10 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=12";
     import { getModule, bookKey } from "../js/modules-data.js?v=14";
-    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall } from "../js/markdown-loader.js?v=9";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupNoteCard } from "../js/markdown-loader.js?v=10";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=8";
-    import { getFullBookContent } from "../../integration/firestore.js?v=12";
+    import { getFullBookContent, saveBookNote } from "../../integration/firestore.js?v=13";
 
     renderHeader("learn");
     renderFooter();
@@ -96,6 +96,7 @@
         ${lessonsHtml}
         <h2 style="margin-top: var(--rp-space-6);">Текст модуля</h2>
         <div id="module-doc" class="card skeleton-loading">Загрузка…</div>
+        <div id="module-note" style="margin-top: var(--rp-space-4);"></div>
         <div id="quiz-cta" style="margin-top: var(--rp-space-6);" hidden>
           <a class="btn btn-primary" href="../quiz/index.html?module=${mod.id}">Пройти тест по модулю →</a>
           ${mod.status !== "certified" ? `<p class="form-note" style="margin-top: var(--rp-space-2);">Модуль ещё не подтверждён шейхом — тест можно пройти для практики, но материал может измениться.</p>` : ""}
@@ -121,6 +122,12 @@
           const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
           const unlocked = admin || !!profile?.paid;
           if (bodyEl && !unlocked) applyPaywall(bodyEl);
+          // Заметки — та же общая функция, что на book.html (js/markdown-loader.js).
+          const noteRoot = document.getElementById("module-note");
+          if (noteRoot) {
+            setupNoteCard(noteRoot, profile?.progress?.books?.[bookKey(mod.doc)]?.note,
+              (text) => saveBookNote(user.uid, bookKey(mod.doc), text));
+          }
           // Тот же переход на полный текст из Firestore, что на book.html
           // (project.md §18/§22, "закрыть дыру с платным контентом") — до
           // миграции конкретного docId getFullBookContent() вернёт null и
