@@ -9,7 +9,7 @@ import {
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-import { auth, db } from "./firebase-init.js";
+import { auth, db } from "./firebase-init.js?v=1";
 
 export async function registerStudent({ name, email, password }) {
   const cred = await createUserWithEmailAndPassword(auth, email, password);
