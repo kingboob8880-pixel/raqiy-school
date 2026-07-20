@@ -311,9 +311,32 @@ p { margin: 0 0 var(--rp-space-4); }
   z-index: 1;
 }
 .path-step--done .path-step__marker { background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff; }
-.path-step__body { flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md); padding: var(--rp-space-4); }
+.path-step__body { flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md); padding: var(--rp-space-4); display: flex; gap: var(--rp-space-3); align-items: center; }
 .path-step__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); margin-bottom: 0.2rem; }
 .path-step__meta { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+/* Обложка урока рядом с описанием на лендинге (запрос "больше деталей по
+   модулям на лендинге", 2026-07-20) — только у модулей, где есть cover в
+   modules-data.js, остальные показывают текст без картинки. */
+.path-step__thumb { flex: none; width: 3.25rem; height: 3.25rem; border-radius: var(--rp-radius-sm); object-fit: cover; }
+.path-step__text { flex: 1; min-width: 0; }
+.path-step__desc { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-top: 0.3rem; }
+
+/* ---------- "Для кого этот курс" (лендинг) ---------- */
+.audience-grid { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-4); }
+@media (min-width: 56rem) { .audience-grid { grid-template-columns: repeat(3, 1fr); } }
+.audience-card { display: flex; flex-direction: column; gap: var(--rp-space-2); }
+.audience-card__level { display: inline-block; align-self: flex-start; }
+.audience-card h3 { font-size: var(--rp-fs-md); margin: 0; }
+.audience-card p { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; }
+.audience-card__modules { font-size: var(--rp-fs-sm); color: var(--rp-learn-accent-strong); font-weight: 700; }
+
+/* ---------- Видео-витрина (лендинг) ---------- */
+.video-showcase { max-width: 44rem; margin: 0 auto; text-align: center; }
+.video-showcase video { width: 100%; border-radius: var(--rp-radius-md); box-shadow: var(--rp-shadow-pop); display: block; background: #000; }
+.video-showcase p { color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); margin-top: var(--rp-space-3); }
+
+/* ---------- Иконка в статистике лендинга ---------- */
+.stats-strip__icon { display: block; font-size: 1.3rem; margin-bottom: var(--rp-space-1); opacity: 0.85; }
 .level-tag { color: var(--rp-learn-accent-strong); font-weight: 700; }
 
 /* ---------- Формы ---------- */
