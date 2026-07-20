@@ -203,6 +203,7 @@ export function enhanceDuaBlocks(bodyEl) {
     const group = children.slice(i, j);
     const wrap = document.createElement("div");
     wrap.className = "dua-block";
+    wrap.setAttribute("role", "group"); // группа связанных абзацев для ассистивных технологий
     group[0].before(wrap);
     group.forEach((node) => wrap.appendChild(node));
     i = j;

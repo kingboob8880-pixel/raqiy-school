@@ -611,6 +611,13 @@ main.container { padding-block: var(--rp-space-6); }
   border-radius: var(--rp-radius-md); padding: var(--rp-space-4) var(--rp-space-5);
   margin: var(--rp-space-5) 0;
 }
+/* На узком экране (телефон) var(--rp-space-5)=1.5rem с двух сторон плюс
+   увеличенный арабский шрифт внутри — многовато отступа для ~320-360px
+   ширины; на телефоне карточка и так на всю ширину контейнера (loop-
+   проход №5, "мобильная адаптация", 2026-07-20). */
+@media (max-width: 30rem) {
+  .dua-block { padding: var(--rp-space-3) var(--rp-space-4); }
+}
 .dua-block .dua-label {
   /* opacity: 0.7, не 0.6 — расчётом контраста (2026-07-20) 0.6 давало
      4.36:1 на baseline и 4.47:1 на "pattern", ниже порога WCAG AA 4.5:1
@@ -627,6 +634,15 @@ main.container { padding-block: var(--rp-space-6); }
 }
 .doc-body p.doc-body__translit { font-style: italic; opacity: 0.85; }
 .doc-body p.doc-body__translation { font-weight: 600; }
+/* Печать (кнопка "Распечатать / сохранить PDF", book.html): цветная
+   заливка карточки на бумаге — лишний тонер и часто печатается серым
+   пятном на ч/б принтере; печатаем как обычный текст с тонкой рамкой,
+   RTL/шрифт арабского абзаца сохраняются — их печать не портит (loop-
+   проход №4, "доступность", 2026-07-20). */
+@media print {
+  .dua-block { background: none; border-color: #000; }
+  .dua-block .dua-label { color: #000; opacity: 1; }
+}
 
 /* ---------- Оглавление документа + полоса прогресса чтения ---------- */
 /* Раньше жили только в локальном <style> book.html — теперь общие с
