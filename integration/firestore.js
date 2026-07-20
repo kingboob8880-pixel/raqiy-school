@@ -7,7 +7,7 @@ import {
   doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, addDoc,
   serverTimestamp, query, orderBy, arrayUnion,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-import { db } from "./firebase-init.js";
+import { db } from "./firebase-init.js?v=1";
 
 /** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
  * журнала активности (стрики, project.md, решение 2026-07-18). */
