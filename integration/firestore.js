@@ -5,7 +5,8 @@
 //   admins/{uid}               — { name } — присутствие документа = права админа
 import {
   doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, addDoc,
-  serverTimestamp, query, orderBy, arrayUnion,
+  serverTimestamp, query, orderBy, where, arrayUnion, onSnapshot,
+  writeBatch, getCountFromServer,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { db } from "./firebase-init.js?v=1";
 
@@ -93,6 +94,67 @@ export async function listMessages(uid) {
   const q = query(collection(db, "students", uid, "messages"), orderBy("createdAt", "asc"));
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/** Живая подписка на переписку — чат обновлялся только при собственной
+ * отправке сообщения (listMessages() дёргался вручную), поэтому ответ
+ * наставника/ученика появлялся у собеседника только после ручного
+ * обновления страницы. Улучшение чата, 2026-07-20: разбор реализации на
+ * сторонних сайтах (WhatsApp/Slack-style DM) показал, что живое обновление
+ * через слушатель — это база, а не опция, для любого 1:1-чата. onSnapshot()
+ * присылает и текущий срез сразу, и каждое следующее изменение — включая
+ * собственную отправку (мгновенно, за счёт latency compensation) и входящие
+ * сообщения от собеседника без перезагрузки. Возвращает функцию отписки —
+ * вызывающий код обязан её вызвать при закрытии треда/уходе со страницы,
+ * иначе слушатель останется висеть и продолжит тратить чтения Firestore. */
+export function watchMessages(uid, onChange, onError) {
+  const q = query(collection(db, "students", uid, "messages"), orderBy("createdAt", "asc"));
+  return onSnapshot(q, (snap) => {
+    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }, (err) => {
+    console.warn("watchMessages", uid, err);
+    if (onError) onError(err);
+  });
+}
+
+/** Отмечает прочитанными все сообщения от собеседника при открытии треда —
+ * поле read у сообщения существовало в схеме с самого начала, но нигде не
+ * читалось и не проставлялось обратно в true, то есть было мёртвым полем
+ * (улучшение чата, 2026-07-20). viewerRole — та сторона, которая СЕЙЧАС
+ * читает тред ("admin" или "student"): отмечаем прочитанными сообщения
+ * от ПРОТИВОПОЛОЖНОЙ стороны. Пустой список — не ошибка, просто нечего
+ * отмечать (например, тред уже прочитан). */
+export async function markThreadRead(uid, viewerRole) {
+  const otherRole = viewerRole === "admin" ? "student" : "admin";
+  const q = query(
+    collection(db, "students", uid, "messages"),
+    where("from", "==", otherRole),
+    where("read", "==", false),
+  );
+  const snap = await getDocs(q);
+  if (snap.empty) return;
+  const batch = writeBatch(db);
+  snap.docs.forEach((d) => batch.update(d.ref, { read: true }));
+  await batch.commit();
+}
+
+/** Кол-во непрочитанных сообщений ОТ ученика — значок 💬 в списке учеников
+ * админа, чтобы не открывать каждый тред, чтобы понять, кто написал новое
+ * (улучшение чата, 2026-07-20). getCountFromServer — агрегирующий запрос,
+ * не тянет тела сообщений, дешёвый даже при большом списке учеников. */
+export async function countUnreadFromStudent(uid) {
+  try {
+    const q = query(
+      collection(db, "students", uid, "messages"),
+      where("from", "==", "student"),
+      where("read", "==", false),
+    );
+    const snap = await getCountFromServer(q);
+    return snap.data().count;
+  } catch (err) {
+    console.warn("countUnreadFromStudent", uid, err);
+    return 0;
+  }
 }
 
 /** Полный текст платной книги/модуля из Firestore (docId = bookKey() из
