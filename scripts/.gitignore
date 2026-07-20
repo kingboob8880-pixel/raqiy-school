@@ -1,0 +1,5 @@
+node_modules/
+# Сервисный ключ Firebase Admin (Service Account) — никогда не коммитить,
+# даже случайно положенный сюда для удобства запуска (integration/README.md §7).
+*serviceAccount*.json
+*firebase-adminsdk*.json

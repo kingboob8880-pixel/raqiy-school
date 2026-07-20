@@ -1,0 +1,9 @@
+{
+  "name": "raqiy-scripts",
+  "description": "Локальные администраторские скрипты (не деплоятся, не часть сайта/functions). Требуют Admin SDK — сервисный ключ автора курса, никогда не коммитится.",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}
