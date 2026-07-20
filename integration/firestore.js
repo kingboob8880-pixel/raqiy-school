@@ -95,6 +95,25 @@ export async function listMessages(uid) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
+/** Полный текст платной книги/модуля из Firestore (docId = bookKey() из
+ * modules-data.js) — реальная защита вместо визуальной обрезки в браузере
+ * (project.md §18/§22, "закрыть дыру с платным контентом", 2026-07-20).
+ * Правила Firestore (integration/firestore.rules) пускают на чтение только
+ * оплативших/админа, поэтому вызывать эту функцию для незалогиненных/
+ * неоплативших нет смысла — get() просто упадёт на правилах. Возвращает
+ * null, если для этого docId ещё не запущена миграция
+ * (scripts/seed-paid-content.mjs) — тогда вызывающий код должен показать то,
+ * что уже загружено локально (текущий бесплатный отрывок), а не падать. */
+export async function getFullBookContent(docId) {
+  try {
+    const snap = await getDoc(doc(db, "content", docId));
+    return snap.exists() ? snap.data() : null;
+  } catch (err) {
+    console.warn("getFullBookContent", docId, err);
+    return null;
+  }
+}
+
 /** "Молчат N дней" — для счётчика в дашборде админа (§19 project.md). */
 export function daysSince(timestamp) {
   if (!timestamp) return null;
