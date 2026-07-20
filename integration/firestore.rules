@@ -38,5 +38,18 @@ service cloud.firestore {
         allow update, delete: if isAdmin();
       }
     }
+
+    // Полный текст платных книг/модулей (docId = bookKey() из
+    // pages/js/modules-data.js). Реальная защита пейвола вместо визуальной
+    // (project.md §18/§22, задача "закрыть дыру с платным контентом",
+    // 2026-07-20): до этого полный текст лежал открытым в content/*.md на
+    // GitHub независимо от статуса оплаты. Пишет сюда только скрипт
+    // scripts/seed-paid-content.mjs через Admin SDK от имени автора курса —
+    // клиентской записи с этой коллекцией не предполагается вовсе.
+    match /content/{docId} {
+      allow read: if isAdmin()
+                  || (isSignedIn() && get(/databases/$(database)/documents/students/$(request.auth.uid)).data.paid == true);
+      allow write: if false;
+    }
   }
 }

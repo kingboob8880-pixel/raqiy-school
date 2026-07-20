@@ -311,9 +311,32 @@ p { margin: 0 0 var(--rp-space-4); }
   z-index: 1;
 }
 .path-step--done .path-step__marker { background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff; }
-.path-step__body { flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md); padding: var(--rp-space-4); }
+.path-step__body { flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md); padding: var(--rp-space-4); display: flex; gap: var(--rp-space-3); align-items: center; }
 .path-step__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); margin-bottom: 0.2rem; }
 .path-step__meta { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+/* Обложка урока рядом с описанием на лендинге (запрос "больше деталей по
+   модулям на лендинге", 2026-07-20) — только у модулей, где есть cover в
+   modules-data.js, остальные показывают текст без картинки. */
+.path-step__thumb { flex: none; width: 3.25rem; height: 3.25rem; border-radius: var(--rp-radius-sm); object-fit: cover; }
+.path-step__text { flex: 1; min-width: 0; }
+.path-step__desc { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-top: 0.3rem; }
+
+/* ---------- "Для кого этот курс" (лендинг) ---------- */
+.audience-grid { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-4); }
+@media (min-width: 56rem) { .audience-grid { grid-template-columns: repeat(3, 1fr); } }
+.audience-card { display: flex; flex-direction: column; gap: var(--rp-space-2); }
+.audience-card__level { display: inline-block; align-self: flex-start; }
+.audience-card h3 { font-size: var(--rp-fs-md); margin: 0; }
+.audience-card p { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; }
+.audience-card__modules { font-size: var(--rp-fs-sm); color: var(--rp-learn-accent-strong); font-weight: 700; }
+
+/* ---------- Видео-витрина (лендинг) ---------- */
+.video-showcase { max-width: 44rem; margin: 0 auto; text-align: center; }
+.video-showcase video { width: 100%; border-radius: var(--rp-radius-md); box-shadow: var(--rp-shadow-pop); display: block; background: #000; }
+.video-showcase p { color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); margin-top: var(--rp-space-3); }
+
+/* ---------- Иконка в статистике лендинга ---------- */
+.stats-strip__icon { display: block; font-size: 1.3rem; margin-bottom: var(--rp-space-1); opacity: 0.85; }
 .level-tag { color: var(--rp-learn-accent-strong); font-weight: 700; }
 
 /* ---------- Формы ---------- */
@@ -372,22 +395,31 @@ p { margin: 0 0 var(--rp-space-4); }
 
 .stat-grid { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-4); }
 @media (min-width: 40rem) { .stat-grid { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); } }
+/* Вынесено из повторяющихся инлайн-стилей на каждой странице (project.md
+   §22, backlog "вынос повторяющихся инлайн-стилей (padding, container
+   отступы) в общие CSS-классы", 2026-07-20) — было 7 одинаковых
+   style="padding-block: var(--rp-space-6);" на <main class="container">. */
+main.container { padding-block: var(--rp-space-6); }
+.container--narrow { max-width: 40rem; }
+
+/* Строка формы (сообщение/рассылка/ответ в переписке) — было 3 одинаковых
+   пары display:flex;gap + инпут-стиль в student.html/admin.html. */
+.form-inline { display: flex; gap: var(--rp-space-2); }
+.text-input {
+  flex: 1; padding: 0.65rem; border-radius: var(--rp-radius-sm);
+  border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);
+}
+
 .stat-card { text-align: center; }
-.stat-card__icon { display: block; font-size: 1.4rem; margin-bottom: var(--rp-space-2); }
 .stat-card__value { font-family: var(--rp-font-heading); font-size: var(--rp-fs-2xl); }
 .stat-card__label { font-size: var(--rp-fs-sm); color: var(--rp-zone-text); opacity: 0.7; }
 
-/* Кольцо прогресса — вместо голого числа (план улучшения курса, 2026-07-18) */
-.progress-ring {
-  width: 4.5rem; height: 4.5rem; border-radius: var(--rp-radius-pill); margin: 0 auto var(--rp-space-2);
-  display: flex; align-items: center; justify-content: center;
-  background: conic-gradient(var(--rp-zone-accent) calc(var(--rp-progress, 0) * 1%), color-mix(in srgb, var(--rp-zone-accent) 16%, transparent) 0);
-}
-.progress-ring__hole {
-  width: 3.4rem; height: 3.4rem; border-radius: var(--rp-radius-pill); background: var(--rp-zone-surface-raised, var(--rp-zone-surface));
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); font-weight: 700;
-}
+/* Полоса прогресса вместо кольца (kabinet-ux-improvements.md §1.2.2,
+   2026-07-20) — NN/g: длина/2D-позиция считывается быстрее и точнее угла
+   сектора у донат-чарта. Переиспользует .quiz-progress/.quiz-progress__bar,
+   тот же паттерн, что уже стоит в квизе (design-система, не новый компонент). */
+.stat-progress-bar { margin: 0 0 var(--rp-space-2); }
+.stat-progress-bar .quiz-progress { margin-bottom: 0; }
 
 /* Бейджи за уровень + мягкое напоминание "повторить" (план улучшения курса,
    2026-07-18). Состояния различаются заливкой/иконкой, не прозрачностью
@@ -515,10 +547,44 @@ p { margin: 0 0 var(--rp-space-4); }
 .status-pill--unpaid { background: var(--rp-status-danger-bg); color: var(--rp-status-danger); }
 
 /* ---------- Переписка (кабинет ученика — с наставником, кабинет админа — с конкретным учеником) ---------- */
-.msg-list { display: flex; flex-direction: column; gap: var(--rp-space-2); max-height: 16rem; overflow-y: auto; margin-bottom: var(--rp-space-3); }
-.msg { padding: var(--rp-space-2) var(--rp-space-3); border-radius: var(--rp-radius-md); max-width: 80%; }
+/* Чат ученик↔наставник — группировка подряд идущих сообщений, таймштампы,
+   разделители по датам, пустое состояние. Паттерн подсмотрен у WhatsApp/
+   Telegram/Slack DM: время всегда видно (не по hover — неудобно на
+   мобильном), имя отправителя над пузырём не нужно в 1:1 (только
+   выравнивание + цвет), группировка — по отправителю + разрыв < 5 мин
+   (план улучшения курса, 2026-07-19). Рендер — pages/js/chat-ui.js. */
+.msg-list { display: flex; flex-direction: column; max-height: 20rem; overflow-y: auto; margin-bottom: var(--rp-space-3); padding-right: 2px; }
+.msg {
+  position: relative; margin-top: var(--rp-space-3);
+  padding: 0.5rem 2.9rem 0.5rem 0.75rem; border-radius: var(--rp-radius-md);
+  max-width: 80%; overflow-wrap: break-word;
+}
+.msg:first-child { margin-top: 0; }
+.msg--grouped { margin-top: 0.15rem; }
 .msg-student { align-self: flex-end; background: var(--rp-zone-accent); color: #fff; }
 .msg-admin { align-self: flex-start; background: var(--rp-zone-surface); border: 1px solid var(--rp-zone-border); }
+.msg__time { position: absolute; right: 0.65rem; bottom: 0.3rem; font-size: 0.68rem; line-height: 1; opacity: 0.65; }
+.msg-student .msg__time { color: #fff; }
+.msg-date-sep { align-self: center; margin: var(--rp-space-4) 0 var(--rp-space-2); }
+.msg-date-sep span {
+  font-size: var(--rp-fs-sm); color: var(--rp-zone-text); opacity: 0.65;
+  background: color-mix(in srgb, var(--rp-zone-text) 8%, transparent);
+  padding: 0.2rem 0.75rem; border-radius: var(--rp-radius-pill);
+}
+.msg-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; padding: var(--rp-space-6) var(--rp-space-3); text-align: center; color: var(--rp-zone-text); opacity: 0.75; }
+.msg-empty__icon { font-size: 1.75rem; opacity: 0.8; margin-bottom: 0.2rem; }
+.msg-empty p { margin: 0; }
+
+/* Поле ввода чата — textarea с автовысотой вместо однострочного input,
+   Enter отправляет/Shift+Enter — новая строка (pages/js/chat-ui.js). */
+.chat-input {
+  flex: 1; resize: none; overflow-y: auto; max-height: 7.5rem; min-height: 2.75rem;
+  font: inherit; font-size: max(1rem, var(--rp-fs-base)); padding: 0.65rem 0.85rem;
+  border-radius: var(--rp-radius-sm); border: 1px solid color-mix(in srgb, var(--rp-zone-border, var(--rp-learn-border)) 55%, var(--rp-zone-text, var(--rp-learn-text)) 45%);
+  background: var(--rp-zone-surface, #fff); color: var(--rp-zone-text, inherit);
+}
+.chat-form { display: flex; gap: var(--rp-space-2); align-items: flex-end; }
+.chat-form button:disabled { opacity: 0.5; cursor: default; }
 
 /* ---------- Инструменты админа: поиск/фильтр учеников, действия в строке таблицы ---------- */
 .admin-toolbar { display: flex; gap: var(--rp-space-2); margin-bottom: var(--rp-space-3); flex-wrap: wrap; }
@@ -558,6 +624,14 @@ p { margin: 0 0 var(--rp-space-4); }
    (✅/❌ в тексте), не только цветом — так же надёжнее для дальтоников. */
 .quiz-feedback { font-size: var(--rp-fs-sm); font-weight: 700; margin: var(--rp-space-2) 0 var(--rp-space-4); min-height: 1.2em; color: var(--rp-learn-text); }
 
+/* Разбор ответов на экране результата непройденного теста (project.md §22,
+   backlog "постраничный разбор ответов после несданного теста", 2026-07-20). */
+.quiz-review { list-style: none; margin: var(--rp-space-3) 0 0; padding: 0; }
+.quiz-review__item { padding: var(--rp-space-3) 0; border-top: 1px solid var(--rp-learn-border); }
+.quiz-review__item:first-child { border-top: none; padding-top: 0; }
+.quiz-review__q { font-weight: 700; margin-bottom: var(--rp-space-1); }
+.quiz-review__item.is-wrong .quiz-review__q { color: var(--rp-status-danger); }
+
 .skeleton-loading { padding: var(--rp-space-6) 0; text-align: center; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
 
 /* ---------- Список тестов/экзаменов (pages/tests/index.html) ---------- */
@@ -573,3 +647,28 @@ p { margin: 0 0 var(--rp-space-4); }
 .test-item--module { border-style: dashed; font-weight: 700; }
 
 .footer { padding: var(--rp-space-6) 0; text-align: center; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+
+/* ---------- Секция "Сейчас в процессе" (кабинет ученика) ----------
+   kabinet-ux-improvements.md §1.2.3 — LMS-паттерн: отдельная секция для
+   модулей in-progress над общим book-grid, сортировка по убыванию прогресса.
+   Переиспользует .book-card, добавляет мини-полосу прогресса под мета. */
+.in-progress-grid { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-3); margin-bottom: var(--rp-space-5); }
+@media (min-width: 40rem) { .in-progress-grid { grid-template-columns: repeat(2, 1fr); } }
+.book-card__progress { margin-top: 0.35rem; }
+.book-card__progress .quiz-progress { height: 0.35rem; margin-bottom: 0; }
+
+/* ---------- Тосты — обратная связь после действий в кабинетах ----------
+   kabinet-ux-improvements.md §3 — явное подтверждение вместо тихого
+   обновления списка/alert(). */
+.toast-container {
+  position: fixed; z-index: 1000; left: 50%; bottom: var(--rp-space-5); transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: var(--rp-space-2); align-items: center;
+  pointer-events: none; width: min(90vw, 24rem);
+}
+.toast {
+  background: var(--rp-zone-text); color: var(--rp-zone-surface, #fff);
+  padding: 0.65rem 1.1rem; border-radius: var(--rp-radius-md); box-shadow: var(--rp-shadow-pop);
+  font-size: var(--rp-fs-sm); text-align: center; opacity: 0; transform: translateY(0.4rem);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.toast.is-visible { opacity: 0.96; transform: translateY(0); }

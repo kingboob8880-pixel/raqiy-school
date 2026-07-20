@@ -15,7 +15,7 @@
 <meta property="og:url" content="https://kingboob8880-pixel.github.io/raqiy-school/pages/index.html">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="../design/tokens.css?v=10">
-<link rel="stylesheet" href="../design/base.css?v=21">
+<link rel="stylesheet" href="../design/base.css?v=25">
 <link rel="stylesheet" href="../design/landing-themes.css?v=8">
 <style>
   .price-card { max-width: 28rem; margin: var(--rp-space-6) auto; text-align: center; }
@@ -43,10 +43,10 @@
   <section class="container">
     <div class="card">
       <div class="stats-strip">
-        <div class="stats-strip__item"><div class="stats-strip__value">11</div><div class="stats-strip__label">модулей курса</div></div>
-        <div class="stats-strip__item"><div class="stats-strip__value">16</div><div class="stats-strip__label">книг с отдельным экзаменом</div></div>
-        <div class="stats-strip__item"><div class="stats-strip__value">100%</div><div class="stats-strip__label">контента промаркировано по источнику</div></div>
-        <div class="stats-strip__item"><div class="stats-strip__value">30 000 ₽</div><div class="stats-strip__label">один платёж за весь курс</div></div>
+        <div class="stats-strip__item"><span class="stats-strip__icon" aria-hidden="true">📚</span><div class="stats-strip__value">11</div><div class="stats-strip__label">модулей курса</div></div>
+        <div class="stats-strip__item"><span class="stats-strip__icon" aria-hidden="true">📝</span><div class="stats-strip__value">16</div><div class="stats-strip__label">книг с отдельным экзаменом</div></div>
+        <div class="stats-strip__item"><span class="stats-strip__icon" aria-hidden="true">🔎</span><div class="stats-strip__value">100%</div><div class="stats-strip__label">контента промаркировано по источнику</div></div>
+        <div class="stats-strip__item"><span class="stats-strip__icon" aria-hidden="true">💳</span><div class="stats-strip__value">30 000 ₽</div><div class="stats-strip__label">один платёж за весь курс</div></div>
       </div>
     </div>
   </section>
@@ -89,6 +89,31 @@
   </section>
 
   <section class="container">
+    <h2 style="text-align:center;">Для кого этот курс</h2>
+    <p class="form-note" style="text-align:center; max-width: 40rem; margin: 0 auto var(--rp-space-5);">Три уровня одного пути — от первого прочитанного аята до самостоятельного приёма пациентов. Начинать можно с нуля.</p>
+    <div class="audience-grid">
+      <div class="card audience-card">
+        <span class="badge badge-tinted audience-card__level">Начальный</span>
+        <h3>Ещё не читали рукью — ни разу</h3>
+        <p>Базового чтения Корана достаточно (таджвид желателен, но не обязателен на старте). Курс начинается с основ убеждённости (якына) — с нуля, без предварительных знаний фикха рукьи. Цель — научиться грамотно читать рукью себе и близким.</p>
+        <p class="audience-card__modules">Модули 1–3</p>
+      </div>
+      <div class="card audience-card">
+        <span class="badge badge-tinted audience-card__level">Средний</span>
+        <h3>Знаете основы, хотите разобраться глубже</h3>
+        <p>Углублённая диагностика — по словам самого пациента, никогда через боль или надавливание (Модуль 4) — и направленное применение рукьи к конкретному случаю, плюс полный арсенал защиты от сглаза, зависти и колдовства.</p>
+        <p class="audience-card__modules">Модули 4–6</p>
+      </div>
+      <div class="card audience-card">
+        <span class="badge badge-tinted audience-card__level">Продвинутый</span>
+        <h3>Готовитесь принимать пациентов</h3>
+        <p>Изгнание духовных сущностей, разбор реальных обезличенных кейсов под супервизией наставника и финальный практикум в системе RUKYA Pro — с этого уровня выпускник несёт ответственность за приём настоящих пациентов.</p>
+        <p class="audience-card__modules">Модули 7–11</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
     <h2 style="text-align:center;">Как проходит обучение</h2>
     <div class="process-steps">
       <div class="card process-step"><div class="process-step__num"></div><h3>Регистрация</h3><p>Бесплатно, за минуту — email и пароль.</p></div>
@@ -97,6 +122,14 @@
       <div class="card process-step"><div class="process-step__num"></div><h3>Экзамен за экзаменом</h3><p>Тест после каждой книги и итоговый тест по модулю — до сертификата.</p></div>
     </div>
     <p class="form-note" style="text-align:center; margin-top: var(--rp-space-3);">Порядок необязателен — оплатить можно сразу, не дожидаясь отрывков.</p>
+  </section>
+
+  <section class="container">
+    <h2 style="text-align:center;">Видео о курсе</h2>
+    <div class="video-showcase">
+      <video controls preload="none" poster="../assets/video/rukya-intro-poster.jpg" src="../assets/video/rukya-intro.mp4"></video>
+      <p>«Рукья: анатомия предписания» — вводное видео о том, как устроен курс и что стоит за самим понятием заклинания. То же видео открывает Модуль 1.</p>
+    </div>
   </section>
 
   <section class="container">
@@ -124,7 +157,9 @@
     <div class="card rukya-pro-card">
       <div class="rukya-pro-card__media">
         <img src="../assets/images/rukya-pro/dashboard.jpg" alt="Панель управления системы RUKYA Pro — карточки пациентов, планы исцеления, диагностика" loading="lazy">
-        <p class="rukya-pro-card__caption">Реальный интерфейс RUKYA Pro — панель управления приёмом пациентов</p>
+        <p class="rukya-pro-card__caption">Панель управления приёмом пациентов</p>
+        <img src="../assets/images/rukya-pro/library.jpg" alt="Библиотека формул RUKYA Pro — каждая помечена источником" loading="lazy" style="margin-top: var(--rp-space-3);">
+        <p class="rukya-pro-card__caption">Библиотека формул — каждая с указанием источника (Коран/Сунна)</p>
       </div>
       <div class="rukya-pro-card__body">
         <span class="badge badge-tinted">Выдаётся только выпускникам курса</span>
@@ -206,22 +241,48 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/layout.js?v=11";
-    import { MODULES } from "./js/modules-data.js?v=13";
+    import { renderHeader, renderFooter } from "./js/layout.js?v=12";
+    import { MODULES } from "./js/modules-data.js?v=14";
+    import { withBase } from "./js/base-path.js?v=6";
 
     renderHeader("learn");
     renderFooter();
 
+    // Короткое описание каждого модуля для лендинга (запрос "больше деталей
+    // по модулям", 2026-07-20) — landing-специфичный текст, не структурные
+    // данные курса, поэтому держится здесь, а не в modules-data.js. Сжатый
+    // пересказ того, что уже опубликовано на странице каждого модуля —
+    // новых утверждений не вводит.
+    const MODULE_BLURBS = {
+      1: "Основы убеждённости (якын) и мольба заклинателя — без веры в то, что исцеляет только Аллах, заклинание остаётся пустым звуком.",
+      2: "Что дозволено в заклинании, а что нет, и метод «Влияние Волей» — переход от роли читателя к осознанному действию.",
+      3: "Словарь арабских названий органов тела и адаб перед чтением — точность, которая нужна для личной, конкретной дуа.",
+      4: "Обязательный протокол безопасности: опросник пациента и красные флаги, требующие направления к врачу — до, а не вместо духовного лечения.",
+      5: "Направленное чтение туда, куда указывает сам пациент — никогда через надавливание или ощупывание тела.",
+      6: "Азкары и дуа личной защиты, арсенал против колдовства, сглаза и зависти — крепость верующего, а не набор амулетов.",
+      7: "Что делать, если чтение встречает сопротивление — и обязательное правило немедленной остановки, если пациенту плохо.",
+      8: "Разбор реальных обезличенных кейсов с наставником и учебные сеансы под наблюдением — прежде чем принимать пациентов самостоятельно.",
+      9: "Богословские границы: единственность Истины и вопрос заступничества — где рукья остаётся в рамках акыды, а где выходит за них.",
+      10: "Как отличить истинного заклинателя от того, кто наживается на чужой беде, не имея ни знания, ни богобоязненности.",
+      11: "Финальный практикум — приём пациентов через систему RUKYA Pro: диагноз алгоритма проверяется и подписывается самим раки.",
+    };
+
     const root = document.getElementById("path-preview");
-    root.innerHTML = MODULES.map((m) => `
+    root.innerHTML = MODULES.map((m) => {
+      const thumb = m.cover ? withBase(m.cover.replace(/\.jpg$/, "-thumb.jpg")) : null;
+      return `
       <a class="path-step" href="modules/module.html?id=${m.id}">
         <span class="path-step__marker">${m.id}</span>
         <span class="path-step__body">
-          <span class="path-step__title">${m.title}</span>
-          <span class="path-step__meta">${m.level}</span>
+          ${thumb ? `<img class="path-step__thumb" src="${thumb}" alt="" loading="lazy">` : ""}
+          <span class="path-step__text">
+            <span class="path-step__title">${m.title}</span>
+            <span class="path-step__meta">${m.level}</span>
+            <span class="path-step__desc">${MODULE_BLURBS[m.id] || ""}</span>
+          </span>
         </span>
-      </a>
-    `).join("");
+      </a>`;
+    }).join("");
   </script>
 </body>
 </html>

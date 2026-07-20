@@ -6,22 +6,22 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Тест — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=10">
-<link rel="stylesheet" href="../../design/base.css?v=21">
+<link rel="stylesheet" href="../../design/base.css?v=25">
 </head>
 <body data-zone="learn">
   <div id="site-header"></div>
-  <main class="container" style="padding-block: var(--rp-space-6); max-width: 40rem;">
+  <main class="container container--narrow">
     <div id="quiz-root" class="skeleton-loading">Загрузка…</div>
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=11";
-    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=13";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=12";
+    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=14";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
     import { loadExamDoc } from "../js/exam-loader.js?v=7";
     import { watchAuth } from "../../integration/auth.js?v=8";
-    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=10";
+    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=11";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
@@ -143,6 +143,28 @@
         const backHref = isBookQuiz ? `../modules/module.html?id=${mod.id}` : "../dashboard/student.html";
         const backLabel = isBookQuiz ? "Вернуться к модулю" : "Вернуться в кабинет";
 
+        // Разбор ответов после непройденного теста (project.md §22, backlog
+        // "постраничный разбор ответов после несданного теста" — раньше
+        // экран результата показывал только итоговый %, хотя во время
+        // самого теста подсказка по каждому вопросу уже была видна один раз
+        // и пропадала. Только для непройденного — прошедшему разбирать
+        // нечего, он и так помнит верные ответы по мгновенной обратной связи.
+        const reviewHtml = !passed ? `
+          <div class="card" style="margin-top: var(--rp-space-4); text-align:left;">
+            <h3>Разбор ответов</h3>
+            <ol class="quiz-review">
+              ${questions.map((q, i) => {
+                const isCorrect = answers[i] === q.correct;
+                return `
+                  <li class="quiz-review__item ${isCorrect ? "is-correct" : "is-wrong"}">
+                    <p class="quiz-review__q">${isCorrect ? "✅" : "❌"} ${q.q}</p>
+                    ${!isCorrect ? `<p class="form-note">Ваш ответ: ${q.options[answers[i]] ?? "—"}</p>` : ""}
+                    <p class="form-note">Правильный ответ: ${q.options[q.correct]}</p>
+                  </li>`;
+              }).join("")}
+            </ol>
+          </div>` : "";
+
         root.innerHTML = `
           <div class="card" style="text-align:center;">
             <h2>${passed ? "Тест пройден" : "Тест не пройден"}</h2>
@@ -154,6 +176,7 @@
               ? `<a class="btn btn-primary" href="${backHref}">${backLabel}</a>`
               : `<button class="btn btn-outline" onclick="location.reload()">Пройти ещё раз</button>`}
           </div>
+          ${reviewHtml}
         `;
       }
 
