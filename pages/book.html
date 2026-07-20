@@ -57,6 +57,7 @@
     import { bookKey, MODULES } from "./js/modules-data.js?v=14";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=8";
+    import { getFullBookContent } from "../integration/firestore.js?v=11";
 
     renderHeader("learn");
     renderFooter();
@@ -161,7 +162,24 @@
             const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
             const unlocked = admin || !!profile?.paid;
             if (bodyEl && !unlocked) applyPaywall(bodyEl);
-            if (bodyEl && unlocked) addReadingAids(root);
+            if (bodyEl && unlocked) {
+              // Полный текст — из Firestore (реальная защита, не то, что уже
+              // лежит в открытом content/*.md). Пока миграция
+              // (scripts/seed-paid-content.mjs) не запущена для этого docId,
+              // getFullBookContent() вернёт null — тогда оставляем то, что
+              // уже отрисовано из статического файла, ничего не ломаем.
+              const full = await getFullBookContent(bookKey(docPath));
+              if (full?.body) {
+                bodyEl.innerHTML = window.marked ? window.marked.parse(full.body) : bodyEl.innerHTML;
+                bodyEl.querySelectorAll("table").forEach((table) => {
+                  const wrap = document.createElement("div");
+                  wrap.className = "table-scroll";
+                  table.replaceWith(wrap);
+                  wrap.appendChild(table);
+                });
+              }
+              addReadingAids(root);
+            }
             // Кнопка печати — только когда есть что печатать (независимая
             // проверка, 2026-07-19): раньше показывалась сразу всем, включая
             // гостя за стеной регистрации.
