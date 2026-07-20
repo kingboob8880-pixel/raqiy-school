@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет админа — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=10">
-<link rel="stylesheet" href="../../design/base.css?v=21">
+<link rel="stylesheet" href="../../design/base.css?v=22">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -26,9 +26,9 @@
       </div>
 
       <div class="stat-grid" style="margin-bottom: var(--rp-space-6);">
-        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">👥</span><div class="stat-card__value" id="stat-total">—</div><div class="stat-card__label">Всего учеников</div></div>
-        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">💳</span><div class="stat-card__value" id="stat-paid">—</div><div class="stat-card__label">Оплатили</div></div>
-        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🔕</span><div class="stat-card__value" id="stat-silent">—</div><div class="stat-card__label">Молчат &gt;14 дней</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-total">—</div><div class="stat-card__label">Всего учеников</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-paid">—</div><div class="stat-card__label">Оплатили</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-silent">—</div><div class="stat-card__label">Молчат &gt;14 дней</div></div>
       </div>
 
       <div class="card" style="margin-bottom: var(--rp-space-5);">
@@ -68,7 +68,7 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=11";
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=12";
     import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=8";
     import {
       listStudents, setStudentPaid, deleteStudent, sendMessage, listMessages, daysSince,
@@ -162,6 +162,7 @@
         cb.addEventListener("change", async () => {
           await setStudentPaid(cb.dataset.uid, cb.checked);
           await refreshStudents();
+          showToast(cb.checked ? "Отмечено как оплачено" : "Отмечено как не оплачено");
         });
       });
 
@@ -179,6 +180,7 @@
           await deleteStudent(btn.dataset.uid);
           if (openThreadUid === btn.dataset.uid) openThreadUid = null;
           await refreshStudents();
+          showToast(`Запись ${btn.dataset.name} удалена`);
         });
       });
 
@@ -191,6 +193,7 @@
           await sendMessage(form.dataset.uid, "admin", text);
           input.value = "";
           await loadThread(form.dataset.uid);
+          showToast("Ответ отправлен");
         });
       });
     }
@@ -248,7 +251,7 @@
         if (!confirm(`Отправить это сообщение всем ученикам (${allStudents.length})?`)) return;
         await Promise.all(allStudents.map((s) => sendMessage(s.uid, "admin", text)));
         input.value = "";
-        alert("Отправлено " + allStudents.length + " ученикам.");
+        showToast("Отправлено " + allStudents.length + " ученикам");
       });
 
       document.getElementById("logout-btn").addEventListener("click", async () => {

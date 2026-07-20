@@ -108,6 +108,30 @@ export function renderHeader(zone = "learn") {
   initSiteTheme();
 }
 
+// Явная обратная связь после действий в кабинетах (kabinet-ux-improvements.md
+// §3) — тост вместо тихого обновления списка/alert(). Один контейнер на
+// страницу, создаётся лениво при первом вызове.
+export function showToast(message) {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.className = "toast-container";
+    container.setAttribute("role", "status");
+    container.setAttribute("aria-live", "polite");
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.classList.add("is-visible"), 10);
+  setTimeout(() => {
+    toast.classList.remove("is-visible");
+    setTimeout(() => toast.remove(), 250);
+  }, 3200);
+}
+
 export function renderFooter() {
   const root = document.getElementById("site-footer");
   if (!root) return;

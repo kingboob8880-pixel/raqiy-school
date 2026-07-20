@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет ученика — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=10">
-<link rel="stylesheet" href="../../design/base.css?v=21">
+<link rel="stylesheet" href="../../design/base.css?v=22">
 </head>
 <body data-zone="student">
   <div id="site-header"></div>
@@ -23,12 +23,13 @@
 
       <div class="stat-grid" style="margin-bottom: var(--rp-space-4);">
         <div class="card stat-card">
-          <div class="progress-ring" id="progress-ring"><div class="progress-ring__hole" id="stat-progress">—</div></div>
+          <div class="stat-card__value" id="stat-progress">—</div>
+          <div class="stat-progress-bar"><div class="quiz-progress"><div class="quiz-progress__bar" id="stat-progress-bar" style="width:0%"></div></div></div>
           <div class="stat-card__label">Прогресс курса</div>
         </div>
-        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🎯</span><div class="stat-card__value" id="stat-score">—</div><div class="stat-card__label">Средний балл тестов</div></div>
-        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🔥</span><div class="stat-card__value" id="stat-streak">—</div><div class="stat-card__label">Дней подряд</div></div>
-        <div class="card stat-card"><span class="stat-card__icon" aria-hidden="true">🕊️</span><div class="stat-card__value" id="stat-status">—</div><div class="stat-card__label">Статус оплаты</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-score">—</div><div class="stat-card__label">Средний балл тестов</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-streak">—</div><div class="stat-card__label">Дней подряд</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-status">—</div><div class="stat-card__label">Статус оплаты</div></div>
       </div>
 
       <div id="badge-row" class="badge-row"></div>
@@ -55,6 +56,11 @@
       <h2>Продолжить обучение</h2>
       <div id="continue-card" class="card continue-card" style="margin-bottom: var(--rp-space-6);"><p class="form-note">Загрузка…</p></div>
 
+      <div id="in-progress-section" hidden>
+        <h2>Сейчас в процессе</h2>
+        <div id="in-progress-grid" class="in-progress-grid"></div>
+      </div>
+
       <div class="section-banner">
         <img id="books-banner-img" alt="" loading="lazy">
         <h2>Книги курса</h2>
@@ -76,10 +82,10 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=11";
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=12";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=8";
     import { computeOverallProgress, computeAverageScore, computeStreak, listMessages, sendMessage } from "../../integration/firestore.js?v=10";
-    import { MODULES, bookKey, findNextLesson, computeLevelBadges } from "../js/modules-data.js?v=13";
+    import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress } from "../js/modules-data.js?v=14";
     import { withBase } from "../js/base-path.js?v=6";
 
     const REVIEW_AFTER_DAYS = 30;
@@ -151,6 +157,30 @@
           </a>`;
       }).join("");
 
+      // "Сейчас в процессе" — LMS-паттерн (kabinet-ux-improvements.md §1.2.3):
+      // отдельная секция над общим book-grid, только модули с частичным
+      // прогрессом, сортировка по убыванию % прохождения.
+      const inProgressModules = MODULES
+        .map((m) => ({ m, ...computeModuleProgress(m, profile?.progress) }))
+        .filter((x) => x.inProgress)
+        .sort((a, b) => b.percent - a.percent);
+      if (inProgressModules.length) {
+        document.getElementById("in-progress-section").hidden = false;
+        document.getElementById("in-progress-grid").innerHTML = inProgressModules.map(({ m, percent }) => {
+          const thumb = m.cover ? withBase(m.cover.replace(/\.jpg$/, "-thumb.jpg")) : null;
+          return `
+            <a class="book-card" href="${withBase("/pages/modules/module.html")}?id=${m.id}">
+              <span class="book-card__marker" ${thumb ? `style="background-image:url('${thumb}')"` : ""}>${thumb ? "" : m.id}</span>
+              <span class="book-card__body">
+                <span class="book-card__title">${m.title}</span>
+                <span class="book-card__meta">${m.level} · ${percent}%</span>
+                <span class="book-card__progress"><span class="quiz-progress" style="display:block;"><span class="quiz-progress__bar" style="display:block; width:${percent}%"></span></span></span>
+              </span>
+              <span class="book-card__arrow" aria-hidden="true">→</span>
+            </a>`;
+        }).join("");
+      }
+
       const continueRoot = document.getElementById("continue-card");
       const next = findNextLesson(profile?.progress);
       if (next && next.lesson) {
@@ -181,7 +211,7 @@
 
       const overallProgress = computeOverallProgress(profile?.progress);
       document.getElementById("stat-progress").textContent = overallProgress + "%";
-      document.getElementById("progress-ring").style.setProperty("--rp-progress", overallProgress);
+      document.getElementById("stat-progress-bar").style.width = overallProgress + "%";
       const avg = computeAverageScore(profile?.progress);
       document.getElementById("stat-score").textContent = avg === null ? "—" : avg + "%";
       document.getElementById("stat-streak").textContent = computeStreak(profile?.progress?.activityDates);
@@ -230,6 +260,7 @@
           ? updated.map((m) => `<div class="msg msg-${m.from === "admin" ? "admin" : "student"}">${escapeHtml(m.text)}</div>`).join("")
           : `<p class="form-note">Сообщений пока нет.</p>`;
         msgRoot.scrollTop = msgRoot.scrollHeight;
+        showToast("Сообщение отправлено");
       });
 
       document.getElementById("logout-btn").addEventListener("click", async () => {
