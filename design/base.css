@@ -453,6 +453,72 @@ main.container { padding-block: var(--rp-space-6); }
 .paywall-card { margin-top: var(--rp-space-2); text-align: center; border-color: var(--rp-color-gold-500); }
 .paywall-card__price { font-family: var(--rp-font-heading); font-size: var(--rp-fs-xl); color: var(--rp-learn-accent); margin: var(--rp-space-2) 0 var(--rp-space-4); }
 
+/* ---------- Текст урока/модуля (общее для book.html и modules/module.html) ---------- */
+/* Раньше жило дублем в page-local <style> обоих файлов (только table/th/
+   blockquote) — перенесено сюда, чтобы не расходилось между страницами, и
+   расширено (запрос автора "сделай красивее и интереснее", 2026-07-20,
+   скриншот с нечитаемо-центрированным текстом урока). Явный text-align:left
+   — защита от центрирования независимо от источника (не нашли активное
+   правило-виновника статическим чтением CSS трёх файлов, но эффект на
+   скриншоте автора реален; левое выравнивание для длинного текста верно
+   в любом случае — стандартная типографика). */
+.doc-body,
+.doc-body h1, .doc-body h2, .doc-body h3, .doc-body h4,
+.doc-body p, .doc-body li { text-align: left; }
+.doc-body h2 {
+  margin-top: var(--rp-space-7); padding-bottom: var(--rp-space-2);
+  border-bottom: 2px solid color-mix(in srgb, var(--rp-learn-accent) 35%, transparent);
+}
+.doc-body h2:first-child { margin-top: 0; }
+.doc-body > p:first-of-type { font-size: var(--rp-fs-md); }
+/* Ссылки внутри текста (перекрёстные ссылки на другие модули) — не
+   красим отдельным акцентным цветом: --rp-learn-accent(-strong) не
+   проходит WCAG AA (4.5:1) одновременно на всех 3 темах сайта (проверено
+   расчётом: 2.32:1 на тёмной теме "изумруд" для accent-strong, 3.12:1 на
+   светлой для accent) — тот же класс бага, что уже несколько раз чинили
+   в course-improvement-plan.md. Жирность + увеличенный отступ подчёркивания
+   отличают ссылку от прозы без риска контраста, используя тот же цвет
+   текста, что уже проходит AA по всему документу. */
+.doc-body a { font-weight: 700; text-underline-offset: 0.15em; }
+/* Нумерованный список ("Уроки модуля" и т.п.) — раньше голые браузерные
+   цифры "1." без визуальной связи с остальной системой значков-кружков
+   сайта (path-step__marker, book-card__marker уже используют этот
+   паттерн). */
+.doc-body ol { list-style: none; padding-left: 0; counter-reset: doc-ol; }
+.doc-body ol > li {
+  position: relative; padding-left: 2.6rem; margin-bottom: var(--rp-space-3);
+  counter-increment: doc-ol; min-height: 1.75rem;
+}
+.doc-body ol > li::before {
+  content: counter(doc-ol); position: absolute; left: 0; top: 0;
+  width: 1.75rem; height: 1.75rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-learn-accent); color: var(--rp-learn-accent-contrast);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--rp-font-heading); font-weight: 700; font-size: var(--rp-fs-sm);
+}
+.doc-body ul { padding-left: 1.3rem; }
+.doc-body ul li { margin-bottom: var(--rp-space-2); }
+.doc-body table { width: 100%; border-collapse: collapse; margin: var(--rp-space-4) 0; }
+.doc-body th, .doc-body td { border: 1px solid var(--rp-learn-border); padding: var(--rp-space-2) var(--rp-space-3); text-align: left; font-size: var(--rp-fs-sm); }
+.doc-body th { background: var(--rp-color-parchment-200); color: var(--rp-color-ink-900); }
+/* Богословские/предупредительные примечания в тексте книги (⚠️) — раньше
+   рендерились как обычный blockquote без стиля, визуально не отличались
+   от прозы (независимая проверка, 2026-07-19). */
+.doc-body blockquote { margin: var(--rp-space-5) 0; padding: var(--rp-space-4);
+  border-left: 4px solid var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 10%, var(--rp-learn-surface));
+  border-radius: 0 var(--rp-radius-sm) var(--rp-radius-sm) 0; }
+.doc-body blockquote p:last-child { margin-bottom: 0; }
+/* Абзацы-предупреждения, написанные обычным текстом с "⚠️" в начале (не
+   markdown-цитатой ">") — та же визуальная подача, что у blockquote выше,
+   через класс .doc-warning, который проставляет JS в renderDocInto()
+   (pages/js/markdown-loader.js) по первому символу абзаца — сам текст
+   markdown-исходников не трогаем. */
+.doc-body p.doc-warning {
+  margin: var(--rp-space-5) 0; padding: var(--rp-space-4);
+  border-left: 4px solid var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 10%, var(--rp-learn-surface));
+  border-radius: 0 var(--rp-radius-sm) var(--rp-radius-sm) 0;
+}
+
 /* ---------- Разворот книги (обложка модуля + заголовок) — module.html ---------- */
 .book-hero {
   position: relative; overflow: hidden;
