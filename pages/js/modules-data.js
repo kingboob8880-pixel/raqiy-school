@@ -149,6 +149,23 @@ export function findNextLesson(progress) {
   return null;
 }
 
+/** Доля прохождения одного модуля (0-100) + признак "в процессе" — для
+ * секции "Сейчас в процессе" в кабинете ученика (kabinet-ux-improvements.md
+ * §1.2.3). Модули без отдельных книг (lessons: []) считаются по статусу
+ * итогового теста модуля: "in_progress" (провальная попытка) даёт 50%,
+ * иначе 0/100. */
+export function computeModuleProgress(m, progress) {
+  const moduleStatus = progress?.[m.id]?.status;
+  if (moduleStatus === "done") return { percent: 100, inProgress: false };
+  if (!m.lessons.length) {
+    return { percent: moduleStatus === "in_progress" ? 50 : 0, inProgress: moduleStatus === "in_progress" };
+  }
+  const doneLessons = m.lessons.filter((l) => progress?.books?.[bookKey(l.doc)]?.status === "done").length;
+  const percent = Math.round((doneLessons / m.lessons.length) * 100);
+  const inProgress = (doneLessons > 0 && doneLessons < m.lessons.length) || moduleStatus === "in_progress";
+  return { percent, inProgress };
+}
+
 export const QUIZ_PASS_THRESHOLD = 0.7;
 
 /** Бейджи за завершённый уровень (Начальный/Средний/Продвинутый) — считаются
