@@ -58,6 +58,15 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
     table.replaceWith(wrap);
     wrap.appendChild(table);
   });
+  // Предупреждения в тексте книг иногда написаны обычным абзацем "⚠️ ...",
+  // а не markdown-цитатой (>) — визуально ничем не отличались от обычной
+  // прозы (независимая проверка, 2026-07-20, скриншот автора "текст
+  // модуля"). Помечаем классом по первому символу — сам markdown-текст не
+  // трогаем, только рендер; design/base.css уже стилизует .doc-warning так
+  // же, как существующий <blockquote>.
+  container.querySelectorAll(".doc-body > p").forEach((p) => {
+    if (p.textContent.trim().startsWith("⚠️")) p.classList.add("doc-warning");
+  });
 }
 
 /** Три уровня доступа к тексту книги/модуля (project.md §18): гость — текста
