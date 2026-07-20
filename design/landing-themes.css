@@ -47,3 +47,52 @@
   border-top: 1px solid rgba(251,246,236,0.2); font-size: var(--rp-fs-sm);
   letter-spacing: 0.05em; text-transform: uppercase; color: var(--rp-hero-panel-accent);
 }
+
+/* ---------- Плавное появление секций при прокрутке ---------- */
+/* Раньше все ~12 секций лендинга появлялись разом, статичным блоком текста —
+   при живой прокрутке это ощущается монотонно (запрос автора "чтобы не было
+   скуки", 2026-07-20). Лёгкое проявление снизу при входе в область экрана —
+   без прыжков, без задержки чтения, отключается для тех, кто просил меньше
+   анимации в системе. */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.is-visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- Чередование фона секций — визуальный ритм вместо однородной стены карточек ---------- */
+.section-tint { background: color-mix(in srgb, var(--rp-learn-accent) 6%, transparent); padding-block: var(--rp-space-7); }
+
+/* ---------- Хук после хиро: аят + подлинная цитата из Урока 1 ---------- */
+/* Аят уже был на сайте, но только в теме "Сплит" — большинство посетителей
+   его не видели вообще, если не переключали тему вручную. Здесь он виден
+   всегда, независимо от выбранной темы оформления (запрос "не скучно",
+   2026-07-20) — вместе с подлинной цитатой из уже опубликованного текста
+   Урока 1 (не новый текст, дословная цитата с указанием источника). */
+.landing-hook { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-5); }
+@media (min-width: 56rem) { .landing-hook { grid-template-columns: 1fr 1fr; align-items: stretch; } }
+.landing-hook .ayah-card { margin: 0; display: flex; flex-direction: column; justify-content: center; }
+.lesson-teaser {
+  display: flex; flex-direction: column; justify-content: center; gap: var(--rp-space-3);
+  padding: var(--rp-space-5); text-align: left;
+}
+.lesson-teaser__eyebrow { font-size: var(--rp-fs-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--rp-learn-accent); }
+.lesson-teaser__quote { font-size: var(--rp-fs-md); font-family: var(--rp-font-heading); line-height: 1.5; margin: 0; }
+.lesson-teaser__quote::before { content: "«"; } .lesson-teaser__quote::after { content: "»"; }
+.lesson-teaser__source { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; }
+
+/* ---------- Лёгкий подъём карточек лендинга при наведении — только декоративные, некликабельные карточки ---------- */
+.advantage-card, .audience-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.advantage-card:hover, .audience-card:hover { transform: translateY(-4px); box-shadow: var(--rp-shadow-pop); }
+@media (prefers-reduced-motion: reduce) {
+  .advantage-card, .audience-card { transition: none; }
+  .advantage-card:hover, .audience-card:hover { transform: none; }
+}
+
+/* ---------- Соединительная линия между шагами процесса на десктопе ---------- */
+@media (min-width: 56rem) {
+  .process-step:not(:last-child)::after {
+    content: ""; position: absolute; top: calc(var(--rp-space-5) + 1.25rem); right: calc(-1 * var(--rp-space-4) / 2);
+    width: var(--rp-space-4); height: 2px; background: var(--rp-learn-border);
+  }
+}
