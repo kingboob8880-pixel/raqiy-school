@@ -48,17 +48,10 @@
   letter-spacing: 0.05em; text-transform: uppercase; color: var(--rp-hero-panel-accent);
 }
 
-/* ---------- Плавное появление секций при прокрутке ---------- */
-/* Раньше все ~12 секций лендинга появлялись разом, статичным блоком текста —
-   при живой прокрутке это ощущается монотонно (запрос автора "чтобы не было
-   скуки", 2026-07-20). Лёгкое проявление снизу при входе в область экрана —
-   без прыжков, без задержки чтения, отключается для тех, кто просил меньше
-   анимации в системе. */
-.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
-.reveal.is-visible { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-}
+/* .reveal/.is-visible (плавное появление при прокрутке) переехало в
+   design/base.css — понадобилось не только лендингу, но и "Пути ученика"
+   (полировка страницы модулей, 2026-07-20), общая утилита, не только для
+   лендинга. */
 
 /* ---------- Чередование фона секций — визуальный ритм вместо однородной стены карточек ---------- */
 .section-tint { background: color-mix(in srgb, var(--rp-learn-accent) 6%, transparent); padding-block: var(--rp-space-7); }
