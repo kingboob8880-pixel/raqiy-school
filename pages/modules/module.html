@@ -11,7 +11,7 @@
 <style>
   .doc-body table { width: 100%; border-collapse: collapse; margin: var(--rp-space-4) 0; }
   .doc-body th, .doc-body td { border: 1px solid var(--rp-learn-border); padding: var(--rp-space-2) var(--rp-space-3); text-align: left; font-size: var(--rp-fs-sm); }
-  .doc-body th { background: var(--rp-color-parchment-200); }
+  .doc-body th { background: var(--rp-color-parchment-200); color: var(--rp-color-ink-900); }
   .doc-body blockquote { margin: var(--rp-space-5) 0; padding: var(--rp-space-4);
     border-left: 4px solid var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 10%, var(--rp-learn-surface));
     border-radius: 0 var(--rp-radius-sm) var(--rp-radius-sm) 0; }
@@ -21,7 +21,16 @@
   .lesson-link { display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-3);
     padding: var(--rp-space-4); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border);
     background: var(--rp-learn-surface); text-decoration: none; color: inherit; }
-  .lesson-link:hover { background: var(--rp-color-parchment-200); }
+  /* Раньше фон при наведении был жёстко светлым (--rp-color-parchment-200),
+     а текст — color: inherit, то есть светлым текстом текущей темы: на
+     тёмной теме "изумруд" это давало светлый текст на светлом фоне,
+     нечитаемо (независимая проверка, 2026-07-20, скриншот автора). Тот же
+     класс бага, что уже 4 раза находили и чинили в course-improvement-plan.md
+     (review-flag/quiz-option/field-error) — фон здесь тоже жёстко светлый
+     не зависит от темы, значит и текст при наведении должен быть жёстко
+     тёмным, а не наследоваться. */
+  .lesson-link:hover { background: var(--rp-color-parchment-200); color: var(--rp-color-ink-900); }
+  .lesson-link:hover .lesson-link__meta { color: var(--rp-color-ink-700); }
   .lesson-link__meta { display: block; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-top: 0.2rem; }
 </style>
 </head>
