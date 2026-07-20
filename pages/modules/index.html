@@ -6,16 +6,16 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Модули курса — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=10">
-<link rel="stylesheet" href="../../design/base.css?v=29">
+<link rel="stylesheet" href="../../design/base.css?v=30">
 </head>
 <body data-zone="learn">
   <div id="site-header"></div>
   <main class="container">
     <h1>Путь ученика</h1>
     <p class="form-note">11 этапов — от основ убеждённости до самостоятельного приёма пациентов в RUKYA Pro.</p>
-    <input type="search" id="module-search" placeholder="Поиск по модулям и книгам…" aria-label="Поиск по модулям и книгам"
-      style="width:100%; max-width:24rem; padding: 0.65rem 1rem; margin-bottom: var(--rp-space-5); border-radius: var(--rp-radius-pill);
-        border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); font: inherit;">
+    <div class="search-field">
+      <input type="search" id="module-search" placeholder="Поиск по модулям и книгам…" aria-label="Поиск по модулям и книгам">
+    </div>
     <p id="search-empty" class="form-note" hidden>Ничего не найдено.</p>
     <div id="path-root" class="path"></div>
   </main>
@@ -40,32 +40,65 @@
     // 2026-07-19). Иконка + текст, не просто цвет — доступно и дальтоникам.
     const LEVEL_ICON = { "Начальный": "○", "Средний": "◐", "Продвинутый": "●" };
 
+    // Карточка "пути" — полировка внешнего вида (запрос "переработай вид,
+    // чтобы было красиво", 2026-07-20): маркер+тело разделены на
+    // .path-step__main (заголовок/уровень/совпадение поиска) и
+    // .path-step__status (бейдж статуса) — раньше бейдж лип под заголовком
+    // отдельным блоком, визуально не было понятно, что это два разных типа
+    // информации. Стрелка .path-step__go — та же подсказка "кликабельно",
+    // что уже стоит на .lesson-link/тест-карточках, здесь её не было.
+    // .path-step--done (уже существующий класс/стиль маркера) переиспользован
+    // для статуса "certified" — подтверждённые шейхом модули визуально
+    // выделяются заливкой маркера, а не только текстом бейджа рядом.
     function moduleCardHtml(m, matchedLesson) {
       return `
-        <a class="path-step" href="module.html?id=${m.id}">
+        <a class="path-step reveal ${m.status === "certified" ? "path-step--done" : ""}" href="module.html?id=${m.id}">
           <span class="path-step__marker">${m.id}</span>
           <span class="path-step__body">
-            <span class="path-step__title">${m.title}</span>
-            <span class="path-step__meta"><span class="level-tag" aria-hidden="true">${LEVEL_ICON[m.level] || ""}</span> ${m.level}${matchedLesson ? ` · содержит книгу «${matchedLesson}»` : ""}</span>
-            <div style="margin-top: 0.4rem;">${statusBadgeHtml(m.status)}</div>
+            <span class="path-step__main">
+              <span class="path-step__title">${m.title}</span>
+              <span class="path-step__meta">
+                <span><span class="level-tag" aria-hidden="true">${LEVEL_ICON[m.level] || ""}</span> ${m.level}</span>
+                ${matchedLesson ? `<span>· содержит книгу «${matchedLesson}»</span>` : ""}
+              </span>
+            </span>
+            <span class="path-step__status">${statusBadgeHtml(m.status)}</span>
           </span>
+          <span class="path-step__go" aria-hidden="true">→</span>
         </a>`;
     }
 
+    // Лёгкое проявление карточек при прокрутке (тот же .reveal, что на
+    // лендинге, design/base.css) — раньше все 11 карточек появлялись разом.
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
     function renderList(query) {
       const q = query.trim().toLowerCase();
+      let html;
       if (!q) {
-        root.innerHTML = MODULES.map((m) => moduleCardHtml(m, null)).join("");
+        html = MODULES.map((m) => moduleCardHtml(m, null)).join("");
         emptyNote.hidden = true;
-        return;
+      } else {
+        const matches = MODULES.map((m) => {
+          if (m.title.toLowerCase().includes(q) || m.level.toLowerCase().includes(q)) return { m, matchedLesson: null };
+          const lesson = m.lessons.find((l) => l.title.toLowerCase().includes(q));
+          return lesson ? { m, matchedLesson: lesson.title } : null;
+        }).filter(Boolean);
+        html = matches.map(({ m, matchedLesson }) => moduleCardHtml(m, matchedLesson)).join("");
+        emptyNote.hidden = matches.length > 0;
       }
-      const matches = MODULES.map((m) => {
-        if (m.title.toLowerCase().includes(q) || m.level.toLowerCase().includes(q)) return { m, matchedLesson: null };
-        const lesson = m.lessons.find((l) => l.title.toLowerCase().includes(q));
-        return lesson ? { m, matchedLesson: lesson.title } : null;
-      }).filter(Boolean);
-      root.innerHTML = matches.map(({ m, matchedLesson }) => moduleCardHtml(m, matchedLesson)).join("");
-      emptyNote.hidden = matches.length > 0;
+      root.innerHTML = html;
+      root.querySelectorAll(".reveal").forEach((el, i) => {
+        el.style.transitionDelay = `${Math.min(i * 40, 400)}ms`;
+        revealObserver.observe(el);
+      });
     }
 
     renderList("");

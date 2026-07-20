@@ -302,23 +302,99 @@ p { margin: 0 0 var(--rp-space-4); }
 .faq-item[open] summary::after { transform: rotate(45deg); }
 .faq-item p { margin: var(--rp-space-3) 0 0; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
 
+/* ---------- Плавное появление секций/карточек при прокрутке ---------- */
+/* Раньше только у лендинга (design/landing-themes.css); "Путь ученика"
+   получил ту же лёгкую полировку (запрос "переработай вид, чтобы было
+   красиво", 2026-07-20) — общая утилита, перенесена сюда, чтобы не
+   дублировать в двух файлах. */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.is-visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- Поле поиска (пилюля с иконкой) ---------- */
+/* Раньше на "Пути ученика" это был инлайн-style на одном <input> — вынесено
+   в переиспользуемый класс (та же полировка, 2026-07-20), т.к. второе такое
+   поле уже просилось (поиск по ученикам в админке использует свою вёрстку
+   тулбара — не трогаю, другой контекст: там ещё select рядом). */
+.search-field { position: relative; max-width: 24rem; margin-bottom: var(--rp-space-5); }
+.search-field::before {
+  content: "🔍"; position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+  font-size: 0.9rem; opacity: 0.6; pointer-events: none;
+}
+.search-field input {
+  width: 100%; font: inherit; padding: 0.7rem 1rem 0.7rem 2.4rem; border-radius: var(--rp-radius-pill);
+  border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.search-field input:focus-visible { border-color: var(--rp-learn-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rp-learn-accent) 25%, transparent); }
+
 /* ---------- Оглавление модулей — "дорожка-путь" (1b, §16а) ---------- */
+/* Полировка внешнего вида (запрос автора "переработать вид, чтобы было
+   красиво", 2026-07-20): раньше карточки были плоскими без обратной связи
+   на hover, маркер-кружок — тонкая обводка без объёма, уровень — просто
+   приглушённый текст рядом с бейджем статуса (визуально сливались друг с
+   другом). Теперь: карточка приподнимается и обретает тень/акцентную рамку
+   при наведении (тот же паттерн hover-lift, что уже на .advantage-card/
+   .audience-card лендинга), маркер — заливка вместо тонкого кольца, статус
+   вынесен в отдельную строку справа, стрелка-указатель проявляется при
+   наведении как явный намёк "кликабельно, веди сюда". */
 .path { display: flex; flex-direction: column; gap: var(--rp-space-4); padding: var(--rp-space-4) 0; position: relative; }
 .path::before {
   content: ""; position: absolute; left: 1.4rem; top: 0.5rem; bottom: 0.5rem; width: 2px;
-  background: var(--rp-learn-border); opacity: 0.4;
+  background: linear-gradient(to bottom, var(--rp-learn-accent) 0%, var(--rp-learn-border) 100%); opacity: 0.35;
 }
 .path-step { display: flex; gap: var(--rp-space-4); align-items: flex-start; position: relative; text-decoration: none; color: inherit; }
 .path-step__marker {
-  flex: none; width: 2.8rem; height: 2.8rem; border-radius: var(--rp-radius-pill);
-  background: var(--rp-learn-surface-raised); border: 2px solid var(--rp-learn-accent);
-  display: flex; align-items: center; justify-content: center; font-family: var(--rp-font-heading); font-weight: 700;
-  z-index: 1;
+  /* color: var(--rp-learn-text), не --rp-learn-accent-strong — расчётом
+     контраста (2026-07-20) на теме "изумруд" accent-strong поверх этой
+     заливки давал 1.67:1 (провал WCAG AA), на baseline — 3.91:1, тоже мимо
+     порога для обычного текста. var(--rp-learn-text) — тот же цвет, что уже
+     проверен по всему сайту — 7.6–13.4:1 на всех трёх темах. */
+  flex: none; width: 2.9rem; height: 2.9rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-learn-accent) 16%, var(--rp-learn-surface-raised));
+  border: 2px solid var(--rp-learn-accent); color: var(--rp-learn-text);
+  display: flex; align-items: center; justify-content: center; font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); font-weight: 700;
+  z-index: 1; transition: background 0.2s ease, transform 0.2s ease;
 }
 .path-step--done .path-step__marker { background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff; }
-.path-step__body { flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md); padding: var(--rp-space-4); display: flex; gap: var(--rp-space-3); align-items: center; }
-.path-step__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); margin-bottom: 0.2rem; }
-.path-step__meta { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+.path-step:hover .path-step__marker { transform: scale(1.08); }
+.path-step__body {
+  flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
+  padding: var(--rp-space-4) var(--rp-space-5); display: flex; gap: var(--rp-space-3); align-items: center; justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.path-step:hover .path-step__body {
+  transform: translateY(-3px); box-shadow: var(--rp-shadow-pop);
+  border-color: color-mix(in srgb, var(--rp-learn-accent) 55%, var(--rp-learn-border));
+}
+.path-step__main { min-width: 0; }
+.path-step__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); margin-bottom: 0.3rem; }
+/* color: var(--rp-zone-text)+opacity, не --rp-learn-text-muted напрямую —
+   расчётом контраста (2026-07-20) нашёл, что --rp-learn-text-muted на
+   var(--rp-learn-surface) даёт всего 3.78:1 на baseline-теме (ниже порога
+   WCAG AA 4.5:1 для обычного текста; на "изумруде"/"pattern" — 7+:1, так что
+   баг был не на привычной тёмной теме, а на светлой). var(--rp-zone-text)
+   + opacity: 0.7 — уже проверенный паттерн (.form-note, 2026-07-19),
+   проходит 6+:1 на всех трёх темах. */
+.path-step__meta { font-size: var(--rp-fs-sm); color: var(--rp-zone-text, var(--rp-learn-text)); opacity: 0.7; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem var(--rp-space-2); }
+.path-step__meta .level-tag { color: inherit; font-weight: 700; opacity: 1; }
+.path-step__status { flex: none; }
+.path-step__go {
+  /* color: var(--rp-learn-text), не accent-strong — на "изумруде" accent-strong
+     поверх --rp-learn-surface даёт 2.32:1 (ниже порога 3:1 для нетекстовых UI-
+     элементов, WCAG 1.4.11); --rp-learn-text — тот же уже проверенный на
+     сайте цвет "текст на карточке". */
+  flex: none; display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
+  border-radius: var(--rp-radius-pill); color: var(--rp-learn-text); font-size: 1.1rem;
+  transform: translateX(-4px); opacity: 0; transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.path-step:hover .path-step__go, .path-step:focus-visible .path-step__go { transform: translateX(0); opacity: 1; }
+@media (max-width: 34rem) {
+  .path-step__body { flex-wrap: wrap; }
+  .path-step__go { display: none; }
+}
 /* Обложка урока рядом с описанием на лендинге (запрос "больше деталей по
    модулям на лендинге", 2026-07-20) — только у модулей, где есть cover в
    modules-data.js, остальные показывают текст без картинки. */
