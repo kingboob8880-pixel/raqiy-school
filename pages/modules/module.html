@@ -39,6 +39,7 @@
     import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall } from "../js/markdown-loader.js?v=9";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=8";
+    import { getFullBookContent } from "../../integration/firestore.js?v=11";
 
     renderHeader("learn");
     renderFooter();
@@ -120,6 +121,22 @@
           const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
           const unlocked = admin || !!profile?.paid;
           if (bodyEl && !unlocked) applyPaywall(bodyEl);
+          // Тот же переход на полный текст из Firestore, что на book.html
+          // (project.md §18/§22, "закрыть дыру с платным контентом") — до
+          // миграции конкретного docId getFullBookContent() вернёт null и
+          // ничего не поменяется.
+          if (bodyEl && unlocked) {
+            const full = await getFullBookContent(bookKey(mod.doc));
+            if (full?.body) {
+              bodyEl.innerHTML = window.marked ? window.marked.parse(full.body) : bodyEl.innerHTML;
+              bodyEl.querySelectorAll("table").forEach((table) => {
+                const wrap = document.createElement("div");
+                wrap.className = "table-scroll";
+                table.replaceWith(wrap);
+                wrap.appendChild(table);
+              });
+            }
+          }
           // Кнопка теста — только после доступа к тексту модуля, тот же
           // принцип, что уже применяется к экзамену по отдельному уроку
           // (book.html): нет смысла сдавать тест по материалу, который не
