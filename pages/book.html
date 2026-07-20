@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../design/tokens.css?v=10">
-<link rel="stylesheet" href="../design/base.css?v=30">
+<link rel="stylesheet" href="../design/base.css?v=31">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
 <style>
   /* Общие стили текста урока (.doc-body — таблицы/список/цитаты/заголовки)
@@ -15,18 +15,16 @@
   .doc-meta { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-bottom: var(--rp-space-5); }
   .book-exam-cta { margin-top: var(--rp-space-6); padding: var(--rp-space-5); text-align: center; }
   .book-exam-cta__actions { display: flex; gap: var(--rp-space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--rp-space-4); }
-  .doc-toc { background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
-    padding: var(--rp-space-4); margin-bottom: var(--rp-space-5); }
-  .doc-toc__title { font-size: var(--rp-fs-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-    opacity: 0.7; margin: 0 0 var(--rp-space-2); }
-  .doc-toc ol { margin: 0; padding-left: 1.2rem; }
-  .doc-toc li { margin-bottom: var(--rp-space-1); }
-  .doc-toc a { text-decoration: none; color: var(--rp-learn-accent-strong); }
-  .doc-toc a:hover { text-decoration: underline; }
+  /* .doc-toc/#reading-progress переехали в design/base.css — понадобились
+     не только book.html, но и modules/module.html (loop-проход №3,
+     2026-07-20): у длинных модулей без отдельных уроков-книг (напр.
+     module-6/index.md, ~2800 слов) не было вообще никакой навигации по
+     тексту, хотя он длиннее многих отдельных книг. */
   @media print {
     .no-print { display: none !important; }
     body { background: #fff; }
     .doc-body { color: #000; }
+    #reading-progress { display: none; }
   }
 </style>
 </head>
@@ -45,7 +43,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=12";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupNoteCard } from "./js/markdown-loader.js?v=11";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupNoteCard, enhanceDuaBlocks, addReadingAids } from "./js/markdown-loader.js?v=12";
     import { bookKey, MODULES } from "./js/modules-data.js?v=15";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=8";
@@ -87,36 +85,9 @@
      * (общая для этой страницы и modules/module.html, независимая проверка
      * 2026-07-19). */
 
-    /** Оглавление + оценка времени чтения — ориентиры для длинного текста
-     * (план улучшения курса, 2026-07-18, "chunking"): не режем сам текст
-     * (он прошёл триаж §7/§9), только добавляем навигацию по уже готовому
-     * контенту. Показываем только когда текст открыт целиком (unlocked) —
-     * для урезанного отрывка оглавление бессмысленно. */
-    function addReadingAids(root) {
-      const bodyEl = root.querySelector(".doc-body");
-      const metaEl = root.querySelector(".doc-meta");
-      if (!bodyEl) return;
-
-      const words = bodyEl.textContent.trim().split(/\s+/).filter(Boolean).length;
-      const minutes = Math.max(1, Math.round(words / 200));
-      if (metaEl) {
-        const time = document.createElement("p");
-        time.className = "form-note";
-        time.textContent = `≈ ${minutes} мин чтения`;
-        metaEl.appendChild(time);
-      }
-
-      const headings = Array.from(bodyEl.querySelectorAll("h2"));
-      if (headings.length < 2) return;
-      headings.forEach((h, i) => { h.id = `sec-${i}`; });
-      const toc = document.createElement("nav");
-      toc.className = "doc-toc";
-      toc.setAttribute("aria-label", "Оглавление");
-      toc.innerHTML = `
-        <p class="doc-toc__title">Оглавление</p>
-        <ol>${headings.map((h) => `<li><a href="#${h.id}">${h.textContent}</a></li>`).join("")}</ol>`;
-      bodyEl.before(toc);
-    }
+    /** addReadingAids теперь общая — pages/js/markdown-loader.js (loop-проход
+     * №3, 2026-07-20). Показываем только когда текст открыт целиком
+     * (unlocked) — для урезанного отрывка оглавление бессмысленно. */
 
     function examCtaHtml(progress) {
       const lesson = findLesson(docPath);
@@ -176,6 +147,13 @@
                   table.replaceWith(wrap);
                   wrap.appendChild(table);
                 });
+                // enhanceDuaBlocks() применяется в renderDocInto() к статическому
+                // тексту, но полный текст из Firestore заменяет bodyEl.innerHTML
+                // напрямую (getFullBookContent), минуя renderDocInto — без
+                // повторного вызова здесь блоки "Арабский текст/Транскрипция/
+                // Перевод" в полном тексте не получили бы визуального выделения
+                // (loop-проход №1, 2026-07-20).
+                enhanceDuaBlocks(bodyEl);
               }
               addReadingAids(root);
             }

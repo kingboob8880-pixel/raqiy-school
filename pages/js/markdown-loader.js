@@ -67,6 +67,146 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
   container.querySelectorAll(".doc-body > p").forEach((p) => {
     if (p.textContent.trim().startsWith("⚠️")) p.classList.add("doc-warning");
   });
+  const bodyEl = container.querySelector(".doc-body");
+  if (bodyEl) enhanceDuaBlocks(bodyEl);
+}
+
+// Метки "**Арабский текст:**"/"**Транскрипция:**"/"**Перевод:**" перед
+// длинными дуа (напр. «Мольба заклинателя») рендерились как обычные жирные
+// абзацы — арабский текст ничем визуально не отличался от русской прозы:
+// не RTL, не увеличен, нет arial/serif-шрифта для арабской вязи, нет
+// зрительной группировки метка+текст+текст+текст в один блок (запрос
+// автора "проработай над удобством и видом", 2026-07-20, скриншот книги
+// "Мольба заклинателя"). Постобработка DOM после рендера — сам markdown
+// не трогаем, метки остаются как источник правды.
+const DUA_LABELS = {
+  "Арабский текст:": "arabic",
+  "Транскрипция:": "translit",
+  "Перевод:": "translation",
+};
+
+/** Группирует подряд идущие пары "метка + абзац" (Арабский/Транскрипция/
+ * Перевод) в один визуальный блок .dua-block, стилизует арабский текст
+ * как RTL с арабским шрифтом (design/base.css). Идемпотентна — повторный
+ * вызов на уже обработанном узле не ломает разметку (проверяет наличие
+ * .dua-block перед повторной группировкой). Экспортирована — вызывается и
+ * из renderDocInto(), и отдельно после замены bodyEl.innerHTML полным
+ * текстом из Firestore (book.html/module.html, getFullBookContent()). */
+/** Оглавление + оценка времени чтения + полоса прогресса — ориентиры для
+ * длинного текста (план улучшения курса, 2026-07-18, "chunking"). Раньше
+ * жила только в book.html; теперь общая с modules/module.html
+ * (loop-проход №3, "удобство", 2026-07-20) — у длинных модулей без
+ * отдельных уроков-книг (напр. module-6/index.md, ~2800 слов) не было
+ * вообще никакой навигации по тексту. Принимает контейнер с `.doc-meta` и
+ * `.doc-body` внутри (root/#doc-root на book.html, #module-doc на
+ * module.html). Идемпотентна — `watchAuth` в обоих вызывающих файлах может
+ * сработать больше одного раза за сессию (уже известный паттерн Firebase,
+ * см. `started`-флаг в quiz/index.html); без guard'а повторный вызов
+ * дублировал бы и оглавление, и полосу прогресса. */
+export function addReadingAids(container) {
+  const bodyEl = container.querySelector(".doc-body");
+  const metaEl = container.querySelector(".doc-meta");
+  if (!bodyEl || bodyEl.dataset.readingAidsAdded) return;
+  bodyEl.dataset.readingAidsAdded = "1";
+
+  const words = bodyEl.textContent.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / 200));
+  if (metaEl) {
+    const time = document.createElement("p");
+    time.className = "form-note";
+    time.textContent = `≈ ${minutes} мин чтения`;
+    metaEl.appendChild(time);
+  }
+
+  const headings = Array.from(bodyEl.querySelectorAll("h2"));
+  if (headings.length >= 2) {
+    headings.forEach((h, i) => { h.id = `sec-${i}`; });
+    const toc = document.createElement("nav");
+    toc.className = "doc-toc";
+    toc.setAttribute("aria-label", "Оглавление");
+    toc.innerHTML = `
+      <p class="doc-toc__title">Оглавление</p>
+      <ol>${headings.map((h) => `<li><a href="#${h.id}">${h.textContent}</a></li>`).join("")}</ol>`;
+    bodyEl.before(toc);
+  }
+
+  // Полоса прогресса чтения — только для достаточно длинного текста
+  // (короткие уроки в ней не нуждаются, полоса мгновенно заполнялась бы
+  // целиком). Порог совпадает по духу с порогом появления оглавления.
+  if (minutes >= 3 && !document.getElementById("reading-progress")) {
+    const bar = document.createElement("div");
+    bar.id = "reading-progress";
+    bar.setAttribute("aria-hidden", "true");
+    document.body.prepend(bar);
+    const update = () => {
+      const rect = bodyEl.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const scrolled = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : (rect.top < 0 ? 1 : 0);
+      bar.style.width = `${Math.round(scrolled * 100)}%`;
+    };
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  }
+
+  // Кнопка "наверх" — тот же порог длины (minutes >= 3), что у полосы
+  // прогресса: короткому уроку она не нужна, к началу и так рукой подать.
+  if (minutes >= 3 && !document.getElementById("back-to-top")) {
+    const btn = document.createElement("button");
+    btn.id = "back-to-top";
+    btn.className = "no-print";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Наверх");
+    btn.textContent = "↑";
+    document.body.appendChild(btn);
+    const toggle = () => btn.classList.toggle("is-visible", window.scrollY > 600);
+    window.addEventListener("scroll", toggle, { passive: true });
+    toggle();
+    btn.addEventListener("click", () => {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    });
+  }
+}
+
+export function enhanceDuaBlocks(bodyEl) {
+  const children = Array.from(bodyEl.children);
+  let i = 0;
+  while (i < children.length) {
+    const el = children[i];
+    if (el.tagName !== "P" || el.parentElement !== bodyEl) { i++; continue; }
+    const onlyStrong = el.children.length === 1 && el.firstElementChild?.tagName === "STRONG";
+    const label = onlyStrong ? el.textContent.trim() : null;
+    const kind = label && DUA_LABELS[label];
+    if (!kind) { i++; continue; }
+    const content = children[i + 1];
+    if (!content || content.tagName !== "P") { i++; continue; }
+    el.classList.add("dua-label");
+    content.classList.add(`doc-body__${kind}`);
+    if (kind === "arabic") { content.setAttribute("dir", "rtl"); content.setAttribute("lang", "ar"); }
+    // Собираем блок из всех подряд идущих пар начиная с текущей позиции —
+    // не привязываемся к фиксированному порядку (в некоторых уроках
+    // Транскрипция+Перевод есть, а отдельного Арабского текста нет).
+    let j = i;
+    while (j < children.length) {
+      const lp = children[j];
+      const lbl = lp.tagName === "P" && lp.children.length === 1 && lp.firstElementChild?.tagName === "STRONG"
+        ? lp.textContent.trim() : null;
+      if (!lbl || !DUA_LABELS[lbl]) break;
+      const cp = children[j + 1];
+      if (!cp || cp.tagName !== "P") break;
+      lp.classList.add("dua-label");
+      cp.classList.add(`doc-body__${DUA_LABELS[lbl]}`);
+      if (DUA_LABELS[lbl] === "arabic") { cp.setAttribute("dir", "rtl"); cp.setAttribute("lang", "ar"); }
+      j += 2;
+    }
+    const group = children.slice(i, j);
+    const wrap = document.createElement("div");
+    wrap.className = "dua-block";
+    group[0].before(wrap);
+    group.forEach((node) => wrap.appendChild(node));
+    i = j;
+  }
 }
 
 /** Три уровня доступа к тексту книги/модуля (project.md §18): гость — текста
