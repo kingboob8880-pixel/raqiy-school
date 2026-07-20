@@ -15,3 +15,11 @@ integration/firebase-config.local.js
 
 # Секреты (GitHub-токены и т.п.) — никогда не коммитить.
 .env
+
+# RUKYA PRO desktop (Electron-обёртка над tg/files/rukya_p_4/…) — отдельный
+# продукт для выпускников курса, не часть сайта. node_modules/dist/release
+# генерируются локально при сборке (BUILD_EXE.bat) — тяжёлые, платформо-
+# зависимые, не для git (2026-07-20).
+/rukya-pro-desktop/node_modules/
+/rukya-pro-desktop/dist/
+/rukya-pro-desktop/release/
