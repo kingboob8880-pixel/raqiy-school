@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Тест — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=10">
-<link rel="stylesheet" href="../../design/base.css?v=28">
+<link rel="stylesheet" href="../../design/base.css?v=29">
 </head>
 <body data-zone="learn">
   <div id="site-header"></div>
@@ -20,7 +20,7 @@
     import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=14";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
     import { loadExamDoc } from "../js/exam-loader.js?v=7";
-    import { watchAuth } from "../../integration/auth.js?v=8";
+    import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=8";
     import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=13";
     import { withBase } from "../js/base-path.js?v=6";
 
@@ -38,7 +38,40 @@
     const isBookQuiz = !!examPath;
 
     let currentUser = null;
-    watchAuth((user) => { currentUser = user; });
+
+    // Раньше этой проверки не было вообще — init() вызывался безусловно
+    // внизу файла, и реальные вопросы+варианты ответов экзамена отдавались
+    // ЛЮБОМУ, включая гостя без аккаунта, просто по прямой ссылке (независимая
+    // проверка, 2026-07-20: "работа над тестами и экзаменом"). Это серьёзнее,
+    // чем уже закрытая дыра со статическим .md-файлом книги — здесь даже не
+    // нужно смотреть вкладку "Сеть", достаточно открыть URL. Экзамены — часть
+    // курса, которая по всей остальной сайту продаётся как платная (лендинг,
+    // book.html/module.html), поэтому тот же трёхуровневый доступ, что и у
+    // текста книги: гость — регистрация, зарегистрированный неоплативший —
+    // предложение оплаты, оплативший/админ — тест целиком.
+    function accessWallHtml(kind) {
+      if (kind === "guest") {
+        return `
+          <div class="card paywall-card">
+            <h3>Зарегистрируйтесь, чтобы пройти тест</h3>
+            <p class="form-note">Экзамены — часть платного курса. Регистрация бесплатна и займёт меньше минуты.</p>
+            <div class="book-exam-cta__actions">
+              <a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Зарегистрироваться бесплатно</a>
+              <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже есть аккаунт? Войти</a>
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="card paywall-card">
+          <h3>Экзамены открываются после оплаты курса</h3>
+          <p class="form-note">Пока доступны бесплатные ознакомительные отрывки книг. Экзамены, как и полный текст курса, входят в оплату целиком.</p>
+          <p class="paywall-card__price">30 000 ₽</p>
+          <div class="book-exam-cta__actions">
+            <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать лекарю в Telegram</a>
+            <a class="btn btn-outline" href="${withBase("/pages/dashboard/student.html")}">Вернуться в кабинет</a>
+          </div>
+        </div>`;
+    }
 
     async function init() {
       let mod, questions, quizTitle, resultKey;
@@ -166,9 +199,10 @@
           </div>` : "";
 
         root.innerHTML = `
-          <div class="card" style="text-align:center;">
+          <div class="card quiz-result ${passed ? "quiz-result--passed" : ""}" style="text-align:center;">
+            <div class="quiz-result__icon" aria-hidden="true">${passed ? "🎉" : "📖"}</div>
             <h2>${passed ? "Тест пройден" : "Тест не пройден"}</h2>
-            <p style="font-size: var(--rp-fs-2xl); font-family: var(--rp-font-heading);">${Math.round(ratio * 100)}%</p>
+            <p class="quiz-result__score">${Math.round(ratio * 100)}%</p>
             <p class="form-note">Порог прохождения — ${Math.round(QUIZ_PASS_THRESHOLD * 100)}%.</p>
             ${saveFailed ? `<p class="field-error">Не удалось сохранить результат (нет связи). Прогресс в кабинете не обновится — попробуйте пройти тест ещё раз позже.</p>` : ""}
             ${!currentUser ? `<p class="form-note">Вы не вошли в кабинет — результат не сохранён. <a href="${withBase("/pages/auth/login.html")}">Войдите</a>, чтобы прогресс учитывался.</p>` : ""}
@@ -183,7 +217,32 @@
       render();
     }
 
-    init();
+    let started = false;
+    watchAuth(async (user) => {
+      currentUser = user;
+      if (started) return; // не пересобираем уже идущий тест на повторных событиях auth
+      if (!user) {
+        root.innerHTML = accessWallHtml("guest");
+        return;
+      }
+      let unlocked = false;
+      try {
+        const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
+        unlocked = admin || !!profile?.paid;
+      } catch (err) {
+        console.warn(err);
+        root.innerHTML = `
+          <p class="field-error">Не удалось проверить доступ — проверьте связь с интернетом.</p>
+          <button class="btn btn-outline btn-sm" type="button" onclick="location.reload()">Повторить</button>`;
+        return;
+      }
+      if (!unlocked) {
+        root.innerHTML = accessWallHtml("unpaid");
+        return;
+      }
+      started = true;
+      init();
+    });
   </script>
 </body>
 </html>
