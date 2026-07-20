@@ -372,6 +372,21 @@ p { margin: 0 0 var(--rp-space-4); }
 
 .stat-grid { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-4); }
 @media (min-width: 40rem) { .stat-grid { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); } }
+/* Вынесено из повторяющихся инлайн-стилей на каждой странице (project.md
+   §22, backlog "вынос повторяющихся инлайн-стилей (padding, container
+   отступы) в общие CSS-классы", 2026-07-20) — было 7 одинаковых
+   style="padding-block: var(--rp-space-6);" на <main class="container">. */
+main.container { padding-block: var(--rp-space-6); }
+.container--narrow { max-width: 40rem; }
+
+/* Строка формы (сообщение/рассылка/ответ в переписке) — было 3 одинаковых
+   пары display:flex;gap + инпут-стиль в student.html/admin.html. */
+.form-inline { display: flex; gap: var(--rp-space-2); }
+.text-input {
+  flex: 1; padding: 0.65rem; border-radius: var(--rp-radius-sm);
+  border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface); color: var(--rp-zone-text);
+}
+
 .stat-card { text-align: center; }
 .stat-card__value { font-family: var(--rp-font-heading); font-size: var(--rp-fs-2xl); }
 .stat-card__label { font-size: var(--rp-fs-sm); color: var(--rp-zone-text); opacity: 0.7; }
@@ -551,6 +566,14 @@ p { margin: 0 0 var(--rp-space-4); }
    текст даёт ~2.4:1 (ниже WCAG AA). Правильно/неправильно различаем иконкой
    (✅/❌ в тексте), не только цветом — так же надёжнее для дальтоников. */
 .quiz-feedback { font-size: var(--rp-fs-sm); font-weight: 700; margin: var(--rp-space-2) 0 var(--rp-space-4); min-height: 1.2em; color: var(--rp-learn-text); }
+
+/* Разбор ответов на экране результата непройденного теста (project.md §22,
+   backlog "постраничный разбор ответов после несданного теста", 2026-07-20). */
+.quiz-review { list-style: none; margin: var(--rp-space-3) 0 0; padding: 0; }
+.quiz-review__item { padding: var(--rp-space-3) 0; border-top: 1px solid var(--rp-learn-border); }
+.quiz-review__item:first-child { border-top: none; padding-top: 0; }
+.quiz-review__q { font-weight: 700; margin-bottom: var(--rp-space-1); }
+.quiz-review__item.is-wrong .quiz-review__q { color: var(--rp-status-danger); }
 
 .skeleton-loading { padding: var(--rp-space-6) 0; text-align: center; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
 
