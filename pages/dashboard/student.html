@@ -53,6 +53,11 @@
         <button id="onboarding-dismiss" class="btn btn-outline btn-sm" type="button">Понятно, скрыть</button>
       </div>
 
+      <div id="welcome-back" class="card" style="border-color: var(--rp-learn-accent); margin-bottom: var(--rp-space-5);" hidden>
+        <h3 id="welcome-back-title">С возвращением!</h3>
+        <p id="welcome-back-text" class="form-note"></p>
+      </div>
+
       <h2>Продолжить обучение</h2>
       <div id="continue-card" class="card continue-card" style="margin-bottom: var(--rp-space-6);"><p class="form-note">Загрузка…</p></div>
 
@@ -84,7 +89,7 @@
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=12";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=8";
-    import { computeOverallProgress, computeAverageScore, computeStreak, watchMessages, markThreadRead, sendMessage } from "../../integration/firestore.js?v=12";
+    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage } from "../../integration/firestore.js?v=13";
     import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress } from "../js/modules-data.js?v=14";
     import { withBase } from "../js/base-path.js?v=6";
     import { renderMessages, wireChatForm, scrollToBottom } from "../js/chat-ui.js?v=1";
@@ -131,6 +136,26 @@
       const displayName = profile?.name?.trim() || user.email;
       document.getElementById("dash-name").textContent = profile?.name ? `Здравствуйте, ${profile.name}!` : "Кабинет ученика";
       document.getElementById("dash-avatar").textContent = displayName.charAt(0).toUpperCase();
+
+      // "С возвращением" — веб-исследование удержания учеников ("оживление
+      // обучающей системы", 2026-07-20) единогласно называет напоминание при
+      // возврате после паузы одним из самых действенных инструментов против
+      // отсева (до половины отсева происходит в первые недели простоя). У нас
+      // уже был "молчит >14 дней" — но только на экране АДМИНА; сам ученик,
+      // вернувшись, не получал никакого сигнала "мы заметили, вот тут
+      // продолжить". lastSeenAt пишется при реальном действии (тест/прогресс,
+      // integration/firestore.js), не при простом входе — так порог не
+      // сработает на "просто открыл и сразу закрыл кабинет". Порог 7 дней —
+      // не наказание, а тёплое "с возвращением", поэтому текст не о вине, а о
+      // том, что прогресс никуда не делся.
+      const WELCOME_BACK_AFTER_DAYS = 7;
+      const inactiveDays = daysSince(profile?.lastSeenAt);
+      if (inactiveDays !== null && inactiveDays >= WELCOME_BACK_AFTER_DAYS) {
+        const wb = document.getElementById("welcome-back");
+        wb.hidden = false;
+        document.getElementById("welcome-back-text").textContent =
+          `Вы не заходили ${inactiveDays} дн. — прогресс никуда не делся, продолжите с того же места ниже.`;
+      }
 
       document.getElementById("books-banner-img").src = withBase("/assets/images/covers/knigi-dlya-obucheniya.jpg");
 

@@ -100,6 +100,39 @@ export function applyPaywall(bodyEl) {
 /** Гость без регистрации — текст не показываем вообще, только призыв
  * зарегистрироваться. Иначе регистрация не даёт никакой разницы в доступе
  * по сравнению с обычным посетителем сайта. */
+/** Личная заметка ученика к книге/модулю — общая для book.html и
+ * modules/module.html (веб-исследование лучших LMS-практик, "оживление
+ * обучающей системы", 2026-07-20): возможность аннотировать текст —
+ * стандартный паттерн у читалок и курсов, у нас не было вообще. Не
+ * импортирует firestore.js напрямую (этот файл — только рендер/DOM,
+ * без знания о бэкенде) — сохранение передаётся колбэком onSave(text)
+ * от вызывающей страницы. Ручное сохранение по кнопке, не автосейв на
+ * каждый символ — меньше записей в Firestore, понятнее момент "сохранено". */
+export function setupNoteCard(container, existingNote, onSave) {
+  container.className = "card no-print";
+  container.innerHTML = `
+    <h3>Мои заметки</h3>
+    <p class="form-note">Видны только вам — не часть текста книги.</p>
+    <textarea id="note-text" class="text-input" style="width:100%; min-height:5rem; resize:vertical;"
+      placeholder="Мысли, вопросы, то, что хочется запомнить…">${existingNote ? existingNote.replace(/</g, "&lt;") : ""}</textarea>
+    <div class="hero-actions" style="margin-top: var(--rp-space-3); justify-content:flex-start;">
+      <button id="note-save" class="btn btn-outline btn-sm" type="button">Сохранить заметку</button>
+      <span id="note-status" class="form-note" role="status" aria-live="polite"></span>
+    </div>`;
+  const textarea = container.querySelector("#note-text");
+  const status = container.querySelector("#note-status");
+  container.querySelector("#note-save").addEventListener("click", async () => {
+    status.textContent = "Сохранение…";
+    try {
+      await onSave(textarea.value);
+      status.textContent = "Сохранено ✓";
+    } catch (err) {
+      console.warn(err);
+      status.textContent = "Не удалось сохранить — проверьте связь с интернетом.";
+    }
+  });
+}
+
 export function applyRegisterWall(bodyEl) {
   Array.from(bodyEl.children).forEach((el) => el.remove());
   const wall = document.createElement("div");
