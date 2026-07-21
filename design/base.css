@@ -79,27 +79,17 @@ p { margin: 0 0 var(--rp-space-4); }
 }
 
 /* ---------- Навигация ---------- */
-/* Полупрозрачная заливка + блюр вместо сплошной — по референсу design.html
-   (макет лендинга, 2026-07-21): раньше шапка была плоской непрозрачной
-   плашкой, из-за чего сквозь неё не читался фоновый узор/свечение
-   страницы — эффект "стекла" делает липкую шапку заметно легче на вид, а
-   не просто перекрывающей контент плашкой. color-mix, не отдельный rgba-
-   токен на тему — 88% исходного --rp-zone-surface держит тот же уровень
-   контраста текста/ссылок шапки, что уже проверен на непрозрачном фоне
-   (разница в 12% прозрачности не двигает соотношение ниже порога AA).
-   @supports-фолбэк — на браузерах без backdrop-filter шапка остаётся
-   непрозрачной (текущее поведение), не полупрозрачной поверх текста. */
+/* Была попытка сделать шапку полупрозрачной с backdrop-filter: blur (по
+   референсу design.html, 2026-07-21) — на практике на фоне с тонким
+   ромбовидным узором (--rp-learn-bg) блюр смазывает золотые линии узора
+   под шапкой в жёлтое пятно-гало, и на границе шапки виден жёсткий шов
+   между размытой/тонированной зоной и чётким узором ниже (скриншот
+   автора, "исправь... без этой желтизны", 2026-07-21). Плоская
+   непрозрачная заливка — исходное поведение, никакого шва. */
 .site-header {
   position: sticky; top: 0; z-index: 20;
   background: var(--rp-zone-surface, var(--rp-learn-surface));
   border-bottom: 1px solid var(--rp-zone-border, var(--rp-learn-border));
-}
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .site-header {
-    background: color-mix(in srgb, var(--rp-zone-surface, var(--rp-learn-surface)) 88%, transparent);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
 }
 .site-header__row {
   display: flex; align-items: center; justify-content: space-between;
