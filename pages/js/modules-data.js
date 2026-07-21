@@ -41,15 +41,17 @@ export const MODULES = [
     cover: "/assets/images/covers/zaklinanie-organy-koldovstvo.jpg",
     lessons: [
       { title: "Дозволенность заклинания — где проходит граница", doc: "/content/module-2/dozvolennost-zaklinaniya.md", exam: "/content/exams/module-2-dozvolennost-zaklinaniya.md" },
+      { title: "Что такое заклинание — пять элементов истинной рукьи", doc: "/content/module-2/chto-takoe-zaklinanie.md" },
       { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md", exam: "/content/exams/module-2-ya-zaklinayu.md" },
       { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md", exam: "/content/exams/module-2-obshchee-ponyatie-zaklinanie.md" },
-      { title: "Продвинутое заклинание — метод «Аллязи» (деривация атрибутов)", doc: "/content/module-2/prodvinutoe-zaklinanie.md", exam: "/content/exams/module-2-prodvinutoe-zaklinanie.md" },
       // Книга №2 инвентаря — восстановлена по решению автора курса (2026-07-21).
       // Три пути формулы «Арки» (органы, предметы, недуги) + каталоги недугов.
       { title: "Виды заклинаний и их применение — три пути формулы «Арки»", doc: "/content/module-2/vidy-zaklinaniy.md" },
+      { title: "Продвинутое заклинание — метод «Аллязи» (деривация атрибутов)", doc: "/content/module-2/prodvinutoe-zaklinanie.md", exam: "/content/exams/module-2-prodvinutoe-zaklinanie.md" },
       { title: "Инструменты заклинателя: дозволенные практики", doc: "/content/module-2/instrumenty-zaklinatelya.md", exam: "/content/exams/module-2-instrumenty-zaklinatelya.md" },
+      { title: "Речь с болезнью — полная методология сеанса рукьи", doc: "/content/module-2/rech-s-boleznyu.md" },
+      { title: "Убирание грязи — диагностика и заклинание недугов души", doc: "/content/module-2/ubiranie-gryazi.md" },
       { title: "Классификация недугов (Справочник)", doc: "/content/reference/classification.md", exam: "/content/exams/reference-classification.md" },
-      { title: "Заклинания (рукья) от недугов души — 15 формул", doc: "/content/module-2/ubiranie-gryazi.md" },
     ],
   },
   {
