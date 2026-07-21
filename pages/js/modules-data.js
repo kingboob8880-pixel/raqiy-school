@@ -21,6 +21,8 @@ export const MODULES = [
       { title: "Теоретик и практик — как правильно формулировать мольбу", doc: "/content/module-1/teoretik-i-praktik.md", exam: "/content/exams/module-1-teoretik-i-praktik.md" },
       { title: "Метод уединения с таухидом — визуализация через имена Аллаха", doc: "/content/module-1/metod-taukhid.md" },
       { title: "Фундаментальное состояние целителя — собранность, дыхание, фокус", doc: "/content/module-1/fundamentalnoe.md" },
+      { title: "Басира — духовное зрение сердцем", doc: "/content/module-1/basira.md" },
+      { title: "Эхсан и черпание силы от Аллаха", doc: "/content/module-1/ehsan-i-sila.md" },
     ],
     intro_video: "/assets/video/rukya-intro.mp4",
   },
