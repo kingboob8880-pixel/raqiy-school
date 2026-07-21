@@ -40,6 +40,9 @@ export const MODULES = [
       { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md", exam: "/content/exams/module-2-ya-zaklinayu.md" },
       { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md", exam: "/content/exams/module-2-obshchee-ponyatie-zaklinanie.md" },
       { title: "Продвинутое заклинание — метод «Аллязи» (деривация атрибутов)", doc: "/content/module-2/prodvinutoe-zaklinanie.md", exam: "/content/exams/module-2-prodvinutoe-zaklinanie.md" },
+      // Книга №2 инвентаря — восстановлена по решению автора курса (2026-07-21).
+      // Три пути формулы «Арки» (органы, предметы, недуги) + каталоги недугов.
+      { title: "Виды заклинаний и их применение — три пути формулы «Арки»", doc: "/content/module-2/vidy-zaklinaniy.md" },
       { title: "Инструменты заклинателя: дозволенные практики", doc: "/content/module-2/instrumenty-zaklinatelya.md", exam: "/content/exams/module-2-instrumenty-zaklinatelya.md" },
       { title: "Классификация недугов (Справочник)", doc: "/content/reference/classification.md", exam: "/content/exams/reference-classification.md" },
     ],
@@ -76,6 +79,10 @@ export const MODULES = [
       // почти полностью — убрана только сама техника нажатия/надавливания (см.
       // status: "author" в front matter файла и предупреждение в начале урока).
       { title: "Хитаб аль-Исаба — Влияние Волей: метод по органам", doc: "/content/module-5/hitab-al-isaba.md" },
+      // Книга №9 — продвинутые формулы действий (10 действий + комбо).
+      { title: "Продвинутый Мастер — уровни заклинания действием", doc: "/content/module-5/prodvinutyy-master.md" },
+      // Книга №12 — трёхуровневый метод по органам и видам колдовства.
+      { title: "Учебник по чтению заклинаний на органы по видам колдовства", doc: "/content/module-5/zaklinaniya-na-organy.md" },
     ],
   },
   {
@@ -100,7 +107,10 @@ export const MODULES = [
     status: "draft",
     doc: "/content/module-7/index.md",
     cover: "/assets/images/covers/ubivanie-dzhinnov.jpg",
-    lessons: [],
+    lessons: [
+      // Книга №4 — четырёхуровневая система формул убийства/сжигания джиннов.
+      { title: "Заклинания на убийство и сжигание джиннов — четыре уровня формулы", doc: "/content/module-7/zaklinaniya-na-ubiystvo-dzhinnov.md" },
+    ],
   },
   {
     id: 8,
