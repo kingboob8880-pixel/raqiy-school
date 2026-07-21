@@ -121,7 +121,30 @@
 
       introEl.textContent = "Поздравляем — курс пройден полностью. Вот ваш сертификат:";
       root.innerHTML = certHtml({ name: profile.name || "Ученик", sample: false, dateStr: new Date().toLocaleDateString("ru-RU") });
-      statusRoot.innerHTML = `<button class="btn btn-outline" onclick="window.print()">Распечатать / сохранить PDF</button>`;
+      // Скачивание RUKYA PRO — программа для приёма пациентов, обещанная в
+      // Модуле 11 — открывается только тем, кто реально закончил курс
+      // (та же проверка allDone, что решает, показывать ли сам сертификат
+      // выше), запрос автора "выдаём ученикам как только они заканчивают
+      // своё обучение", 2026-07-21. Файл лежит в самом репозитории сайта
+      // (assets/downloads/) — простое и быстрое решение, но не абсолютная
+      // защита: прямая ссылка технически доступна и без входа тому, кто её
+      // узнает, тот же уровень защиты, что и у остального статичного
+      // контента сайта (видео, изображения). Для более строгой защиты
+      // (доступ только через проверку Firebase после входа) нужен Firebase
+      // Storage с правилами доступа — не настроено.
+      statusRoot.innerHTML = `
+        <button class="btn btn-outline" onclick="window.print()">Распечатать / сохранить PDF</button>
+        <div class="card" style="max-width: 32rem; margin: var(--rp-space-5) auto; text-align:center;">
+          <h3 style="margin-bottom: var(--rp-space-2);">RUKYA PRO — программа для приёма пациентов</h3>
+          <p class="form-note">Теперь, когда курс завершён, можно скачать RUKYA PRO — рабочую
+             программу для ведения пациентов (из Модуля 11). Работает офлайн, без браузера,
+             все данные хранятся только на вашем компьютере.</p>
+          <a class="btn btn-primary" style="margin-top: var(--rp-space-3);"
+             href="${withBase("/assets/downloads/RUKYA-PRO-Setup-1.0.0.exe")}" download>Скачать RUKYA PRO (.exe, ~87 МБ) →</a>
+          <p class="form-note" style="margin-top: var(--rp-space-2);">При первом запуске Windows
+             может показать предупреждение SmartScreen (программа новая, без платной цифровой
+             подписи) — это ожидаемо, нужно нажать «Подробнее» → «Выполнить в любом случае».</p>
+        </div>`;
     });
   </script>
 </body>
