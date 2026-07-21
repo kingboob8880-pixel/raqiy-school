@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Общее понятие заклинания — метод «Влияние Волей»"
 book: "/content/module-2/obshchee-ponyatie-zaklinanie.md"
-status: draft
+status: author
 ---
 
 1. Какой статус присвоен этому разделу в системе бейджей курса?

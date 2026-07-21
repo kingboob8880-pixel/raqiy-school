@@ -2,7 +2,7 @@
 title: "Рукья против сихра, сглаза и зависти"
 module: 5
 source: "Книги Лекарь — папка Лекарь"
-status: draft
+status: author
 ---
 
 ## Подробная инструкция по применению аятов против колдовства, сглаза и зависти
@@ -20,49 +20,49 @@ status: draft
 #### Рукия 1
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">ةرَحَسَّلا نَوُمُسرْيَ امَ لَّكُ لُطِبْيُسَ اللَّ نَّإِ</div>
+  <div class="ayah-card__arabic" lang="ar">إِنَّ لَّلا سَيُبْطِلُ كُلَّ مَا يَرْسمُوُنَ السَّحَرَة</div>
   <div class="ayah-card__translit">Инна Аллаха саюбатилу кулла ма ярсумуна-с-сахарату</div>
   <div class="ayah-card__translation">Воистину, Аллах уничтожит всё, что рисуют колдуны</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">ةرَحَسَّلا هُبُتكْيَ امَ لَّكُ لُطِبْيُسَ اللَّ نَّإِ</div>
+  <div class="ayah-card__arabic" lang="ar">إِنَّ لَّلا سَيُبْطِلُ كُلَّ مَا يَكْتبُهُ السَّحَرَة</div>
   <div class="ayah-card__translit">Инна Аллаха сайубтилу кулла ма йактубуху ссахарату</div>
   <div class="ayah-card__translation">Воистину, Аллах уничтожит всё, что пишут колдуны</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">رٍحِاسَ دَيْكَ اوُعَنصَ امَ لَّكُ هُلُطِبْيُسَ اللَّ نَّإِ</div>
+  <div class="ayah-card__arabic" lang="ar">إِنَّ لَّلا سَيُبْطِلُهُ كُلَّ مَا صَنعَوُا كَيْدَ سَاحِرٍ</div>
   <div class="ayah-card__translit">Инна-Ллаха сайубтилуху кулла ма сана'у кайду сахир</div>
   <div class="ayah-card__translation">Воистину, Аллах уничтожит всё, что они ухищряются, [всё] коварство колдуна</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">ةِرَحَسَّلاوَ ةِنَهَكَلْا نَمِ يدِسَجَ يِف امَ لَخَدَ رٍشَ لَّكُ لُطِبَيُسَ اللَ نَّإِ</div>
+  <div class="ayah-card__arabic" lang="ar">إِنَّ لَلا سَيُبَطِلُ كُلَّ شَرٍ دَخَلَ مَا فِي جَسَدِي مِنَ الْكَهَنَةِ وَالسَّحَرَةِ</div>
   <div class="ayah-card__translit">Инна Аллоха сайубаттилу кулла шаррин дахаля ма фи жасади мина-ль-кахянати вас-сахарати</div>
   <div class="ayah-card__translation">Поистине, Аллах уничтожит всякое зло, вошедшее в мое тело от колдунов и магов</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">رِوُبُقلْا دِاَّبُع دَيْكَ اوُعَنصَ امَ لَّكُ هُلُطِبْيُسَ اللَّ نَّإِ</div>
+  <div class="ayah-card__arabic" lang="ar">إِنَّ لَّلا سَيُبْطِلُهُ كُلَّ مَا صَنعَوُا كَيْدَ عبُاَّدِ الْقبُوُرِ</div>
   <div class="ayah-card__translit">Инна Аллаха сайубтилуху кулля ма сана'у кайду 'уббадиль-кубуур</div>
   <div class="ayah-card__translation">Поистине, Аллах уничтожит всё, что они совершили из козней поклоняющихся могилам</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">نِيطِاَيشَ دِاَّبُع دَيْكَ اوُعَنصَ امَ لَّكُ هُلُطِبْيُسَ اللَّ نَّإِ</div>
+  <div class="ayah-card__arabic" lang="ar">إِنَّ لَّلا سَيُبْطِلُهُ كُلَّ مَا صَنعَوُا كَيْدَ عبُاَّدِ شَياَطِينِ</div>
   <div class="ayah-card__translit">Инна Аллаха сайубтилуху кулля ма сана'у кайду 'уббади шайатыин</div>
   <div class="ayah-card__translation">Поистине, Аллах уничтожит всё, что они совершили из козней поклоняющихся шайтанам</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">مٍاَنصْأَ دِاَّبُع دَيْكَ اوُعَنصَ امَ لَّكُ هُلُطِبْيُسَ اللَّ نَّإِ</div>
+  <div class="ayah-card__arabic" lang="ar">إِنَّ لَّلا سَيُبْطِلُهُ كُلَّ مَا صَنعَوُا كَيْدَ عبُاَّدِ أَصْناَمٍ</div>
   <div class="ayah-card__translit">Инна Аллаха сайубтилуху кулля ма сана'у кайду 'уббади аснаам</div>
   <div class="ayah-card__translation">Поистине, Аллах уничтожит всё, что они совершили из козней поклоняющихся идолам</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">مِوجُّنلا دِاَّبُع دَيْكَ اوُعَنصَ امَ لَّكُ هُلُطِبْيُسَ اللَّ نَّإِ</div>
+  <div class="ayah-card__arabic" lang="ar">إِنَّ لَّلا سَيُبْطِلُهُ كُلَّ مَا صَنعَوُا كَيْدَ عبُاَّدِ النجُّومِ</div>
   <div class="ayah-card__translit">Инна Аллаха сайубтилуху кулля ма сана'у кайду 'уббади-ннуджум</div>
   <div class="ayah-card__translation">Поистине, Аллах уничтожит всё, что они совершили из козней поклоняющихся звёздам</div>
 </div>
@@ -73,7 +73,7 @@ status: draft
 #### Рукия 2
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">ارًوُثنْمَ ءًاَبهَ هاَنلْعَجَفَ رٍحِاسَ دَيْكَ اوُعَنصَ امَ لَّكُ</div>
+  <div class="ayah-card__arabic" lang="ar">كُلَّ مَا صَنعَوُا كَيْدَ سَاحِرٍ فَجَعَلْناَه هَباَءً مَنْثوُرًا</div>
   <div class="ayah-card__translit">Кулля ма сана'у кайду сахир, фа-джа'альнаху хаба'ан мансура</div>
   <div class="ayah-card__translation">Всё, что они ухищрялись, [всё] коварство колдуна -- Мы обратим его в рассеянный прах</div>
 </div>
@@ -84,13 +84,13 @@ status: draft
 #### Рукия 3
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">رٍحِاسَ دَيْكَ اوُعَنصَ امَ لَّكُ اللُ رَمَّدَ</div>
+  <div class="ayah-card__arabic" lang="ar">دَمَّرَ لُلا كُلَّ مَا صَنعَوُا كَيْدَ سَاحِرٍ</div>
   <div class="ayah-card__translit">Даммара-Ллаху кулла ма сана'у кайду сахирин</div>
   <div class="ayah-card__translation">Да уничтожит Аллах всё что они колдуны сотворили из козней</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">رٍحِاسَ دَيْكَ اوُعَنصَ امَ لَّكُ نْمِ جَرَخَ رٍشَ لَّكُ اللَّ رَمَّدَ</div>
+  <div class="ayah-card__arabic" lang="ar">دَمَّرَ لَّلا كُلَّ شَرٍ خَرَجَ مِنْ كُلَّ مَا صَنعَوُا كَيْدَ سَاحِرٍ</div>
   <div class="ayah-card__translit">Даммара-Ллаху кулла шаррин кхараджа мин кулла ма сана'у кайду сахирин</div>
   <div class="ayah-card__translation">Да уничтожит Аллах всё зло, исходящее из всего, что они совершили, [а также] козни колдуна!</div>
 </div>
@@ -101,13 +101,13 @@ status: draft
 #### Рукия 4
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">رٍحِاسَ دَيْكَ اوُعَنصَ امَ لَّكُ لْطِبْأَ مَّهُللا</div>
+  <div class="ayah-card__arabic" lang="ar">اللهُمَّ أَبْطِلْ كُلَّ مَا صَنعَوُا كَيْدَ سَاحِرٍ</div>
   <div class="ayah-card__translit">Аллахумма абтыль кулла ма сана'у кайда сахирин</div>
   <div class="ayah-card__translation">Аллахумма, уничтожь всё, что они совершили колдуны</div>
 </div>
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">رٍحِاسَ دَيْكَ اوُعَنصَ امَ لَّكُ رْمِّدَ مَّهُللا</div>
+  <div class="ayah-card__arabic" lang="ar">اللهُمَّ دَمِّرْ كُلَّ مَا صَنعَوُا كَيْدَ سَاحِرٍ</div>
   <div class="ayah-card__translit">Аллахумма даммир кулля ма сана'у кайда сахирин</div>
   <div class="ayah-card__translation">Аллахумма, разрушь всё, что они сотворили, [как] козни колдуна!</div>
 </div>
@@ -173,7 +173,7 @@ status: draft
 **1. От сглаза и зависти:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">ءِامَلْاِب دِسَحَلْاوَ نِيْعَلْا لَّكُ اللُ جُرِخْيُ</div>
+  <div class="ayah-card__arabic" lang="ar">يُخْرِجُ لُلا كُلَّ الْعَيْنِ وَالْحَسَدِ باِلْمَاءِ</div>
   <div class="ayah-card__translit">Юхриджу-Ллаху кулля-ль-'айни ва-ль-хасади би-ль-маи</div>
   <div class="ayah-card__translation">Аллах выводит всякий сглаз и зависть через воду</div>
 </div>
@@ -181,7 +181,7 @@ status: draft
 **2. От сихра:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">ءامَلْاِب رٍحْسِ لَّكُ اللَّّ جُرِخْيُ</div>
+  <div class="ayah-card__arabic" lang="ar">يُخْرِجُ اللَّهِ كُلَّ سِحْرٍ باِلْمَاء</div>
   <div class="ayah-card__translit">Юхриджу Ллаху кулла сихр биль-маи</div>
   <div class="ayah-card__translation">Аллах изгоняет всю магию водами</div>
 </div>
@@ -189,7 +189,7 @@ status: draft
 **3. От зла во взглядах людей:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا رِاصَبْأَ نْمِ جَرَخَ رٍشَ لَّكُ اللَّّ رَمَّدَ</div>
+  <div class="ayah-card__arabic" lang="ar">دَمَّرَ اللَّهِ كُلَّ شَرٍ خَرَجَ مِنْ أَبْصَارِ الناَّسِ</div>
   <div class="ayah-card__translit">Даммара-Ллаху кулла шаррин хараджа мин абсари-н-нас</div>
   <div class="ayah-card__translation">Да уничтожит Аллах всё зло, исходящее из взоров людей</div>
 </div>
@@ -197,7 +197,7 @@ status: draft
 **4. От зла в сердцах людей:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا بِوُلُق نْمِ جَرَخَ رٍشَ لَّكُ اللَّّ رَمَّدَ</div>
+  <div class="ayah-card__arabic" lang="ar">دَمَّرَ اللَّهِ كُلَّ شَرٍ خَرَجَ مِنْ قلُوُبِ الناَّسِ</div>
   <div class="ayah-card__translit">Даммара-Ллаху кулла шаррин харажя мин кулюби-н-нас</div>
   <div class="ayah-card__translation">Да уничтожит Аллах всё зло, вышедшее из сердец людей</div>
 </div>
@@ -205,7 +205,7 @@ status: draft
 **5. От зла в душах людей:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا سِفْنَّلا نَمِ جَرَخَ رٍشَ لَّكُ اللَّّ رَمَّدَ</div>
+  <div class="ayah-card__arabic" lang="ar">دَمَّرَ اللَّهِ كُلَّ شَرٍ خَرَجَ مِنَ النَّفْسِ الناَّسِ</div>
   <div class="ayah-card__translit">Даммара-Ллаху кулла шаррин харажя мин ан-нафси ан-наси</div>
   <div class="ayah-card__translation">Да уничтожит Аллах всё зло, исходящее из души людей</div>
 </div>
@@ -223,7 +223,7 @@ status: draft
 ### Дуа для очищения от сглаза и зависти через ветер
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا دِسَحَوَ نِوُيُعلْا لَّكُ حِيرِلاِب اللُ جُرْخَيَ</div>
+  <div class="ayah-card__arabic" lang="ar">يَخَرْجُ لُلا باِلرِيحِ كُلَّ الْعيُوُنِ وَحَسَدِ الناَّسِ</div>
   <div class="ayah-card__translit">Яхруджу-Ллаху бир-рихи куллаль-уюни ва хасадин-наси</div>
   <div class="ayah-card__translation">Да выведет Аллах через ветер все сглазы и зависти людей</div>
 </div>
@@ -241,7 +241,7 @@ status: draft
 ### Дуа для очищения от сглаза и зависти через землю
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا دِسَحَوَ نِوُيُعلْا لَّكُ ةِبَرْتُّلاِب اللُ جُرْخَيَ</div>
+  <div class="ayah-card__arabic" lang="ar">يَخَرْجُ لُلا باِلتُّرْبَةِ كُلَّ الْعيُوُنِ وَحَسَدِ الناَّسِ</div>
   <div class="ayah-card__translit">Яхруджу-Ллаху бит-турбати куллаль-уюни ва хасадин-наси</div>
   <div class="ayah-card__translation">Да выведет Аллах через почву все сглазы и зависти людей</div>
 </div>
@@ -259,7 +259,7 @@ status: draft
 ### Дуа для очищения от сглаза и зависти через огонь
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا دِسَحَوَ نِوُيُعلْا لَّكُ رِاَّنلاِب اللُ جُرْخَيَ</div>
+  <div class="ayah-card__arabic" lang="ar">يَخَرْجُ لُلا باِلناَّرِ كُلَّ الْعيُوُنِ وَحَسَدِ الناَّسِ</div>
   <div class="ayah-card__translit">Яхруджу-Ллаху бин-нари куллаль-уюни ва хасадин-наси</div>
   <div class="ayah-card__translation">Да выведет Аллах через огонь все сглазы и зависти людей</div>
 </div>
@@ -277,7 +277,7 @@ status: draft
 ### Дуа для очищения от сглаза и зависти через воду
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا دِسَحَوَ نِوُيُعلْا لَّكُ ءِامَلْاِب اللُ جُرْخَيَ</div>
+  <div class="ayah-card__arabic" lang="ar">يَخَرْجُ لُلا باِلْمَاءِ كُلَّ الْعيُوُنِ وَحَسَدِ الناَّسِ</div>
   <div class="ayah-card__translit">Яхруджу-Ллаху биль-маи куллаль-уюни ва хасадин-наси</div>
   <div class="ayah-card__translation">Да выведет Аллах через воду все сглазы и зависти людей</div>
 </div>

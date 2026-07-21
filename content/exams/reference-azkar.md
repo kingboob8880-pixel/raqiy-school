@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Базовые азкары и дуа защиты"
 book: "/content/reference/azkar.md"
-status: draft
+status: author
 ---
 
 1. Какой аят называется самым сильным из ежедневных азкаров защиты?

@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Дуа о Божественном Сокрытии и Защите"
 book: "/content/module-6/dua-o-sokrytii.md"
-status: draft
+status: author
 ---
 
 1. О чём именно просит раки в этой мольбе — судя по ключевому слову «стур»?

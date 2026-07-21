@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Открытие духовных замков — авторская система дуа"
 book: "/content/module-6/otkrytie-dukhovnykh-zamkov.md"
-status: draft
+status: author
 ---
 
 1. Что означает «замок» (قُفْل) в этой авторской системе?

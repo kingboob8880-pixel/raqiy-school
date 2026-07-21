@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Арсенал против колдовства, сглаза и зависти"
 book: "/content/module-6/arsenal-protiv-koldovstva.md"
-status: draft
+status: author
 ---
 
 1. Какой общий принцип лежит в основе всех дуа этого урока?
