@@ -213,6 +213,56 @@ p { margin: 0 0 var(--rp-space-4); }
   padding-top: var(--rp-space-2); margin-top: var(--rp-space-2);
 }
 
+/* ---------- Карточки атрибутов/терминов + нумерованные шаги — для контента
+   уроков с каталогами (напр. модуль 2, "продвинутое заклинание") ----------
+   Перенесено из отдельного авторского HTML-файла (ruqyah-advanced44.html,
+   запрос "слей с сайтом... переработай визуал", 2026-07-21) — тот файл был
+   в своей отдельной тёмно-золотой теме со своими шрифтами (Cinzel/Amiri),
+   решили НЕ тащить отдельную тему, а пересобрать те же по духу карточки в
+   уже существующей палитре сайта (--rp-learn-*, --rp-color-gold-*, тот же
+   --rp-font-arabic) — с ней это и так уже золото-пергаментная эстетика,
+   отдельная тема не нужна. */
+.attr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr)); gap: var(--rp-space-4); margin: var(--rp-space-4) 0; }
+.attr-card {
+  background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-top: 3px solid var(--rp-learn-accent);
+  border-radius: var(--rp-radius-md); padding: var(--rp-space-4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.attr-card:hover { transform: translateY(-2px); box-shadow: var(--rp-shadow-card); }
+.attr-card__eyebrow { font-size: var(--rp-fs-sm); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rp-learn-badge-text); margin-bottom: var(--rp-space-2); }
+.attr-card__arabic { font-family: var(--rp-font-arabic); font-size: 1.4rem; direction: rtl; text-align: right; color: var(--rp-learn-text); margin-bottom: var(--rp-space-2); line-height: 1.7; }
+.attr-card__translit { font-style: italic; opacity: 0.8; font-size: var(--rp-fs-sm); margin-bottom: 0.25rem; }
+.attr-card__meaning { font-weight: 700; margin-bottom: 0.3rem; }
+.attr-card__source { font-size: var(--rp-fs-sm); color: var(--rp-learn-badge-text); margin-bottom: var(--rp-space-3); }
+.attr-card__use { font-size: var(--rp-fs-sm); opacity: 0.9; border-top: 1px solid var(--rp-learn-border); padding-top: var(--rp-space-2); }
+
+/* Компактные карточки для каталога терминов/глаголов — то же по духу, что
+   attr-card, но мельче (короткие 2-3-словные единицы, не абзацы). */
+.term-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: var(--rp-space-3); margin: var(--rp-space-4) 0; }
+.term-card { background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-sm); padding: var(--rp-space-3); text-align: center; transition: border-color 0.2s ease; }
+.term-card:hover { border-color: var(--rp-learn-accent); }
+.term-card__arabic { font-family: var(--rp-font-arabic); font-size: 1.25rem; direction: rtl; color: var(--rp-learn-accent-strong); margin-bottom: 0.2rem; }
+.term-card__translit { font-style: italic; opacity: 0.8; font-size: var(--rp-fs-sm); }
+.term-card__meaning { font-size: var(--rp-fs-sm); margin-top: 0.25rem; }
+
+/* Нумерованные шаги — тот же визуальный язык кружка-маркера, что уже
+   используют .path-step__marker ("Путь ученика") и пункты оглавления
+   (.doc-toc a::before) — единообразие вместо изобретения нового стиля
+   нумерации в третий раз. */
+.step-list { list-style: none; counter-reset: rp-step; margin: var(--rp-space-4) 0; padding: 0; }
+.step-list > li { counter-increment: rp-step; display: flex; gap: var(--rp-space-4); margin-bottom: var(--rp-space-4); align-items: flex-start; }
+.step-list > li::before {
+  content: counter(rp-step); flex: none; width: 2.4rem; height: 2.4rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-learn-accent) 16%, var(--rp-learn-surface-raised));
+  border: 2px solid var(--rp-learn-accent); color: var(--rp-learn-text);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--rp-font-heading); font-weight: 700; margin-top: 0.1rem;
+}
+.step-list h4 { margin: 0 0 0.3rem; }
+@media (max-width: 26rem) {
+  .attr-grid, .term-grid { grid-template-columns: 1fr; }
+}
+
 /* ---------- Значки статуса контента ---------- */
 .badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: var(--rp-fs-sm); font-weight: 700; padding: 0.25rem 0.65rem; border-radius: var(--rp-radius-pill); }
 .badge-certified { background: var(--rp-color-green-100); color: var(--rp-color-green-800); }
