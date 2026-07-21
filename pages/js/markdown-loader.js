@@ -4,7 +4,7 @@
 // странице отдельным <script> из CDN — см. pages/book.html/module.html).
 
 import { withBase } from "./base-path.js?v=6";
-import { MODULES } from "./modules-data.js?v=15";
+import { MODULES } from "./modules-data.js?v=16";
 
 export function parseFrontMatter(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
