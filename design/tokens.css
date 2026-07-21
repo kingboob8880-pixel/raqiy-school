@@ -287,67 +287,43 @@ html[data-site-theme="emerald"] {
     radial-gradient(130% 70% at 50% -10%, #245038, var(--rp-color-emerald-900) 65%);
 }
 
-/* B — Светлый с тонким геометрическим паттерном */
-/* Полный ре-дизайн акцента (запрос автора "переделай эту тему, это
-   средняя тема светлая", 2026-07-21, по трём пунктам сразу: акцент не
-   зелёный + карточки объёмнее + больше визуального характера). Раньше
-   тема целиком красилась зелёным green-700/800 — той же палитрой, что и
-   тема "изумруд" — и не имела собственной идентичности, просто "светлая
-   версия изумруда". Теперь акцент — терракота (--rp-color-terracotta-*,
-   см. primitives выше), узор фона заметнее (opacity 0.22→0.3) и того же
-   тёплого тона, что акцент, а surface-raised — не едва уловимый
-   parchment-50 (предыдущая правка этого же дня), а заметный терракотовый
-   намёк на белом (#f6f0ee — 8%-подмес terracotta-700 в белый), чтобы
-   градиент .card был виден, а не почти неотличим от плоской заливки. */
+/* B — Чистая светлая тема (deep-blue accent) */
+/* Полный редизайн светлой темы (запрос автора "полностью переделай с
+   нуля чтобы светлая тема была прям светлой и приятной современной",
+   2026-07-21). Предыдущая итерация (терракота) была слишком тёплой/
+   мутной. Новая палитра — чистый белый фон с едва заметным холодным
+   оттенком, акцент — глубокий синий (#2855a8), контрастно отличается
+   от золота (baseline) и зелени (emerald). Синий — один из ключевых
+   цветов исламского искусства. Контраст: #2855a8 на белом — 6.7:1
+   (AA+), #1e3f7a — 10.2:1 (AAA), белый на #2855a8 — 6.7:1 (AA+),
+   #64748b (muted) на белом — 4.8:1 (AA). */
 html[data-site-theme="pattern"] {
-  /* Фон переделан по референсу "design white.html" (автор добавил файл
-     специально для светлой темы, 2026-07-21, попросил "обнови по ней нашу
-     светлую тему"). В референсе ромбовидного узора нет вообще — вместо
-     него мягкое двухслойное радиальное свечение (блик сверху + едва
-     заметное цветное пятно в углу) поверх ровной заливки; в оригинале
-     цветное пятно зелёное (та же палитра, что у "изумруда") — по прямому
-     выбору автора (см. уточняющий вопрос) структура взята, а акцентный
-     цвет остаётся терракотовым, не зелёным, — терракота лишь заменяет
-     зелёный в том же самом свечении. Заодно снимает и жалобу класса
-     "резко/жёстко для глаз" (та же природа, что чинили у baseline-темы
-     этим же днём) — тут фон вообще без штриховой текстуры, только мягкий
-     цвет. */
   --rp-learn-bg:
-    radial-gradient(1100px 620px at 50% -8%, var(--rp-color-parchment-50), rgba(251, 246, 236, 0) 70%),
-    radial-gradient(900px 700px at 92% 30%, rgba(143, 67, 37, 0.07), rgba(143, 67, 37, 0) 60%),
-    var(--rp-color-parchment-200);
+    radial-gradient(1100px 620px at 50% -8%, #ffffff, rgba(255,255,255,0) 70%),
+    radial-gradient(900px 700px at 92% 30%, rgba(37, 78, 158, 0.045), rgba(37, 78, 158, 0) 60%),
+    #f8f9fc;
   --rp-learn-surface: #ffffff;
-  --rp-learn-surface-raised: #f6f0ee;
-  /* Рамка карточек была акцентно-терракотовой на 32% — заметно "цветнее",
-     чем у референса, там рамка нейтрально-чернильная и едва заметная
-     (rgba(43,36,23,.1)) — терракота у него появляется только на бейджах и
-     при наведении (.lift:hover уже подмешивает --rp-learn-accent через
-     color-mix, не трогать). Снижено до нейтрального ink-900 (тот же rgb,
-     что и в --rp-shadow-card/-pop, 34,28,17) на 12% — карточки спокойнее,
-     акцент остаётся только там, где он смыслово нужен. */
-  --rp-learn-border: rgba(34, 28, 17, 0.12);
-  --rp-learn-text: var(--rp-color-ink-900);
-  --rp-learn-text-muted: var(--rp-color-sand-600);
-  --rp-learn-accent: var(--rp-color-terracotta-700);
-  --rp-learn-accent-strong: var(--rp-color-terracotta-800);
+  --rp-learn-surface-raised: #f0f2f7;
+  --rp-learn-border: rgba(15, 23, 42, 0.09);
+  --rp-learn-text: #0f172a;
+  --rp-learn-text-muted: #64748b;
+  --rp-learn-accent: #2855a8;
+  --rp-learn-accent-strong: #1e3f7a;
   --rp-learn-accent-contrast: #ffffff;
-  /* Текст светлый (белый) — направление градиента затемняет, не
-     осветляет (тот же принцип, что был у зелёного варианта: белый на
-     terracotta-800 — 9.0:1, 2026-07-21). */
-  --rp-learn-accent-alt: var(--rp-color-terracotta-800);
-  --rp-learn-icon-bg: rgba(143, 67, 37, 0.12);
-  --rp-learn-icon-text: var(--rp-color-terracotta-700);
-  --rp-learn-badge-bg: rgba(143, 67, 37, 0.1);
-  --rp-learn-badge-text: var(--rp-color-terracotta-700);
-  --rp-learn-badge-border: rgba(143, 67, 37, 0.28);
-  --rp-ayah-card-bg: var(--rp-color-ink-900);
-  --rp-ayah-card-text: var(--rp-color-parchment-50);
-  --rp-ayah-card-accent: var(--rp-color-terracotta-700);
+  --rp-learn-accent-alt: #1e3f7a;
+  --rp-learn-icon-bg: rgba(40, 85, 168, 0.08);
+  --rp-learn-icon-text: #2855a8;
+  --rp-learn-badge-bg: rgba(40, 85, 168, 0.07);
+  --rp-learn-badge-text: #1e3f7a;
+  --rp-learn-badge-border: rgba(40, 85, 168, 0.18);
+  --rp-ayah-card-bg: #0f172a;
+  --rp-ayah-card-text: #f1f5f9;
+  --rp-ayah-card-accent: #60a5fa;
   --rp-hero-panel-gradient:
-    radial-gradient(60% 80% at 88% 0%, rgba(143, 67, 37, 0.12), transparent 60%),
-    radial-gradient(130% 70% at 50% -10%, #fdf9ef, var(--rp-color-parchment-200) 65%);
-  --rp-hero-panel-text: var(--rp-color-ink-900);
-  --rp-hero-panel-accent: var(--rp-color-terracotta-700);
+    radial-gradient(60% 80% at 88% 0%, rgba(40, 85, 168, 0.07), transparent 60%),
+    radial-gradient(130% 70% at 50% -10%, #ffffff, #f0f2f7 65%);
+  --rp-hero-panel-text: #0f172a;
+  --rp-hero-panel-accent: #2855a8;
 }
 
 /* ============================================================
@@ -383,33 +359,24 @@ html[data-site-theme="emerald"] {
   --rp-admin-accent-contrast: var(--rp-color-ink-900);
 }
 
-/* B — Светлый паттерн: оба кабинета — светлый режим */
-/* Акцент кабинетов переведён на терракоту вместе с зоной "learn" (запрос
-   "переделай эту тему" целиком, не только лендинг, 2026-07-21) — иначе
-   кнопки в кабинете ученика/админа на этой теме остались бы зелёными,
-   рассинхронизированными с новой идентичностью темы. --rp-student-border
-   тоже был золотым (gold-500) — leftover от baseline, никогда не
-   принадлежал этой теме содержательно, заодно исправлено. --rp-admin-*
-   border/bg/surface оставлены нейтрально-серыми (graphite) — админка
-   намеренно нейтральна независимо от темы сайта, только акцент кнопок
-   меняется. */
+/* B — Светлая тема: оба кабинета — светлый режим (deep-blue accent) */
 html[data-site-theme="pattern"] {
-  --rp-student-bg: var(--rp-color-parchment-200);
+  --rp-student-bg: #f0f2f7;
   --rp-student-surface: #ffffff;
-  --rp-student-surface-raised: #f6f0ee;
-  --rp-student-border: var(--rp-color-terracotta-700);
-  --rp-student-text: var(--rp-color-ink-900);
-  --rp-student-accent: var(--rp-color-terracotta-700);
-  --rp-student-accent-strong: var(--rp-color-terracotta-800);
+  --rp-student-surface-raised: #ebedf4;
+  --rp-student-border: #2855a8;
+  --rp-student-text: #0f172a;
+  --rp-student-accent: #2855a8;
+  --rp-student-accent-strong: #1e3f7a;
   --rp-student-accent-contrast: #ffffff;
 
-  --rp-admin-bg: var(--rp-color-graphite-100);
+  --rp-admin-bg: #e8eaee;
   --rp-admin-surface: #ffffff;
-  --rp-admin-surface-raised: #f6f6f7;
+  --rp-admin-surface-raised: #f2f3f6;
   --rp-admin-border: var(--rp-color-graphite-700);
   --rp-admin-text: var(--rp-color-graphite-900);
-  --rp-admin-accent: var(--rp-color-terracotta-700);
-  --rp-admin-accent-strong: var(--rp-color-terracotta-800);
+  --rp-admin-accent: #2855a8;
+  --rp-admin-accent-strong: #1e3f7a;
   --rp-admin-accent-contrast: #ffffff;
 }
 

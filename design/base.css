@@ -157,7 +157,7 @@ p { margin: 0 0 var(--rp-space-4); }
 }
 .theme-switcher__btn[aria-pressed="true"] { border-color: var(--rp-zone-accent, var(--rp-learn-accent)); }
 .theme-switcher__btn[data-theme="emerald"] { background: linear-gradient(135deg, #245038, #16281d); }
-.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #fbf6ec, #e8dcc0); }
+.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #f8f9fc, #b8c5db); }
 .theme-switcher__btn[data-theme="split"] { background: linear-gradient(135deg, #faf6ec, #b0842c); }
 
 /* ---------- Кнопки ---------- */
@@ -312,7 +312,7 @@ p { margin: 0 0 var(--rp-space-4); }
 /* ---------- Значки статуса контента ---------- */
 .badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: var(--rp-fs-sm); font-weight: 700; padding: 0.25rem 0.65rem; border-radius: var(--rp-radius-pill); }
 .badge-certified { background: var(--rp-color-green-100); color: var(--rp-color-green-800); }
-.badge-draft { background: var(--rp-color-gold-100); color: var(--rp-color-gold-600); }
+.badge-draft { background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface)); color: var(--rp-learn-text); }
 .badge-archive { background: var(--rp-color-graphite-100); color: var(--rp-color-graphite-800); }
 /* Авторская методика (напр. формула-конструктор "Аркы") — не Сунна, не путать с
    "подтверждено"/"черновик": помечает контент, включённый по решению автора
@@ -783,7 +783,7 @@ main.container { padding-block: var(--rp-space-6); }
 .doc-body ul li { margin-bottom: var(--rp-space-2); }
 .doc-body table { width: 100%; border-collapse: collapse; margin: var(--rp-space-4) 0; }
 .doc-body th, .doc-body td { border: 1px solid var(--rp-learn-border); padding: var(--rp-space-2) var(--rp-space-3); text-align: left; font-size: var(--rp-fs-sm); }
-.doc-body th { background: var(--rp-color-parchment-200); color: var(--rp-color-ink-900); }
+.doc-body th { background: var(--rp-learn-surface-raised); color: var(--rp-learn-text); }
 /* Богословские/предупредительные примечания в тексте книги (⚠️) — раньше
    рендерились как обычный blockquote без стиля, визуально не отличались
    от прозы (независимая проверка, 2026-07-19). */
@@ -1143,7 +1143,7 @@ main.container { padding-block: var(--rp-space-6); }
 .quiz-progress { height: 0.5rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); overflow: hidden; margin-bottom: var(--rp-space-5); }
 .quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.3s ease; }
 .quiz-option { display: block; width: 100%; min-height: 2.75rem; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; }
-.quiz-option[aria-pressed="true"] { border-color: var(--rp-learn-accent); background: var(--rp-color-gold-100); }
+.quiz-option[aria-pressed="true"] { border-color: var(--rp-learn-accent); background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface)); }
 /* Мгновенная обратная связь по вопросу (план улучшения курса, 2026-07-18,
    второй проход — retrieval practice). Фон смешан с текущим --rp-learn-surface
    через color-mix, а не жёстко-светлый цвет — иначе на тёмной теме "изумруд"
@@ -1189,7 +1189,7 @@ main.container { padding-block: var(--rp-space-6); }
 /* Тот же класс бага, что уже чинили у .lesson-link:hover — жёстко светлый
    фон при наведении + унаследованный светлый текст темы "изумруд" =
    нечитаемо (независимая проверка, 2026-07-20). */
-.test-item:hover { background: var(--rp-color-parchment-200); color: var(--rp-color-ink-900); }
+.test-item:hover { background: var(--rp-learn-surface-raised); color: var(--rp-learn-text); }
 .test-item--module { border-style: dashed; font-weight: 700; }
 
 .footer { padding: var(--rp-space-6) 0; text-align: center; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
