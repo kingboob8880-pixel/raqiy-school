@@ -6,9 +6,10 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Тест — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=17">
-<link rel="stylesheet" href="../../design/base.css?v=38">
+<link rel="stylesheet" href="../../design/base.css?v=39">
 </head>
 <body data-zone="learn">
+  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header"></div>
   <main class="container container--narrow">
     <div id="quiz-root" class="skeleton-loading">Загрузка…</div>
@@ -17,11 +18,11 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=14";
-    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=19";
+    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=20";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
     import { loadExamDoc } from "../js/exam-loader.js?v=8";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=8";
-    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=13";
+    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=14";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
@@ -108,6 +109,10 @@
       let current = 0;
       const answers = new Array(questions.length).fill(null);
 
+      // Предупреждение при случайном уходе со страницы (аудит, 2026-07-21).
+      const warnLeave = (e) => { e.preventDefault(); };
+      window.addEventListener("beforeunload", warnLeave);
+
       // Ссылка выхода до завершения — раньше единственным способом уйти
       // было закрыть вкладку (независимая проверка, 2026-07-19).
       const exitHref = isBookQuiz ? withBase(`/pages/modules/module.html?id=${mod.id}`) : withBase("/pages/dashboard/student.html");
@@ -161,6 +166,7 @@
       }
 
       async function finish() {
+        window.removeEventListener("beforeunload", warnLeave);
         const correctCount = answers.filter((a, i) => a === questions[i].correct).length;
         const ratio = correctCount / questions.length;
         const passed = ratio >= QUIZ_PASS_THRESHOLD;
