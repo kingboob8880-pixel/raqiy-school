@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
+<title>Об авторе — Лекарь Абу Мухаммад</title>
+<meta name="description" content="Абу Мухаммад — практикующий лекарь по рукье, основатель онлайн-школы. Обучение у шейхов, более 1600 публикаций, 284 голосовых урока.">
+<link rel="stylesheet" href="../design/tokens.css?v=17">
+<link rel="stylesheet" href="../design/base.css?v=38">
+<style>
+  .about-hero {
+    text-align: center;
+    padding: var(--rp-space-6) 0 var(--rp-space-4);
+  }
+  .about-hero__portrait {
+    width: 7rem; height: 7rem;
+    border-radius: var(--rp-radius-pill);
+    background: var(--rp-color-gold-100);
+    color: var(--rp-color-gold-600);
+    font-family: var(--rp-font-arabic);
+    font-size: 3rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 3px solid var(--rp-color-gold-400);
+    margin-bottom: var(--rp-space-3);
+  }
+  .about-hero__name {
+    font-family: var(--rp-font-heading);
+    font-size: var(--rp-fs-2xl);
+    font-weight: 800;
+    margin: 0 0 var(--rp-space-1);
+  }
+  .about-hero__role {
+    font-size: var(--rp-fs-sm);
+    color: var(--rp-learn-text-muted);
+    margin: 0;
+  }
+  .about-quote {
+    text-align: center;
+    font-style: italic;
+    color: var(--rp-learn-text-muted);
+    max-width: 36rem;
+    margin: var(--rp-space-4) auto var(--rp-space-5);
+    line-height: 1.7;
+  }
+  .about-section { margin-bottom: var(--rp-space-6); }
+  .about-section h2 {
+    display: flex; align-items: center; gap: var(--rp-space-2);
+    font-size: var(--rp-fs-lg); margin-bottom: var(--rp-space-3);
+  }
+  .about-section h2 span { font-size: 1.4em; }
+  .about-section p { line-height: 1.75; margin-bottom: var(--rp-space-3); }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    gap: var(--rp-space-3);
+    margin: var(--rp-space-5) 0;
+  }
+  .about-stat {
+    text-align: center;
+    padding: var(--rp-space-4) var(--rp-space-2);
+    border-radius: var(--rp-radius-md);
+    background: var(--rp-color-parchment-50);
+    border: 1px solid rgba(43, 36, 23, 0.08);
+  }
+  .about-stat__value {
+    font-family: var(--rp-font-heading);
+    font-size: var(--rp-fs-xl);
+    font-weight: 800;
+    color: var(--rp-color-gold-600);
+  }
+  .about-stat__label {
+    font-size: var(--rp-fs-sm);
+    color: var(--rp-learn-text-muted);
+    margin-top: var(--rp-space-1);
+  }
+
+  .specialization-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--rp-space-3);
+    margin-top: var(--rp-space-3);
+  }
+  .spec-card {
+    padding: var(--rp-space-4);
+    border-radius: var(--rp-radius-md);
+    background: var(--rp-color-parchment-50);
+    border: 1px solid rgba(43, 36, 23, 0.08);
+  }
+  .spec-card__icon { font-size: 1.5rem; margin-bottom: var(--rp-space-2); }
+  .spec-card h3 { font-size: var(--rp-fs-base); margin: 0 0 var(--rp-space-1); }
+  .spec-card p { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; line-height: 1.6; }
+
+  .principles-list { list-style: none; padding: 0; margin: 0; }
+  .principles-list li {
+    padding: var(--rp-space-3) 0;
+    border-bottom: 1px solid rgba(43, 36, 23, 0.08);
+    line-height: 1.7;
+  }
+  .principles-list li:last-child { border-bottom: none; }
+  .principles-list strong { color: var(--rp-color-gold-700); }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--rp-space-3);
+    margin-top: var(--rp-space-3);
+  }
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: var(--rp-space-3);
+    padding: var(--rp-space-4);
+    border-radius: var(--rp-radius-md);
+    background: var(--rp-color-parchment-50);
+    border: 1px solid rgba(43, 36, 23, 0.08);
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.2s;
+  }
+  .contact-card:hover { box-shadow: var(--rp-shadow-pop); }
+  .contact-card__icon { font-size: 1.5rem; flex-shrink: 0; }
+  .contact-card__label { font-weight: 600; font-size: var(--rp-fs-sm); }
+  .contact-card__handle { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+</style>
+</head>
+<body data-zone="learn">
+  <div id="site-header"></div>
+  <main class="container container--narrow">
+
+    <div class="about-hero reveal">
+      <div class="about-hero__portrait" aria-hidden="true">ش</div>
+      <h1 class="about-hero__name">Лекарь Абу Мухаммад</h1>
+      <p class="about-hero__role">Основатель онлайн-школы рукии · Практикующий лекарь</p>
+    </div>
+
+    <p class="about-quote reveal">
+      «Аллах Великодушный и Милостивый исцеляет Своих рабов —<br>
+      а лекарь является лишь причиной»
+    </p>
+
+    <div class="about-stats reveal">
+      <div class="about-stat card"><div class="about-stat__value">1600+</div><div class="about-stat__label">Публикаций</div></div>
+      <div class="about-stat card"><div class="about-stat__value">2+</div><div class="about-stat__label">Года практики</div></div>
+      <div class="about-stat card"><div class="about-stat__value">284</div><div class="about-stat__label">Голосовых уроков</div></div>
+      <div class="about-stat card"><div class="about-stat__value">7</div><div class="about-stat__label">Методов лечения</div></div>
+      <div class="about-stat card"><div class="about-stat__value">90+</div><div class="about-stat__label">Отзывов</div></div>
+    </div>
+
+    <section class="about-section reveal">
+      <h2><span>🎓</span> Образование и путь</h2>
+      <p>Меня зовут <strong>абу Мухаммад</strong>, я раб Аллаха. Рукья для меня — не «одна из услуг», а ответственность
+         перед Аллахом и людьми: поэтому я прошёл обучение у нескольких шейхов, а своим главным учителем и ориентиром
+         в методике считаю <strong>шейха Абдураззак аль-Азхар</strong>; важный слой знаний получил у <strong>Абу Захаби</strong>.</p>
+      <p>Фундамент — систематическое изучение <strong>Корана</strong>, <strong>хадисов</strong> и наследия учёных по рукье,
+         джиннам и сихру. Параллельно веду просветительскую работу: более 1600 публикаций, 284 голосовых урока и материалы
+         в Telegram-канале — чтобы люди могли отличать дозволенное от запретного и не терялись в страхе.
+         Постоянно углубляю знание и оттачиваю практику.</p>
+    </section>
+
+    <section class="about-section reveal">
+      <h2><span>⚔️</span> Специализация</h2>
+      <p>Сопровождаю мужчин и женщин с различными видами духовных поражений — опираясь <strong>только на Коран и Сунну</strong>,
+         без ширка и запретных приёмов. В арсенале — <strong>семь направлений лечения</strong>, которые комбинирую по ситуации:</p>
+      <div class="specialization-grid">
+        <div class="spec-card card">
+          <div class="spec-card__icon">🔮</div>
+          <h3>Сихр</h3>
+          <p>Колдовство всех видов: съеденный, закопанный, на разлуку, бесплодие, болезнь, привязку — включая сложные и запущенные формы.</p>
+        </div>
+        <div class="spec-card card">
+          <div class="spec-card__icon">👁</div>
+          <h3>Сглаз (Айн)</h3>
+          <p>Дурной глаз, поразивший здоровье, красоту, имущество, семью, детей, карьеру.</p>
+        </div>
+        <div class="spec-card card">
+          <div class="spec-card__icon">🌀</div>
+          <h3>Джинн / Шайтан</h3>
+          <p>Одержимость, массы (прикосновение), вселение, наущения (васваса), ночные кошмары.</p>
+        </div>
+        <div class="spec-card card">
+          <div class="spec-card__icon">🖤</div>
+          <h3>Хасад</h3>
+          <p>Разрушительная зависть, бьющая по достатку, здоровью, семье и благополучию.</p>
+        </div>
+        <div class="spec-card card">
+          <div class="spec-card__icon">🏠</div>
+          <h3>Чистка дома</h3>
+          <p>Очищение жилища от присутствия джиннов, негативных воздействий, следов колдовства.</p>
+        </div>
+        <div class="spec-card card">
+          <div class="spec-card__icon">😰</div>
+          <h3>Зажимы в теле</h3>
+          <p>Физические проявления духовных болезней: боли, блоки, тяжесть без медицинских причин.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-tint" style="margin: 0 calc(-1 * var(--rp-space-4)); padding: var(--rp-space-5) var(--rp-space-4); border-radius: var(--rp-radius-lg);">
+    <section class="about-section reveal" style="margin-bottom: 0;">
+      <h2><span>💎</span> Принципы и подход</h2>
+      <ul class="principles-list">
+        <li><strong>Только Коран, Сунна и дозволённые средства</strong> — никаких амулетов, сделок с джиннами и сомнительных ритуалов.</li>
+        <li><strong>Честность</strong> — сначала внимательный опрос и диагностика, затем ясное объяснение, что происходит и что по Шариату можно и нужно делать. Не обещаю «чудо за один день».</li>
+        <li><strong>Персональный план</strong> — кто-то выздоравливает через дистанционные практики и инструкции, кому-то важен очный контакт и ручной сеанс; в тяжёлых случаях возможно длительное сопровождение до стабильного результата.</li>
+        <li><strong>Прозрачность источников</strong> — каждая книга и каждая формула в курсе помечены: прямая цитата Корана и Сунны, устоявшаяся практика или авторская методика — открыто, без выдачи одного за другое.</li>
+        <li><strong>Упование только на Аллаха</strong> — моя роль: быть причиной (сабабом), через которую по воле Аллаха приходит облегчение.</li>
+      </ul>
+    </section>
+    </div>
+
+    <section class="about-section reveal" style="margin-top: var(--rp-space-6);">
+      <h2><span>📚</span> Онлайн-школа рукии</h2>
+      <p>Весь накопленный опыт я оформил в <strong>полноценный курс подготовки заклинателя (раки)</strong> — 11 модулей,
+         25 книг, от основ убеждённости до самостоятельного приёма пациентов. Каждый источник прошёл триаж по критерию подлинности
+         прежде чем попасть в программу. Каждую книгу помечаю как прямую цитату Корана/Сунны, устоявшуюся практику или
+         собственную методику — открыто, без выдачи одного за другое. Оплату каждого ученика подтверждаю лично.</p>
+      <div class="hero-actions" style="justify-content: flex-start;">
+        <a class="btn btn-primary" href="modules/index.html">Смотреть модули курса</a>
+        <a class="btn btn-outline" href="index.html">На главную</a>
+      </div>
+    </section>
+
+    <section class="about-section reveal">
+      <h2><span>📬</span> Контакты</h2>
+      <div class="contact-grid">
+        <a class="contact-card" href="https://t.me/Lechenya_bot" target="_blank" rel="noopener">
+          <span class="contact-card__icon">📋</span>
+          <div>
+            <div class="contact-card__label">Записаться на лечение</div>
+            <div class="contact-card__handle">@Lechenya_bot</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://t.me/ruqoq" target="_blank" rel="noopener">
+          <span class="contact-card__icon">💬</span>
+          <div>
+            <div class="contact-card__label">Связь с лекарем</div>
+            <div class="contact-card__handle">@ruqoq</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://t.me/health_ruqiya" target="_blank" rel="noopener">
+          <span class="contact-card__icon">📢</span>
+          <div>
+            <div class="contact-card__label">Telegram-канал</div>
+            <div class="contact-card__handle">@health_ruqiya</div>
+          </div>
+        </a>
+        <a class="contact-card" href="https://t.me/svdeteli" target="_blank" rel="noopener">
+          <span class="contact-card__icon">⭐</span>
+          <div>
+            <div class="contact-card__label">Отзывы свидетелей</div>
+            <div class="contact-card__handle">@svdeteli</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+  </main>
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter } from "./js/layout.js?v=14";
+    renderHeader("learn");
+    renderFooter();
+
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    } else {
+      document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
+    }
+  </script>
+</body>
+</html>
