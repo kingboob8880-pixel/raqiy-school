@@ -71,6 +71,11 @@ export const MODULES = [
     doc: "/content/module-5/index.md",
     lessons: [
       { title: "Очищение разума — авторские формулы по функциям тела и психики", doc: "/content/module-5/ochishchenie-razuma.md", exam: "/content/exams/module-5-ochishchenie-razuma.md" },
+      // Книга №16 инвентаря — раньше исключена целиком (project.md §9а, диагностика
+      // надавливанием). По прямому решению автора курса (2026-07-21) восстановлена
+      // почти полностью — убрана только сама техника нажатия/надавливания (см.
+      // status: "author" в front matter файла и предупреждение в начале урока).
+      { title: "Хитаб аль-Исаба — Влияние Волей: метод по органам", doc: "/content/module-5/hitab-al-isaba.md" },
     ],
   },
   {
