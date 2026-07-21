@@ -6,6 +6,13 @@
 import { withBase } from "./base-path.js?v=6";
 import { MODULES } from "./modules-data.js?v=19";
 
+/** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter
+ *  значений (title, source) через innerHTML (аудит, 2026-07-21). */
+function esc(s) {
+  if (!s) return "";
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 export function parseFrontMatter(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (!match) return { meta: {}, body: raw };
@@ -42,10 +49,10 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
     ? window.marked.parse(doc.body)
     : `<pre style="white-space:pre-wrap; overflow-wrap:anywhere;">${doc.body}</pre>`;
   container.innerHTML = `
-    ${showTitle && doc.meta.title ? `<h1>${doc.meta.title}</h1>` : ""}
+    ${showTitle && doc.meta.title ? `<h1>${esc(doc.meta.title)}</h1>` : ""}
     <div class="doc-meta">
       ${statusBadgeHtml(doc.meta.status)}
-      ${doc.meta.source ? `<p class="form-note">Источник: ${doc.meta.source}</p>` : ""}
+      ${doc.meta.source ? `<p class="form-note">Источник: ${esc(doc.meta.source)}</p>` : ""}
     </div>
     <div class="doc-body">${html}</div>
   `;
