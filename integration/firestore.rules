@@ -11,6 +11,18 @@ service cloud.firestore {
     function isOwner(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
+    // Раздел "Архив" (content/_content_archive_index_md — bookKey() от
+    // "/content/archive/index.md") разбирает материалы, исключённые из
+    // сертифицируемой программы, с прямой критикой конкретных книг/методик.
+    // Автор попросил "убери от всех кроме меня админа" (2026-07-21) — на
+    // клиенте (pages/book.html) уже сделано, но реальная защита живёт
+    // здесь: без этой правки любой ОПЛАТИВШИЙ курс ученик всё равно мог бы
+    // прочитать полный текст прямым запросом к Firestore (SDK/консоль),
+    // в обход JS-стены — то же рассуждение, что и у общего правила ниже
+    // ("реальная защита пейвола вместо визуальной").
+    function isArchiveDoc(docId) {
+      return docId == '_content_archive_index_md';
+    }
 
     match /admins/{uid} {
       // Список админов не создаётся через клиент — только вручную в консоли Firebase
@@ -47,8 +59,11 @@ service cloud.firestore {
     // scripts/seed-paid-content.mjs через Admin SDK от имени автора курса —
     // клиентской записи с этой коллекцией не предполагается вовсе.
     match /content/{docId} {
+      // Архив — исключение из общего правила "оплатил → читает всё": даже
+      // paid == true не даёт доступа к этому docId, только isAdmin().
       allow read: if isAdmin()
-                  || (isSignedIn() && get(/databases/$(database)/documents/students/$(request.auth.uid)).data.paid == true);
+                  || (!isArchiveDoc(docId) && isSignedIn()
+                      && get(/databases/$(database)/documents/students/$(request.auth.uid)).data.paid == true);
       allow write: if false;
     }
   }
