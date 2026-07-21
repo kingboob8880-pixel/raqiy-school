@@ -326,6 +326,46 @@ html[data-site-theme="pattern"] {
   --rp-hero-panel-accent: #2855a8;
 }
 
+/* C — Тёмный уголь + золото (референс: второй сайт автора,
+   https://kingboob8880-pixel.github.io/site/, запрос "переделай третью
+   тему на тёмный стиль наподобие этого", 2026-07-21). Раньше "split" не
+   переопределялся вообще — читал светлый золото-пергаментный baseline из
+   :root, что делало вторую и третью темы почти неотличимы после
+   переделки "pattern" в синюю. Теперь — тёплый почти-чёрный фон
+   (#0d0b08, тот же тон, что и на референс-сайте) с приглушённым золотым
+   акцентом — третья тема наконец самостоятельна: не зелёная (emerald), не
+   синяя (pattern), а тёмно-золотая, в стиле визитки лекаря. Контраст:
+   ink-900 (#221c11) на --rp-learn-accent (#d4a73c) — 7.6:1 (AAA), текст
+   #f0e8d8 на фоне #0d0b08 — 16.1:1, приглушённый #bfb49e на фоне —
+   9.6:1 (оба с большим запасом AA). */
+html[data-site-theme="split"] {
+  --rp-learn-bg:
+    #0d0b08 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23d4a73c' stroke-opacity='0.1' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  --rp-learn-surface: #1a1612;
+  --rp-learn-surface-raised: #211c16;
+  --rp-learn-border: rgba(212, 167, 60, 0.16);
+  --rp-learn-text: #f0e8d8;
+  --rp-learn-text-muted: #bfb49e;
+  --rp-learn-accent: #d4a73c;
+  --rp-learn-accent-strong: #c49530;
+  --rp-learn-accent-contrast: var(--rp-color-ink-900);
+  --rp-learn-accent-alt: #e8be52;
+  --rp-learn-icon-bg: rgba(212, 167, 60, 0.12);
+  --rp-learn-icon-text: #e8be52;
+  --rp-learn-badge-bg: rgba(212, 167, 60, 0.1);
+  --rp-learn-badge-text: #e8be52;
+  --rp-learn-badge-border: rgba(212, 167, 60, 0.28);
+  --rp-ayah-card-bg: #131110;
+  --rp-ayah-card-text: #f0e8d8;
+  --rp-ayah-card-accent: #e8be52;
+  --rp-hero-panel-gradient:
+    radial-gradient(60% 80% at 12% 0%, rgba(212, 167, 60, 0.14), transparent 60%),
+    radial-gradient(130% 70% at 50% -10%, #1c1814, #0d0b08 65%);
+  --rp-hero-panel-text: #f0e8d8;
+  --rp-hero-panel-accent: #e8be52;
+  --rp-hero-brand-mark: #e8be52;
+}
+
 /* ============================================================
    Темы применяются и к кабинетам ученика/админа (project.md §16а,
    решение 2026-07-16 — по прямой команде владельца школы, отменяет
@@ -335,7 +375,8 @@ html[data-site-theme="pattern"] {
    собственный статический data-zone (для отсутствия FOUC до JS) и составной
    селектор вида [data-zone][data-site-theme] на body бы не сработал: он
    требует оба атрибута на одном элементе, а data-site-theme стоит только
-   на <html>. "split" — не переопределяется, это исходный baseline. ====== */
+   на <html>. "split" теперь тоже переопределяется (см. блок C выше) —
+   раньше был единственной темой без override, читал светлый baseline. ====== */
 
 /* A — Тёмный изумруд: кабинет ученика в тёмно-зелёной гамме */
 html[data-site-theme="emerald"] {
@@ -378,6 +419,28 @@ html[data-site-theme="pattern"] {
   --rp-admin-accent: #2855a8;
   --rp-admin-accent-strong: #1e3f7a;
   --rp-admin-accent-contrast: #ffffff;
+}
+
+/* C — Тёмный уголь + золото: оба кабинета в тёмном режиме, тот же тон, что
+   и learn-зона этой темы (см. блок C выше). */
+html[data-site-theme="split"] {
+  --rp-student-bg: #0d0b08;
+  --rp-student-surface: #1a1612;
+  --rp-student-surface-raised: #211c16;
+  --rp-student-border: rgba(212, 167, 60, 0.2);
+  --rp-student-text: #f0e8d8;
+  --rp-student-accent: #d4a73c;
+  --rp-student-accent-strong: #c49530;
+  --rp-student-accent-contrast: var(--rp-color-ink-900);
+
+  --rp-admin-bg: #0a0806;
+  --rp-admin-surface: #17130f;
+  --rp-admin-surface-raised: #1e1811;
+  --rp-admin-border: rgba(212, 167, 60, 0.2);
+  --rp-admin-text: #f0e8d8;
+  --rp-admin-accent: #d4a73c;
+  --rp-admin-accent-strong: #c49530;
+  --rp-admin-accent-contrast: var(--rp-color-ink-900);
 }
 
 @media (prefers-reduced-motion: reduce) {
