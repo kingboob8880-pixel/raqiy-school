@@ -6,13 +6,13 @@ export const MODULES = [
     id: 1,
     title: "Основа основ",
     level: "Начальный",
-    // status: "draft" (было "certified") — урок «Учебник якына» существенно
+    // status: "author" (было "certified") — урок «Учебник якына» существенно
     // расширен 2026-07-20 (сорокадневная программа, 16 упражнений вместо
     // сжатого пересказа), сам урок понижен до черновика; честно отражаем
     // это и на бейдже модуля на "Пути ученика", а не только на странице
     // самого урока — иначе список модулей показывал бы модуль как
     // "подтверждено шейхом" при том, что треть его уроков ждёт подтверждения.
-    status: "draft",
+    status: "author",
     doc: "/content/module-1/index.md",
     cover: "/assets/images/covers/molba-lekarya.jpg",
     lessons: [
@@ -28,13 +28,13 @@ export const MODULES = [
     id: 2,
     title: "Основы заклинания",
     level: "Начальный",
-    // status: "draft" (было "certified") — добавлен новый урок
+    // status: "author" (было "certified") — добавлен новый урок
     // "Продвинутое заклинание — метод «Аллязи»" (перенос авторского
     // материала ruqyah-advanced44.html по решению автора курса,
     // 2026-07-21) — тот же принцип, что и с Модулем 1 (2026-07-20):
     // модуль с материально изменившимся составом уроков понижается до
     // черновика, пока шейх не подтвердит заново.
-    status: "draft",
+    status: "author",
     doc: "/content/module-2/index.md",
     cover: "/assets/images/covers/zaklinanie-organy-koldovstvo.jpg",
     lessons: [
@@ -54,7 +54,7 @@ export const MODULES = [
     id: 3,
     title: "Основы применения",
     level: "Начальный",
-    status: "draft",
+    status: "author",
     doc: "/content/module-3/index.md",
     cover: "/assets/images/covers/organy-tela.jpg",
     lessons: [
@@ -68,7 +68,7 @@ export const MODULES = [
     id: 4,
     title: "Диагностика — протокол безопасности",
     level: "Средний",
-    status: "draft",
+    status: "author",
     doc: "/content/module-4/index.md",
     lessons: [
       { title: "Диагностика недугов души — три группы корневых проблем", doc: "/content/module-4/diagnostika.md" },
@@ -80,7 +80,7 @@ export const MODULES = [
     id: 5,
     title: "Направленное применение",
     level: "Средний",
-    status: "draft",
+    status: "author",
     doc: "/content/module-5/index.md",
     lessons: [
       { title: "Очищение разума — авторские формулы по функциям тела и психики", doc: "/content/module-5/ochishchenie-razuma.md", exam: "/content/exams/module-5-ochishchenie-razuma.md" },
@@ -126,7 +126,7 @@ export const MODULES = [
     id: 7,
     title: "Изгнание духовных сущностей",
     level: "Продвинутый",
-    status: "draft",
+    status: "author",
     doc: "/content/module-7/index.md",
     cover: "/assets/images/covers/ubivanie-dzhinnov.jpg",
     lessons: [
@@ -141,7 +141,7 @@ export const MODULES = [
     id: 8,
     title: "Итоговая практика под супервизией",
     level: "Продвинутый",
-    status: "draft",
+    status: "author",
     doc: "/content/module-8/index.md",
     lessons: [],
   },
@@ -170,7 +170,7 @@ export const MODULES = [
     id: 11,
     title: "Работа в системе RUKYA Pro",
     level: "Продвинутый",
-    status: "draft",
+    status: "author",
     doc: "/content/module-11/index.md",
     lessons: [],
   },
