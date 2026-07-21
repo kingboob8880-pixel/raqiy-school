@@ -19,6 +19,8 @@ export const MODULES = [
       { title: "Учебник якына — убеждённости", doc: "/content/module-1/yakyn.md", exam: "/content/exams/module-1-yakyn.md" },
       { title: "Мольба заклинателя", doc: "/content/module-1/molba-zaklinatelya.md", exam: "/content/exams/module-1-molba-zaklinatelya.md" },
       { title: "Теоретик и практик — как правильно формулировать мольбу", doc: "/content/module-1/teoretik-i-praktik.md", exam: "/content/exams/module-1-teoretik-i-praktik.md" },
+      { title: "Метод уединения с таухидом — визуализация через имена Аллаха", doc: "/content/module-1/metod-taukhid.md" },
+      { title: "Фундаментальное состояние целителя — собранность, дыхание, фокус", doc: "/content/module-1/fundamentalnoe.md" },
     ],
     intro_video: "/assets/video/rukya-intro.mp4",
   },
@@ -45,6 +47,7 @@ export const MODULES = [
       { title: "Виды заклинаний и их применение — три пути формулы «Арки»", doc: "/content/module-2/vidy-zaklinaniy.md" },
       { title: "Инструменты заклинателя: дозволенные практики", doc: "/content/module-2/instrumenty-zaklinatelya.md", exam: "/content/exams/module-2-instrumenty-zaklinatelya.md" },
       { title: "Классификация недугов (Справочник)", doc: "/content/reference/classification.md", exam: "/content/exams/reference-classification.md" },
+      { title: "Заклинания (рукья) от недугов души — 15 формул", doc: "/content/module-2/ubiranie-gryazi.md" },
     ],
   },
   {
@@ -56,6 +59,9 @@ export const MODULES = [
     cover: "/assets/images/covers/organy-tela.jpg",
     lessons: [
       { title: "Словарь органов тела (Справочник)", doc: "/content/reference/organs.md", exam: "/content/exams/reference-organs.md" },
+      { title: "Влияние эмоциональных загрязнений на тело", doc: "/content/module-3/vliyanie-emots.md" },
+      { title: "Влияние загрязнений на внешность и фигуру", doc: "/content/module-3/krasota.md" },
+      { title: "Защита органов от страстей — дуа по каждому органу", doc: "/content/module-3/tablitsa-strasti.md" },
     ],
   },
   {
@@ -64,7 +70,11 @@ export const MODULES = [
     level: "Средний",
     status: "draft",
     doc: "/content/module-4/index.md",
-    lessons: [],
+    lessons: [
+      { title: "Диагностика недугов души — три группы корневых проблем", doc: "/content/module-4/diagnostika.md" },
+      { title: "Таблица эмоциональных загрязнений — 30 состояний и зоны тела", doc: "/content/module-4/zagryazneniya.md" },
+      { title: "Карта эмоциональных зажимов — метод устранения через зикры", doc: "/content/module-4/zazhimy.md" },
+    ],
   },
   {
     id: 5,
@@ -87,6 +97,13 @@ export const MODULES = [
       { title: "Учебное пособие по продвинутому заклинанию — метод «Аллязи»", doc: "/content/module-5/prodvinutoe-zaklinanie-posobie.md" },
       // Книга №10 — 8 компонентов эффективного заклинания (намерение, визуализация, концентрация, голос, энергия, воля, связь, спецификация).
       { title: "Сравнение сильного со слабым — компоненты эффективного заклинания", doc: "/content/module-5/sravnenie-silnogo-so-slabym.md" },
+      { title: "Дуа против колдовства истощения — 13 формул", doc: "/content/module-5/protiv-istoshcheniya.md" },
+      { title: "Лечение от сглаза водой — программа очищения", doc: "/content/module-5/lecheniya-sglaz.md" },
+      { title: "Рукья против сихра, сглаза и зависти — подробное руководство", doc: "/content/module-5/sikhr-sglaz-posobie.md" },
+      { title: "Краткая рукья от колдовства — сеанс 50–70 минут", doc: "/content/module-5/rukiya-sikhr.md" },
+      { title: "Рукья для укрепления супружества — 10 дуа", doc: "/content/module-5/dua-strasti.md" },
+      { title: "Руководство по убиранию чёрных линий", doc: "/content/module-5/ubiranie-liniy.md" },
+      { title: "Метод избавления от джиннов — трёхступенчатый подход", doc: "/content/module-5/metod-izbavleniya.md" },
     ],
   },
   {
@@ -102,6 +119,7 @@ export const MODULES = [
       { title: "Дуа личной защиты от джиннов и шайтанов", doc: "/content/module-6/dua-zashchity-ot-dzhinnov-i-shaytanov.md", exam: "/content/exams/module-6-dua-zashchity-ot-dzhinnov-i-shaytanov.md" },
       { title: "Арсенал против колдовства, сглаза и зависти", doc: "/content/module-6/arsenal-protiv-koldovstva.md", exam: "/content/exams/module-6-arsenal-protiv-koldovstva.md" },
       { title: "Открытие духовных замков", doc: "/content/module-6/otkrytie-dukhovnykh-zamkov.md", exam: "/content/exams/module-6-otkrytie-dukhovnykh-zamkov.md" },
+      { title: "Закрытие дверей шайтанов — дуа для тела и дома", doc: "/content/module-6/zakrytie-dverey.md" },
     ],
   },
   {
@@ -116,6 +134,7 @@ export const MODULES = [
       { title: "Заклинания на убийство и сжигание джиннов — четыре уровня формулы", doc: "/content/module-7/zaklinaniya-na-ubiystvo-dzhinnov.md" },
       // Книга №18 — полное руководство: 13 типов джиннов + протоколы уничтожения каждого.
       { title: "Учебник по уничтожению и сжиганию джиннов и духовных сущностей", doc: "/content/module-7/unichtozhenie-dzhinnov-posobie.md" },
+      { title: "Дуа против одержимости — 9 формул защиты", doc: "/content/module-7/dua-oderzhimost.md" },
     ],
   },
   {
@@ -134,6 +153,9 @@ export const MODULES = [
     doc: "/content/module-9/index.md",
     lessons: [
       { title: "Границы веры — единственность Истины и вопрос заступничества", doc: "/content/module-9/granitsy-very-i-zastupnichestvo.md", exam: "/content/exams/module-9-granitsy-very-i-zastupnichestvo.md" },
+      { title: "Что есть истина — разбор с доказательствами из Корана и Сунны", doc: "/content/module-9/sut-istiny.md" },
+      { title: "Вопросы просьб у могилы — классификация обращений к умершим", doc: "/content/module-9/voprosy-mogil.md" },
+      { title: "Вопросы заступничества — разбор у могилы Пророка ﷺ", doc: "/content/module-9/voprosy-zastup.md" },
     ],
   },
   {
