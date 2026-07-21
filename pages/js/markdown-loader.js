@@ -4,6 +4,7 @@
 // странице отдельным <script> из CDN — см. pages/book.html/module.html).
 
 import { withBase } from "./base-path.js?v=6";
+import { MODULES } from "./modules-data.js?v=15";
 
 export function parseFrontMatter(raw) {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
@@ -68,7 +69,7 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
     if (p.textContent.trim().startsWith("⚠️")) p.classList.add("doc-warning");
   });
   const bodyEl = container.querySelector(".doc-body");
-  if (bodyEl) enhanceDuaBlocks(bodyEl);
+  if (bodyEl) { enhanceDuaBlocks(bodyEl); enhanceContentLinks(bodyEl); }
 }
 
 // Метки "**Арабский текст:**"/"**Транскрипция:**"/"**Перевод:**" перед
@@ -208,6 +209,99 @@ export function enhanceDuaBlocks(bodyEl) {
     group.forEach((node) => wrap.appendChild(node));
     i = j;
   }
+}
+
+/** Ссылки внутри текста книг/модулей на другие разделы курса пишутся в
+ * markdown как обычные ссылки на сырые файлы контента, напр.
+ * "[Модуль 4](/content/module-4/index.md)" — marked.js рендерит их как
+ * обычный <a href="/content/module-4/index.md">, что при клике вело бы на
+ * сырой .md-файл в репозитории, а не на настоящую страницу модуля/книги
+ * (независимая проверка, 2026-07-21, вместе с жалобой автора на вид
+ * ссылок). Резолвим такой путь в реальный маршрут сайта через тот же
+ * modules-data.js, которым уже пользуются module.html/book.html. */
+function resolveContentLink(rawHref) {
+  const path = (rawHref || "").replace(/^https?:\/\/[^/]+/, "").split(/[?#]/)[0];
+  if (!path.startsWith("/content/")) return null;
+  for (const m of MODULES) {
+    if (m.doc === path) return { href: withBase(`/pages/modules/module.html?id=${m.id}`), title: m.title, kind: "module" };
+    for (const lesson of m.lessons) {
+      if (lesson.doc === path) return { href: withBase(`/pages/book.html?doc=${encodeURIComponent(path)}`), title: lesson.title, kind: "lesson" };
+    }
+  }
+  return null;
+}
+
+/** Превращает распознанные ссылки на другие модули/книги/справочники в
+ * компактные кнопки-«пилюли» вместо обычного подчёркнутого текста внутри
+ * абзаца (запрос автора "тексты которые служат ссылкой для других модулей
+ * пусть будут в виде кнопок красиво и современно", 2026-07-21) — и вместо
+ * немедленного перехода (который сбрасывает место чтения текущего урока)
+ * открывает модалку-предпросмотр с названием раздела и явным выбором
+ * "Открыть"/"Остаться здесь" (openContentLinkModal). Ссылки на неизвестные
+ * пути (вне modules-data.js) не трогаем — оставляем как есть, безопасный
+ * фолбэк. Идемпотентна через data-атрибут, как и остальные enhance*-функции
+ * этого файла (bodyEl может обрабатываться повторно при повторном
+ * срабатывании watchAuth). */
+export function enhanceContentLinks(bodyEl) {
+  bodyEl.querySelectorAll('a[href^="/content/"]').forEach((a) => {
+    if (a.dataset.contentLinkDone) return;
+    a.dataset.contentLinkDone = "1";
+    const resolved = resolveContentLink(a.getAttribute("href"));
+    if (!resolved) return;
+    const label = a.textContent.trim() || resolved.title;
+    a.href = resolved.href; // обычная навигация — на случай открытия в новой вкладке/ Ctrl+клика, где preventDefault ниже не сработает
+    a.classList.add("content-ref-link");
+    a.innerHTML = `<span class="content-ref-link__icon" aria-hidden="true">${resolved.kind === "module" ? "▤" : "▸"}</span><span>${label}</span>`;
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      openContentLinkModal(resolved, label);
+    });
+  });
+}
+
+let activeModalCleanup = null;
+
+/** Общая модалка-предпросмотр перед переходом на другой раздел курса —
+ * без нее клик по ссылке-кнопке сразу же уводил бы со страницы и терял
+ * прогресс чтения текущего урока. Закрывается по Escape, клику по
+ * подложке или кнопке "Остаться здесь"; фокус переносится на модалку и
+ * возвращается на исходную ссылку при закрытии (базовая доступность). */
+export function openContentLinkModal({ href, kind }, label) {
+  if (activeModalCleanup) activeModalCleanup();
+  const trigger = document.activeElement;
+
+  const overlay = document.createElement("div");
+  overlay.className = "rp-modal-overlay";
+  overlay.innerHTML = `
+    <div class="rp-modal" role="dialog" aria-modal="true" aria-labelledby="rp-modal-title">
+      <button class="rp-modal__close" type="button" aria-label="Закрыть">×</button>
+      <p class="rp-modal__eyebrow">${kind === "module" ? "Другой модуль курса" : "Другая книга / справочник"}</p>
+      <h3 id="rp-modal-title" class="rp-modal__title">${label}</h3>
+      <p class="form-note">Переход откроет её на новой странице — место в текущем уроке
+        не потеряется, можно будет вернуться назад.</p>
+      <div class="rp-modal__actions">
+        <a class="btn btn-primary" href="${href}">Открыть →</a>
+        <button class="btn btn-outline" type="button" data-close>Остаться здесь</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.body.classList.add("rp-modal-open");
+
+  const close = () => {
+    overlay.remove();
+    document.body.classList.remove("rp-modal-open");
+    document.removeEventListener("keydown", onKeydown);
+    if (trigger && typeof trigger.focus === "function") trigger.focus();
+    activeModalCleanup = null;
+  };
+  const onKeydown = (e) => { if (e.key === "Escape") close(); };
+  document.addEventListener("keydown", onKeydown);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+  overlay.querySelector(".rp-modal__close").addEventListener("click", close);
+  overlay.querySelector("[data-close]").addEventListener("click", close);
+  activeModalCleanup = close;
+
+  overlay.querySelector(".rp-modal__close").focus();
 }
 
 /** Три уровня доступа к тексту книги/модуля (project.md §18): гость — текста

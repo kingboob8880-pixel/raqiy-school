@@ -43,7 +43,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=12";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupNoteCard, enhanceDuaBlocks, addReadingAids } from "./js/markdown-loader.js?v=12";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupNoteCard, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=13";
     import { bookKey, MODULES } from "./js/modules-data.js?v=15";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=8";
@@ -154,6 +154,12 @@
                 // Перевод" в полном тексте не получили бы визуального выделения
                 // (loop-проход №1, 2026-07-20).
                 enhanceDuaBlocks(bodyEl);
+                // Та же причина, что и для enhanceDuaBlocks() выше — полный
+                // текст из Firestore заменяет bodyEl.innerHTML напрямую, минуя
+                // renderDocInto(), где enhanceContentLinks() обычно вызывается
+                // автоматически (ссылки на другие модули/книги → кнопки +
+                // модалка-предпросмотр, запрос автора, 2026-07-21).
+                enhanceContentLinks(bodyEl);
               }
               addReadingAids(root);
             }

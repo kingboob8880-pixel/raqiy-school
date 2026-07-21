@@ -40,7 +40,7 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=12";
     import { getModule, bookKey } from "../js/modules-data.js?v=15";
-    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupNoteCard, enhanceDuaBlocks, addReadingAids } from "../js/markdown-loader.js?v=12";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupNoteCard, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "../js/markdown-loader.js?v=13";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=8";
     import { getFullBookContent, saveBookNote } from "../../integration/firestore.js?v=13";
@@ -149,6 +149,9 @@
               // Тот же вызов, что в book.html — полный текст из Firestore
               // минует renderDocInto(), нужно повторно выделить блоки дуа.
               enhanceDuaBlocks(bodyEl);
+              // И то же самое для ссылок на другие модули/книги → кнопки +
+              // модалка-предпросмотр (запрос автора, 2026-07-21).
+              enhanceContentLinks(bodyEl);
             }
             // Оглавление + прогресс чтения — раньше были только на
             // book.html, хотя текст модуля (у модулей без отдельных
