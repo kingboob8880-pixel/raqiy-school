@@ -107,7 +107,7 @@
       if (!user) return; // гость уже видит образец выше, дальше ничего не грузим
       const profile = await getStudentProfile(user.uid);
       const done = MODULES.filter((m) => profile?.progress?.[m.id]?.status === "done").length;
-      const allDone = done === MODULES.length;
+      const allDone = done === MODULES.length || !!profile?.certificateGranted;
 
       if (!allDone) {
         statusRoot.innerHTML = `

@@ -9,6 +9,7 @@ import {
   writeBatch, getCountFromServer,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { db } from "./firebase-init.js?v=1";
+import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=1";
 
 /** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
  * журнала активности (стрики, project.md, решение 2026-07-18). */
@@ -26,7 +27,7 @@ export async function markModuleProgress(uid, moduleId, status) {
 }
 
 export async function recordQuizResult(uid, moduleId, scoreRatio) {
-  const passed = scoreRatio >= 0.7;
+  const passed = scoreRatio >= QUIZ_PASS_THRESHOLD;
   const update = {
     [`progress.${moduleId}.quizScore`]: scoreRatio,
     [`progress.${moduleId}.status`]: passed ? "done" : "in_progress",
@@ -40,7 +41,7 @@ export async function recordQuizResult(uid, moduleId, scoreRatio) {
 /** Экзамен по отдельной книге (не по модулю целиком, project.md §5) —
  * bookKey — плоский ключ из pages/js/modules-data.js#bookKey(doc). */
 export async function recordBookQuizResult(uid, bookKey, scoreRatio) {
-  const passed = scoreRatio >= 0.7;
+  const passed = scoreRatio >= QUIZ_PASS_THRESHOLD;
   const update = {
     [`progress.books.${bookKey}.quizScore`]: scoreRatio,
     [`progress.books.${bookKey}.status`]: passed ? "done" : "in_progress",
@@ -213,4 +214,21 @@ export function computeAverageScore(progress) {
   const scores = Object.values(progress).map((m) => m.quizScore).filter((s) => typeof s === "number");
   if (!scores.length) return null;
   return Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100);
+}
+
+/** Выдать/отозвать сертификат ученику вручную (кнопка в админ-панели).
+ * Поле certificateGranted в students/{uid} — булево. Сертификат также
+ * выдаётся автоматически при прохождении всех модулей (логика на клиенте
+ * в student.html/certificate/index.html). */
+export async function setCertificateGranted(uid, granted) {
+  const update = { certificateGranted: granted };
+  if (granted) update.certificateGrantedAt = serverTimestamp();
+  await updateDoc(doc(db, "students", uid), update);
+}
+
+/** Дать/забрать доступ к скачиванию Rukya Pro вручную (кнопка в админ-панели).
+ * Поле rukyaProAccess в students/{uid} — булево. Доступ к скачиванию также
+ * открывается автоматически, если у ученика есть сертификат. */
+export async function setRukyaProAccess(uid, granted) {
+  await updateDoc(doc(db, "students", uid), { rukyaProAccess: granted });
 }

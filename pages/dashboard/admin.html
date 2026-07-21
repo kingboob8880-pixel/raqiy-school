@@ -54,10 +54,10 @@
         <div class="table-scroll">
           <table class="data-table">
             <thead>
-              <tr><th>Имя</th><th>Email</th><th>Прогресс</th><th>Балл</th><th>Молчит</th><th>Оплачено</th><th></th></tr>
+              <tr><th>Имя</th><th>Email</th><th>Прогресс</th><th>Балл</th><th>Молчит</th><th>Оплачено</th><th>Сертификат</th><th>Rukya Pro</th><th></th></tr>
             </thead>
             <tbody id="students-body">
-              <tr><td colspan="7" class="form-note">Загрузка…</td></tr>
+              <tr><td colspan="9" class="form-note">Загрузка…</td></tr>
             </tbody>
           </table>
         </div>
@@ -74,7 +74,8 @@
     import {
       listStudents, setStudentPaid, deleteStudent, sendMessage, watchMessages, markThreadRead,
       countUnreadFromStudent, daysSince, computeOverallProgress, computeAverageScore,
-    } from "../../integration/firestore.js?v=14";
+      setCertificateGranted, setRukyaProAccess,
+    } from "../../integration/firestore.js?v=15";
     import { renderMessages, wireChatForm, scrollToBottom } from "../js/chat-ui.js?v=1";
 
     renderHeader("admin");
@@ -106,6 +107,8 @@
       // чата, 2026-07-20).
       const unread = unreadMap[s.uid] || 0;
       const badgeHtml = unread ? `<span class="unread-badge">${unread > 9 ? "9+" : unread}</span>` : "";
+      const hasCert = !!s.certificateGranted;
+      const hasRukyaPro = !!s.rukyaProAccess;
       const row = `
         <tr>
           <td>${name}</td>
@@ -120,6 +123,12 @@
             </label>
           </td>
           <td>
+            <button type="button" class="btn btn-sm ${hasCert ? "btn-primary" : "btn-outline"} cert-toggle" data-uid="${s.uid}" title="${hasCert ? "Отозвать сертификат" : "Выдать сертификат"}">🎓${hasCert ? " ✓" : ""}</button>
+          </td>
+          <td>
+            <button type="button" class="btn btn-sm ${hasRukyaPro ? "btn-primary" : "btn-outline"} rukya-toggle" data-uid="${s.uid}" title="${hasRukyaPro ? "Отозвать доступ к Rukya Pro" : "Дать доступ к Rukya Pro"}">📥${hasRukyaPro ? " ✓" : ""}</button>
+          </td>
+          <td>
             <div class="row-actions">
               <button type="button" class="thread-toggle ${isOpen ? "is-active" : ""}" data-uid="${s.uid}" title="Переписка" aria-label="Переписка с учеником">💬${badgeHtml}</button>
               <button type="button" class="student-delete is-danger" data-uid="${s.uid}" data-name="${nameAttr}" title="Удалить" aria-label="Удалить ученика">🗑</button>
@@ -128,7 +137,7 @@
         </tr>`;
       const thread = isOpen ? `
         <tr class="thread-row" data-thread-for="${s.uid}">
-          <td colspan="7">
+          <td colspan="9">
             <div class="thread-panel">
               <div class="msg-list" id="thread-msgs-${s.uid}" role="log" aria-live="polite"><p class="form-note">Загрузка…</p></div>
               <form class="thread-reply chat-form" data-uid="${s.uid}">
@@ -201,7 +210,7 @@
       const filtered = allStudents.filter((s) => matchesFilter(s, query, filter));
 
       body.innerHTML = filtered.map(studentRowHtml).join("")
-        || `<tr><td colspan="7" class="form-note">Ничего не найдено.</td></tr>`;
+        || `<tr><td colspan="9" class="form-note">Ничего не найдено.</td></tr>`;
 
       body.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
         cb.addEventListener("change", async () => {
@@ -228,6 +237,30 @@
         });
       });
 
+      body.querySelectorAll(".cert-toggle").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const s = allStudents.find((x) => x.uid === btn.dataset.uid);
+          const newVal = !s?.certificateGranted;
+          const action = newVal ? "Выдать сертификат" : "Отозвать сертификат";
+          if (!confirm(`${action} ученику ${s?.name || s?.email || ""}?`)) return;
+          await setCertificateGranted(btn.dataset.uid, newVal);
+          await refreshStudents();
+          showToast(newVal ? "Сертификат выдан" : "Сертификат отозван");
+        });
+      });
+
+      body.querySelectorAll(".rukya-toggle").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const s = allStudents.find((x) => x.uid === btn.dataset.uid);
+          const newVal = !s?.rukyaProAccess;
+          const action = newVal ? "Дать доступ к Rukya Pro" : "Отозвать доступ к Rukya Pro";
+          if (!confirm(`${action} ученику ${s?.name || s?.email || ""}?`)) return;
+          await setRukyaProAccess(btn.dataset.uid, newVal);
+          await refreshStudents();
+          showToast(newVal ? "Доступ к Rukya Pro открыт" : "Доступ к Rukya Pro закрыт");
+        });
+      });
+
       body.querySelectorAll(".thread-reply").forEach((form) => {
         wireChatForm(form, form.querySelector("textarea"), async (text) => {
           await sendMessage(form.dataset.uid, "admin", text);
@@ -244,7 +277,7 @@
         allStudents = await listStudents();
       } catch (err) {
         console.warn(err);
-        body.innerHTML = `<tr><td colspan="7" class="field-error">Не удалось загрузить список учеников. <button id="students-retry" class="btn btn-outline btn-sm" type="button">Повторить</button></td></tr>`;
+        body.innerHTML = `<tr><td colspan="9" class="field-error">Не удалось загрузить список учеников. <button id="students-retry" class="btn btn-outline btn-sm" type="button">Повторить</button></td></tr>`;
         document.getElementById("students-retry").addEventListener("click", refreshStudents);
         return;
       }
