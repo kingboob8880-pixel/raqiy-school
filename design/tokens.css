@@ -75,9 +75,15 @@
      мотив, что у темы "pattern" ниже, но приглушённее и на другом базовом
      цвете, чтобы фон не читался пустым плоским полем (project.md, решение
      2026-07-18). */
-  --rp-learn-bg: var(--rp-color-parchment-400) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%238f6a22' stroke-opacity='0.16' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  --rp-learn-bg: var(--rp-color-parchment-400) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%238f6a22' stroke-opacity='0.2' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
   --rp-learn-surface: var(--rp-color-parchment-100);
-  --rp-learn-surface-raised: var(--rp-color-parchment-50);
+  /* Раньше parchment-50 (#fbf6ec) — на глаз почти неотличим от surface
+     (parchment-100, #faf5ea, разница на уровне 1 пункта RGB) — градиент
+     .card был фактически таким же плоским, как позже нашли и исправили у
+     темы "pattern" тем же днём. parchment-200 — заметно более тёплый
+     оттенок, тот же приём "проработай все темы, сделай приятными"
+     (2026-07-21), контраст ink-900 на нём — 14.1:1, с запасом. */
+  --rp-learn-surface-raised: var(--rp-color-parchment-200);
   --rp-learn-border: var(--rp-color-gold-500);
   --rp-learn-text: var(--rp-color-ink-900);
   --rp-learn-text-muted: var(--rp-color-sand-500);
@@ -101,9 +107,15 @@
   --rp-learn-accent-alt: #be9a52;
   --rp-learn-icon-bg: var(--rp-color-gold-100);
   --rp-learn-icon-text: var(--rp-color-gold-600);
-  --rp-learn-badge-bg: #ffffff;
+  /* Раньше badge-bg был плоским #ffffff — единственная тема, где бейдж
+     (пилюля "Курс от лекаря...", теги уровня и т.п.) не был хоть немного
+     тонирован под акцент, в отличие от тем "изумруд"/"pattern" (там
+     rgba(accent, alpha)). rgba(gold-500, 0.07) — тот же принцип, подобран
+     так, чтобы gold-600-текст держал AA даже на самом светлом фоне под
+     бейджем: 4.6:1 (2026-07-21). */
+  --rp-learn-badge-bg: rgba(176, 132, 44, 0.07);
   --rp-learn-badge-text: var(--rp-color-gold-600);
-  --rp-learn-badge-border: rgba(43, 36, 23, 0.15);
+  --rp-learn-badge-border: rgba(176, 132, 44, 0.28);
   --rp-ayah-card-bg: var(--rp-color-ink-900);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
   --rp-ayah-card-accent: var(--rp-color-gold-500);
@@ -141,7 +153,12 @@
      притом, что у <body> тоже статически стоит свой data-zone. */
   --rp-student-bg: var(--rp-color-green-100);
   --rp-student-surface: #ffffff;
-  --rp-student-surface-raised: #ffffff;
+  /* Была #ffffff — та же плоская пара, что нашли и починили у темы
+     "pattern" в этот же день ("проработай все темы"). green-100 — уже
+     существующий токен, тот же оттенок, что и --rp-student-bg этой зоны,
+     так что surface-raised теперь тонко перекликается с фоном зоны, а не
+     случайный отдельный цвет. ink-900 на нём — 14.1:1 (2026-07-21). */
+  --rp-student-surface-raised: var(--rp-color-green-100);
   --rp-student-border: var(--rp-color-green-700);
   --rp-student-text: var(--rp-color-ink-900);
   --rp-student-accent: var(--rp-color-green-700);
@@ -226,7 +243,12 @@
    "pattern", но золотыми линиями на тёмном изумруде — раньше фон был
    плоской заливкой без узора (project.md, решение 2026-07-18). */
 html[data-site-theme="emerald"] {
-  --rp-learn-bg: var(--rp-color-emerald-900) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23e6c983' stroke-opacity='0.09' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  /* opacity 0.09→0.12 — тот же лёгкий подъём "характера" узора, что
+     baseline/pattern получили в этот же проход ("проработай все темы,
+     сделай приятными", 2026-07-21); чуть сильнее нельзя — тёмный фон уже
+     мельче гасит контраст узора, чем светлые темы, выше начинает
+     выглядеть шумно под текстом. */
+  --rp-learn-bg: var(--rp-color-emerald-900) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23e6c983' stroke-opacity='0.12' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
   --rp-learn-surface: var(--rp-color-emerald-700);
   --rp-learn-surface-raised: #26492f;
   --rp-learn-border: rgba(230, 201, 131, 0.25);
