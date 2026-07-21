@@ -6,12 +6,13 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Вход — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=17">
-<link rel="stylesheet" href="../../design/base.css?v=38">
+<link rel="stylesheet" href="../../design/base.css?v=39">
 <style>
   .auth-wrap { max-width: 26rem; margin: var(--rp-space-7) auto; padding-inline: var(--rp-space-4); }
 </style>
 </head>
 <body data-zone="learn">
+  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header"></div>
   <main class="auth-wrap">
     <div class="card">
@@ -32,6 +33,7 @@
         </div>
         <p id="form-error" class="field-error" role="alert" hidden></p>
         <button id="submit-btn" type="submit" class="btn btn-primary btn-block">Войти</button>
+        <a href="#" id="forgot-link" class="form-note" style="display:block; text-align:center; margin-top: var(--rp-space-2);">Забыли пароль?</a>
       </form>
       <p class="form-note" style="margin-top: var(--rp-space-4);">Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
     </div>
@@ -41,6 +43,8 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=14";
     import { loginWithEmail, resolveRole, friendlyAuthError } from "../../integration/auth.js?v=8";
+    import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { auth } from "../../integration/firebase-init.js?v=1";
     renderHeader("learn");
     renderFooter();
 
@@ -76,6 +80,33 @@
         errorEl.hidden = false;
         submitBtn.disabled = false;
         submitBtn.textContent = "Войти";
+      }
+    });
+
+    document.getElementById("forgot-link").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      if (!email) {
+        errorEl.textContent = "Введите email";
+        errorEl.hidden = false;
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        errorEl.hidden = true;
+        const msg = document.createElement("p");
+        msg.className = "form-note";
+        msg.style.color = "var(--rp-status-success, green)";
+        msg.style.textAlign = "center";
+        msg.style.marginTop = "var(--rp-space-2)";
+        msg.textContent = `Ссылка для сброса пароля отправлена на ${email}`;
+        const existing = document.getElementById("forgot-success");
+        if (existing) existing.remove();
+        msg.id = "forgot-success";
+        document.getElementById("forgot-link").after(msg);
+      } catch (err) {
+        errorEl.textContent = friendlyAuthError(err);
+        errorEl.hidden = false;
       }
     });
   </script>
