@@ -14,11 +14,13 @@
 <meta property="og:image" content="https://kingboob8880-pixel.github.io/raqiy-school/assets/images/covers/knigi-dlya-obucheniya.jpg">
 <meta property="og:url" content="https://kingboob8880-pixel.github.io/raqiy-school/pages/index.html">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="../design/tokens.css?v=10">
-<link rel="stylesheet" href="../design/base.css?v=36">
-<link rel="stylesheet" href="../design/landing-themes.css?v=9">
+<link rel="stylesheet" href="../design/tokens.css?v=11">
+<link rel="stylesheet" href="../design/base.css?v=37">
+<link rel="stylesheet" href="../design/landing-themes.css?v=10">
 <style>
-  .price-card { max-width: 28rem; margin: var(--rp-space-6) auto; text-align: center; }
+  /* .price-card убран — закрывающий блок теперь .final-cta
+     (design/landing-themes.css), полировка по референсу design.html,
+     2026-07-21. */
   .rukya-pro-card { display: flex; flex-direction: column; gap: var(--rp-space-5); padding: var(--rp-space-6); }
   @media (min-width: 48rem) { .rukya-pro-card { flex-direction: row; align-items: center; } }
   .rukya-pro-card__media { flex: 1 1 55%; min-width: 0; }
@@ -36,6 +38,32 @@
       <div class="landing-hero" id="hero-content"></div>
       <div class="landing-features">
         <div class="feature-row" id="feature-row"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- 3 столпа доверия — сразу под шапкой лендинга ---------- -->
+  <!-- По референсу design.html (макет автора, 2026-07-21): короткий,
+       "с первого взгляда" сигнал доверия сразу под hero, до статистики и
+       аята — три мысли, которые дальше подробно раскрываются в разделе
+       "Почему именно этот курс" (advantages-grid ниже). Текст — сжатая
+       версия уже опубликованных там формулировок, не новые утверждения. -->
+  <section class="container reveal">
+    <div class="advantages-grid">
+      <div class="card lift advantage-card">
+        <div class="feature-item__icon" aria-hidden="true">📖</div>
+        <h3>Только проверенные источники</h3>
+        <p>Каждый фрагмент курса промаркирован: прямая цитата Корана или Сунны, устоявшаяся практика, или авторский метод — открыто, без выдачи одного за другое.</p>
+      </div>
+      <div class="card lift advantage-card">
+        <div class="feature-item__icon" aria-hidden="true">🛡</div>
+        <h3>Безопасность пациента — не опция</h3>
+        <p>Диагностика — никогда через боль и надавливание. Строгая этика приёма и границы метода встроены в курс с самого начала, а не добавлены потом.</p>
+      </div>
+      <div class="card lift advantage-card">
+        <div class="feature-item__icon" aria-hidden="true">🎓</div>
+        <h3>От теории к практике</h3>
+        <p>Финальные модули — разбор реальных кейсов под супервизией и работа в системе RUKYA Pro, где выпускник ведёт приём настоящих пациентов.</p>
       </div>
     </div>
   </section>
@@ -75,32 +103,32 @@
     <h2 style="text-align:center;">Почему именно этот курс</h2>
     <p class="form-note" style="text-align:center; max-width: 40rem; margin: 0 auto var(--rp-space-5);">Не обещание «стать мастером за неделю» — прозрачность источников, реальная ответственность и рабочий инструмент после выпуска.</p>
     <div class="advantages-grid">
-      <div class="card advantage-card">
+      <div class="card lift advantage-card">
         <div class="feature-item__icon" aria-hidden="true">📖</div>
         <h3>Прозрачность источников</h3>
         <p>Каждая книга и каждая формула помечены: прямая цитата Корана и Сунны, устоявшаяся практика или авторская методика — открыто, без выдачи одного за другое.</p>
       </div>
-      <div class="card advantage-card">
+      <div class="card lift advantage-card">
         <div class="feature-item__icon" aria-hidden="true">🛡</div>
         <h3>Безопасность пациента — не оговорка, а правило</h3>
         <p>Диагностика никогда не строится на боли или надавливании. Страдание и мольба пациента никогда не трактуются как «манипуляция» — это встроено в сам курс, а не приписано потом.</p>
       </div>
-      <div class="card advantage-card">
+      <div class="card lift advantage-card">
         <div class="feature-item__icon" aria-hidden="true">🧰</div>
         <h3>Не только теория — рабочий инструмент</h3>
         <p>Выпускник получает не просто сертификат, а систему RUKYA Pro: карточки пациентов, план исцеления, библиотеку формул с указанием источника — приём пациентов начинается не с чистого листа.</p>
       </div>
-      <div class="card advantage-card">
+      <div class="card lift advantage-card">
         <div class="feature-item__icon" aria-hidden="true">📝</div>
         <h3>Экзамен по каждой книге, а не один тест «по всему»</h3>
         <p>16 отдельных экзаменов с порогом 70% и правом пересдачи — знания проверяются по мере усвоения, а не одной галочкой в конце курса.</p>
       </div>
-      <div class="card advantage-card">
+      <div class="card lift advantage-card">
         <div class="feature-item__icon" aria-hidden="true">✋</div>
         <h3>Личная проверка автора</h3>
         <p>Абу Мухаммад лично триажировал 25 источников, прежде чем включить их в программу, и лично подтверждает оплату и доступ каждого ученика — не автоматическая воронка.</p>
       </div>
-      <div class="card advantage-card">
+      <div class="card lift advantage-card">
         <div class="feature-item__icon" aria-hidden="true">🆓</div>
         <h3>Можно начать бесплатно, без риска</h3>
         <p>Ознакомительные отрывки всех книг курса открыты сразу после регистрации — платите 30 000 ₽ только когда сами убедитесь, что курс вам подходит.</p>
@@ -113,19 +141,19 @@
     <h2 style="text-align:center;">Для кого этот курс</h2>
     <p class="form-note" style="text-align:center; max-width: 40rem; margin: 0 auto var(--rp-space-5);">Три уровня одного пути — от первого прочитанного аята до самостоятельного приёма пациентов. Начинать можно с нуля.</p>
     <div class="audience-grid">
-      <div class="card audience-card">
+      <div class="card lift audience-card">
         <span class="badge badge-tinted audience-card__level">Начальный</span>
         <h3>Ещё не читали рукью — ни разу</h3>
         <p>Базового чтения Корана достаточно (таджвид желателен, но не обязателен на старте). Курс начинается с основ убеждённости (якына) — с нуля, без предварительных знаний фикха рукьи. Цель — научиться грамотно читать рукью себе и близким.</p>
         <p class="audience-card__modules">Модули 1–3</p>
       </div>
-      <div class="card audience-card">
+      <div class="card lift audience-card">
         <span class="badge badge-tinted audience-card__level">Средний</span>
         <h3>Знаете основы, хотите разобраться глубже</h3>
         <p>Углублённая диагностика — по словам самого пациента, никогда через боль или надавливание (Модуль 4) — и направленное применение рукьи к конкретному случаю, плюс полный арсенал защиты от сглаза, зависти и колдовства.</p>
         <p class="audience-card__modules">Модули 4–6</p>
       </div>
-      <div class="card audience-card">
+      <div class="card lift audience-card">
         <span class="badge badge-tinted audience-card__level">Продвинутый</span>
         <h3>Готовитесь принимать пациентов</h3>
         <p>Изгнание духовных сущностей, разбор реальных обезличенных кейсов под супервизией наставника и финальный практикум в системе RUKYA Pro — с этого уровня выпускник несёт ответственность за приём настоящих пациентов.</p>
@@ -138,10 +166,10 @@
   <section class="container reveal">
     <h2 style="text-align:center;">Как проходит обучение</h2>
     <div class="process-steps">
-      <div class="card process-step"><div class="process-step__num"></div><h3>Регистрация</h3><p>Бесплатно, за минуту — email и пароль.</p></div>
-      <div class="card process-step"><div class="process-step__num"></div><h3>Читаете отрывки</h3><p>Бесплатный ознакомительный кусок каждой книги — без оплаты, сразу после регистрации.</p></div>
-      <div class="card process-step"><div class="process-step__num"></div><h3>Открываете курс целиком</h3><p>30 000 ₽ — пишете лекарю в Telegram, он высылает реквизиты и вручную подтверждает доступ.</p></div>
-      <div class="card process-step"><div class="process-step__num"></div><h3>Экзамен за экзаменом</h3><p>Тест после каждой книги и итоговый тест по модулю — до сертификата.</p></div>
+      <div class="card lift process-step"><div class="process-step__num"></div><h3>Регистрация</h3><p>Бесплатно, за минуту — email и пароль.</p></div>
+      <div class="card lift process-step"><div class="process-step__num"></div><h3>Читаете отрывки</h3><p>Бесплатный ознакомительный кусок каждой книги — без оплаты, сразу после регистрации.</p></div>
+      <div class="card lift process-step"><div class="process-step__num"></div><h3>Открываете курс целиком</h3><p>30 000 ₽ — пишете лекарю в Telegram, он высылает реквизиты и вручную подтверждает доступ.</p></div>
+      <div class="card lift process-step"><div class="process-step__num"></div><h3>Экзамен за экзаменом</h3><p>Тест после каждой книги и итоговый тест по модулю — до сертификата.</p></div>
     </div>
     <p class="form-note" style="text-align:center; margin-top: var(--rp-space-3);">Порядок необязателен — оплатить можно сразу, не дожидаясь отрывков.</p>
   </section>
@@ -253,13 +281,17 @@
   </section>
 
   <section class="container reveal">
-    <div class="card price-card">
-      <h2>Как начать</h2>
+    <div class="final-cta">
+      <p class="final-cta__arabic">بِسْمِ اللَّهِ</p>
+      <h2>Начните с бесплатного уровня уже сегодня</h2>
       <p>Зарегистрируйтесь на сайте — сразу открыты бесплатные ознакомительные
          отрывки всех книг курса. Полный текст, экзамены и весь курс целиком —
          30 000 ₽: напишите лекарю Абу Мухаммаду в Telegram, он вышлет реквизиты
          лично и подтвердит доступ.</p>
-      <a class="btn btn-primary btn-block" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать в Telegram</a>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="auth/register.html">Начать бесплатно</a>
+        <a class="btn btn-outline" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать в Telegram</a>
+      </div>
     </div>
   </section>
   </main>
