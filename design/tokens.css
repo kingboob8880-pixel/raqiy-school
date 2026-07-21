@@ -316,9 +316,16 @@ html[data-site-theme="pattern"] {
   --rp-learn-badge-bg: rgba(40, 85, 168, 0.07);
   --rp-learn-badge-text: #1e3f7a;
   --rp-learn-badge-border: rgba(40, 85, 168, 0.18);
-  --rp-ayah-card-bg: #0f172a;
+  /* Раньше #0f172a (тёмно-навигационный, почти чёрный) — визуально читался
+     как "чёрный", а не как часть синей темы (запрос автора "то что чёрное
+     фон замени на синее чтобы было как на фото 2" — тот же синий, что у
+     .btn-primary, 2026-07-21). accent-strong (#1e3f7a) — тот же тон, что
+     тёмный конец градиента кнопки. accent посветлел до #93c5fd (было
+     #60a5fa) — на новом более светлом синем фоне прежний давал 2.79:1
+     (провал WCAG AA), светлее — 5.7:1. */
+  --rp-ayah-card-bg: #1e3f7a;
   --rp-ayah-card-text: #f1f5f9;
-  --rp-ayah-card-accent: #60a5fa;
+  --rp-ayah-card-accent: #93c5fd;
   --rp-hero-panel-gradient:
     radial-gradient(60% 80% at 88% 0%, rgba(40, 85, 168, 0.07), transparent 60%),
     radial-gradient(130% 70% at 50% -10%, #ffffff, #f0f2f7 65%);
