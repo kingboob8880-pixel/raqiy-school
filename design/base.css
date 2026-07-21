@@ -657,12 +657,14 @@ main.container { padding-block: var(--rp-space-6); }
 .doc-toc li { margin-bottom: var(--rp-space-1); }
 .doc-toc a { text-decoration: none; color: var(--rp-learn-accent-strong); }
 .doc-toc a:hover { text-decoration: underline; }
-/* Липкое оглавление — только на широких экранах: на телефоне сквозная
-   колонка и так короткая, закреплённый блок только отнимал бы место у
-   самого текста. */
-@media (min-width: 56rem) {
-  .doc-toc { position: sticky; top: 4.25rem; max-height: calc(100vh - 5.5rem); overflow-y: auto; }
-}
+/* Раньше здесь было position: sticky на широких экранах — задумывалось
+   как "остаётся видимым при прокрутке", но при однoколоночной раскладке
+   (оглавление — обычный блок внутри того же текстового потока, что и сам
+   текст, не отдельная боковая колонка) sticky-элемент "прилипал" прямо
+   посреди абзацев при скролле — выглядело так, будто оглавление хаотично
+   прыгает по странице (жалоба автора со скриншотами, 2026-07-21). Теперь
+   оглавление — обычный статичный блок в начале текста: остаётся на своём
+   месте наверху, не гоняется за скроллом. */
 #reading-progress {
   position: fixed; top: 0; left: 0; height: 3px; width: 0%;
   background: var(--rp-learn-accent); z-index: 25; transition: width 0.1s linear;
@@ -685,6 +687,55 @@ main.container { padding-block: var(--rp-space-6); }
 #back-to-top:hover { background: var(--rp-learn-accent); color: var(--rp-learn-accent-contrast); }
 @media (prefers-reduced-motion: reduce) { #back-to-top { transition: opacity 0.2s ease; } }
 @media print { #back-to-top { display: none; } }
+
+/* ---------- Ссылки на другие модули/книги внутри текста — кнопки-«пилюли» ----------
+   Раньше markdown-ссылки вида "[Модуль 4](/content/module-4/index.md)" рендерились
+   как обычный подчёркнутый текст (и вдобавок вели на сырой .md-файл, а не на
+   страницу модуля) — запрос автора "тексты которые служат ссылкой для других
+   модулей пусть будут в виде кнопок красиво и современно", 2026-07-21.
+   pages/js/markdown-loader.js (enhanceContentLinks) резолвит настоящий URL и
+   вешает этот класс; те же --rp-learn-badge-* переменные, что у .badge-tinted —
+   уже проверенные на контраст во всех 3 темах, отдельной проверки не требуется. */
+.content-ref-link {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.15rem 0.7rem 0.15rem 0.5rem; margin: 0 0.1rem;
+  border-radius: var(--rp-radius-pill); font-size: 0.92em; font-weight: 700; line-height: 1.6;
+  background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text);
+  border: 1px solid var(--rp-learn-badge-border); text-decoration: none;
+  vertical-align: baseline; transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.content-ref-link:hover, .content-ref-link:focus-visible {
+  transform: translateY(-1px); box-shadow: var(--rp-shadow-card); text-decoration: none;
+}
+.content-ref-link__icon { font-size: 0.85em; opacity: 0.85; }
+@media print { .content-ref-link { border: 1px solid #000; color: #000; background: none; } }
+
+/* ---------- Модалка-предпросмотр перед переходом (markdown-loader.js, openContentLinkModal) ---------- */
+.rp-modal-open { overflow: hidden; } /* блокируем скролл фона, пока открыта модалка */
+.rp-modal-overlay {
+  position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;
+  padding: var(--rp-space-4); background: rgba(20, 16, 10, 0.55); backdrop-filter: blur(2px);
+  animation: rp-modal-fade 0.15s ease;
+}
+.rp-modal {
+  position: relative; width: 100%; max-width: 26rem; padding: var(--rp-space-5);
+  border-radius: var(--rp-radius-lg); background: var(--rp-learn-surface-raised);
+  border: 1px solid var(--rp-learn-border); box-shadow: var(--rp-shadow-pop);
+  animation: rp-modal-pop 0.18s ease;
+}
+.rp-modal__close {
+  position: absolute; top: var(--rp-space-3); right: var(--rp-space-3);
+  width: 2rem; height: 2rem; border-radius: var(--rp-radius-pill); border: 1px solid var(--rp-learn-border);
+  background: transparent; color: var(--rp-learn-text); font-size: 1.1rem; line-height: 1; cursor: pointer;
+}
+.rp-modal__close:hover { background: var(--rp-learn-surface); }
+.rp-modal__eyebrow { font-size: var(--rp-fs-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--rp-learn-badge-text); margin: 0 0 var(--rp-space-1); padding-right: var(--rp-space-6); }
+.rp-modal__title { margin: 0 0 var(--rp-space-2); padding-right: var(--rp-space-6); }
+.rp-modal__actions { display: flex; gap: var(--rp-space-2); flex-wrap: wrap; margin-top: var(--rp-space-4); }
+@keyframes rp-modal-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rp-modal-pop { from { opacity: 0; transform: translateY(0.5rem) scale(0.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .rp-modal-overlay, .rp-modal { animation: none; } }
 
 /* ---------- Разворот книги (обложка модуля + заголовок) — module.html ---------- */
 .book-hero {
