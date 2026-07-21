@@ -6,8 +6,8 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../design/tokens.css?v=17">
-<link rel="stylesheet" href="../design/base.css?v=39">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous" defer></script>
+<link rel="stylesheet" href="../design/base.css?v=38">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
 <style>
   /* Общие стили текста урока (.doc-body — таблицы/список/цитаты/заголовки)
      теперь в design/base.css — общие для этой страницы и modules/module.html,
@@ -29,7 +29,6 @@
 </style>
 </head>
 <body data-zone="learn">
-  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header" class="no-print"></div>
   <main class="container">
     <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; gap: var(--rp-space-3); flex-wrap: wrap;">
@@ -44,11 +43,11 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=14";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, applyAdminOnlyWall, setupNoteCard, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=17";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, applyAdminOnlyWall, setupNoteCard, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=16";
     import { bookKey, MODULES } from "./js/modules-data.js?v=19";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=8";
-    import { getFullBookContent, saveBookNote } from "../integration/firestore.js?v=14";
+    import { getFullBookContent, saveBookNote } from "../integration/firestore.js?v=13";
 
     renderHeader("learn");
     renderFooter();
@@ -118,7 +117,6 @@
       loadMarkdownDoc(docPath)
         .then((doc) => {
           renderDocInto(root, doc);
-          if (doc.meta.title) document.title = `${doc.meta.title} — Онлайн-школа рукии`;
           const bodyEl = root.querySelector(".doc-body");
           const noteRoot = document.createElement("div");
           noteRoot.style.marginTop = "var(--rp-space-4)";

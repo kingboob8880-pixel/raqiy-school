@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Сертификат — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=17">
-<link rel="stylesheet" href="../../design/base.css?v=39">
+<link rel="stylesheet" href="../../design/base.css?v=38">
 <style>
   .cert-frame { max-width: 42rem; margin: var(--rp-space-6) auto; padding: var(--rp-space-3);
     background: var(--rp-color-parchment-50); border-radius: var(--rp-radius-lg);
@@ -44,7 +44,6 @@
 </style>
 </head>
 <body data-zone="learn">
-  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header" class="no-print"></div>
   <main class="container">
     <p class="form-note" id="cert-intro" style="text-align:center; max-width: 32rem; margin: var(--rp-space-5) auto;">Загрузка…</p>
@@ -76,7 +75,7 @@
             <svg class="cert__spark cert__spark--tl" viewBox="0 0 100 100" aria-hidden="true">${SPARK_PATH}</svg>
             <svg class="cert__spark cert__spark--br" viewBox="0 0 100 100" aria-hidden="true">${SPARK_PATH}</svg>
             ${sample ? `<span class="cert__watermark" aria-hidden="true">Пример</span>` : ""}
-            <p class="cert__basmala" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <p class="cert__basmala">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
             <p class="cert__eyebrow">Сертификат о завершении</p>
             <div class="cert__name">${name}</div>
             <p class="cert__desc">прошёл(-ла) полный курс подготовки заклинателя (раки) — 11 модулей,
@@ -121,8 +120,7 @@
       }
 
       introEl.textContent = "Поздравляем — курс пройден полностью. Вот ваш сертификат:";
-      const completionDate = profile?.completedAt?.toDate?.() ?? new Date();
-      root.innerHTML = certHtml({ name: profile.name || "Ученик", sample: false, dateStr: completionDate.toLocaleDateString("ru-RU") });
+      root.innerHTML = certHtml({ name: profile.name || "Ученик", sample: false, dateStr: new Date().toLocaleDateString("ru-RU") });
       // Скачивание RUKYA PRO — программа для приёма пациентов, обещанная в
       // Модуле 11 — открывается только тем, кто реально закончил курс
       // (та же проверка allDone, что решает, показывать ли сам сертификат
