@@ -4,7 +4,7 @@
 // странице отдельным <script> из CDN — см. pages/book.html/module.html).
 
 import { withBase } from "./base-path.js?v=6";
-import { MODULES } from "./modules-data.js?v=20";
+import { MODULES } from "./modules-data.js?v=21";
 
 /** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter
  *  значений (title, source) через innerHTML (аудит, 2026-07-21). */
@@ -35,11 +35,12 @@ const STATUS_BADGE = {
   certified: { cls: "badge-certified", label: "Подтверждено шейхом" },
   draft: { cls: "badge-draft", label: "Черновик, ждёт подтверждения шейха" },
   archive: { cls: "badge-archive", label: "Вне сертифицируемой программы" },
-  author: { cls: "badge-author", label: "Авторская методика — не Сунна" },
+  author: null,
 };
 
 export function statusBadgeHtml(status) {
-  const s = STATUS_BADGE[status] || STATUS_BADGE.draft;
+  const s = STATUS_BADGE[status];
+  if (!s) return "";
   return `<span class="badge ${s.cls}">${s.label}</span>`;
 }
 
