@@ -74,13 +74,29 @@
 .lesson-teaser__quote::before { content: "«"; } .lesson-teaser__quote::after { content: "»"; }
 .lesson-teaser__source { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; }
 
-/* ---------- Лёгкий подъём карточек лендинга при наведении — только декоративные, некликабельные карточки ---------- */
-.advantage-card, .audience-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.advantage-card:hover, .audience-card:hover { transform: translateY(-4px); box-shadow: var(--rp-shadow-pop); }
-@media (prefers-reduced-motion: reduce) {
-  .advantage-card, .audience-card { transition: none; }
-  .advantage-card:hover, .audience-card:hover { transform: none; }
+/* ---------- Лёгкий подъём карточек лендинга при наведении ---------- */
+/* Переехало на общую утилиту .lift (design/base.css, полировка по
+   референсу design.html, 2026-07-21) — та же логика подъёма, что была
+   здесь раньше, плюс акцентная рамка при наведении, которой не было.
+   Класс "lift" добавлен прямо в разметку pages/index.html у карточек,
+   куда он применяется — только декоративные, некликабельные карточки. */
+
+/* ---------- Финальный призыв к действию — по референсу design.html ---------- */
+/* Тот же радиальный градиент-панель, что уже используется в hero (те же
+   --rp-hero-panel-* токены, уже проверены на контраст во всех 3 темах —
+   повторная проверка не нужна) — визуальная "рамка" страницы: начинается
+   такой панелью (hero) и заканчивается такой же (2026-07-21). Раньше
+   закрывающий блок ("Как начать") был обычной плоской карточкой — терялся
+   на фоне остальных card-секций, не читался как финальный акцент. */
+.final-cta {
+  position: relative; overflow: hidden; border-radius: var(--rp-radius-xl);
+  padding: var(--rp-space-7) var(--rp-space-6); text-align: center;
+  background: var(--rp-hero-panel-gradient); color: var(--rp-hero-panel-text);
+  border: 1px solid var(--rp-learn-border);
 }
+.final-cta__arabic { font-family: var(--rp-font-arabic); direction: rtl; font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem); color: var(--rp-hero-panel-accent); margin: 0; }
+.final-cta h2 { color: var(--rp-hero-panel-text); margin: var(--rp-space-3) auto 0; max-width: 34rem; }
+.final-cta p { color: var(--rp-hero-panel-text); opacity: 0.85; max-width: 30rem; margin: var(--rp-space-3) auto 0; }
 
 /* ---------- Соединительная линия между шагами процесса на десктопе ---------- */
 @media (min-width: 56rem) {

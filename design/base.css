@@ -79,10 +79,27 @@ p { margin: 0 0 var(--rp-space-4); }
 }
 
 /* ---------- Навигация ---------- */
+/* Полупрозрачная заливка + блюр вместо сплошной — по референсу design.html
+   (макет лендинга, 2026-07-21): раньше шапка была плоской непрозрачной
+   плашкой, из-за чего сквозь неё не читался фоновый узор/свечение
+   страницы — эффект "стекла" делает липкую шапку заметно легче на вид, а
+   не просто перекрывающей контент плашкой. color-mix, не отдельный rgba-
+   токен на тему — 88% исходного --rp-zone-surface держит тот же уровень
+   контраста текста/ссылок шапки, что уже проверен на непрозрачном фоне
+   (разница в 12% прозрачности не двигает соотношение ниже порога AA).
+   @supports-фолбэк — на браузерах без backdrop-filter шапка остаётся
+   непрозрачной (текущее поведение), не полупрозрачной поверх текста. */
 .site-header {
   position: sticky; top: 0; z-index: 20;
   background: var(--rp-zone-surface, var(--rp-learn-surface));
   border-bottom: 1px solid var(--rp-zone-border, var(--rp-learn-border));
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .site-header {
+    background: color-mix(in srgb, var(--rp-zone-surface, var(--rp-learn-surface)) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
 }
 .site-header__row {
   display: flex; align-items: center; justify-content: space-between;
@@ -163,11 +180,25 @@ p { margin: 0 0 var(--rp-space-4); }
   min-height: 2.75rem;
 }
 .btn:active { transform: translateY(1px); }
+/* Градиент + цветная тень — по референсу design.html ("премиальная"
+   кнопка вместо плоской заливки). --rp-zone-accent-alt задан только для
+   зоны "learn" (design/tokens.css) — у кабинетов ученика/админа
+   переменная не определена, поэтому там кнопка тихо остаётся плоской, как
+   раньше: `var(--rp-zone-accent-alt, var(--rp-zone-accent))` подставляет
+   САМ accent вторым концом градиента, что вырождается в сплошную заливку
+   без изменений (умышленно — точечная полировка этого прохода не трогает
+   кабинеты, см. project.md 2026-07-21). Оба конца градиента для зоны
+   "learn" во всех 3 темах проверены расчётом контраста с
+   --rp-zone-accent-contrast (см. комментарии у --rp-learn-accent-alt). */
 .btn-primary {
-  background: var(--rp-zone-accent, var(--rp-learn-accent));
+  background: linear-gradient(120deg, var(--rp-zone-accent-alt, var(--rp-zone-accent, var(--rp-learn-accent))), var(--rp-zone-accent, var(--rp-learn-accent)));
   color: var(--rp-zone-accent-contrast, var(--rp-learn-accent-contrast));
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 32%, transparent);
 }
-.btn-primary:hover { opacity: 0.92; }
+.btn-primary:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 14px 30px color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 40%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary:hover { transform: none; }
+}
 .btn-outline {
   background: transparent;
   border-color: var(--rp-zone-border, var(--rp-learn-border));
@@ -179,12 +210,37 @@ p { margin: 0 0 var(--rp-space-4); }
 .btn-sm { padding: 0.45rem 0.85rem; min-height: 2.25rem; font-size: var(--rp-fs-sm); }
 
 /* ---------- Карточки ---------- */
+/* Лёгкий диагональный градиент (surface-raised → surface) вместо плоской
+   заливки — по референсу design.html: там карточки лендинга используют
+   linear-gradient(165deg, #1a3225, #16281d), эти два цвета — ровно
+   emerald-темы surface-raised/surface. Тот же приём общий для .card
+   (применяется сайт-широко — формы, карточки кабинетов, модалки), а не
+   только лендинга: там, где surface-raised совпадает с surface (тема
+   "pattern", кабинет ученика — оба #ffffff), градиент вырождается в
+   плоскую заливку без изменений — безопасно везде (2026-07-21). */
 .card {
-  background: var(--rp-zone-surface, var(--rp-learn-surface));
+  background: linear-gradient(165deg, var(--rp-zone-surface-raised, var(--rp-learn-surface-raised)), var(--rp-zone-surface, var(--rp-learn-surface)));
   border: 1px solid var(--rp-zone-border, var(--rp-learn-border));
   border-radius: var(--rp-radius-lg);
   padding: var(--rp-space-5);
   box-shadow: var(--rp-shadow-card);
+}
+
+/* Утилита "приподнять при наведении" — обобщённая версия паттерна, что уже
+   был у .advantage-card/.audience-card (design/landing-themes.css) и
+   .path-step__body/.attr-card/.term-card: подъём + тень + акцентная
+   рамка. Названа .lift, как в design.html, чтобы будущие карточки не
+   изобретали hover-подъём в четвёртый раз. Только на явно декоративных/
+   некликабельных карточках — для кликабельных .path-step/.lesson-link
+   свой вариант с дополнительной стрелкой-подсказкой. */
+.lift { transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
+.lift:hover {
+  transform: translateY(-4px); box-shadow: var(--rp-shadow-pop);
+  border-color: color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 45%, var(--rp-zone-border, var(--rp-learn-border)));
+}
+@media (prefers-reduced-motion: reduce) {
+  .lift { transition: none; }
+  .lift:hover { transform: none; }
 }
 
 /* Карточка формулы: арабский текст + транскрипция + перевод + источник.

@@ -72,7 +72,22 @@
   --rp-learn-text-muted: var(--rp-color-sand-500);
   --rp-learn-accent: var(--rp-color-gold-500);
   --rp-learn-accent-strong: var(--rp-color-gold-600);
-  --rp-learn-accent-contrast: var(--rp-color-parchment-50);
+  /* ink-900, не parchment-50 — расчётом контраста (2026-07-21, полировка
+     дизайн-системы по референсу design.html) нашёл, что светлый текст на
+     --rp-learn-accent (gold-500, #b0842c) даёт всего 3.15:1 — ниже порога
+     WCAG AA (4.5:1) для обычного текста. Затрагивает "ش" в шапке,
+     process-step__num, author-card__portrait, кнопку .btn-primary — везде,
+     где текст/иконка кладётся поверх плашки --rp-learn-accent. ink-900 даёт
+     4.98:1. Тема "изумруд" уже использует ink-900 (её отдельный override
+     ниже) — тема baseline была единственной, где это не было исправлено. */
+  --rp-learn-accent-contrast: var(--rp-color-ink-900);
+  /* Второй, более светлый оттенок акцента — только для градиента кнопки
+     .btn-primary (design.html, "премиальная" кнопка с лёгким переливом
+     вместо плоской заливки). Подобран расчётом контраста так, чтобы ОБА
+     конца градиента держали AA с --rp-learn-accent-contrast: #be9a52
+     (gold-500, осветлённый на 18% к белому) даёт 6.4:1 с ink-900, сам
+     gold-500 — 4.98:1 (2026-07-21). */
+  --rp-learn-accent-alt: #be9a52;
   --rp-learn-icon-bg: var(--rp-color-gold-100);
   --rp-learn-icon-text: var(--rp-color-gold-600);
   --rp-learn-badge-bg: #ffffff;
@@ -108,6 +123,16 @@
   --rp-student-text: var(--rp-color-ink-900);
   --rp-student-accent: var(--rp-color-green-700);
   --rp-student-accent-strong: var(--rp-color-green-800);
+  /* Раньше кнопки в зонах "кабинет ученика/админа" не имели своего
+     accent-contrast и молча наследовали --rp-learn-accent-contrast через
+     fallback в .btn-primary — совпадало по цвету случайно, а не по расчёту:
+     на baseline-теме --rp-student-accent (зелёный, тёмный) и
+     --rp-admin-accent (золотой, светлее) требуют ПРОТИВОПОЛОЖНЫЙ по
+     светлоте текст, но делили один и тот же общий fallback. Явные
+     собственные токены — точный расчёт контраста для каждой зоны
+     (2026-07-21, полировка дизайн-системы). parchment-50 на green-700 —
+     5.94:1. */
+  --rp-student-accent-contrast: var(--rp-color-parchment-50);
 
   --rp-admin-bg: var(--rp-color-graphite-900);
   --rp-admin-surface: var(--rp-color-graphite-800);
@@ -116,6 +141,10 @@
   --rp-admin-text: var(--rp-color-graphite-100);
   --rp-admin-accent: var(--rp-color-gold-500);
   --rp-admin-accent-strong: var(--rp-color-gold-600);
+  /* ink-900 на gold-500 — 4.98:1. Раньше через общий fallback сюда попадал
+     parchment-50 (светлый текст на золоте, 3.15:1 — провал AA, тот же баг,
+     что был у --rp-learn-accent-contrast baseline, см. выше). */
+  --rp-admin-accent-contrast: var(--rp-color-ink-900);
 }
 
 /* Зона "кабинет ученика" (§16а) — читает --rp-student-*, которые переключаются темой на <html> */
@@ -127,6 +156,9 @@
   --rp-zone-text: var(--rp-student-text);
   --rp-zone-accent: var(--rp-student-accent);
   --rp-zone-accent-strong: var(--rp-student-accent-strong);
+  /* Раньше не было — .btn-primary молча падал на --rp-learn-accent-contrast
+     через fallback (см. комментарий у --rp-student-accent-contrast выше). */
+  --rp-zone-accent-contrast: var(--rp-student-accent-contrast);
 }
 
 /* Зона "кабинет админа" (§16а) — читает --rp-admin-*, которые переключаются темой на <html> */
@@ -138,6 +170,7 @@
   --rp-zone-text: var(--rp-admin-text);
   --rp-zone-accent: var(--rp-admin-accent);
   --rp-zone-accent-strong: var(--rp-admin-accent-strong);
+  --rp-zone-accent-contrast: var(--rp-admin-accent-contrast);
 }
 
 /* Зона "учебный контент" по умолчанию, явно тоже через [data-zone] для единообразия */
@@ -150,6 +183,10 @@
   --rp-zone-accent: var(--rp-learn-accent);
   --rp-zone-accent-strong: var(--rp-learn-accent-strong);
   --rp-zone-accent-contrast: var(--rp-learn-accent-contrast);
+  /* Только у зоны "learn" — градиентная кнопка (design.html) намеренно не
+     распространена на кабинеты ученика/админа в этом проходе ("точечная
+     полировка", а не полный редизайн кабинетов, 2026-07-21). */
+  --rp-zone-accent-alt: var(--rp-learn-accent-alt);
 }
 
 /* ============================================================
@@ -175,6 +212,11 @@ html[data-site-theme="emerald"] {
   --rp-learn-accent: var(--rp-color-gold-400);
   --rp-learn-accent-strong: var(--rp-color-gold-600);
   --rp-learn-accent-contrast: var(--rp-color-ink-900);
+  /* gold-200 — уже существующий токен (#e6c983), тот же светлый оттенок,
+     что design.html использует как верхний конец градиента кнопки.
+     ink-900 на gold-200 — 10.5:1, на базовом gold-400 — 6.0:1, оба конца
+     градиента с запасом проходят AA (2026-07-21). */
+  --rp-learn-accent-alt: var(--rp-color-gold-200);
   --rp-learn-icon-bg: rgba(230, 201, 131, 0.14);
   --rp-learn-icon-text: var(--rp-color-gold-200);
   --rp-learn-badge-bg: rgba(230, 201, 131, 0.16);
@@ -204,6 +246,10 @@ html[data-site-theme="pattern"] {
   --rp-learn-accent: var(--rp-color-green-700);
   --rp-learn-accent-strong: var(--rp-color-green-800);
   --rp-learn-accent-contrast: #ffffff;
+  /* Здесь текст светлый (белый) — значит безопасное направление градиента
+     ЗАТЕМНЯЕТ, а не осветляет (иначе контраст падал бы): green-800 — тот же
+     цвет, что и accent-strong, белый на нём — 9.35:1 (2026-07-21). */
+  --rp-learn-accent-alt: var(--rp-color-green-800);
   --rp-learn-icon-bg: rgba(47, 106, 74, 0.12);
   --rp-learn-icon-text: var(--rp-color-green-700);
   --rp-learn-badge-bg: rgba(47, 106, 74, 0.1);
@@ -239,6 +285,7 @@ html[data-site-theme="emerald"] {
   --rp-student-text: var(--rp-color-parchment-50);
   --rp-student-accent: var(--rp-color-gold-400);
   --rp-student-accent-strong: var(--rp-color-gold-600);
+  --rp-student-accent-contrast: var(--rp-color-ink-900);
 
   /* кабинет админа — та же гамма, но глубже (он и так тёмный по умолчанию) */
   --rp-admin-bg: #0f1f16;
@@ -248,6 +295,7 @@ html[data-site-theme="emerald"] {
   --rp-admin-text: var(--rp-color-parchment-50);
   --rp-admin-accent: var(--rp-color-gold-400);
   --rp-admin-accent-strong: var(--rp-color-gold-600);
+  --rp-admin-accent-contrast: var(--rp-color-ink-900);
 }
 
 /* B — Светлый паттерн: оба кабинета — светлый режим */
@@ -259,6 +307,7 @@ html[data-site-theme="pattern"] {
   --rp-student-text: var(--rp-color-ink-900);
   --rp-student-accent: var(--rp-color-green-700);
   --rp-student-accent-strong: var(--rp-color-green-800);
+  --rp-student-accent-contrast: #ffffff;
 
   --rp-admin-bg: var(--rp-color-graphite-100);
   --rp-admin-surface: #ffffff;
@@ -267,6 +316,7 @@ html[data-site-theme="pattern"] {
   --rp-admin-text: var(--rp-color-graphite-900);
   --rp-admin-accent: var(--rp-color-green-700);
   --rp-admin-accent-strong: var(--rp-color-green-800);
+  --rp-admin-accent-contrast: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {
