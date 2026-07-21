@@ -360,14 +360,42 @@ p { margin: 0 0 var(--rp-space-4); }
 }
 .path-step--done .path-step__marker { background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff; }
 .path-step:hover .path-step__marker { transform: scale(1.08); }
+/* Галочка в углу маркера у подтверждённых модулей — не полагаемся только
+   на цвет заливки (зелёный маркер и так есть, но цвет ненадёжен как
+   единственный сигнал, в т.ч. для дальтоников); статичная, без анимации —
+   постоянно мигающие бейджи достижений были бы утомительны на странице,
+   которую открывают часто (запрос "оживить, но не сделать скучным" не
+   значит "непрерывно шевелящимся", 2026-07-21). */
+.path-step--done .path-step__marker { position: relative; }
+.path-step--done .path-step__marker::after {
+  content: "✓"; position: absolute; bottom: -0.2rem; right: -0.2rem;
+  width: 1.15rem; height: 1.15rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-status-success); color: #fff; font-size: 0.65rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--rp-learn-surface);
+}
 .path-step__body {
-  flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
+  flex: 1; position: relative; overflow: hidden;
+  background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
   padding: var(--rp-space-4) var(--rp-space-5); display: flex; gap: var(--rp-space-3); align-items: center; justify-content: space-between;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
+/* Лёгкий блик, скользящий по карточке при наведении — только по наведению
+   (не непрерывно), премиальный, но не навязчивый штрих (та же просьба
+   "оживить", 2026-07-21). */
+.path-step__body::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 42%,
+    color-mix(in srgb, var(--rp-learn-accent) 20%, transparent) 50%, transparent 58%);
+  transform: translateX(-130%); transition: transform 0.65s ease;
+}
+.path-step:hover .path-step__body::after { transform: translateX(130%); }
 .path-step:hover .path-step__body {
   transform: translateY(-3px); box-shadow: var(--rp-shadow-pop);
   border-color: color-mix(in srgb, var(--rp-learn-accent) 55%, var(--rp-learn-border));
+}
+@media (prefers-reduced-motion: reduce) {
+  .path-step__body::after { display: none; }
 }
 .path-step__main { min-width: 0; }
 .path-step__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); margin-bottom: 0.3rem; }
@@ -727,12 +755,24 @@ main.container { padding-block: var(--rp-space-6); }
   border-radius: var(--rp-radius-pill); font-size: 0.92em; font-weight: 700; line-height: 1.6;
   background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text);
   border: 1px solid var(--rp-learn-badge-border); text-decoration: none;
-  vertical-align: baseline; transition: transform 0.15s ease, box-shadow 0.15s ease;
+  vertical-align: baseline; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 .content-ref-link:hover, .content-ref-link:focus-visible {
-  transform: translateY(-1px); box-shadow: var(--rp-shadow-card); text-decoration: none;
+  transform: translateY(-1px) scale(1.03); box-shadow: var(--rp-shadow-card); text-decoration: none;
+  border-color: var(--rp-learn-accent);
 }
-.content-ref-link__icon { font-size: 0.85em; opacity: 0.85; }
+/* Иконка чуть "подпрыгивает" вбок при наведении — маленький, но живой намёк
+   "нажми меня" (запрос автора "нужно сделать интересным, добавить анимацию,
+   чтобы не было скукоты", 2026-07-21). */
+.content-ref-link__icon { font-size: 0.85em; opacity: 0.85; display: inline-block; transition: transform 0.2s ease; }
+.content-ref-link:hover .content-ref-link__icon, .content-ref-link:focus-visible .content-ref-link__icon {
+  transform: translateX(2px) scale(1.15);
+}
+@media (prefers-reduced-motion: reduce) {
+  .content-ref-link, .content-ref-link:hover, .content-ref-link__icon, .content-ref-link:hover .content-ref-link__icon {
+    transition: none; transform: none;
+  }
+}
 @media print { .content-ref-link { border: 1px solid #000; color: #000; background: none; } }
 
 /* ---------- Модалка-предпросмотр перед переходом (markdown-loader.js, openContentLinkModal) ---------- */

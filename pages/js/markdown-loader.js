@@ -104,6 +104,34 @@ const DUA_LABELS = {
  * сработать больше одного раза за сессию (уже известный паттерн Firebase,
  * см. `started`-флаг в quiz/index.html); без guard'а повторный вызов
  * дублировал бы и оглавление, и полосу прогресса. */
+/** Плавное появление элементов при попадании во вьюпорт — та же утилита
+ * `.reveal`/`.is-visible` (design/base.css), что уже используется на
+ * лендинге и "Пути ученика" (modules/index.html), теперь общая: запрос
+ * автора "нужно сделать интересным, может анимацию добавить, чтобы не
+ * было скукоты", 2026-07-21 — статичный текст книг/модулей выглядел
+ * одинаково "включённым" целиком, без ощущения путешествия по странице.
+ * `step` — задержка между соседними элементами (для группы, появляющейся
+ * разом, напр. оглавление); 0 — каждый элемент проявляется независимо
+ * ровно в момент, когда доскроллили именно до него (для контента,
+ * растянутого по всей странице — длинная накопленная задержка для
+ * дальних элементов выглядела бы как лаг, а не как оживление). */
+function staggerReveal(elements, { step = 0, max = 480 } = {}) {
+  if (!("IntersectionObserver" in window) || !elements.length) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  elements.forEach((el, i) => {
+    el.classList.add("reveal");
+    if (step) el.style.transitionDelay = `${Math.min(i * step, max)}ms`;
+    observer.observe(el);
+  });
+}
+
 export function addReadingAids(container) {
   const bodyEl = container.querySelector(".doc-body");
   const metaEl = container.querySelector(".doc-meta");
@@ -129,7 +157,18 @@ export function addReadingAids(container) {
       <p class="doc-toc__title">Оглавление</p>
       <ol>${headings.map((h) => `<li><a href="#${h.id}">${h.textContent}</a></li>`).join("")}</ol>`;
     bodyEl.before(toc);
+    // Пункты появляются "лесенкой" один за другим — вся группа видна разом
+    // (оглавление в начале страницы), поэтому задержка по индексу здесь
+    // уместна, в отличие от контента ниже.
+    staggerReveal(Array.from(toc.querySelectorAll("li")), { step: 55, max: 400 });
   }
+
+  // Заголовки разделов и смысловые "врезки" (цитаты, блоки дуа, карточки
+  // аятов, предупреждения) мягко проявляются по мере прокрутки — то самое
+  // "ощущение путешествия" по длинному тексту, а не стену сплошь видимого
+  // текста. Обычные абзацы не трогаем намеренно: анимировать вообще всё
+  // подряд при чтении длинного текста мешало бы, а не оживляло.
+  staggerReveal(Array.from(bodyEl.querySelectorAll("h2, blockquote, .dua-block, .ayah-card, .doc-warning")));
 
   // Полоса прогресса чтения — только для достаточно длинного текста
   // (короткие уроки в ней не нуждаются, полоса мгновенно заполнялась бы
