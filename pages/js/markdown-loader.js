@@ -420,6 +420,28 @@ export function setupNoteCard(container, existingNote, onSave) {
   });
 }
 
+/** Раздел "Архив" (content/archive/index.md) — разбор материалов, исключённых
+ * из сертифицируемой программы, с прямой критикой конкретных книг/методик
+ * (project.md §7/§9). Раньше был за тем же пейволом, что и обычные платные
+ * книги — значит, любой ОПЛАТИВШИЙ курс ученик тоже видел его целиком, не
+ * только админ. Автор прислал скриншот live-страницы и явно попросил:
+ * "убери от всех кроме меня админа" (2026-07-21) — доступ сузили до
+ * admin-only (book.html передаёт сюда, если !admin && это архивный docPath).
+ * Отдельная от applyPaywall()/applyRegisterWall() функция — тем двум уместен
+ * призыв "оплатите курс"/"зарегистрируйтесь", здесь это неуместно: доступ
+ * не продаётся, у обычного ученика (даже оплатившего) его не будет никогда. */
+export function applyAdminOnlyWall(bodyEl) {
+  Array.from(bodyEl.children).forEach((el) => el.remove());
+  const wall = document.createElement("div");
+  wall.className = "card paywall-card";
+  wall.innerHTML = `
+    <h3>Этот раздел виден только администратору школы</h3>
+    <p class="form-note">Здесь — внутренний разбор материалов, не входящих в
+      сертифицируемую программу курса. Он не продаётся и не открывается по
+      оплате — обычная часть курса вам доступна в разделе «Модули».</p>`;
+  bodyEl.after(wall);
+}
+
 export function applyRegisterWall(bodyEl) {
   Array.from(bodyEl.children).forEach((el) => el.remove());
   const wall = document.createElement("div");

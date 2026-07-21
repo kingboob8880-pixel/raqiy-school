@@ -4,6 +4,7 @@
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=7";
+import { watchAuth, isAdmin } from "../../integration/auth.js?v=8";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
@@ -54,7 +55,7 @@ export function renderHeader(zone = "learn") {
         <nav class="site-header__nav" id="site-nav">
           <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>Модули</a>
           <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>Тесты</a>
-          <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}"><span aria-hidden="true">🗃</span>Архив</a>
+          <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}" hidden><span aria-hidden="true">🗃</span>Архив</a>
           <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>Кабинет</a>
         </nav>
         <div class="site-header__actions">
@@ -102,6 +103,23 @@ export function renderHeader(zone = "learn") {
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeNav(); });
     document.addEventListener("click", (e) => {
       if (navEl.classList.contains("is-open") && !navEl.contains(e.target) && !navToggle.contains(e.target)) closeNav();
+    });
+  }
+
+  // Пункт "Архив" виден только админу (запрос автора "убери от всех кроме
+  // меня админа", 2026-07-21 — раздел разбирает материалы, исключённые из
+  // сертифицируемой программы, и не должен быть виден ни гостю, ни
+  // оплатившему ученику). По умолчанию скрыт атрибутом hidden в разметке
+  // выше — так пункт меню не мигает видимым до проверки роли и не ведёт
+  // обычного посетителя в тупик "виден только администратору"
+  // (book.html?doc=/content/archive/index.md — applyAdminOnlyWall()).
+  // watchAuth может сработать больше раза за сессию — операция идемпотентна.
+  const archiveLink = root.querySelector('.site-header__nav a[data-nav="archive"]');
+  if (archiveLink) {
+    watchAuth(async (user) => {
+      if (!user) { archiveLink.hidden = true; return; }
+      try { archiveLink.hidden = !(await isAdmin(user.uid)); }
+      catch { archiveLink.hidden = true; }
     });
   }
 
