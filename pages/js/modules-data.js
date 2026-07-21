@@ -136,7 +136,6 @@ export const MODULES = [
       { title: "Заклинания на убийство и сжигание джиннов — четыре уровня формулы", doc: "/content/module-7/zaklinaniya-na-ubiystvo-dzhinnov.md" },
       // Книга №18 — полное руководство: 13 типов джиннов + протоколы уничтожения каждого.
       { title: "Учебник по уничтожению и сжиганию джиннов и духовных сущностей", doc: "/content/module-7/unichtozhenie-dzhinnov-posobie.md" },
-      { title: "Дуа против одержимости — 9 формул защиты", doc: "/content/module-7/dua-oderzhimost.md" },
     ],
   },
   {
