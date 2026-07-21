@@ -76,8 +76,8 @@ export const MODULES = [
     doc: "/content/module-4/index.md",
     lessons: [
       { title: "Диагностика недугов души — три группы корневых проблем", doc: "/content/module-4/diagnostika.md" },
-      { title: "Таблица эмоциональных загрязнений — 30 состояний и зоны тела", doc: "/content/module-4/zagryazneniya.md" },
-      { title: "Карта эмоциональных зажимов — метод устранения через зикры", doc: "/content/module-4/zazhimy.md" },
+      { title: "Эмоциональные загрязнения — связь с диагностикой", doc: "/content/module-4/zagryazneniya.md" },
+      { title: "Раны души — карта зажимов, метод устранения и 30 дуа выведения", doc: "/content/module-4/zazhimy.md" },
     ],
   },
   {
