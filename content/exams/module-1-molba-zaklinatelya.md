@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Мольба заклинателя"
 book: "/content/module-1/molba-zaklinatelya.md"
-status: draft
+status: author
 ---
 
 1. Сколько всего частей у «Мольбы заклинателя», и сколько из них полностью сертифицированы?

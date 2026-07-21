@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Продвинутое заклинание — метод «Аллязи»"
 book: "/content/module-2/prodvinutoe-zaklinanie.md"
-status: draft
+status: author
 ---
 
 1. Что означает слово «аллязи» (الَّذِي), связывающее имя Аллаха с Его атрибутом?

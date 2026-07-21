@@ -2,7 +2,7 @@
 title: "Дуа против одержимости"
 module: 7
 source: "Книги Лекарь — папка Лекарь"
-status: draft
+status: author
 ---
 
 ## Дуа против одержимости

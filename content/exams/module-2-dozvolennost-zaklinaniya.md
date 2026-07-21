@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Дозволенность заклинания — где проходит граница"
 book: "/content/module-2/dozvolennost-zaklinaniya.md"
-status: draft
+status: author
 ---
 
 1. О чём спросили сподвижники Пророка ﷺ по поводу заклинаний времён джахилии?

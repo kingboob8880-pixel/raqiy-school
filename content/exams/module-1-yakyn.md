@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Учебник якына — убеждённости"
 book: "/content/module-1/yakyn.md"
-status: draft
+status: author
 ---
 
 1. Сколько степеней познания сердцем описывает якын?

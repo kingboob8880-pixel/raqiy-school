@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Дуа личной защиты от джиннов и шайтанов"
 book: "/content/module-6/dua-zashchity-ot-dzhinnov-i-shaytanov.md"
-status: draft
+status: author
 ---
 
 1. От чьего лица построены все дуа этого урока?

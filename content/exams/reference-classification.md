@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Классификация недугов"
 book: "/content/reference/classification.md"
-status: draft
+status: author
 ---
 
 1. Сколько видов колдовства перечислено в классификации?

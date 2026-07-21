@@ -2,7 +2,7 @@
 title: "Лечение от сглаза водой"
 module: 5
 source: "Книги Лекарь — папка Лекарь"
-status: draft
+status: author
 ---
 
 ## Программа лечения от сглаза, зависти и сихра с использованием воды
@@ -29,7 +29,7 @@ status: draft
 **1. От сглаза и зависти:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">ءِامَلْاِب دِسَحَلْاوَ نِيْعَلْا لَّكُ اللُ جُرِخْيُ</div>
+  <div class="ayah-card__arabic" lang="ar">يُخْرِجُ لُلا كُلَّ الْعَيْنِ وَالْحَسَدِ باِلْمَاءِ</div>
   <div class="ayah-card__translit">Юхриджу-Ллаху кулля-ль-'айни ва-ль-хасади би-ль-маи</div>
   <div class="ayah-card__translation">Аллах выводит всякий сглаз и зависть через воду</div>
 </div>
@@ -37,7 +37,7 @@ status: draft
 **2. От сихра:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">ءامَلْاِب رٍحْسِ لَّكُ اللَّّ جُرِخْيُ</div>
+  <div class="ayah-card__arabic" lang="ar">يُخْرِجُ اللَّهِ كُلَّ سِحْرٍ باِلْمَاء</div>
   <div class="ayah-card__translit">Юхриджу Ллаху кулла сихр биль-маи</div>
   <div class="ayah-card__translation">Аллах изгоняет всю магию водами</div>
 </div>
@@ -45,7 +45,7 @@ status: draft
 **3. От зла во взглядах людей:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا رِاصَبْأَ نْمِ جَرَخَ رٍشَ لَّكُ اللَّّ رَمَّدَ</div>
+  <div class="ayah-card__arabic" lang="ar">دَمَّرَ اللَّهِ كُلَّ شَرٍ خَرَجَ مِنْ أَبْصَارِ الناَّسِ</div>
   <div class="ayah-card__translit">Даммара-Ллаху кулла шаррин хараджа мин абсари-н-нас</div>
   <div class="ayah-card__translation">Да уничтожит Аллах всё зло, исходящее из взоров людей</div>
 </div>
@@ -53,7 +53,7 @@ status: draft
 **4. От зла в сердцах людей:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا بِوُلُق نْمِ جَرَخَ رٍشَ لَّكُ اللَّّ رَمَّدَ</div>
+  <div class="ayah-card__arabic" lang="ar">دَمَّرَ اللَّهِ كُلَّ شَرٍ خَرَجَ مِنْ قلُوُبِ الناَّسِ</div>
   <div class="ayah-card__translit">Даммара-Ллаху кулла шаррин харажя мин кулюби-н-нас</div>
   <div class="ayah-card__translation">Да уничтожит Аллах всё зло, вышедшее из сердец людей</div>
 </div>
@@ -61,7 +61,7 @@ status: draft
 **5. От зла в душах людей:**
 
 <div class="ayah-card">
-  <div class="ayah-card__arabic" lang="ar">سِاَّنلا سِفْنَّلا نَمِ جَرَخَ رٍشَ لَّكُ اللَّّ رَمَّدَ</div>
+  <div class="ayah-card__arabic" lang="ar">دَمَّرَ اللَّهِ كُلَّ شَرٍ خَرَجَ مِنَ النَّفْسِ الناَّسِ</div>
   <div class="ayah-card__translit">Даммара-Ллаху кулла шаррин харажя мин ан-нафси ан-наси</div>
   <div class="ayah-card__translation">Да уничтожит Аллах всё зло, исходящее из души людей</div>
 </div>
