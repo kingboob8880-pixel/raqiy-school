@@ -97,8 +97,20 @@
   --rp-ayah-card-text: var(--rp-color-parchment-50);
   --rp-ayah-card-accent: var(--rp-color-gold-500);
 
-  /* Панель каллиграфии — hero-сплит на лендинге (project.md, "Лендинг - новый фон.html" вариант C) */
-  --rp-hero-panel-gradient: linear-gradient(155deg, var(--rp-color-emerald-700), var(--rp-color-emerald-900));
+  /* Панель каллиграфии — hero-сплит на лендинге (project.md, "Лендинг - новый фон.html" вариант C).
+     Раньше здесь (в baseline/"золотой" теме) стоял тот же зелёный градиент
+     изумрудных primitives, что и у самой темы "изумруд" — на золотой/
+     пергаментной теме он смотрелся чужеродно рядом с чёрным .ayah-card
+     (--rp-ayah-card-bg: ink-900 — тоже тёмная панель на этой же странице,
+     но НЕ зелёная), автор прислал скриншот и попросил унифицировать тёмные
+     панели темы, но не через зелёный, а через "то, что подобает золотому
+     фону" (2026-07-21). Тёплый тёмный ink-700→ink-900 — тот же primitive,
+     что уже красит .ayah-card, поэтому обе тёмные панели страницы (hero +
+     аят) теперь одного тона, и ни одна не зелёная. gold-200/parchment-50
+     поверх него держат контраст 8.0–15.7:1 (было ~похоже на emerald-теме,
+     не хуже). Темы "изумруд"/"pattern" не затронуты — у них свой override
+     ниже (изумруд — зелёный по своей сути темы, pattern — светлый). */
+  --rp-hero-panel-gradient: linear-gradient(155deg, var(--rp-color-ink-700), var(--rp-color-ink-900));
   --rp-hero-panel-text: var(--rp-color-parchment-50);
   --rp-hero-panel-accent: var(--rp-color-gold-200);
   --rp-hero-brand-mark: var(--rp-color-gold-400);
