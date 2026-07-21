@@ -9,7 +9,6 @@ import {
   writeBatch, getCountFromServer,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { db } from "./firebase-init.js?v=1";
-import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=1";
 
 /** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
  * журнала активности (стрики, project.md, решение 2026-07-18). */
@@ -27,7 +26,7 @@ export async function markModuleProgress(uid, moduleId, status) {
 }
 
 export async function recordQuizResult(uid, moduleId, scoreRatio) {
-  const passed = scoreRatio >= QUIZ_PASS_THRESHOLD;
+  const passed = scoreRatio >= 0.7;
   const update = {
     [`progress.${moduleId}.quizScore`]: scoreRatio,
     [`progress.${moduleId}.status`]: passed ? "done" : "in_progress",
@@ -41,7 +40,7 @@ export async function recordQuizResult(uid, moduleId, scoreRatio) {
 /** Экзамен по отдельной книге (не по модулю целиком, project.md §5) —
  * bookKey — плоский ключ из pages/js/modules-data.js#bookKey(doc). */
 export async function recordBookQuizResult(uid, bookKey, scoreRatio) {
-  const passed = scoreRatio >= QUIZ_PASS_THRESHOLD;
+  const passed = scoreRatio >= 0.7;
   const update = {
     [`progress.books.${bookKey}.quizScore`]: scoreRatio,
     [`progress.books.${bookKey}.status`]: passed ? "done" : "in_progress",

@@ -3,7 +3,7 @@
 // Внедряется в страницы на разной глубине вложенности, поэтому все ссылки —
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
-import { initSiteTheme } from "./theme.js?v=8";
+import { initSiteTheme } from "./theme.js?v=7";
 import { watchAuth, isAdmin } from "../../integration/auth.js?v=8";
 
 export function renderHeader(zone = "learn") {
@@ -61,7 +61,7 @@ export function renderHeader(zone = "learn") {
         </nav>
         <div class="site-header__actions">
           ${themeSwitcherHtml}
-          <a class="btn btn-outline btn-sm" id="auth-btn" href="${withBase("/pages/auth/login.html")}">Войти</a>
+          <a class="btn btn-outline btn-sm" href="${withBase("/pages/auth/login.html")}">Войти</a>
           <button type="button" class="site-header__menu-btn" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню">
             <span aria-hidden="true">☰</span>
           </button>
@@ -117,25 +117,13 @@ export function renderHeader(zone = "learn") {
   // (book.html?doc=/content/archive/index.md — applyAdminOnlyWall()).
   // watchAuth может сработать больше раза за сессию — операция идемпотентна.
   const archiveLink = root.querySelector('.site-header__nav a[data-nav="archive"]');
-  const authBtn = root.querySelector("#auth-btn");
-  // Один watchAuth вместо двух — archiveLink + authBtn переключаются за
-  // один обработчик, чтобы не удваивать подписку на auth-события.
-  watchAuth(async (user) => {
-    if (archiveLink) {
-      if (!user) { archiveLink.hidden = true; }
-      else { try { archiveLink.hidden = !(await isAdmin(user.uid)); } catch { archiveLink.hidden = true; } }
-    }
-    // Кнопка «Войти» → скрыть для залогиненных (аудит, 2026-07-21).
-    if (authBtn) {
-      if (user) {
-        authBtn.textContent = user.displayName || user.email?.split("@")[0] || "Кабинет";
-        authBtn.href = withBase("/pages/dashboard/student.html");
-      } else {
-        authBtn.textContent = "Войти";
-        authBtn.href = withBase("/pages/auth/login.html");
-      }
-    }
-  });
+  if (archiveLink) {
+    watchAuth(async (user) => {
+      if (!user) { archiveLink.hidden = true; return; }
+      try { archiveLink.hidden = !(await isAdmin(user.uid)); }
+      catch { archiveLink.hidden = true; }
+    });
+  }
 
   initSiteTheme();
 }
