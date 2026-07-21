@@ -31,6 +31,17 @@
   --rp-color-sand-600: #5c5138;
   --rp-color-sage-300: #c2d0c6;
 
+  /* Терракота — отдельный акцентный цвет темы "pattern" (запрос автора
+     "переделай эту тему", 2026-07-21): раньше "pattern" (светлая тема)
+     красилась тем же зелёным, что и тема "изумруд" — своей визуальной
+     идентичности не было, светлая тема выглядела просто "бледной версией
+     изумруда". Тёплый терракотовый — не пересекается ни с золотом
+     baseline, ни с зеленью "изумруда". #8f4325 на белом — 7.0:1, #75371e
+     (accent-strong/тёмный конец градиента кнопки) — 9.0:1 (оба с белым
+     текстом кнопки, 2026-07-21). */
+  --rp-color-terracotta-700: #8f4325;
+  --rp-color-terracotta-800: #75371e;
+
   --rp-font-heading: 'Spectral', 'Georgia', serif;
   --rp-font-body: 'Mulish', -apple-system, BlinkMacSystemFont, sans-serif;
   --rp-font-arabic: 'Scheherazade New', 'Amiri', 'Noto Naskh Arabic', serif;
@@ -248,43 +259,44 @@ html[data-site-theme="emerald"] {
 }
 
 /* B — Светлый с тонким геометрическим паттерном */
+/* Полный ре-дизайн акцента (запрос автора "переделай эту тему, это
+   средняя тема светлая", 2026-07-21, по трём пунктам сразу: акцент не
+   зелёный + карточки объёмнее + больше визуального характера). Раньше
+   тема целиком красилась зелёным green-700/800 — той же палитрой, что и
+   тема "изумруд" — и не имела собственной идентичности, просто "светлая
+   версия изумруда". Теперь акцент — терракота (--rp-color-terracotta-*,
+   см. primitives выше), узор фона заметнее (opacity 0.22→0.3) и того же
+   тёплого тона, что акцент, а surface-raised — не едва уловимый
+   parchment-50 (предыдущая правка этого же дня), а заметный терракотовый
+   намёк на белом (#f6f0ee — 8%-подмес terracotta-700 в белый), чтобы
+   градиент .card был виден, а не почти неотличим от плоской заливки. */
 html[data-site-theme="pattern"] {
-  --rp-learn-bg: var(--rp-color-parchment-50) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23b0842c' stroke-opacity='0.22' stroke-width='1.2'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  --rp-learn-bg: var(--rp-color-parchment-50) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%238f4325' stroke-opacity='0.3' stroke-width='1.2'%3E%3Cpath d='M28 4 L52 28 L28 52 L4 28 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
   --rp-learn-surface: #ffffff;
-  /* Раньше = #ffffff, то же самое, что surface — на этой теме градиент
-     .card (design/base.css, полировка по design.html, 2026-07-21) выходил
-     плоским, без объёма, в отличие от baseline/"изумруд", где эти два
-     токена всегда отличались. Автор прислал скриншот темы "pattern" и
-     попросил проработать её тоже — parchment-50 вместо чистого белого:
-     тот же тёплый оттенок, что уже используют --rp-learn-bg этой темы и
-     surface-raised у baseline, едва заметный глазу как отдельный цвет, но
-     достаточный, чтобы у карточек снова читался градиент. Контраст текста
-     не задет — ink-900 на #fbf6ec практически неотличим по яркости от
-     ink-900 на #ffffff (обе >15:1). */
-  --rp-learn-surface-raised: var(--rp-color-parchment-50);
-  --rp-learn-border: rgba(176, 132, 44, 0.3);
+  --rp-learn-surface-raised: #f6f0ee;
+  --rp-learn-border: rgba(143, 67, 37, 0.32);
   --rp-learn-text: var(--rp-color-ink-900);
   --rp-learn-text-muted: var(--rp-color-sand-600);
-  --rp-learn-accent: var(--rp-color-green-700);
-  --rp-learn-accent-strong: var(--rp-color-green-800);
+  --rp-learn-accent: var(--rp-color-terracotta-700);
+  --rp-learn-accent-strong: var(--rp-color-terracotta-800);
   --rp-learn-accent-contrast: #ffffff;
-  /* Здесь текст светлый (белый) — значит безопасное направление градиента
-     ЗАТЕМНЯЕТ, а не осветляет (иначе контраст падал бы): green-800 — тот же
-     цвет, что и accent-strong, белый на нём — 9.35:1 (2026-07-21). */
-  --rp-learn-accent-alt: var(--rp-color-green-800);
-  --rp-learn-icon-bg: rgba(47, 106, 74, 0.12);
-  --rp-learn-icon-text: var(--rp-color-green-700);
-  --rp-learn-badge-bg: rgba(47, 106, 74, 0.1);
-  --rp-learn-badge-text: var(--rp-color-green-700);
-  --rp-learn-badge-border: rgba(47, 106, 74, 0.28);
+  /* Текст светлый (белый) — направление градиента затемняет, не
+     осветляет (тот же принцип, что был у зелёного варианта: белый на
+     terracotta-800 — 9.0:1, 2026-07-21). */
+  --rp-learn-accent-alt: var(--rp-color-terracotta-800);
+  --rp-learn-icon-bg: rgba(143, 67, 37, 0.12);
+  --rp-learn-icon-text: var(--rp-color-terracotta-700);
+  --rp-learn-badge-bg: rgba(143, 67, 37, 0.1);
+  --rp-learn-badge-text: var(--rp-color-terracotta-700);
+  --rp-learn-badge-border: rgba(143, 67, 37, 0.28);
   --rp-ayah-card-bg: var(--rp-color-ink-900);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
-  --rp-ayah-card-accent: var(--rp-color-green-700);
+  --rp-ayah-card-accent: var(--rp-color-terracotta-700);
   --rp-hero-panel-gradient:
-    radial-gradient(60% 80% at 88% 0%, rgba(47, 106, 74, 0.08), transparent 60%),
+    radial-gradient(60% 80% at 88% 0%, rgba(143, 67, 37, 0.12), transparent 60%),
     radial-gradient(130% 70% at 50% -10%, #fdf9ef, var(--rp-color-parchment-200) 65%);
   --rp-hero-panel-text: var(--rp-color-ink-900);
-  --rp-hero-panel-accent: var(--rp-color-green-700);
+  --rp-hero-panel-accent: var(--rp-color-terracotta-700);
 }
 
 /* ============================================================
@@ -321,17 +333,23 @@ html[data-site-theme="emerald"] {
 }
 
 /* B — Светлый паттерн: оба кабинета — светлый режим */
+/* Акцент кабинетов переведён на терракоту вместе с зоной "learn" (запрос
+   "переделай эту тему" целиком, не только лендинг, 2026-07-21) — иначе
+   кнопки в кабинете ученика/админа на этой теме остались бы зелёными,
+   рассинхронизированными с новой идентичностью темы. --rp-student-border
+   тоже был золотым (gold-500) — leftover от baseline, никогда не
+   принадлежал этой теме содержательно, заодно исправлено. --rp-admin-*
+   border/bg/surface оставлены нейтрально-серыми (graphite) — админка
+   намеренно нейтральна независимо от темы сайта, только акцент кнопок
+   меняется. */
 html[data-site-theme="pattern"] {
   --rp-student-bg: var(--rp-color-parchment-200);
   --rp-student-surface: #ffffff;
-  /* Та же правка, что у --rp-learn-surface-raised выше — иначе кабинет
-     ученика на этой теме единственный, где карточки остались бы плоскими
-     (2026-07-21). */
-  --rp-student-surface-raised: var(--rp-color-parchment-50);
-  --rp-student-border: var(--rp-color-gold-500);
+  --rp-student-surface-raised: #f6f0ee;
+  --rp-student-border: var(--rp-color-terracotta-700);
   --rp-student-text: var(--rp-color-ink-900);
-  --rp-student-accent: var(--rp-color-green-700);
-  --rp-student-accent-strong: var(--rp-color-green-800);
+  --rp-student-accent: var(--rp-color-terracotta-700);
+  --rp-student-accent-strong: var(--rp-color-terracotta-800);
   --rp-student-accent-contrast: #ffffff;
 
   --rp-admin-bg: var(--rp-color-graphite-100);
@@ -339,8 +357,8 @@ html[data-site-theme="pattern"] {
   --rp-admin-surface-raised: #f6f6f7;
   --rp-admin-border: var(--rp-color-graphite-700);
   --rp-admin-text: var(--rp-color-graphite-900);
-  --rp-admin-accent: var(--rp-color-green-700);
-  --rp-admin-accent-strong: var(--rp-color-green-800);
+  --rp-admin-accent: var(--rp-color-terracotta-700);
+  --rp-admin-accent-strong: var(--rp-color-terracotta-800);
   --rp-admin-accent-contrast: #ffffff;
 }
 
