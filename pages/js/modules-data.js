@@ -63,7 +63,7 @@ export const MODULES = [
     cover: "/assets/images/covers/organy-tela.jpg",
     lessons: [
       { title: "Словарь органов тела (Справочник)", doc: "/content/reference/organs.md", exam: "/content/exams/reference-organs.md" },
-      { title: "Влияние эмоциональных загрязнений на тело", doc: "/content/module-3/vliyanie-emots.md" },
+      { title: "30 эмоциональных загрязнений — карта тела, механизм и дуа изгнания", doc: "/content/module-3/vliyanie-emots.md" },
       { title: "Влияние загрязнений на внешность и фигуру", doc: "/content/module-3/krasota.md" },
       { title: "Защита органов от страстей — дуа по каждому органу", doc: "/content/module-3/tablitsa-strasti.md" },
     ],
