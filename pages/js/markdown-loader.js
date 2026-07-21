@@ -114,8 +114,12 @@ const DUA_LABELS = {
  * разом, напр. оглавление); 0 — каждый элемент проявляется независимо
  * ровно в момент, когда доскроллили именно до него (для контента,
  * растянутого по всей странице — длинная накопленная задержка для
- * дальних элементов выглядела бы как лаг, а не как оживление). */
-function staggerReveal(elements, { step = 0, max = 480 } = {}) {
+ * дальних элементов выглядела бы как лаг, а не как оживление).
+ * Экспортирована (была локальной) — modules/module.html переиспользует её
+ * для списка "Уроки" вместо третьей копии того же IntersectionObserver-кода
+ * (запрос автора "сделай отображение красивым и интересным", скриншот
+ * списка уроков, 2026-07-21). */
+export function staggerReveal(elements, { step = 0, max = 480 } = {}) {
   if (!("IntersectionObserver" in window) || !elements.length) return;
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
