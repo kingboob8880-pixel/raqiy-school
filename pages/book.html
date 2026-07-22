@@ -103,7 +103,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=16";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, applyAdminOnlyWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=23";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=23";
     import { t, getLang } from "./js/i18n.js?v=5";
     import { bookKey, MODULES, isModuleUnlocked } from "./js/modules-data.js?v=34";
     import { withBase } from "./js/base-path.js?v=6";
@@ -119,12 +119,6 @@
     const params = new URLSearchParams(location.search);
     const docPath = params.get("doc");
     const root = document.getElementById("doc-root");
-
-    // Раздел "Архив" — не обычная платная книга, доступ только у админа
-    // (запрос автора "убери от всех кроме меня админа", 2026-07-21, скриншот
-    // live-страницы, открытой оплатившим/анонимным доступом наравне с курсом).
-    const ARCHIVE_DOC = "/content/archive/index.md";
-    const isArchiveDoc = docPath === ARCHIVE_DOC;
 
     function findLesson(doc) {
       for (const m of MODULES) {
@@ -225,10 +219,6 @@
               return;
             }
             const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
-            if (isArchiveDoc && !admin) {
-              if (bodyEl) applyAdminOnlyWall(bodyEl);
-              return;
-            }
             // Module lock check — students cannot access lessons in locked modules
             if (owningModule && !admin && !isModuleUnlocked(owningModule.id, profile?.progress)) {
               root.innerHTML = `

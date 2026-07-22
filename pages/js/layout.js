@@ -66,7 +66,6 @@ export function renderHeader(zone = "learn") {
           <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>${t("nav.tests")}</a>
           <a data-nav="flashcards" href="${withBase("/pages/flashcards/index.html")}"><span aria-hidden="true">🃏</span>${t("nav.flashcards")}</a>
           <a data-nav="glossary" href="${withBase("/pages/glossary/index.html")}"><span aria-hidden="true">📘</span>${t("nav.glossary")}</a>
-          <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}" hidden><span aria-hidden="true">🗃</span>${t("nav.archive")}</a>
           <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}</a>
         </nav>
         <div class="site-header__actions">
@@ -90,16 +89,12 @@ export function renderHeader(zone = "learn") {
   // (страница книги/модуля живёт под /pages/modules/ или /pages/book.html,
   // поэтому сравниваем сегмент, а не href целиком).
   const path = location.pathname;
-  // Урок (book.html) без "archive" в query — часть раздела "Модули", просто
-  // не подсвечивалось раньше (независимая проверка, 2026-07-19).
-  const isArchiveDoc = path.includes("/pages/book.html") && location.search.includes("archive");
   const navMatch = {
     about: path.includes("/pages/about.html"),
-    modules: path.includes("/pages/modules/") || (path.includes("/pages/book.html") && !isArchiveDoc),
+    modules: path.includes("/pages/modules/") || path.includes("/pages/book.html"),
     tests: path.includes("/pages/tests/"),
     flashcards: path.includes("/pages/flashcards/"),
     glossary: path.includes("/pages/glossary/"),
-    archive: isArchiveDoc,
     dashboard: path.includes("/pages/dashboard/"),
   };
   root.querySelectorAll(".site-header__nav a[data-nav]").forEach((a) => {
@@ -126,24 +121,8 @@ export function renderHeader(zone = "learn") {
     });
   }
 
-  // Пункт "Архив" виден только админу (запрос автора "убери от всех кроме
-  // меня админа", 2026-07-21 — раздел разбирает материалы, исключённые из
-  // сертифицируемой программы, и не должен быть виден ни гостю, ни
-  // оплатившему ученику). По умолчанию скрыт атрибутом hidden в разметке
-  // выше — так пункт меню не мигает видимым до проверки роли и не ведёт
-  // обычного посетителя в тупик "виден только администратору"
-  // (book.html?doc=/content/archive/index.md — applyAdminOnlyWall()).
-  // watchAuth может сработать больше раза за сессию — операция идемпотентна.
-  const archiveLink = root.querySelector('.site-header__nav a[data-nav="archive"]');
   const authBtn = root.querySelector("#auth-btn");
-  // Один watchAuth вместо двух — archiveLink + authBtn переключаются за
-  // один обработчик, чтобы не удваивать подписку на auth-события.
   watchAuth(async (user) => {
-    if (archiveLink) {
-      if (!user) { archiveLink.hidden = true; }
-      else { try { archiveLink.hidden = !(await isAdmin(user.uid)); } catch { archiveLink.hidden = true; } }
-    }
-    // Кнопка «Войти» → скрыть для залогиненных (аудит, 2026-07-21).
     if (authBtn) {
       if (user) {
         authBtn.textContent = user.displayName || user.email?.split("@")[0] || t("nav.dashboard");

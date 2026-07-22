@@ -29,7 +29,6 @@ const S = {
   "nav.tests":         { ru: "Тесты", en: "Tests", uz: "Testlar" },
   "nav.flashcards":    { ru: "Карточки", en: "Flashcards", uz: "Kartochkalar" },
   "nav.glossary":      { ru: "Словарь", en: "Glossary", uz: "Lug'at" },
-  "nav.archive":       { ru: "Архив", en: "Archive", uz: "Arxiv" },
   "nav.dashboard":     { ru: "Кабинет", en: "Dashboard", uz: "Kabinet" },
   "auth.login":        { ru: "Войти", en: "Sign in", uz: "Kirish" },
   "skip.link":         { ru: "Перейти к содержимому", en: "Skip to content", uz: "Kontentga o'tish" },
