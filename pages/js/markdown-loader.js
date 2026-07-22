@@ -77,7 +77,19 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
     if (p.textContent.trim().startsWith("⚠️")) p.classList.add("doc-warning");
   });
   const bodyEl = container.querySelector(".doc-body");
-  if (bodyEl) { enhanceDuaBlocks(bodyEl); enhanceContentLinks(bodyEl); }
+  if (bodyEl) {
+    // marked.js рендерит ![alt](/assets/...) как <img src="/assets/...">,
+    // но на GitHub Pages корень — /raqiy-school/, поэтому /assets/... не
+    // найдётся. Перезаписываем src через withBase() — аналог enhanceContentLinks
+    // для ссылок (2026-07-22, скриншот автора "фотки не появляются").
+    bodyEl.querySelectorAll("img").forEach((img) => {
+      const src = img.getAttribute("src");
+      if (src && src.startsWith("/") && !src.startsWith("//")) {
+        img.src = withBase(src);
+      }
+    });
+    enhanceDuaBlocks(bodyEl); enhanceContentLinks(bodyEl);
+  }
 }
 
 // Метки "**Арабский текст:**"/"**Транскрипция:**"/"**Перевод:**" перед
