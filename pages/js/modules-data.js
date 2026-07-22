@@ -169,7 +169,9 @@ export const MODULES = [
     level: "Продвинутый",
     status: "certified",
     doc: "/content/module-10/index.md",
-    lessons: [],
+    lessons: [
+      { title: "Разница между практиком и теоретиком в рукье", doc: "/content/module-10/raznitsa-praktik-vs-teoretik.md" },
+    ],
   },
   {
     id: 11,
