@@ -14,7 +14,7 @@ export const MODULES = [
     // "подтверждено шейхом" при том, что треть его уроков ждёт подтверждения.
     status: "author",
     doc: "/content/module-1/index.md",
-    cover: "/assets/images/covers/molba-lekarya.jpg",
+    cover: "/assets/images/covers/volevoy-akt.jpg",
     lessons: [
       { title: "Учебник якына — убеждённости", doc: "/content/module-1/yakyn.md", exam: "/content/exams/module-1-yakyn.md" },
       { title: "Мольба заклинателя", doc: "/content/module-1/molba-zaklinatelya.md", exam: "/content/exams/module-1-molba-zaklinatelya.md" },
@@ -75,6 +75,7 @@ export const MODULES = [
     level: "Средний",
     status: "author",
     doc: "/content/module-4/index.md",
+    cover: "/assets/images/covers/diagnostika.jpg",
     lessons: [
       { title: "Диагностика недугов души — три группы корневых проблем", doc: "/content/module-4/diagnostika.md" },
       { title: "Эмоциональные загрязнения — связь с диагностикой", doc: "/content/module-4/zagryazneniya.md" },
@@ -87,6 +88,7 @@ export const MODULES = [
     level: "Средний",
     status: "author",
     doc: "/content/module-5/index.md",
+    cover: "/assets/images/covers/napravlennoe-primenenie.jpg",
     lessons: [
       { title: "Очищение разума — авторские формулы по функциям тела и психики", doc: "/content/module-5/ochishchenie-razuma.md", exam: "/content/exams/module-5-ochishchenie-razuma.md" },
       // Книга №16 инвентаря — раньше исключена целиком (project.md §9а, диагностика
@@ -145,6 +147,7 @@ export const MODULES = [
     level: "Продвинутый",
     status: "author",
     doc: "/content/module-8/index.md",
+    cover: "/assets/images/covers/prodvinutyy-master.jpg",
     lessons: [
       { title: "Фундамент мастера — состояние заклинателя", doc: "/content/module-8/fundament-mastera.md" },
       { title: "Заклинание действием — продвинутые формулы", doc: "/content/module-8/prodvinutye-formuly.md" },
@@ -157,6 +160,7 @@ export const MODULES = [
     level: "Продвинутый",
     status: "certified",
     doc: "/content/module-9/index.md",
+    cover: "/assets/images/covers/istinnoe-vs-lozhnoe.jpg",
     lessons: [
       { title: "Границы веры — единственность Истины и вопрос заступничества", doc: "/content/module-9/granitsy-very-i-zastupnichestvo.md", exam: "/content/exams/module-9-granitsy-very-i-zastupnichestvo.md" },
       { title: "Что есть истина — разбор с доказательствами из Корана и Сунны", doc: "/content/module-9/sut-istiny.md" },
@@ -170,6 +174,7 @@ export const MODULES = [
     level: "Продвинутый",
     status: "certified",
     doc: "/content/module-10/index.md",
+    cover: "/assets/images/covers/istinnyy-rakiy.jpg",
     lessons: [
       { title: "Разница между практиком и теоретиком в рукье", doc: "/content/module-10/raznitsa-praktik-vs-teoretik.md" },
     ],
@@ -180,6 +185,7 @@ export const MODULES = [
     level: "Продвинутый",
     status: "author",
     doc: "/content/module-11/index.md",
+    cover: "/assets/images/covers/rukya-pro.jpg",
     lessons: [],
   },
 ];
