@@ -21,8 +21,8 @@
     import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=30";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
     import { loadExamDoc } from "../js/exam-loader.js?v=8";
-    import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=8";
-    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=15";
+    import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=9";
+    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=17";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
@@ -39,6 +39,7 @@
     const isBookQuiz = !!examPath;
 
     let currentUser = null;
+    let currentStudentName = "";
 
     // Раньше этой проверки не было вообще — init() вызывался безусловно
     // внизу файла, и реальные вопросы+варианты ответов экзамена отдавались
@@ -174,8 +175,8 @@
         let saveFailed = false;
         if (currentUser) {
           try {
-            if (isBookQuiz) await recordBookQuizResult(currentUser.uid, resultKey, ratio);
-            else await recordQuizResult(currentUser.uid, resultKey, ratio);
+            if (isBookQuiz) await recordBookQuizResult(currentUser.uid, resultKey, ratio, currentStudentName);
+            else await recordQuizResult(currentUser.uid, resultKey, ratio, currentStudentName);
           } catch (e) { console.warn(e); saveFailed = true; }
         }
 
@@ -234,6 +235,7 @@
       let unlocked = false;
       try {
         const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
+        currentStudentName = profile?.name || "";
         unlocked = admin || !!profile?.paid;
       } catch (err) {
         console.warn(err);

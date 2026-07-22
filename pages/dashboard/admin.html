@@ -70,12 +70,12 @@
 
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=14";
-    import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=8";
+    import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=9";
     import {
       listStudents, setStudentPaid, deleteStudent, sendMessage, sendMediaMessage, watchMessages, markThreadRead,
       countUnreadFromStudent, daysSince, computeOverallProgress, computeAverageScore,
       setCertificateGranted, setRukyaProAccess,
-    } from "../../integration/firestore.js?v=16";
+    } from "../../integration/firestore.js?v=17";
     import { renderMessages, wireChatForm, scrollToBottom } from "../js/chat-ui.js?v=2";
 
     renderHeader("admin");

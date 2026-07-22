@@ -10,6 +10,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { auth, db } from "./firebase-init.js?v=1";
+import { notifyRegistration } from "./notify.js?v=1";
 
 export async function registerStudent({ name, email, password }) {
   const cred = await createUserWithEmailAndPassword(auth, email, password);
@@ -20,6 +21,7 @@ export async function registerStudent({ name, email, password }) {
     createdAt: serverTimestamp(),
     progress: {}, // { moduleId: { status: 'in_progress'|'done', quizScore: number } }
   });
+  notifyRegistration(name, email);
   return cred.user;
 }
 

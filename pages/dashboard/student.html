@@ -144,8 +144,8 @@
 
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=14";
-    import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=8";
-    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage } from "../../integration/firestore.js?v=16";
+    import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=9";
+    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage } from "../../integration/firestore.js?v=17";
     import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress } from "../js/modules-data.js?v=30";
     import { withBase } from "../js/base-path.js?v=6";
     import { renderMessages, wireChatForm, scrollToBottom } from "../js/chat-ui.js?v=2";
@@ -358,7 +358,7 @@
 
       wireChatForm(document.getElementById("message-form"), document.getElementById("message-text"), async (text) => {
         try {
-          await sendMessage(user.uid, "student", text);
+          await sendMessage(user.uid, "student", text, profile?.name);
           showToast("Сообщение отправлено");
         } catch (err) {
           console.warn("sendMessage error", err);
@@ -366,7 +366,7 @@
         }
       }, async (file, type, duration) => {
         try {
-          await sendMediaMessage(user.uid, "student", file, type, duration);
+          await sendMediaMessage(user.uid, "student", file, type, duration, profile?.name);
           showToast(type === "voice" ? "Голосовое отправлено" : type === "video" ? "Видео отправлено" : "Файл отправлен");
         } catch (err) {
           console.warn("sendMediaMessage error", err);
