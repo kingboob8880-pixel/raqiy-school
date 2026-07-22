@@ -132,37 +132,25 @@
             setupSelfCheck(noteRoot, bodyEl, profile?.progress?.books?.[bookKey(mod.doc)]?.understanding,
               (u) => saveUnderstanding(user.uid, bookKey(mod.doc), u));
           }
-          // Тот же переход на полный текст из Firestore, что на book.html
-          // (project.md §18/§22, "закрыть дыру с платным контентом") — до
-          // миграции конкретного docId getFullBookContent() вернёт null и
-          // ничего не поменяется.
-          if (bodyEl && unlocked) {
-            const full = await getFullBookContent(bookKey(mod.doc));
-            if (full?.body) {
-              bodyEl.innerHTML = window.marked ? window.marked.parse(full.body) : bodyEl.innerHTML;
-              bodyEl.querySelectorAll("table").forEach((table) => {
-                const wrap = document.createElement("div");
-                wrap.className = "table-scroll";
-                table.replaceWith(wrap);
-                wrap.appendChild(table);
-              });
-              // Тот же вызов, что в book.html — полный текст из Firestore
-              // минует renderDocInto(), нужно повторно выделить блоки дуа.
-              enhanceDuaBlocks(bodyEl);
-              // И то же самое для ссылок на другие модули/книги → кнопки +
-              // модалка-предпросмотр (запрос автора, 2026-07-21).
-              enhanceContentLinks(bodyEl);
+          try {
+            if (bodyEl && unlocked) {
+              const full = await getFullBookContent(bookKey(mod.doc));
+              if (full?.body) {
+                bodyEl.innerHTML = window.marked ? window.marked.parse(full.body) : bodyEl.innerHTML;
+                bodyEl.querySelectorAll("table").forEach((table) => {
+                  const wrap = document.createElement("div");
+                  wrap.className = "table-scroll";
+                  table.replaceWith(wrap);
+                  wrap.appendChild(table);
+                });
+                enhanceDuaBlocks(bodyEl);
+                enhanceContentLinks(bodyEl);
+              }
+              addReadingAids(docRoot);
             }
-            // Оглавление + прогресс чтения — раньше были только на
-            // book.html, хотя текст модуля (у модулей без отдельных
-            // уроков-книг) бывает длиннее иной отдельной книги (напр.
-            // module-6/index.md, ~2800 слов) — loop-проход №3, 2026-07-20.
-            addReadingAids(docRoot);
-          }
-          // Кнопка теста — только после доступа к тексту модуля, тот же
-          // принцип, что уже применяется к экзамену по отдельному уроку
-          // (book.html): нет смысла сдавать тест по материалу, который не
-          // дали дочитать (независимая проверка, 2026-07-19).
+          } catch (e) { console.warn("module content enrichment", e); }
+          // Кнопка теста — показываем всегда когда есть доступ, даже если
+          // выше произошла ошибка обогащения контента.
           if (unlocked) document.getElementById("quiz-cta").hidden = false;
           if (mod.lessons.length) renderLessons(profile?.progress);
         });
