@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
+<title>Глоссарий — Онлайн-школа рукии</title>
+<link rel="stylesheet" href="../../design/tokens.css?v=20">
+<link rel="stylesheet" href="../../design/base.css?v=50">
+<style>
+  /* ── Glossary-specific styles ── */
+  .glossary-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: var(--rp-space-4); }
+  .glossary-filters button {
+    padding: 0.4rem 0.9rem; border-radius: var(--rp-radius-md); border: 1px solid var(--rp-zone-border, var(--rp-learn-border));
+    background: var(--rp-zone-surface, var(--rp-learn-surface)); color: var(--rp-zone-text, var(--rp-learn-text));
+    font-size: var(--rp-fs-sm); cursor: pointer; transition: background 0.2s, border-color 0.2s;
+  }
+  .glossary-filters button:hover { border-color: var(--rp-zone-accent, var(--rp-learn-accent)); }
+  .glossary-filters button.is-active {
+    background: var(--rp-zone-accent, var(--rp-learn-accent)); color: #fff;
+    border-color: var(--rp-zone-accent, var(--rp-learn-accent));
+  }
+
+  .glossary-group { margin-bottom: var(--rp-space-5); }
+  .glossary-group__letter {
+    font-size: 1.6rem; font-weight: 700; padding: 0.3rem 0;
+    border-bottom: 2px solid var(--rp-zone-accent, var(--rp-learn-accent));
+    margin-bottom: var(--rp-space-3); color: var(--rp-zone-accent, var(--rp-learn-accent));
+    position: sticky; top: 0; background: var(--rp-zone-bg, var(--rp-learn-bg)); z-index: 2;
+  }
+  .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--rp-space-3); }
+
+  .term-card {
+    background: linear-gradient(165deg, var(--rp-zone-surface-raised, var(--rp-learn-surface-raised)), var(--rp-zone-surface, var(--rp-learn-surface)));
+    border: 1px solid var(--rp-zone-border, var(--rp-learn-border));
+    border-radius: var(--rp-radius-lg); padding: var(--rp-space-4);
+    box-shadow: var(--rp-shadow-card); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .term-card:hover {
+    transform: translateY(-3px); box-shadow: var(--rp-shadow-pop);
+    border-color: color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 45%, var(--rp-zone-border, var(--rp-learn-border)));
+  }
+  @media (prefers-reduced-motion: reduce) { .term-card { transition: none; } .term-card:hover { transform: none; } }
+
+  .term-card__arabic {
+    font-family: var(--rp-font-arabic, "Amiri", serif); font-size: 1.5rem;
+    direction: rtl; text-align: right; line-height: 1.8; margin-bottom: 0.3rem;
+    color: var(--rp-zone-accent, var(--rp-learn-accent));
+  }
+  .term-card__translit { font-style: italic; font-size: var(--rp-fs-sm); opacity: 0.8; margin-bottom: 0.4rem; }
+  .term-card__name { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem; }
+  .term-card__def { font-size: var(--rp-fs-sm); line-height: 1.55; opacity: 0.9; margin-bottom: 0.5rem; }
+  .term-card__meta { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+  .term-card__tag {
+    display: inline-block; font-size: 0.72rem; padding: 0.15rem 0.5rem;
+    border-radius: var(--rp-radius-md); background: color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 15%, transparent);
+    color: var(--rp-zone-accent, var(--rp-learn-accent));
+  }
+  .term-card__module {
+    font-size: 0.72rem; opacity: 0.65;
+  }
+
+  .glossary-stats { display: flex; gap: var(--rp-space-4); flex-wrap: wrap; margin-bottom: var(--rp-space-4); }
+  .glossary-stats__item { font-size: var(--rp-fs-sm); opacity: 0.7; }
+  .glossary-stats__num { font-weight: 700; color: var(--rp-zone-accent, var(--rp-learn-accent)); }
+
+  .search-field { max-width: 28rem; }
+
+  @media (max-width: 640px) {
+    .glossary-grid { grid-template-columns: 1fr; }
+    .glossary-filters { gap: 0.35rem; }
+    .glossary-filters button { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+  }
+</style>
+</head>
+<body data-zone="learn">
+  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
+  <div id="site-header"></div>
+  <main class="container">
+    <h1 id="page-title">Глоссарий рукии</h1>
+    <p class="form-note" id="page-subtitle">Словарь ключевых терминов — арабский оригинал, транслитерация и определение.</p>
+
+    <div class="search-field">
+      <input type="search" id="glossary-search" placeholder="Поиск по терминам…" aria-label="Поиск по терминам">
+    </div>
+
+    <div class="glossary-filters" id="category-filters"></div>
+
+    <div class="glossary-stats" id="glossary-stats"></div>
+
+    <p id="search-empty" class="form-note" hidden>Ничего не найдено.</p>
+    <div id="glossary-root"></div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter } from "../js/layout.js?v=16";
+    import { t, getLang } from "../js/i18n.js?v=5";
+
+    renderHeader("learn");
+    renderFooter();
+
+    // ── i18n for this page ──
+    const lang = getLang();
+    const L = {
+      title:     { ru: "Глоссарий рукии", en: "Ruqyah Glossary", uz: "Ruqya lug'ati" },
+      subtitle:  { ru: "Словарь ключевых терминов — арабский оригинал, транслитерация и определение.", en: "Key terms dictionary — Arabic original, transliteration and definition.", uz: "Asosiy atamalar lug'ati — arab asl nusxasi, transliteratsiya va ta'rif." },
+      search:    { ru: "Поиск по терминам…", en: "Search terms…", uz: "Atamalarni qidirish…" },
+      noResults: { ru: "Ничего не найдено.", en: "Nothing found.", uz: "Hech narsa topilmadi." },
+      all:       { ru: "Все", en: "All", uz: "Barchasi" },
+      catAqeeda: { ru: "Основы вероубеждения", en: "Creed fundamentals", uz: "Aqida asoslari" },
+      catIllness:{ ru: "Виды недугов", en: "Types of ailments", uz: "Kasallik turlari" },
+      catMethod: { ru: "Методы лечения", en: "Treatment methods", uz: "Davolash usullari" },
+      catQuranS: { ru: "Коран и Сунна", en: "Quran & Sunnah", uz: "Qur'on va Sunna" },
+      catPractice:{ ru: "Практика раки", en: "Practitioner terms", uz: "Amaliyotchi atamalari" },
+      total:     { ru: "Всего терминов:", en: "Total terms:", uz: "Jami atamalar:" },
+      shown:     { ru: "Показано:", en: "Shown:", uz: "Ko'rsatilgan:" },
+      module:    { ru: "Модуль", en: "Module", uz: "Modul" },
+    };
+    const tl = (key) => L[key]?.[lang] || L[key]?.ru || key;
+
+    document.getElementById("page-title").textContent = tl("title");
+    document.getElementById("page-subtitle").textContent = tl("subtitle");
+    const searchInput = document.getElementById("glossary-search");
+    searchInput.placeholder = tl("search");
+    document.getElementById("search-empty").textContent = tl("noResults");
+    document.documentElement.lang = lang;
+
+    // ── Categories ──
+    const CATEGORIES = {
+      aqeeda:   tl("catAqeeda"),
+      illness:  tl("catIllness"),
+      method:   tl("catMethod"),
+      quran:    tl("catQuranS"),
+      practice: tl("catPractice"),
+    };
+
+    // ── Term data ──
+    // Each: { ar, translit, ru, en, uz, cat, modules }
+    const TERMS = [
+      { ar: "رقية", translit: "Ruqya", ru: "Рукья", en: "Ruqyah", uz: "Ruqya", def: { ru: "Исламское исцеление через чтение Корана и дуа — обращение к Аллаху с просьбой об излечении.", en: "Islamic healing through reciting Quran and dua — turning to Allah for cure.", uz: "Qur'on va duo o'qish orqali islomiy davolash — Allohdan shifo so'rash." }, cat: "method", modules: [1,2,5] },
+      { ar: "عين", translit: "'Ayn", ru: "Сглаз / 'Айн", en: "Evil Eye", uz: "Ko'z tegish", def: { ru: "Поражение человека завистливым или восхищённым взглядом, подтверждённое Кораном и Сунной.", en: "Harm caused by an envious or admiring gaze, confirmed by Quran and Sunnah.", uz: "Hasadli yoki hayratli nazar bilan zararlash, Qur'on va Sunna bilan tasdiqlangan." }, cat: "illness", modules: [5,6] },
+      { ar: "سحر", translit: "Sihr", ru: "Сихр", en: "Sorcery", uz: "Sehr", def: { ru: "Колдовство — воздействие через сговор с шайтанами, категорически запрещено в исламе.", en: "Sorcery — influence through pact with devils, categorically forbidden in Islam.", uz: "Sehrgarlik — shaytanlar bilan kelishuv orqali ta'sir, Islomda qat'iyan taqiqlangan." }, cat: "illness", modules: [5,6,7] },
+      { ar: "حسد", translit: "Hasad", ru: "Хасад", en: "Envy", uz: "Hasad", def: { ru: "Зависть — желание лишить другого блага, которое даровал ему Аллах.", en: "Envy — desire to deprive another of blessings Allah gave them.", uz: "Hasad — Alloh bergan ne'matdan boshqani mahrum qilishni xohlash." }, cat: "illness", modules: [5,6] },
+      { ar: "مس", translit: "Mass", ru: "Масс", en: "Jinn Touch", uz: "Mass", def: { ru: "Прикосновение (воздействие) джинна на человека — от лёгкого влияния до полной одержимости.", en: "Jinn's touch on a person — from light influence to full possession.", uz: "Jinning insonga ta'siri — yengil ta'sirdan to'liq egalikkacha." }, cat: "illness", modules: [5,7] },
+      { ar: "جن", translit: "Jinn", ru: "Джинн", en: "Jinn", uz: "Jin", def: { ru: "Разумные создания из бездымного огня, невидимые человеческому глазу, упоминаемые в Коране.", en: "Intelligent beings made from smokeless fire, invisible to human eye, mentioned in the Quran.", uz: "Tutunsiz olovdan yaratilgan aqlli mavjudotlar, inson ko'ziga ko'rinmas, Qur'onda tilga olingan." }, cat: "aqeeda", modules: [5,7] },
+      { ar: "شيطان", translit: "Shaytan", ru: "Шайтан", en: "Devil", uz: "Shayton", def: { ru: "Дьявол — Иблис и его потомки, враги человека, наущающие на зло.", en: "Devil — Iblis and his progeny, enemies of mankind, whispering evil.", uz: "Shayton — Iblis va uning avlodi, insonning dushmanlari, yomonlikka vasvasa qiluvchilar." }, cat: "aqeeda", modules: [6,7] },
+      { ar: "يقين", translit: "Yaqin", ru: "Якын", en: "Certainty", uz: "Yaqin", def: { ru: "Убеждённость сердца — без якына рукья остаётся пустым звуком; основа Модуля 1.", en: "Heart's conviction — without yaqin, ruqyah is an empty sound; foundation of Module 1.", uz: "Qalb ishonchi — yaqinsiz ruqya bo'sh tovush; 1-modulning asosi." }, cat: "aqeeda", modules: [1] },
+      { ar: "توكل", translit: "Tawakkul", ru: "Таваккуль", en: "Reliance on Allah", uz: "Tavakkul", def: { ru: "Полное упование на Аллаха — деятельное доверие, а не пассивное ожидание.", en: "Complete reliance on Allah — active trust, not passive waiting.", uz: "Allohga to'liq tavakkul — faol ishonch, sust kutish emas." }, cat: "aqeeda", modules: [1] },
+      { ar: "إحسان", translit: "Ihsan", ru: "Эхсан", en: "Excellence in worship", uz: "Ehson", def: { ru: "Поклонение Аллаху так, будто видишь Его; источник силы заклинателя.", en: "Worshipping Allah as if you see Him; the healer's source of strength.", uz: "Allohga go'yo Uni ko'rayotganday ibodat qilish; tabibning kuch manbai." }, cat: "aqeeda", modules: [1] },
+      { ar: "بصيرة", translit: "Basira", ru: "Басира", en: "Spiritual Insight", uz: "Basira", def: { ru: "Духовное зрение сердца — способность распознавать истинное положение пациента.", en: "Heart's spiritual vision — ability to discern a patient's true condition.", uz: "Qalbning ruhiy ko'rishi — bemorning haqiqiy holatini ajrata olish qobiliyati." }, cat: "practice", modules: [1] },
+      { ar: "توحيد", translit: "Tawhid", ru: "Таухид", en: "Monotheism", uz: "Tavhid", def: { ru: "Единобожие — признание Аллаха единственным Господом, единственным объектом поклонения и единственным обладателем совершенных имён и качеств.", en: "Monotheism — affirming Allah as the sole Lord, sole object of worship, and sole possessor of perfect names and attributes.", uz: "Tavhid — Allohni yagona Rabb, yagona ibodat obyekti va mukammal ism va sifatlarning yagona egasi deb tan olish." }, cat: "aqeeda", modules: [1,9] },
+      { ar: "تقوى", translit: "Taqwa", ru: "Таква", en: "God-consciousness", uz: "Taqvo", def: { ru: "Богобоязненность — щит верующего; без таквы нет настоящей рукьи.", en: "God-consciousness — a believer's shield; without taqwa there is no true ruqyah.", uz: "Taqvodorlik — mo'minning qalqoni; taqvosiz haqiqiy ruqya yo'q." }, cat: "aqeeda", modules: [1,6] },
+      { ar: "دعاء", translit: "Du'a", ru: "Дуа", en: "Supplication", uz: "Duo", def: { ru: "Мольба, обращённая к Аллаху — основной инструмент заклинателя.", en: "Supplication addressed to Allah — the healer's primary tool.", uz: "Allohga qaratilgan iltijo — tabibning asosiy vositasi." }, cat: "method", modules: [1,2,3] },
+      { ar: "أذكار", translit: "Adhkar", ru: "Азкары", en: "Remembrances", uz: "Azkorlar", def: { ru: "Поминания Аллаха — утренние, вечерние и ситуативные формулы защиты.", en: "Remembrances of Allah — morning, evening and situational protection formulas.", uz: "Allohni zikr qilish — tonggi, kechki va vaziyatga oid himoya formulalari." }, cat: "method", modules: [6] },
+      { ar: "نية", translit: "Niyya", ru: "Ния", en: "Intention", uz: "Niyat", def: { ru: "Намерение — внутренний акт сердца, без которого любое действие пусто.", en: "Intention — inner act of the heart; without it any action is empty.", uz: "Niyat — qalbning ichki amali, usiz har qanday ish bo'sh." }, cat: "aqeeda", modules: [1,2] },
+      { ar: "إرادة", translit: "Irada", ru: "Ирада", en: "Will / Determination", uz: "Iroda", def: { ru: "Воля, решимость — метод «Влияние Волей» из Модуля 2: осознанное усилие сердца.", en: "Will, determination — 'Influence by Will' method from Module 2: conscious effort of the heart.", uz: "Iroda, qaroriylik — 2-moduldan \"Iroda bilan ta'sir\" usuli: qalbning ongli harakati." }, cat: "practice", modules: [1,2] },
+      { ar: "خشوع", translit: "Khushu'", ru: "Хушу'", en: "Humility in worship", uz: "Xushu'", def: { ru: "Смирение и сосредоточенность в поклонении — состояние, в котором заклинатель должен пребывать во время сеанса.", en: "Humility and focus in worship — the state a healer must maintain during a session.", uz: "Ibodatda kamtarlik va diqqat — tabib seans davomida saqlab turishi kerak bo'lgan holat." }, cat: "practice", modules: [1,8] },
+      { ar: "تزكية", translit: "Tazkiya", ru: "Тазкия", en: "Soul purification", uz: "Tazkiya", def: { ru: "Очищение души от грехов и пороков — необходимое условие для действенной рукьи.", en: "Purification of the soul from sins and vices — prerequisite for effective ruqyah.", uz: "Ruhni gunoh va illatllardan tozalash — samarali ruqya uchun zaruriy shart." }, cat: "aqeeda", modules: [1,3] },
+      { ar: "شفاء", translit: "Shifa'", ru: "Шифа'", en: "Healing", uz: "Shifo", def: { ru: "Исцеление — дарованное только Аллахом; заклинатель — лишь причина (сабаб).", en: "Healing — granted only by Allah; the healer is merely a means (sabab).", uz: "Shifo — faqat Alloh tomonidan beriladi; tabib shunchaki sabab." }, cat: "method", modules: [1,5] },
+      { ar: "رُقْيَة شَرْعِيَّة", translit: "Ruqya shar'iyya", ru: "Рукья шар'ийя", en: "Legitimate Islamic healing", uz: "Ruqya shar'iyya", def: { ru: "Шариатская рукья — дозволенная рукья, опирающаяся на Коран и Сунну, без ширка и бид'а.", en: "Shariah-compliant ruqyah — permissible ruqyah based on Quran and Sunnah, free from shirk and bid'ah.", uz: "Shar'iy ruqya — Qur'on va Sunnaga asoslangan ruxsat etilgan ruqya, shirk va bid'atdan xoli." }, cat: "method", modules: [2] },
+      { ar: "فاتحة", translit: "Fatiha", ru: "Фатиха", en: "Al-Fatiha", uz: "Fotiha", def: { ru: "Открывающая сура Корана — одна из основных формул рукьи, «мать Книги».", en: "Opening chapter of the Quran — one of the core ruqyah formulas, 'mother of the Book'.", uz: "Qur'onning ochilish surasi — ruqyaning asosiy formulalaridan biri, \"Kitobning onasi\"." }, cat: "quran", modules: [2,5] },
+      { ar: "آية الكرسي", translit: "Ayat al-Kursi", ru: "Аят аль-Курси", en: "Throne Verse", uz: "Oyat al-Kursi", def: { ru: "Аят Престола (2:255) — сильнейший аят защиты от шайтанов и джиннов.", en: "Throne Verse (2:255) — the strongest verse of protection against devils and jinn.", uz: "Kursi oyati (2:255) — shayton va jinnlarga qarshi eng kuchli himoya oyati." }, cat: "quran", modules: [2,5,6] },
+      { ar: "معوذات", translit: "Mu'awwidhat", ru: "Му'аввизат", en: "Protective Surahs", uz: "Mu'avvizot", def: { ru: "Защитные суры: аль-Фаляк (113) и ан-Нас (114), иногда включая аль-Ихлас (112).", en: "Protective surahs: al-Falaq (113) and an-Nas (114), sometimes including al-Ikhlas (112).", uz: "Himoya suralari: al-Falaq (113) va an-Nos (114), ba'zan al-Ixlos (112) ham." }, cat: "quran", modules: [2,5,6] },
+      { ar: "نفث", translit: "Nafth", ru: "Нафс", en: "Blowing (in ruqyah)", uz: "Nafs", def: { ru: "Дуновение (лёгкое дутьё) при чтении рукьи — сунна Пророка, мир ему.", en: "Light blowing during ruqyah recitation — sunnah of the Prophet, peace be upon him.", uz: "Ruqya o'qishda yengil puflash — Payg'ambar sunnati, unga tinchlik bo'lsin." }, cat: "method", modules: [2] },
+      { ar: "ورد", translit: "Wird", ru: "Вирд", en: "Daily recitation", uz: "Vird", def: { ru: "Ежедневная программа чтения Корана и азкаров — регулярная духовная практика.", en: "Daily program of Quran recitation and adhkar — regular spiritual practice.", uz: "Qur'on va azkorlarni har kunlik o'qish dasturi — muntazam ruhiy amaliyot." }, cat: "method", modules: [6] },
+      { ar: "صبر", translit: "Sabr", ru: "Сабр", en: "Patience", uz: "Sabr", def: { ru: "Терпение — ключевое качество как пациента, так и заклинателя.", en: "Patience — a key quality for both patient and healer.", uz: "Sabr — bemor ham, tabib ham uchun muhim sifat." }, cat: "aqeeda", modules: [1,8] },
+      { ar: "إيمان", translit: "Iman", ru: "Иман", en: "Faith", uz: "Imon", def: { ru: "Вера — убеждённость сердца, подтверждённая словом и делом; шесть столпов веры.", en: "Faith — conviction of the heart, confirmed by word and deed; six pillars of belief.", uz: "Imon — qalb ishonchi, so'z va amal bilan tasdiqlangan; imonning olti rukni." }, cat: "aqeeda", modules: [1] },
+      { ar: "غيب", translit: "Ghayb", ru: "Гайб", en: "Unseen", uz: "G'ayb", def: { ru: "Сокровенное (незримое) — мир, недоступный органам чувств; знание о нём принадлежит только Аллаху.", en: "The Unseen — realm beyond sensory perception; knowledge of it belongs to Allah alone.", uz: "G'ayb — sezgi organlari yetib bormaydigan olam; uning bilimi faqat Allohga tegishli." }, cat: "aqeeda", modules: [1,9] },
+      { ar: "قدر", translit: "Qadar", ru: "Кадар", en: "Divine Decree", uz: "Qadar", def: { ru: "Предопределение — вера в то, что всё происходит по воле и знанию Аллаха.", en: "Divine decree — belief that everything happens by Allah's will and knowledge.", uz: "Taqdir — hamma narsa Allohning irodasi va bilimi bilan sodir bo'lishiga ishonish." }, cat: "aqeeda", modules: [1] },
+      { ar: "محرم", translit: "Mahram", ru: "Махрам", en: "Male guardian", uz: "Mahram", def: { ru: "Близкий родственник мужского пола (муж, отец, брат, сын) — должен присутствовать при лечении женщины.", en: "Close male relative (husband, father, brother, son) — must be present when treating a woman.", uz: "Yaqin erkak qarindosh (er, ota, aka, o'g'il) — ayolni davolashda hozir bo'lishi shart." }, cat: "practice", modules: [4,8] },
+      { ar: "شرك", translit: "Shirk", ru: "Ширк", en: "Polytheism", uz: "Shirk", def: { ru: "Многобожие, придание Аллаху сотоварищей — величайший грех, обнуляющий любую рукью.", en: "Polytheism, associating partners with Allah — the greatest sin, nullifying any ruqyah.", uz: "Shirk, Allohga sherik qo'shish — eng katta gunoh, har qanday ruqyani bekor qiladi." }, cat: "aqeeda", modules: [2,9] },
+      { ar: "بدعة", translit: "Bid'a", ru: "Бид'а", en: "Innovation", uz: "Bid'at", def: { ru: "Нововведение в религии — то, чего не было в практике Пророка и его сподвижников.", en: "Religious innovation — something absent from the practice of the Prophet and his companions.", uz: "Dinda yangilik — Payg'ambar va uning sahobalarining amaliyotida bo'lmagan narsa." }, cat: "aqeeda", modules: [2,9] },
+      { ar: "حجاب", translit: "Hijab", ru: "Хиджаб (духовный)", en: "Spiritual barrier", uz: "Hijob (ruhiy)", def: { ru: "В контексте рукьи — духовная преграда, защита; физический или энергетический барьер, ставящийся между человеком и вредом.", en: "In ruqyah context — spiritual barrier, protection; physical or energetic shield placed between a person and harm.", uz: "Ruqya kontekstida — ruhiy to'siq, himoya; inson va zarar o'rtasiga qo'yiladigan qalqon." }, cat: "method", modules: [6] },
+      { ar: "تعويذ", translit: "Ta'wiz", ru: "Та'виз", en: "Amulet", uz: "Ta'viz", def: { ru: "Амулет, талисман — ЗАПРЕЩЁН в методологии этой школы; опора должна быть на Аллаха, а не на предметы.", en: "Amulet, talisman — FORBIDDEN in this school's methodology; reliance must be on Allah, not objects.", uz: "Tumor, talisman — bu maktab metodologiyasida TAQIQLANGAN; tayanch Allohga bo'lishi kerak, buyumlarga emas." }, cat: "practice", modules: [2,9] },
+      { ar: "كاهن", translit: "Kahin", ru: "Кахин", en: "Soothsayer", uz: "Kohin", def: { ru: "Предсказатель, прорицатель — обращение к нему запрещено хадисами; антипод праведного раки.", en: "Soothsayer, fortune-teller — consulting them is forbidden by hadith; antithesis of a righteous healer.", uz: "Folbin, bashoratchi — ularga murojaat qilish hadislar bilan taqiqlangan; solih tabibning teskarisi." }, cat: "practice", modules: [9,10] },
+      { ar: "عزيمة", translit: "'Azima", ru: "'Азима", en: "Incantation / determination", uz: "'Azima", def: { ru: "Заклинание, решимость — твёрдое намерение; в терминологии рукьи — формула обращения к Аллаху.", en: "Incantation, determination — firm intention; in ruqyah terminology — formula of addressing Allah.", uz: "Afsun, qaroriylik — qat'iy niyat; ruqya terminologiyasida — Allohga murojaat formulasi." }, cat: "method", modules: [2,8] },
+      { ar: "فقه", translit: "Fiqh", ru: "Фикх", en: "Islamic jurisprudence", uz: "Fiqh", def: { ru: "Исламское правоведение — знание дозволенного и запретного, необходимое заклинателю.", en: "Islamic jurisprudence — knowledge of permissible and forbidden, essential for a healer.", uz: "Islom huquqshunosligi — ruxsat etilgan va taqiqlangan bilimi, tabib uchun zarur." }, cat: "aqeeda", modules: [2] },
+      { ar: "سنة", translit: "Sunna", ru: "Сунна", en: "Prophetic Tradition", uz: "Sunna", def: { ru: "Путь Пророка Мухаммада (мир ему) — слова, действия и одобрения, второй источник шариата.", en: "Way of Prophet Muhammad (peace be upon him) — words, actions and approvals, second source of Sharia.", uz: "Muhammad Payg'ambar yo'li (unga tinchlik bo'lsin) — so'zlar, amallar va tasdiqlar, shariatning ikkinchi manbai." }, cat: "quran", modules: [1,2] },
+      { ar: "حديث", translit: "Hadith", ru: "Хадис", en: "Prophetic narration", uz: "Hadis", def: { ru: "Предание о словах и поступках Пророка (мир ему), переданное цепочкой передатчиков.", en: "Report of the Prophet's words and actions (peace be upon him), transmitted through a chain of narrators.", uz: "Payg'ambarning so'z va amallari haqidagi rivoyat (unga tinchlik bo'lsin), roviylar silsilasi orqali yetkazilgan." }, cat: "quran", modules: [1,2] },
+      { ar: null, translit: "Zazhim → rana dushi", ru: "Зажим (рана души)", en: "Soul wound (clamp)", uz: "Ruh yarasi (qisqich)", def: { ru: "Точка духовной уязвимости — место, где эмоциональная травма «сжимает» душу и тело; ключевое понятие Модуля 4.", en: "Point of spiritual vulnerability — where emotional trauma 'clamps' soul and body; key concept of Module 4.", uz: "Ruhiy zaiflik nuqtasi — hissiy travma ruh va tanani \"qisqich\" qiladigan joy; 4-modulning asosiy tushunchasi." }, cat: "illness", modules: [4] },
+      { ar: null, translit: "Zagryazneniye", ru: "Загрязнение", en: "Spiritual contamination", uz: "Ifloslik", def: { ru: "Духовное загрязнение — эмоциональные примеси, поражающие тело и душу; 30 типов в Модуле 3.", en: "Spiritual contamination — emotional impurities affecting body and soul; 30 types in Module 3.", uz: "Ruhiy ifloslik — tana va ruhga ta'sir qiluvchi hissiy aralashmalar; 3-modulda 30 turi." }, cat: "illness", modules: [3,4] },
+      { ar: null, translit: "Formula zaklinaniya", ru: "Формула заклинания", en: "Incantation formula", uz: "Afsun formulasi", def: { ru: "Структура заклинания: обращение к Аллаху + указание на конкретный недуг + прошение об исцелении; три пути формулы Арки (Модуль 2).", en: "Incantation structure: addressing Allah + specifying the ailment + requesting healing; three paths of the Arki formula (Module 2).", uz: "Afsun tuzilishi: Allohga murojaat + aniq kasallikni ko'rsatish + shifo so'rash; Arki formulasining uch yo'li (2-modul)." }, cat: "method", modules: [2,5,8] },
+      { ar: null, translit: "Raki / Raqiy", ru: "Раки / Ракый", en: "Ruqyah practitioner", uz: "Roqiy", def: { ru: "Заклинатель, практик рукьи — тот, кто читает рукью пациентам; выпускник курса.", en: "Ruqyah practitioner — one who performs ruqyah for patients; course graduate.", uz: "Ruqya amaliyotchisi — bemorlar uchun ruqya o'quvchi; kurs bitiruvchisi." }, cat: "practice", modules: [1,10,11] },
+      { ar: "أسماء الله الحسنى", translit: "Asma' Allah al-Husna", ru: "Прекрасные имена Аллаха", en: "Beautiful Names of Allah", uz: "Allohning go'zal ismlari", def: { ru: "99 имён Аллаха — используются в формулах заклинаний и методе уединения с таухидом.", en: "99 Names of Allah — used in incantation formulas and the tawhid seclusion method.", uz: "Allohning 99 ismi — afsun formulalari va tavhid bilan xilvatga chiqish usulida ishlatiladi." }, cat: "quran", modules: [1,2,8] },
+      { ar: "وسوسة", translit: "Waswasa", ru: "Васваса", en: "Whispering / intrusive thoughts", uz: "Vasvasa", def: { ru: "Наущение шайтана — навязчивые мысли, внушаемые человеку для смущения и отдаления от Аллаха.", en: "Satanic whispering — intrusive thoughts implanted to confuse and distance one from Allah.", uz: "Shayton vasvasasi — odamni chalg'itish va Allohdan uzoqlashtirish uchun singdirilgan bezovta qiluvchi fikrlar." }, cat: "illness", modules: [6,7] },
+    ];
+
+    // ── Render ──
+    const root = document.getElementById("glossary-root");
+    const emptyNote = document.getElementById("search-empty");
+    const filtersEl = document.getElementById("category-filters");
+    const statsEl = document.getElementById("glossary-stats");
+    let activeCategory = null;
+
+    // Build filter buttons
+    const allBtn = document.createElement("button");
+    allBtn.textContent = tl("all");
+    allBtn.className = "is-active";
+    allBtn.addEventListener("click", () => { activeCategory = null; renderList(); setActiveBtn(allBtn); });
+    filtersEl.appendChild(allBtn);
+    const catBtns = {};
+    for (const [key, label] of Object.entries(CATEGORIES)) {
+      const btn = document.createElement("button");
+      btn.textContent = label;
+      btn.addEventListener("click", () => { activeCategory = key; renderList(); setActiveBtn(btn); });
+      filtersEl.appendChild(btn);
+      catBtns[key] = btn;
+    }
+
+    function setActiveBtn(active) {
+      filtersEl.querySelectorAll("button").forEach(b => b.classList.remove("is-active"));
+      active.classList.add("is-active");
+    }
+
+    function getSortKey(term) {
+      // Sort by Russian name for ru, English for en, Uzbek for uz
+      if (lang === "en") return (term.en || term.ru).toLowerCase();
+      if (lang === "uz") return (term.uz || term.ru).toLowerCase();
+      return term.ru.toLowerCase();
+    }
+
+    function getGroupLetter(term) {
+      const key = getSortKey(term);
+      const ch = key.charAt(0).toUpperCase();
+      // For Russian: group by Cyrillic letter; for Latin: by letter
+      return ch;
+    }
+
+    function termMatchesQuery(term, q) {
+      const fields = [
+        term.ar || "",
+        term.translit.toLowerCase(),
+        term.ru.toLowerCase(),
+        (term.en || "").toLowerCase(),
+        (term.uz || "").toLowerCase(),
+        (term.def[lang] || term.def.ru).toLowerCase(),
+      ];
+      return fields.some(f => f.includes(q));
+    }
+
+    function renderList() {
+      const q = searchInput.value.trim().toLowerCase();
+      let filtered = TERMS;
+
+      if (activeCategory) filtered = filtered.filter(t => t.cat === activeCategory);
+      if (q) filtered = filtered.filter(t => termMatchesQuery(t, q));
+
+      // Sort
+      filtered.sort((a, b) => getSortKey(a).localeCompare(getSortKey(b), lang === "uz" ? "uz" : lang));
+
+      // Group by first letter
+      const groups = {};
+      for (const term of filtered) {
+        const letter = getGroupLetter(term);
+        if (!groups[letter]) groups[letter] = [];
+        groups[letter].push(term);
+      }
+
+      // Stats
+      statsEl.innerHTML = `
+        <span class="glossary-stats__item"><span class="glossary-stats__num">${TERMS.length}</span> ${tl("total")}</span>
+        <span class="glossary-stats__item"><span class="glossary-stats__num">${filtered.length}</span> ${tl("shown")}</span>
+      `;
+
+      if (!filtered.length) {
+        root.innerHTML = "";
+        emptyNote.hidden = false;
+        return;
+      }
+      emptyNote.hidden = true;
+
+      const sortedLetters = Object.keys(groups).sort((a, b) => a.localeCompare(b, lang === "uz" ? "uz" : lang));
+
+      root.innerHTML = sortedLetters.map(letter => `
+        <section class="glossary-group">
+          <div class="glossary-group__letter">${letter}</div>
+          <div class="glossary-grid">
+            ${groups[letter].map(term => termCardHtml(term)).join("")}
+          </div>
+        </section>
+      `).join("");
+    }
+
+    function termCardHtml(term) {
+      const def = term.def[lang] || term.def.ru;
+      const name = lang === "en" ? (term.en || term.ru) : lang === "uz" ? (term.uz || term.ru) : term.ru;
+      const catLabel = CATEGORIES[term.cat] || "";
+      const moduleList = term.modules.map(m => `${tl("module")} ${m}`).join(", ");
+      return `
+        <div class="term-card">
+          ${term.ar ? `<div class="term-card__arabic">${term.ar}</div>` : ""}
+          <div class="term-card__translit">${term.translit}</div>
+          <div class="term-card__name">${name}</div>
+          <div class="term-card__def">${def}</div>
+          <div class="term-card__meta">
+            <span class="term-card__tag">${catLabel}</span>
+            <span class="term-card__module">${moduleList}</span>
+          </div>
+        </div>`;
+    }
+
+    renderList();
+    searchInput.addEventListener("input", () => renderList());
+  </script>
+</body>
+</html>

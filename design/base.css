@@ -1513,3 +1513,111 @@ main.container { padding-block: var(--rp-space-6); }
   background: var(--rp-zone-accent, var(--rp-learn-accent));
   color: var(--rp-zone-accent-contrast, #fff);
 }
+
+/* ---------- Слабые места — бар-чарт на дашборде ученика ---------- */
+.weak-areas { padding: var(--rp-space-4) var(--rp-space-5); }
+.weak-areas__chart { display: flex; flex-direction: column; gap: var(--rp-space-2); }
+.weak-areas__row {
+  display: flex; align-items: center; gap: var(--rp-space-2);
+  flex-wrap: wrap;
+}
+.weak-areas__label {
+  min-width: 5.5rem; font-size: var(--rp-fs-sm); font-weight: 600;
+  white-space: nowrap; flex-shrink: 0;
+}
+.weak-areas__label--book {
+  min-width: 0; max-width: 12rem; overflow: hidden;
+  text-overflow: ellipsis; font-weight: 400;
+}
+.weak-areas__bar-wrap {
+  flex: 1; min-width: 4rem; height: 0.65rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-zone-text) 10%, transparent);
+  overflow: hidden;
+}
+.weak-areas__bar {
+  display: block; height: 100%; border-radius: var(--rp-radius-pill);
+  background: var(--rp-status-success); transition: width 0.5s ease;
+}
+.weak-areas__bar--danger { background: var(--rp-status-danger); }
+.weak-areas__value {
+  font-size: var(--rp-fs-sm); font-weight: 700; min-width: 2.6rem;
+  text-align: right; flex-shrink: 0;
+}
+.weak-areas__badge {
+  font-size: var(--rp-fs-xs); font-weight: 600;
+  padding: 0.1rem 0.5rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-status-danger) 15%, transparent);
+  color: var(--rp-status-danger); white-space: nowrap;
+}
+.weak-areas__recommend {
+  margin-top: var(--rp-space-4); font-size: var(--rp-fs-sm); font-weight: 600;
+}
+.weak-areas__recommend a {
+  color: var(--rp-zone-accent, var(--rp-learn-accent));
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
+/* ---------- Кнопка озвучки дуа-блока (Web Speech API TTS) ---------- */
+.dua-block { position: relative; }
+.dua-block__play {
+  position: absolute; top: var(--rp-space-3); right: var(--rp-space-3);
+  width: 2rem; height: 2rem; border-radius: 50%; border: none;
+  background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface));
+  color: var(--rp-learn-accent); font-size: 0.85rem; line-height: 1;
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+  flex-shrink: 0; z-index: 1;
+}
+.dua-block__play:hover { background: color-mix(in srgb, var(--rp-learn-accent) 25%, var(--rp-learn-surface)); transform: scale(1.1); }
+.dua-block__play:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.dua-block__play--active { background: var(--rp-learn-accent); color: #fff; }
+@media print { .dua-block__play { display: none; } }
+
+/* ---------- Встраивание видео (YouTube / .mp4) ---------- */
+.video-embed {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: var(--rp-radius-md); overflow: hidden;
+  background: #000; margin: var(--rp-space-5) 0;
+}
+.video-embed iframe,
+.video-embed video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: none; border-radius: var(--rp-radius-md);
+}
+@media print { .video-embed { display: none; } }
+
+/* ── Assignments grid ── */
+.assignments-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rp-space-4);
+  margin-top: var(--rp-space-4);
+}
+@media (min-width: 640px) {
+  .assignments-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.assignment-card { padding: var(--rp-space-4); }
+.assignment-card__header {
+  display: flex; align-items: center; gap: var(--rp-space-2);
+  flex-wrap: wrap; margin-bottom: var(--rp-space-2);
+  font-size: var(--rp-text-sm);
+}
+.assignment-card__icon { font-size: 1.3em; }
+.assignment-card__type {
+  font-weight: 600;
+  color: var(--rp-zone-accent, var(--rp-learn-accent));
+}
+.assignment-card__duration {
+  margin-left: auto;
+  color: var(--rp-zone-muted, var(--rp-learn-muted));
+  white-space: nowrap;
+}
+.assignment-card__title {
+  font-size: var(--rp-text-base);
+  margin: 0 0 var(--rp-space-2);
+}
+.assignment-card__desc {
+  font-size: var(--rp-text-sm);
+  color: var(--rp-zone-muted, var(--rp-learn-muted));
+  margin: 0; line-height: 1.55;
+}

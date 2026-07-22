@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
+<title>Флеш-карточки — Онлайн-школа рукии</title>
+<link rel="stylesheet" href="../../design/tokens.css?v=20">
+<link rel="stylesheet" href="../../design/base.css?v=50">
+<style>
+/* ── Flashcard page styles ── */
+.fc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rp-space-3);
+  align-items: center;
+  margin-bottom: var(--rp-space-5);
+}
+.fc-controls select {
+  padding: var(--rp-space-2) var(--rp-space-3);
+  border: 1px solid var(--rp-zone-border);
+  border-radius: var(--rp-radius-sm);
+  background: var(--rp-zone-surface);
+  color: var(--rp-zone-text);
+  font-size: var(--rp-fs-base);
+  font-family: var(--rp-font-body);
+  cursor: pointer;
+}
+.fc-stats {
+  display: flex;
+  gap: var(--rp-space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--rp-space-5);
+}
+.fc-stat {
+  background: var(--rp-zone-surface);
+  border: 1px solid var(--rp-zone-border);
+  border-radius: var(--rp-radius-md);
+  padding: var(--rp-space-3) var(--rp-space-4);
+  text-align: center;
+  min-width: 7rem;
+}
+.fc-stat__value {
+  display: block;
+  font-size: var(--rp-fs-xl);
+  font-weight: 700;
+  font-family: var(--rp-font-heading);
+  color: var(--rp-zone-accent);
+}
+.fc-stat__label {
+  font-size: var(--rp-fs-sm);
+  color: var(--rp-zone-text);
+  opacity: 0.7;
+}
+
+/* Progress bar */
+.fc-progress {
+  width: 100%;
+  height: 0.5rem;
+  background: var(--rp-zone-surface);
+  border-radius: var(--rp-radius-pill);
+  overflow: hidden;
+  margin-bottom: var(--rp-space-5);
+  border: 1px solid var(--rp-zone-border);
+}
+.fc-progress__bar {
+  height: 100%;
+  background: var(--rp-zone-accent);
+  border-radius: var(--rp-radius-pill);
+  transition: width 0.4s ease;
+}
+
+/* Card area */
+.fc-card-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--rp-space-5);
+}
+.fc-card-wrapper {
+  perspective: 900px;
+  width: 100%;
+  max-width: 34rem;
+  height: 16rem;
+  margin-bottom: var(--rp-space-4);
+  cursor: pointer;
+}
+.fc-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease;
+}
+.fc-card.is-flipped {
+  transform: rotateY(180deg);
+}
+.fc-card__face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: var(--rp-radius-lg);
+  border: 2px solid var(--rp-zone-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--rp-space-5);
+  text-align: center;
+  overflow-y: auto;
+}
+.fc-card__front {
+  background: linear-gradient(135deg, var(--rp-zone-surface), var(--rp-zone-surface-raised));
+}
+.fc-card__back {
+  background: linear-gradient(135deg, var(--rp-zone-surface-raised), var(--rp-zone-surface));
+  transform: rotateY(180deg);
+}
+.fc-card__label {
+  font-size: var(--rp-fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--rp-zone-accent);
+  margin-bottom: var(--rp-space-2);
+  font-weight: 600;
+}
+.fc-card__text {
+  font-size: var(--rp-fs-md);
+  color: var(--rp-zone-text);
+  line-height: 1.55;
+}
+.fc-card__hint {
+  position: absolute;
+  bottom: var(--rp-space-3);
+  font-size: var(--rp-fs-sm);
+  opacity: 0.45;
+}
+.fc-card__module-tag {
+  position: absolute;
+  top: var(--rp-space-3);
+  left: var(--rp-space-3);
+  font-size: var(--rp-fs-sm);
+  color: var(--rp-zone-accent);
+  font-weight: 600;
+}
+.fc-counter {
+  font-size: var(--rp-fs-sm);
+  color: var(--rp-zone-text);
+  opacity: 0.6;
+  margin-bottom: var(--rp-space-3);
+}
+
+/* Rating buttons */
+.fc-actions {
+  display: flex;
+  gap: var(--rp-space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.fc-actions button {
+  padding: var(--rp-space-2) var(--rp-space-5);
+  border-radius: var(--rp-radius-md);
+  border: 2px solid transparent;
+  font-size: var(--rp-fs-base);
+  font-family: var(--rp-font-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.fc-actions button:active { transform: scale(0.96); }
+.fc-btn-hard {
+  background: var(--rp-color-red-100);
+  color: var(--rp-color-red-600);
+  border-color: var(--rp-color-red-600);
+}
+.fc-btn-review {
+  background: var(--rp-color-gold-100);
+  color: var(--rp-color-gold-600);
+  border-color: var(--rp-color-gold-500);
+}
+.fc-btn-easy {
+  background: var(--rp-color-green-100);
+  color: var(--rp-color-green-700);
+  border-color: var(--rp-color-green-700);
+}
+
+/* Empty / done states */
+.fc-empty, .fc-done {
+  text-align: center;
+  padding: var(--rp-space-7) var(--rp-space-4);
+  color: var(--rp-zone-text);
+}
+.fc-done__icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: var(--rp-space-3);
+}
+.fc-btn-reset {
+  margin-top: var(--rp-space-4);
+  padding: var(--rp-space-2) var(--rp-space-5);
+  border-radius: var(--rp-radius-md);
+  border: 2px solid var(--rp-zone-accent);
+  background: var(--rp-zone-surface);
+  color: var(--rp-zone-accent);
+  font-size: var(--rp-fs-base);
+  font-family: var(--rp-font-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+.fc-login-note {
+  font-size: var(--rp-fs-sm);
+  color: var(--rp-zone-text);
+  opacity: 0.6;
+  text-align: center;
+  margin-top: var(--rp-space-3);
+}
+
+@media (max-width: 36rem) {
+  .fc-card-wrapper { height: 14rem; }
+  .fc-stat { min-width: 5.5rem; padding: var(--rp-space-2) var(--rp-space-3); }
+  .fc-stat__value { font-size: var(--rp-fs-lg); }
+  .fc-actions button { padding: var(--rp-space-2) var(--rp-space-3); font-size: var(--rp-fs-sm); }
+}
+</style>
+</head>
+<body data-zone="learn">
+  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
+  <div id="site-header"></div>
+  <main class="container">
+    <h1 id="page-title">Флеш-карточки</h1>
+    <p class="form-note" id="page-subtitle">Запоминайте ключевые понятия курса с помощью интервального повторения.</p>
+
+    <div class="fc-controls">
+      <select id="fc-module-select" aria-label="Выбор модуля"></select>
+    </div>
+
+    <div class="fc-stats" id="fc-stats"></div>
+    <div class="fc-progress"><div class="fc-progress__bar" id="fc-progress-bar" style="width:0%"></div></div>
+    <div class="fc-card-area" id="fc-card-area"></div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter } from "../js/layout.js?v=16";
+    import { t, getLang } from "../js/i18n.js?v=5";
+    import { watchAuth } from "../../integration/auth.js?v=9";
+    import { doc, updateDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { db } from "../../integration/firebase-init.js?v=1";
+    import { getStudentProfile } from "../../integration/auth.js?v=9";
+
+    renderHeader("learn");
+    renderFooter();
+    document.documentElement.lang = getLang();
+
+    // ── Card data ── (8-12 per module, Russian)
+    const CARDS = [
+      // Module 1
+      { m:1, q:"Что такое якын (убеждённость)?", a:"Абсолютная уверенность сердца в том, что исцеляет только Аллах — фундамент любого заклинания." },
+      { m:1, q:"Что такое таухид в контексте рукьи?", a:"Единобожие — убеждение, что только Аллах исцеляет, заклинатель лишь причина (сабаб), а не источник силы." },
+      { m:1, q:"Фундаментальное состояние заклинателя — что это?", a:"Состояние полной убеждённости и обращённости к Аллаху, без которого слова заклинания лишены силы." },
+      { m:1, q:"Что такое басира?", a:"Духовное зрение — способность видеть истинную суть вещей и различать духовное состояние пациента." },
+      { m:1, q:"Что такое эхсан?", a:"Совершенство поклонения — «поклоняться Аллаху так, будто видишь Его, а если не видишь — знать, что Он видит тебя»." },
+      { m:1, q:"Что такое волевой акт заклинателя?", a:"Осознанное намерение (ирада) — направленное усилие воли, подкреплённое якыном, которое превращает чтение аятов в действие." },
+      { m:1, q:"Почему якын важнее самих слов заклинания?", a:"Слова без убеждённости — пустой звук. Сила рукьи не в формуле, а в состоянии сердца обращённого к Аллаху." },
+      { m:1, q:"Что такое мольба заклинателя (дуа ар-ракыи)?", a:"Личное обращение к Аллаху перед, во время и после сеанса — основа духовной силы заклинателя." },
+      { m:1, q:"Из чего черпает силу заклинатель?", a:"Из таухида, якына, ибадата (поклонения), зикра и постоянного обращения к Аллаху — не из амулетов или ритуалов." },
+      { m:1, q:"Разница между чтецом и заклинателем?", a:"Чтец произносит аяты механически; заклинатель (ракы) вкладывает якын, иради и обращается к Аллаху как к единственному Исцеляющему." },
+
+      // Module 2
+      { m:2, q:"Какие пять качеств должен иметь заклинатель?", a:"Якын, ихляс (искренность), сабр (терпение), ильм (знание), тауба (покаяние) — каждое проверяемо по поведению." },
+      { m:2, q:"Что такое формула «Арки»?", a:"Структурированный подход к построению заклинания: аят + намерение + обращение = направленное воздействие." },
+      { m:2, q:"Что такое метод «Аллязи»?", a:"Метод указания на болезнь через относительное местоимение (аллязи) — «Тот, Который [создал эту болезнь]» — направляя аят к конкретному месту." },
+      { m:2, q:"Какие инструменты есть у заклинателя?", a:"Коранические аяты, дуа из Сунны, ма'у ар-рукья (вода), оливковое масло, мёд, сидр, хиджама — только с далилем." },
+      { m:2, q:"Как заклинатель говорит с болезнью?", a:"Обращается к болезни/джинну через аяты Корана, называя её, приказывая уйти именем Аллаха — не диалог, а хитаб (обращение)." },
+      { m:2, q:"Что дозволено в заклинании, а что нет?", a:"Дозволено: аяты Корана, дуа из Сунны, понятные слова на арабском. Запрещено: талисманы, заклинания на непонятном языке, обращение к кому-либо кроме Аллаха." },
+      { m:2, q:"Что такое влияние волей (ат-тасир биль-ирада)?", a:"Целенаправленное воздействие — заклинатель не просто читает, а направляет аяты к конкретной цели с осознанным намерением и волей." },
+      { m:2, q:"Почему важна речь с болезнью?", a:"Это не беседа — это приказ именем Аллаха, демонстрирующий убеждённость заклинателя и направляющий действие аятов." },
+      { m:2, q:"Как отличить рукью от колдовства (сихра)?", a:"Рукья — обращение только к Аллаху через Коран и Сунну. Сихр — обращение к джиннам и шайтанам, запрещённое единогласно." },
+      { m:2, q:"Что такое адаб перед чтением рукьи?", a:"Омовение, чистота места, намерение, начало с Басмалы — подготовка души и тела к обращению к Аллаху." },
+
+      // Module 3
+      { m:3, q:"Сколько эмоциональных загрязнений описано в курсе?", a:"30 — от гнева и зависти до отчаяния и самовозвеличивания. Каждое ослабляет защиту верующего." },
+      { m:3, q:"Как эмоциональные загрязнения влияют на внешность?", a:"Каждая страсть оставляет физический след: тусклый взгляд, бледность, напряжение мышц — тело отражает состояние души." },
+      { m:3, q:"Что такое защита от страстей (шахават)?", a:"Система духовных практик — зикр, тауба, контроль взгляда и языка — предотвращающая загрязнение сердца." },
+      { m:3, q:"Почему гнев (гадаб) — одно из главных загрязнений?", a:"Гнев открывает двери шайтану, лишает человека разума и способности принимать исцеление. Пророк (с.а.с.) сказал: «Не гневайся»." },
+      { m:3, q:"Как зависть (хасад) вредит заклинателю?", a:"Зависть противоречит довольству предопределением Аллаха — завистливое сердце не может быть сосудом для исцеления." },
+      { m:3, q:"Что такое кибр (высокомерие) и как оно влияет?", a:"Отвержение истины и презрение к людям. Высокомерный заклинатель ставит себя между Аллахом и пациентом." },
+      { m:3, q:"Как отчаяние (яъс) ослабляет рукью?", a:"Отчаяние — потеря надежды на Аллаха, что противоречит якыну. Без надежды нет убеждённости в исцелении." },
+      { m:3, q:"Почему чистота сердца важна для заклинателя?", a:"Загрязнённое сердце — слабый проводник. Чем чище сердце, тем сильнее воздействие аятов через заклинателя." },
+
+      // Module 4
+      { m:4, q:"Какие три группы корневых проблем в диагностике?", a:"1) Айн (сглаз), 2) Масс/одержимость (влияние джиннов), 3) Сихр (колдовство) — каждая с уникальными маркерами." },
+      { m:4, q:"Что такое загрязнения в контексте диагностики?", a:"Эмоциональные и духовные нечистоты, ослабляющие защиту человека и делающие его уязвимым для айна, масса и сихра." },
+      { m:4, q:"Что такое раны души (зажимы)?", a:"Не мышечные спазмы — это нефизические следы травм, обид, страхов, застрявшие в душе; работа с ними — через дуа и покаяние." },
+      { m:4, q:"На чём основана диагностика в рукье?", a:"На словах самого пациента, его описании симптомов и снов — никогда через боль, надавливание или ощупывание тела." },
+      { m:4, q:"Как пациент описывает айн (сглаз)?", a:"Внезапное ухудшение после похвалы/зависти, физические симптомы без медицинской причины, ощущение тяжести." },
+      { m:4, q:"Как отличить масс (влияние джинна) от болезни?", a:"Странное поведение, голоса, внезапные смены состояния, реакция при чтении Корана — но финальный вывод только после исключения медицинских причин." },
+      { m:4, q:"Признаки сихра (колдовства)?", a:"Внезапное отвращение к супругу, разрыв отношений, странные предметы в доме, повторяющиеся кошмары определённого типа." },
+      { m:4, q:"Почему важно направить пациента к врачу?", a:"Духовное лечение — не замена медицине. Красные флаги требуют медицинского обследования ДО начала рукьи." },
+      { m:4, q:"Что такое опросник пациента?", a:"Структурированный набор вопросов о симптомах, снах, отношениях — основа диагностики без физического контакта." },
+
+      // Module 5
+      { m:5, q:"Что такое хитаб аль-исаба (обращение к поражению)?", a:"Направленное чтение аятов непосредственно к месту, на которое указывает пациент — адресное, а не рассеянное воздействие." },
+      { m:5, q:"Как строятся заклинания по органам?", a:"Каждый орган имеет свой набор аятов и дуа — заклинание направляется точно к поражённому месту с соответствующим далилем." },
+      { m:5, q:"Что такое продвинутое заклинание?", a:"Комбинация нескольких методов: хитаб + ирада + конкретные аяты — усиленное воздействие для сложных случаев." },
+      { m:5, q:"Какие компоненты эффективного заклинания?", a:"Чистое намерение, правильный аят, обращение к конкретному месту, убеждённость и повторение — каждый элемент усиливает остальные." },
+      { m:5, q:"Что делать при истощении заклинателя?", a:"Остановиться, восстановить силы зикром и дуа. Продолжать в истощении — вредить и себе, и пациенту." },
+      { m:5, q:"Метод избавления — что это?", a:"Последовательность действий для освобождения от конкретного типа поражения: диагностика, адресное чтение, закрепление." },
+      { m:5, q:"Как повысить эффективность заклинания?", a:"Усилить якын, очистить намерение, поститься, увеличить ночные молитвы — духовная подготовка определяет силу." },
+      { m:5, q:"Почему важно повторение аятов?", a:"Однократное чтение редко достаточно. Повторение — не магический ритуал, а усиление обращения к Аллаху с настойчивостью." },
+
+      // Module 6
+      { m:6, q:"Что такое базовые азкары защиты?", a:"Ежедневные поминания Аллаха — утренние и вечерние азкары, аятуль-курси, три «кул» — первая линия защиты верующего." },
+      { m:6, q:"Какие дуа используются для защиты?", a:"Дуа из Сунны: от сглаза, от зависти, от зла созданий, при входе/выходе из дома, перед сном — каждая с далилем." },
+      { m:6, q:"Что входит в арсенал против колдовства?", a:"Суры аль-Бакара, аль-Фаляк, ан-Нас, аятуль-Курси, дуа против сихра из Сунны + промывание водой рукьи." },
+      { m:6, q:"Что такое духовные замки?", a:"Регулярные практики, «закрывающие двери» для шайтана: азкары, басмаля при входе, при еде, при близости — системная защита." },
+      { m:6, q:"Почему аятуль-курси — основа защиты?", a:"Пророк (с.а.с.) подтвердил: кто прочитал аятуль-курси перед сном — «не приблизится к нему шайтан до утра» (Бухари)." },
+      { m:6, q:"Сколько раз читать «три кул» (аль-Ихляс, аль-Фаляк, ан-Нас)?", a:"Три раза утром и три раза вечером — «тебе хватит от всего» (Абу Дауд, ат-Тирмизи)." },
+      { m:6, q:"Что делать при подозрении на сихр в доме?", a:"Читать суру аль-Бакара целиком — «шайтан не входит в дом, в котором читают суру аль-Бакара» (Муслим)." },
+      { m:6, q:"Как защититься от сглаза (айна)?", a:"Дуа «A'узу би-калимати Ллахи т-таммати мин шарри ма халяк», чтение «ма ша Аллах», скрытие благ от завистливых." },
+
+      // Module 7
+      { m:7, q:"Какие четыре уровня формулы убийства джиннов?", a:"1) Предупреждение, 2) Угроза аятами, 3) Принуждение к выходу, 4) Уничтожение — каждый уровень строится на предыдущем." },
+      { m:7, q:"Сколько типов джиннов описано в курсе?", a:"13 типов — каждый со своими признаками, поведением и специфическими аятами для воздействия." },
+      { m:7, q:"Что делать на первом уровне (предупреждение)?", a:"Обратиться к джинну через аяты Корана, призвать к исламу, дать шанс уйти добровольно — перед эскалацией." },
+      { m:7, q:"Когда переходить к принуждению?", a:"Только если предупреждение и угроза не подействовали — каждый уровень даёт джинну возможность покаяться и уйти." },
+      { m:7, q:"Что такое масс (соприкосновение джинна)?", a:"Влияние джинна на человека — от лёгкого воздействия (васваса) до полной одержимости (тальбис)." },
+      { m:7, q:"Как джинн проявляет себя при чтении Корана?", a:"Реакции: движения тела, изменение голоса, агрессия, потеря сознания — но не всякая реакция = одержимость." },
+      { m:7, q:"Правило немедленной остановки — когда?", a:"Если пациенту физически плохо, он просит остановиться или теряет сознание — остановить НЕМЕДЛЕННО, проверить состояние." },
+      { m:7, q:"Какие аяты используются против джиннов?", a:"Аятуль-Курси, начало аль-Бакары, конец аль-Бакары, аяты из аль-Му'минун, ас-Саффат, аль-Хашр, аль-Джинн и другие." },
+
+      // Module 8
+      { m:8, q:"Что такое состояние мастера?", a:"Уровень заклинателя, когда якын, ирада и ильм сливаются в единое состояние — действие без разрыва между знанием и практикой." },
+      { m:8, q:"Что такое продвинутые формулы?", a:"Комбинации аятов и дуа для сложных случаев — множественные поражения, застарелый сихр, упорные джинны." },
+      { m:8, q:"Как работают комбинированные формулы?", a:"Несколько аятов читаются последовательно, каждый направлен на свой аспект поражения — системное воздействие." },
+      { m:8, q:"Как разобрать реальный кейс?", a:"Собрать анамнез (опросник), определить тип поражения, подобрать формулы, провести сеанс под супервизией наставника." },
+      { m:8, q:"Что такое учебный сеанс под наблюдением?", a:"Практика с реальным пациентом (с согласия) при наставнике — наставник корректирует ошибки в реальном времени." },
+      { m:8, q:"Когда заклинатель считается готовым к самостоятельной практике?", a:"Когда пройдены все модули, сданы все экзамены и наставник подтвердил готовность — не по самооценке." },
+      { m:8, q:"Зачем анализировать обезличенные кейсы?", a:"Реальные ситуации учат тому, чего нет в теории: неожиданные реакции, комбинированные поражения, психологические нюансы." },
+      { m:8, q:"Как избежать ошибок на сеансе?", a:"Следовать протоколу: диагностика, подбор формул, контроль состояния пациента, немедленная остановка при ухудшении." },
+
+      // Module 9
+      { m:9, q:"Чем отличается истинное заклинание от ложного?", a:"Истинное — обращение к Аллаху через Коран и Сунну. Ложное — обращение к джиннам, использование талисманов, непонятные слова." },
+      { m:9, q:"Что такое границы веры (акыды) в рукье?", a:"Убеждение в единственности Аллаха как Исцеляющего, запрет обращения к кому-либо кроме Него, запрет ширка в любой форме." },
+      { m:9, q:"Вопросы могилы — какое отношение к рукье?", a:"Укрепляют осознание ответственности перед Аллахом: «Кто твой Господь? Какова твоя религия? Кто этот человек?»" },
+      { m:9, q:"Что такое заступничество (шафа'а)?", a:"Ходатайство перед Аллахом в День Суда — принадлежит Аллаху целиком, дозволяется Им тем, кем Он доволен." },
+      { m:9, q:"Почему нельзя просить заступничества у мёртвых?", a:"Это ширк — обращение к кому-либо кроме Аллаха с тем, на что способен только Он. Мёртвые не слышат и не могут помочь." },
+      { m:9, q:"Как определить ширк в практике заклинателя?", a:"Обращение к звёздам, джиннам, мёртвым; талисманы с непонятными символами; претензия на личную силу — всё это ширк." },
+      { m:9, q:"Что такое суть истины (хакыка) в рукье?", a:"Единственный Исцеляющий — Аллах. Всё остальное — средства, причины, но не источники силы." },
+      { m:9, q:"Почему акыда — не теоретический раздел курса?", a:"Ошибка в акыде — не просто теоретическое заблуждение, а реальная угроза: заклинание с ширком вредит и заклинателю, и пациенту." },
+
+      // Module 10
+      { m:10, q:"Чем практик отличается от теоретика?", a:"Практик проверяет знания на реальных сеансах, теоретик только читает — знание без практики не делает заклинателем." },
+      { m:10, q:"Какие типичные ошибки допускают невежды?", a:"Диагностика «на глаз», давление на пациента, претензия на личную силу, отказ направлять к врачу, работа без знаний." },
+      { m:10, q:"Какими качествами обладает истинный ракы?", a:"Таква (богобоязненность), ильм (знание), ихляс (искренность), сабр (терпение), тавадуъ (смиренность)." },
+      { m:10, q:"Почему диагностика «на глаз» опасна?", a:"Ведёт к неверному диагнозу, неправильному лечению и упущенным медицинским проблемам. Только системный опросник." },
+      { m:10, q:"Что делает заклинатель невежественным?", a:"Работа без обучения, игнорирование Сунны, самовозвеличивание, отказ от наставничества, отрицание необходимости медицины." },
+      { m:10, q:"Как невежда вредит пациенту?", a:"Неверный диагноз, физическое давление, внушение ложного страха, задержка обращения к врачу — вред реален и доказуем." },
+      { m:10, q:"Зачем заклинателю наставник (шейх)?", a:"Проверка знаний, коррекция ошибок, передача опыта, защита от заблуждений — самообучение без контроля ведёт к ошибкам." },
+      { m:10, q:"Что такое ответственность ракыя?", a:"Заклинатель отвечает перед Аллахом за каждый сеанс — неграмотное лечение = грех, если пациенту нанесён вред." },
+
+      // Module 11
+      { m:11, q:"Что такое RUKYA Pro?", a:"Профессиональная система для приёма пациентов — карточки, план исцеления, библиотека формул с источниками, работает офлайн." },
+      { m:11, q:"Как работает ИИ-диагностика в RUKYA Pro?", a:"Алгоритм анализирует симптомы и предлагает черновик диагноза — но финальный вывод ВСЕГДА пишет и подписывает сам ракы." },
+      { m:11, q:"Какую ответственность несёт ракы при использовании ИИ?", a:"Полную — ИИ даёт подсказку, но каждый диагноз проверяется и подписывается человеком. Ответственность не делегируется." },
+      { m:11, q:"Почему RUKYA Pro работает офлайн?", a:"Данные пациентов хранятся только на устройстве ракыя — конфиденциальность и защита информации без облачных рисков." },
+      { m:11, q:"Что входит в библиотеку формул RUKYA Pro?", a:"Аяты Корана, дуа из Сунны — каждая формула с указанием источника, далиля и рекомендуемого применения." },
+      { m:11, q:"Кто получает доступ к RUKYA Pro?", a:"Только выпускники курса — после прохождения всех 11 модулей и сдачи всех экзаменов. Не продаётся отдельно." },
+      { m:11, q:"Что такое карточка пациента в RUKYA Pro?", a:"Структурированный профиль: симптомы, история, план лечения, записи сеансов — вся информация в одном месте." },
+      { m:11, q:"Зачем ракы подписывает диагноз?", a:"Фиксирует личную ответственность: решение принимает человек, а не алгоритм — это защита и для ракыя, и для пациента." },
+    ];
+
+    // ── Spaced repetition engine ──
+    // Each card has a box (0-4). Box 0 = new/hard, higher = better known.
+    // Schedule: box 0 → immediate, 1 → 1 day, 2 → 3 days, 3 → 7 days, 4 → 14 days.
+    const BOX_INTERVALS = [0, 1, 3, 7, 14]; // days
+
+    let currentUser = null;
+    let cardProgress = {}; // { "m1_0": { box: 0, lastReview: "2026-07-22" }, ... }
+    let sessionQueue = [];
+    let sessionIndex = 0;
+    let selectedModule = "all";
+    let saveTimeout = null;
+
+    function cardKey(card) {
+      const idx = CARDS.indexOf(card);
+      return `m${card.m}_${idx}`;
+    }
+
+    function todayStr() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    }
+
+    function daysBetween(a, b) {
+      const d1 = new Date(a), d2 = new Date(b);
+      return Math.floor((d2 - d1) / (1000*60*60*24));
+    }
+
+    function isDue(card) {
+      const key = cardKey(card);
+      const prog = cardProgress[key];
+      if (!prog) return true; // new card
+      const interval = BOX_INTERVALS[Math.min(prog.box, 4)];
+      if (interval === 0) return true;
+      return daysBetween(prog.lastReview, todayStr()) >= interval;
+    }
+
+    function buildQueue() {
+      const pool = selectedModule === "all"
+        ? CARDS
+        : CARDS.filter(c => c.m === parseInt(selectedModule));
+
+      const due = pool.filter(c => isDue(c));
+      // Sort: lower box first (needs more review), then shuffle within same box
+      due.sort((a, b) => {
+        const ba = (cardProgress[cardKey(a)]?.box || 0);
+        const bb = (cardProgress[cardKey(b)]?.box || 0);
+        if (ba !== bb) return ba - bb;
+        return Math.random() - 0.5;
+      });
+      sessionQueue = due;
+      sessionIndex = 0;
+    }
+
+    function rateCard(rating) {
+      // rating: "easy" → box+1, "review" → stay, "hard" → box-1 (min 0)
+      const card = sessionQueue[sessionIndex];
+      if (!card) return;
+      const key = cardKey(card);
+      const prog = cardProgress[key] || { box: 0, lastReview: todayStr() };
+
+      if (rating === "easy") prog.box = Math.min(prog.box + 1, 4);
+      else if (rating === "hard") prog.box = Math.max(prog.box - 1, 0);
+      // "review" → same box
+
+      prog.lastReview = todayStr();
+      cardProgress[key] = prog;
+
+      sessionIndex++;
+      scheduleSave();
+      render();
+    }
+
+    // ── Firestore persistence ──
+    function scheduleSave() {
+      if (saveTimeout) clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => saveToFirestore(), 2000);
+    }
+
+    async function saveToFirestore() {
+      if (!currentUser) {
+        try { localStorage.setItem("fc_progress", JSON.stringify(cardProgress)); } catch {}
+        return;
+      }
+      try {
+        const today = todayStr();
+        await updateDoc(doc(db, "students", currentUser.uid), {
+          flashcards: cardProgress,
+          lastSeenAt: serverTimestamp(),
+          "progress.activityDates": arrayUnion(today),
+        });
+      } catch (e) {
+        console.warn("flashcard save error", e);
+        try { localStorage.setItem("fc_progress", JSON.stringify(cardProgress)); } catch {}
+      }
+    }
+
+    async function loadProgress() {
+      if (currentUser) {
+        try {
+          const profile = await getStudentProfile(currentUser.uid);
+          if (profile?.flashcards) {
+            cardProgress = profile.flashcards;
+            return;
+          }
+        } catch (e) { console.warn("load flashcards", e); }
+      }
+      try {
+        const stored = localStorage.getItem("fc_progress");
+        if (stored) cardProgress = JSON.parse(stored);
+      } catch {}
+    }
+
+    // ── Stats ──
+    function getStats() {
+      const pool = selectedModule === "all"
+        ? CARDS
+        : CARDS.filter(c => c.m === parseInt(selectedModule));
+
+      let mastered = 0, review = 0, newCards = 0;
+      pool.forEach(c => {
+        const prog = cardProgress[cardKey(c)];
+        if (!prog) { newCards++; return; }
+        if (prog.box >= 3) mastered++;
+        else review++;
+      });
+
+      // Streak: count consecutive days with flashcard activity
+      const dates = new Set();
+      Object.values(cardProgress).forEach(p => { if (p.lastReview) dates.add(p.lastReview); });
+      let streak = 0;
+      const cursor = new Date();
+      const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      if (!dates.has(fmt(cursor))) cursor.setDate(cursor.getDate() - 1);
+      while (dates.has(fmt(cursor))) {
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+
+      return { total: pool.length, mastered, review: review + newCards, streak, sessionLeft: sessionQueue.length - sessionIndex };
+    }
+
+    // ── Rendering ──
+    const statsEl = document.getElementById("fc-stats");
+    const progressBar = document.getElementById("fc-progress-bar");
+    const cardArea = document.getElementById("fc-card-area");
+    const moduleSelect = document.getElementById("fc-module-select");
+
+    function render() {
+      const stats = getStats();
+
+      // Stats
+      const lang = getLang();
+      const labels = {
+        mastered: { ru: "Усвоено", en: "Mastered", uz: "O'zlashtirilgan" },
+        review: { ru: "К повторению", en: "To review", uz: "Takrorlash" },
+        streak: { ru: "Стрик", en: "Streak", uz: "Strik" },
+        days: { ru: "дн.", en: "days", uz: "kun" },
+      };
+      const l = (k) => labels[k]?.[lang] || labels[k]?.ru || k;
+
+      statsEl.innerHTML = `
+        <div class="fc-stat"><span class="fc-stat__value">${stats.mastered}</span><span class="fc-stat__label">${l("mastered")}</span></div>
+        <div class="fc-stat"><span class="fc-stat__value">${stats.review}</span><span class="fc-stat__label">${l("review")}</span></div>
+        <div class="fc-stat"><span class="fc-stat__value">${stats.streak} ${l("days")}</span><span class="fc-stat__label">${l("streak")}</span></div>
+      `;
+
+      // Progress bar
+      const done = sessionIndex;
+      const total = sessionQueue.length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 100;
+      progressBar.style.width = `${pct}%`;
+
+      // Card or done
+      if (sessionIndex >= sessionQueue.length) {
+        const doneMsg = {
+          ru: total === 0 ? "Нет карточек для повторения" : "Все карточки на сегодня пройдены!",
+          en: total === 0 ? "No cards to review" : "All cards done for today!",
+          uz: total === 0 ? "Takrorlash uchun kartochkalar yo'q" : "Bugungi barcha kartochkalar o'tildi!",
+        };
+        const resetLabel = { ru: "Начать заново", en: "Start over", uz: "Qaytadan boshlash" };
+        const comeBackMsg = {
+          ru: "Возвращайтесь завтра для повторения!",
+          en: "Come back tomorrow for review!",
+          uz: "Ertaga takrorlash uchun qayting!",
+        };
+        cardArea.innerHTML = `
+          <div class="fc-done">
+            <span class="fc-done__icon">${total === 0 ? "🎉" : "✅"}</span>
+            <p>${doneMsg[lang] || doneMsg.ru}</p>
+            <p class="form-note">${comeBackMsg[lang] || comeBackMsg.ru}</p>
+            <button class="fc-btn-reset" onclick="document.dispatchEvent(new CustomEvent('fc-reset'))">${resetLabel[lang] || resetLabel.ru}</button>
+          </div>
+        `;
+        return;
+      }
+
+      const card = sessionQueue[sessionIndex];
+      const counterText = `${sessionIndex + 1} / ${sessionQueue.length}`;
+      const flipHint = { ru: "Нажмите, чтобы перевернуть", en: "Click to flip", uz: "Bosing, teskari tomoni" };
+      const frontLabel = { ru: "Вопрос", en: "Question", uz: "Savol" };
+      const backLabel = { ru: "Ответ", en: "Answer", uz: "Javob" };
+      const btnHard = { ru: "Не знаю", en: "Don't know", uz: "Bilmayman" };
+      const btnReview = { ru: "Повторить", en: "Review", uz: "Takrorlash" };
+      const btnEasy = { ru: "Знаю", en: "Know it", uz: "Bilaman" };
+
+      cardArea.innerHTML = `
+        <div class="fc-counter">${counterText}</div>
+        <div class="fc-card-wrapper" id="fc-card-wrapper">
+          <div class="fc-card" id="fc-card">
+            <div class="fc-card__face fc-card__front">
+              <span class="fc-card__module-tag">M${card.m}</span>
+              <span class="fc-card__label">${frontLabel[lang] || frontLabel.ru}</span>
+              <span class="fc-card__text">${card.q}</span>
+              <span class="fc-card__hint">${flipHint[lang] || flipHint.ru}</span>
+            </div>
+            <div class="fc-card__face fc-card__back">
+              <span class="fc-card__module-tag">M${card.m}</span>
+              <span class="fc-card__label">${backLabel[lang] || backLabel.ru}</span>
+              <span class="fc-card__text">${card.a}</span>
+            </div>
+          </div>
+        </div>
+        <div class="fc-actions" id="fc-actions" hidden>
+          <button class="fc-btn-hard" data-rate="hard">${btnHard[lang] || btnHard.ru}</button>
+          <button class="fc-btn-review" data-rate="review">${btnReview[lang] || btnReview.ru}</button>
+          <button class="fc-btn-easy" data-rate="easy">${btnEasy[lang] || btnEasy.ru}</button>
+        </div>
+        ${!currentUser ? `<p class="fc-login-note">${{ru:"Войдите, чтобы сохранить прогресс",en:"Sign in to save progress",uz:"Progressni saqlash uchun tizimga kiring"}[lang] || "Войдите, чтобы сохранить прогресс"}</p>` : ""}
+      `;
+
+      // Flip handler
+      const wrapper = document.getElementById("fc-card-wrapper");
+      const fcCard = document.getElementById("fc-card");
+      const actions = document.getElementById("fc-actions");
+      wrapper.addEventListener("click", () => {
+        fcCard.classList.toggle("is-flipped");
+        if (fcCard.classList.contains("is-flipped")) {
+          actions.hidden = false;
+        }
+      });
+
+      // Rate handlers
+      actions.querySelectorAll("button[data-rate]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          rateCard(btn.dataset.rate);
+        });
+      });
+    }
+
+    // ── Module selector ──
+    function buildModuleSelect() {
+      const lang = getLang();
+      const allLabel = { ru: "Все модули", en: "All modules", uz: "Barcha modullar" };
+      const modLabel = { ru: "Модуль", en: "Module", uz: "Modul" };
+      let html = `<option value="all">${allLabel[lang] || allLabel.ru}</option>`;
+      for (let i = 1; i <= 11; i++) {
+        html += `<option value="${i}">${modLabel[lang] || modLabel.ru} ${i}</option>`;
+      }
+      moduleSelect.innerHTML = html;
+      moduleSelect.value = selectedModule;
+    }
+
+    moduleSelect.addEventListener("change", () => {
+      selectedModule = moduleSelect.value;
+      buildQueue();
+      render();
+    });
+
+    // Reset handler
+    document.addEventListener("fc-reset", () => {
+      buildQueue();
+      render();
+    });
+
+    // ── Keyboard shortcuts ──
+    document.addEventListener("keydown", (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      const fcCard = document.getElementById("fc-card");
+      const actions = document.getElementById("fc-actions");
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        if (fcCard && !fcCard.classList.contains("is-flipped")) {
+          fcCard.classList.add("is-flipped");
+          if (actions) actions.hidden = false;
+        }
+      }
+      if (fcCard && fcCard.classList.contains("is-flipped")) {
+        if (e.key === "1") rateCard("hard");
+        else if (e.key === "2") rateCard("review");
+        else if (e.key === "3") rateCard("easy");
+      }
+    });
+
+    // ── i18n for static elements ──
+    const lang = getLang();
+    const pageTitle = { ru: "Флеш-карточки", en: "Flashcards", uz: "Flesh-kartochkalar" };
+    const pageSub = {
+      ru: "Запоминайте ключевые понятия курса с помощью интервального повторения.",
+      en: "Memorize key course concepts with spaced repetition.",
+      uz: "Kurs tushunchalarini intervalli takrorlash yordamida yodlang.",
+    };
+    document.getElementById("page-title").textContent = pageTitle[lang] || pageTitle.ru;
+    document.getElementById("page-subtitle").textContent = pageSub[lang] || pageSub.ru;
+
+    // ── Init ──
+    buildModuleSelect();
+    watchAuth(async (user) => {
+      currentUser = user;
+      await loadProgress();
+      buildQueue();
+      render();
+    });
+  </script>
+</body>
+</html>

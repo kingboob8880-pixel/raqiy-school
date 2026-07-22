@@ -5,7 +5,7 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
 import { watchAuth, isAdmin } from "../../integration/auth.js?v=9";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=4";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=5";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
@@ -64,6 +64,8 @@ export function renderHeader(zone = "learn") {
           <a data-nav="about" href="${withBase("/pages/about.html")}"><span aria-hidden="true">🧑‍⚕️</span>${t("nav.about")}</a>
           <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>${t("nav.modules")}</a>
           <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>${t("nav.tests")}</a>
+          <a data-nav="flashcards" href="${withBase("/pages/flashcards/index.html")}"><span aria-hidden="true">🃏</span>${t("nav.flashcards")}</a>
+          <a data-nav="glossary" href="${withBase("/pages/glossary/index.html")}"><span aria-hidden="true">📘</span>${t("nav.glossary")}</a>
           <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}" hidden><span aria-hidden="true">🗃</span>${t("nav.archive")}</a>
           <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}</a>
         </nav>
@@ -95,6 +97,8 @@ export function renderHeader(zone = "learn") {
     about: path.includes("/pages/about.html"),
     modules: path.includes("/pages/modules/") || (path.includes("/pages/book.html") && !isArchiveDoc),
     tests: path.includes("/pages/tests/"),
+    flashcards: path.includes("/pages/flashcards/"),
+    glossary: path.includes("/pages/glossary/"),
     archive: isArchiveDoc,
     dashboard: path.includes("/pages/dashboard/"),
   };

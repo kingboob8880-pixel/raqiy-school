@@ -27,6 +27,8 @@ const S = {
   "nav.about":         { ru: "Об авторе", en: "About", uz: "Muallif haqida" },
   "nav.modules":       { ru: "Модули", en: "Modules", uz: "Modullar" },
   "nav.tests":         { ru: "Тесты", en: "Tests", uz: "Testlar" },
+  "nav.flashcards":    { ru: "Карточки", en: "Flashcards", uz: "Kartochkalar" },
+  "nav.glossary":      { ru: "Словарь", en: "Glossary", uz: "Lug'at" },
   "nav.archive":       { ru: "Архив", en: "Archive", uz: "Arxiv" },
   "nav.dashboard":     { ru: "Кабинет", en: "Dashboard", uz: "Kabinet" },
   "auth.login":        { ru: "Войти", en: "Sign in", uz: "Kirish" },
@@ -509,6 +511,13 @@ const S = {
   "ml.adminOnly":        { ru: "Этот раздел виден только администратору школы", en: "This section is visible to the school admin only", uz: "Bu bo'lim faqat maktab adminiga ko'rinadi" },
   "ml.adminOnlyText":    { ru: "Здесь — внутренний разбор материалов, не входящих в сертифицируемую программу курса. Он не продаётся и не открывается по оплате — обычная часть курса вам доступна в разделе «Модули».", en: "This contains an internal review of materials not included in the certified course program. It is not for sale and not unlocked by payment — the regular course content is available in the \"Modules\" section.", uz: "Bu yerda sertifikatlangan kurs dasturiga kiritilmagan materiallarning ichki tahlili mavjud. U sotilmaydi va to'lov bilan ochilmaydi — oddiy kurs kontenti \"Modullar\" bo'limida mavjud." },
 
+  // ── Assignments ──
+  "module.assignments":  { ru: "Практические задания", en: "Practical assignments", uz: "Amaliy topshiriqlar" },
+  "assign.reflection":   { ru: "Размышление", en: "Reflection", uz: "Fikrlash" },
+  "assign.practice":     { ru: "Практика", en: "Practice", uz: "Amaliyot" },
+  "assign.daily":        { ru: "Ежедневное", en: "Daily", uz: "Kundalik" },
+  "assign.duration":     { ru: "Длительность", en: "Duration", uz: "Davomiyligi" },
+
   // ── Modules search ──
   "modules.search":      { ru: "Поиск по модулям и книгам…", en: "Search modules and books…", uz: "Modullar va kitoblar bo'yicha qidirish…" },
   "modules.noResults":   { ru: "Ничего не найдено.", en: "Nothing found.", uz: "Hech narsa topilmadi." },
@@ -517,7 +526,28 @@ const S = {
   "path.beginner":       { ru: "Начальный уровень", en: "Beginner Level", uz: "Boshlang'ich daraja" },
   "path.intermediate":   { ru: "Средний уровень", en: "Intermediate Level", uz: "O'rta daraja" },
   "path.advanced":       { ru: "Продвинутый уровень", en: "Advanced Level", uz: "Yuqori daraja" },
-  "path.modules":        { ru: "Модули", en: "Modules", uz: "Modullar" }
+  "path.modules":        { ru: "Модули", en: "Modules", uz: "Modullar" },
+
+  // ── Weak areas (student dashboard) ──
+  "dash.weak":           { ru: "Слабые места", en: "Weak areas", uz: "Zaif tomonlar" },
+  "dash.needreview":     { ru: "Требует повторения", en: "Needs review", uz: "Takrorlash kerak" },
+  "dash.recommend":      { ru: "Рекомендуем повторить", en: "We recommend reviewing", uz: "Takrorlashni tavsiya etamiz" },
+  "dash.noscores":       { ru: "Пока нет результатов тестов", en: "No test results yet", uz: "Hali test natijalari yo'q" },
+  "dash.score":          { ru: "Результат", en: "Score", uz: "Natija" },
+
+  // ── Audio dua ──
+  "dua.novoice":         { ru: "Озвучка недоступна", en: "Voice unavailable", uz: "Ovoz mavjud emas" },
+
+  // ── Bookmarks ──
+  "bookmark.add":        { ru: "Добавить закладку", en: "Add bookmark", uz: "Xatcho'p qo'shish" },
+  "bookmark.panel":      { ru: "Закладки", en: "Bookmarks", uz: "Xatcho'plar" },
+  "bookmark.note":       { ru: "Заметка...", en: "Note...", uz: "Eslatma..." },
+  "bookmark.empty":      { ru: "Нет закладок", en: "No bookmarks", uz: "Xatcho'plar yo'q" },
+  "bookmark.save":       { ru: "Сохранить", en: "Save", uz: "Saqlash" },
+
+  // ── Module locking ──
+  "module.locked":       { ru: "Модуль заблокирован", en: "Module locked", uz: "Modul bloklangan" },
+  "module.lockedmsg":    { ru: "Сначала пройдите тест по модулю", en: "Pass the previous module test first", uz: "Avval oldingi modul testini toping" },
 };
 
 // ───── Module titles ─────

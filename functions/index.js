@@ -324,3 +324,67 @@ async function handleMessage(msg) {
 
   await tg("sendMessage", { chat_id: CHAT, text: "Отправьте /help для списка команд." });
 }
+
+// ─────────────────────────────────────────────────
+// НАПОМИНАНИЯ (Gen 1 Pub/Sub schedule)
+// ─────────────────────────────────────────────────
+
+/** Ежедневная проверка неактивных учеников — отправляет напоминание в Telegram
+ * ученикам, которые не заходили 3+ дня. Бот пишет админу список таких учеников
+ * с кнопкой «Написать» для каждого. Запуск: каждый день в 10:00 UTC+3. */
+exports.dailyReminders = functions.pubsub
+  .schedule("0 7 * * *")       // 07:00 UTC = 10:00 Москва
+  .timeZone("Europe/Moscow")
+  .onRun(async () => {
+    const snaps = await db.collection("students").where("paid", "==", true).get();
+    if (snaps.empty) return null;
+
+    const now = Date.now();
+    const DAY = 24 * 60 * 60 * 1000;
+    const inactive = [];
+
+    for (const doc of snaps.docs) {
+      const s = doc.data();
+      if (s.certificateGranted) continue; // выпускник — не трогаем
+
+      const lastSeen = s.lastSeenAt?.toDate?.()?.getTime?.() || 0;
+      const daysSince = Math.floor((now - lastSeen) / DAY);
+
+      if (daysSince >= 3) {
+        inactive.push({ uid: doc.id, name: s.name || s.email || doc.id, days: daysSince });
+      }
+    }
+
+    if (!inactive.length) {
+      logger.info("dailyReminders: все ученики активны");
+      return null;
+    }
+
+    // Отправляем админу сводку
+    const header = `⏰ <b>Неактивные ученики (${inactive.length})</b>\n`;
+    const lines = inactive.map(
+      (s) => `• <b>${s.name}</b> — ${s.days} дн. без визита`
+    );
+
+    // Telegram ограничивает длину сообщения — разбиваем по 10
+    for (let i = 0; i < inactive.length; i += 10) {
+      const chunk = inactive.slice(i, i + 10);
+      const text = (i === 0 ? header : "") + chunk.map(
+        (s) => `• <b>${s.name}</b> — ${s.days} дн.`
+      ).join("\n");
+
+      const buttons = chunk.map((s) => [
+        { text: `💬 ${s.name}`, callback_data: `reply:${s.uid}` },
+      ]);
+
+      await tg("sendMessage", {
+        chat_id: CHAT,
+        text,
+        parse_mode: "HTML",
+        reply_markup: { inline_keyboard: buttons },
+      });
+    }
+
+    logger.info(`dailyReminders: ${inactive.length} неактивных`);
+    return null;
+  });
