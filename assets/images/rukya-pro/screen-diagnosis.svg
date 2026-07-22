@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" font-family="'Segoe UI','Inter',sans-serif">
+  <defs>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.25"/></filter>
+  </defs>
+  <rect width="800" height="520" rx="12" fill="#0c1a0f"/>
+  <rect width="56" height="520" rx="12" fill="#14291a"/>
+  <circle cx="28" cy="28" r="14" fill="#22c55e" opacity="0.2"/>
+  <text x="28" y="33" text-anchor="middle" fill="#22c55e" font-size="14" font-weight="700">R</text>
+
+  <g transform="translate(72,16)">
+    <!-- Progress bar at 60% -->
+    <rect x="0" y="8" width="712" height="4" rx="2" fill="#166534"/>
+    <rect x="0" y="8" width="356" height="4" rx="2" fill="#22c55e"/>
+
+    <!-- Card: Diagnosis result -->
+    <rect x="0" y="28" width="712" height="470" rx="16" fill="#14291a" filter="url(#shadow)"/>
+
+    <g transform="translate(24,52)">
+      <text x="0" y="0" fill="#dcfce7" font-size="15" font-weight="600">✓ Результат диагностики</text>
+
+      <!-- Urgency badge -->
+      <rect x="530" y="-16" width="150" height="26" rx="13" fill="#eab30820"/>
+      <text x="605" y="2" text-anchor="middle" fill="#eab308" font-size="10" font-weight="600">Срочность: Средняя</text>
+
+      <!-- Confidence bar -->
+      <text x="0" y="30" fill="#86efac" font-size="10">Уверенность</text>
+      <text x="648" y="30" fill="#dcfce7" font-size="12" font-weight="700">78%</text>
+      <rect x="0" y="38" width="664" height="8" rx="4" fill="#166534"/>
+      <rect x="0" y="38" width="518" height="8" rx="4" fill="#22c55e"/>
+
+      <!-- Cause 1: Сихр -->
+      <rect x="0" y="62" width="664" height="72" rx="12" fill="#ef444415" stroke="#ef444430" stroke-width="1"/>
+      <circle cx="18" cy="82" r="6" fill="#ef4444"/>
+      <text x="32" y="86" fill="#dcfce7" font-size="12" font-weight="600">Сихр (колдовство)</text>
+      <rect x="200" y="76" width="56" height="18" rx="9" fill="#eab30830"/>
+      <text x="228" y="89" text-anchor="middle" fill="#eab308" font-size="9" font-weight="600">Основная</text>
+      <text x="640" y="86" fill="#ef4444" font-size="13" font-weight="700" text-anchor="end">42%</text>
+      <rect x="32" y="100" width="632" height="5" rx="3" fill="#166534"/>
+      <rect x="32" y="100" width="265" height="5" rx="3" fill="#ef4444"/>
+      <text x="32" y="124" fill="#86efac" font-size="9">Затронуто: желудок, голова, грудь</text>
+
+      <!-- Cause 2: Масс -->
+      <rect x="0" y="144" width="664" height="72" rx="12" fill="#8b5cf615" stroke="#8b5cf630" stroke-width="1"/>
+      <circle cx="18" cy="164" r="6" fill="#8b5cf6"/>
+      <text x="32" y="168" fill="#dcfce7" font-size="12" font-weight="600">Масс (одержимость)</text>
+      <text x="640" y="168" fill="#8b5cf6" font-size="13" font-weight="700" text-anchor="end">35%</text>
+      <rect x="32" y="182" width="632" height="5" rx="3" fill="#166534"/>
+      <rect x="32" y="182" width="221" height="5" rx="3" fill="#8b5cf6"/>
+      <text x="32" y="206" fill="#86efac" font-size="9">Затронуто: грудь, конечности</text>
+
+      <!-- Cause 3: Сглаз -->
+      <rect x="0" y="226" width="664" height="72" rx="12" fill="#f59e0b15" stroke="#f59e0b30" stroke-width="1"/>
+      <circle cx="18" cy="246" r="6" fill="#f59e0b"/>
+      <text x="32" y="250" fill="#dcfce7" font-size="12" font-weight="600">Сглаз ('айн)</text>
+      <text x="640" y="250" fill="#f59e0b" font-size="13" font-weight="700" text-anchor="end">23%</text>
+      <rect x="32" y="264" width="632" height="5" rx="3" fill="#166534"/>
+      <rect x="32" y="264" width="145" height="5" rx="3" fill="#f59e0b"/>
+      <text x="32" y="288" fill="#86efac" font-size="9">Затронуто: голова</text>
+
+      <!-- Recommendations -->
+      <text x="0" y="324" fill="#dcfce7" font-size="13" font-weight="600">💡 Рекомендации</text>
+      <text x="22" y="346" fill="#22c55e" font-size="10">✓</text>
+      <text x="38" y="346" fill="#dcfce7" font-size="11">Прочитать полную анкету пациента</text>
+      <text x="22" y="366" fill="#22c55e" font-size="10">✓</text>
+      <text x="38" y="366" fill="#dcfce7" font-size="11">Сверить с Модулями 4–5 (диагностика + направленное чтение)</text>
+      <text x="22" y="386" fill="#22c55e" font-size="10">✓</text>
+      <text x="38" y="386" fill="#dcfce7" font-size="11">При близких % вернуться к опросу пациента для уточнения</text>
+    </g>
+
+    <!-- Buttons -->
+    <text x="24" y="468" fill="#86efac" font-size="12">← Назад</text>
+    <rect x="550" y="450" width="150" height="36" rx="10" fill="#22c55e"/>
+    <text x="625" y="472" text-anchor="middle" fill="white" font-size="12" font-weight="600">Выбрать программу →</text>
+  </g>
+</svg>
