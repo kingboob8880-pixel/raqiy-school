@@ -1143,8 +1143,11 @@ main.container { padding-block: var(--rp-space-6); }
 .chat-media-btn.is-recording { background: var(--rp-status-danger-bg); animation: rec-pulse 1s ease-in-out infinite; }
 @keyframes rec-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-/* Индикатор записи */
-.chat-rec-indicator {
+/* Индикатор записи — display:flex только когда нет [hidden],
+   иначе display:flex перебивал hidden→display:none и индикатор
+   показывался сразу при загрузке страницы (баг «авто-запись»). */
+.chat-rec-indicator[hidden] { display: none !important; }
+.chat-rec-indicator:not([hidden]) {
   display: flex; align-items: center; gap: var(--rp-space-2);
   width: 100%; padding: 0.5rem 0.75rem;
   background: var(--rp-status-danger-bg); border-radius: var(--rp-radius-sm);
