@@ -16,45 +16,45 @@
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header"></div>
   <main class="container">
-    <div id="gate" class="skeleton-loading">Проверка входа…</div>
+    <div id="gate" class="skeleton-loading" data-t="admin.checking">Проверка входа…</div>
     <div id="dashboard" hidden>
       <div class="dash-hero">
         <div class="avatar">ش</div>
         <div>
-          <p class="dash-hero__eyebrow">Онлайн-школа рукии</p>
-          <h1>Кабинет администратора</h1>
+          <p class="dash-hero__eyebrow" data-t="admin.schoolTitle">Онлайн-школа рукии</p>
+          <h1 data-t="admin.dashboard">Кабинет администратора</h1>
         </div>
       </div>
 
       <div class="stat-grid" style="margin-bottom: var(--rp-space-6);">
-        <div class="card stat-card"><div class="stat-card__value" id="stat-total">—</div><div class="stat-card__label">Всего учеников</div></div>
-        <div class="card stat-card"><div class="stat-card__value" id="stat-paid">—</div><div class="stat-card__label">Оплатили</div></div>
-        <div class="card stat-card"><div class="stat-card__value" id="stat-silent">—</div><div class="stat-card__label">Молчат &gt;14 дней</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-total">—</div><div class="stat-card__label" data-t="admin.totalStudents">Всего учеников</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-paid">—</div><div class="stat-card__label" data-t="admin.paidStudents">Оплатили</div></div>
+        <div class="card stat-card"><div class="stat-card__value" id="stat-silent">—</div><div class="stat-card__label" data-t="admin.silentDays">Молчат &gt;14 дней</div></div>
       </div>
 
       <div class="card" style="margin-bottom: var(--rp-space-5);">
-        <h3>Массовая рассылка</h3>
+        <h3 data-t="admin.broadcast">Массовая рассылка</h3>
         <form id="broadcast-form" class="form-inline">
           <input type="text" id="broadcast-text" class="text-input" aria-label="Текст рассылки всем ученикам" placeholder="Сообщение всем ученикам…">
-          <button class="btn btn-primary btn-sm" type="submit">Отправить всем</button>
+          <button class="btn btn-primary btn-sm" data-t="admin.sendAll" type="submit">Отправить всем</button>
         </form>
       </div>
 
       <h2>Ученики</h2>
       <div class="admin-toolbar">
-        <input type="search" id="student-search" aria-label="Поиск ученика по имени или email" placeholder="Поиск по имени или email…">
+        <input type="search" id="student-search" aria-label="Поиск ученика по имени или email" data-placeholder-t="admin.search" placeholder="Поиск по имени или email…">
         <select id="student-filter" aria-label="Фильтр списка учеников">
-          <option value="all">Все ученики</option>
-          <option value="paid">Оплатили</option>
-          <option value="unpaid">Не оплатили</option>
-          <option value="silent">Молчат &gt;14 дней</option>
+          <option value="all" data-t="admin.filterAll">Все ученики</option>
+          <option value="paid" data-t="admin.filterPaid">Оплатили</option>
+          <option value="unpaid" data-t="admin.filterUnpaid">Не оплатили</option>
+          <option value="silent" data-t="admin.filterSilent">Молчат &gt;14 дней</option>
         </select>
       </div>
       <div class="card" style="padding: 0; overflow: hidden;">
         <div class="table-scroll">
           <table class="data-table">
             <thead>
-              <tr><th>Имя</th><th>Email</th><th>Прогресс</th><th>Балл</th><th>Молчит</th><th>Оплачено</th><th>Сертификат</th><th>Rukya Pro</th><th></th></tr>
+              <tr><th data-t="admin.name">Имя</th><th data-t="admin.email">Email</th><th data-t="admin.progress">Прогресс</th><th data-t="admin.score">Балл</th><th data-t="admin.silent">Молчит</th><th data-t="admin.paidCol">Оплачено</th><th data-t="admin.certCol">Сертификат</th><th data-t="admin.proCol">Rukya Pro</th><th></th></tr>
             </thead>
             <tbody id="students-body">
               <tr><td colspan="9" class="form-note">Загрузка…</td></tr>
@@ -63,13 +63,14 @@
         </div>
       </div>
 
-      <button id="logout-btn" class="btn btn-outline btn-sm" style="margin-top: var(--rp-space-6);">Выйти</button>
+      <button id="logout-btn" class="btn btn-outline btn-sm" data-t="admin.logout" style="margin-top: var(--rp-space-6);">Выйти</button>
     </div>
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=15";
+    import { t, getLang } from "../js/i18n.js?v=4";
     import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=9";
     import {
       listStudents, setStudentPaid, deleteStudent, sendMessage, sendMediaMessage, watchMessages, markThreadRead,
@@ -80,6 +81,7 @@
 
     renderHeader("admin");
     renderFooter();
+    document.documentElement.lang = getLang();
 
     const gate = document.getElementById("gate");
     const dashboard = document.getElementById("dashboard");
@@ -115,18 +117,18 @@
           <td>${email}</td>
           <td>${computeOverallProgress(s.progress)}%</td>
           <td>${avg === null ? "—" : avg + "%"}</td>
-          <td class="${isSilent ? "silent-flag" : ""}">${silent === null ? "—" : silent + " дн."}</td>
+          <td class="${isSilent ? "silent-flag" : ""}">${silent === null ? "—" : silent + " " + t("admin.daysAgo")}</td>
           <td>
             <label class="toggle">
               <input type="checkbox" data-uid="${s.uid}" ${s.paid ? "checked" : ""}>
-              <span class="status-pill ${s.paid ? "status-pill--paid" : "status-pill--unpaid"}">${s.paid ? "Оплачено" : "Не оплачено"}</span>
+              <span class="status-pill ${s.paid ? "status-pill--paid" : "status-pill--unpaid"}">${s.paid ? t("admin.paidStatus") : t("admin.unpaidStatus")}</span>
             </label>
           </td>
           <td>
-            <button type="button" class="btn btn-sm ${hasCert ? "btn-primary" : "btn-outline"} cert-toggle" data-uid="${s.uid}" title="${hasCert ? "Отозвать сертификат" : "Выдать сертификат"}">🎓${hasCert ? " ✓" : ""}</button>
+            <button type="button" class="btn btn-sm ${hasCert ? "btn-primary" : "btn-outline"} cert-toggle" data-uid="${s.uid}" title="${hasCert ? t("admin.revokeCert") : t("admin.grantCert")}">🎓${hasCert ? " ✓" : ""}</button>
           </td>
           <td>
-            <button type="button" class="btn btn-sm ${hasRukyaPro ? "btn-primary" : "btn-outline"} rukya-toggle" data-uid="${s.uid}" title="${hasRukyaPro ? "Отозвать доступ к Rukya Pro" : "Дать доступ к Rukya Pro"}">📥${hasRukyaPro ? " ✓" : ""}</button>
+            <button type="button" class="btn btn-sm ${hasRukyaPro ? "btn-primary" : "btn-outline"} rukya-toggle" data-uid="${s.uid}" title="${hasRukyaPro ? t("admin.revokePro") : t("admin.grantPro")}">📥${hasRukyaPro ? " ✓" : ""}</button>
           </td>
           <td>
             <div class="row-actions">
@@ -222,7 +224,7 @@
       const filtered = allStudents.filter((s) => matchesFilter(s, query, filter));
 
       body.innerHTML = filtered.map(studentRowHtml).join("")
-        || `<tr><td colspan="9" class="form-note">Ничего не найдено.</td></tr>`;
+        || `<tr><td colspan="9" class="form-note">${t("admin.noStudents")}</td></tr>`;
 
       body.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
         cb.addEventListener("change", async () => {
@@ -253,8 +255,8 @@
         btn.addEventListener("click", async () => {
           const s = allStudents.find((x) => x.uid === btn.dataset.uid);
           const newVal = !s?.certificateGranted;
-          const action = newVal ? "Выдать сертификат" : "Отозвать сертификат";
-          if (!confirm(`${action} ученику ${s?.name || s?.email || ""}?`)) return;
+          const action = newVal ? t("admin.confirmCert") : t("admin.confirmRevokeCert");
+          if (!confirm(`${action} ${s?.name || s?.email || ""}?`)) return;
           await setCertificateGranted(btn.dataset.uid, newVal);
           await refreshStudents();
           showToast(newVal ? "Сертификат выдан" : "Сертификат отозван");
@@ -265,8 +267,8 @@
         btn.addEventListener("click", async () => {
           const s = allStudents.find((x) => x.uid === btn.dataset.uid);
           const newVal = !s?.rukyaProAccess;
-          const action = newVal ? "Дать доступ к Rukya Pro" : "Отозвать доступ к Rukya Pro";
-          if (!confirm(`${action} ученику ${s?.name || s?.email || ""}?`)) return;
+          const action = newVal ? t("admin.confirmPro") : t("admin.confirmRevokePro");
+          if (!confirm(`${action} ${s?.name || s?.email || ""}?`)) return;
           await setRukyaProAccess(btn.dataset.uid, newVal);
           await refreshStudents();
           showToast(newVal ? "Доступ к Rukya Pro открыт" : "Доступ к Rukya Pro закрыт");
@@ -361,6 +363,13 @@
         await logout();
         location.href = "../index.html";
       });
+    });
+
+    document.querySelectorAll("[data-t]").forEach(el => {
+      el.textContent = t(el.dataset.t);
+    });
+    document.querySelectorAll("[data-placeholder-t]").forEach(el => {
+      el.placeholder = t(el.dataset.placeholderT);
     });
   </script>
 </body>

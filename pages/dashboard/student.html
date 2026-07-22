@@ -155,7 +155,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=15";
-    import { t, moduleTitle, localLevel } from "../js/i18n.js?v=3";
+    import { t, getLang, moduleTitle, localLevel } from "../js/i18n.js?v=4";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=9";
     import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage } from "../../integration/firestore.js?v=18";
     import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress, computeAchievements } from "../js/modules-data.js?v=33";
@@ -170,6 +170,7 @@
 
     renderHeader("student");
     renderFooter();
+    document.documentElement.lang = getLang();
     document.title = `${t("dash.title")} — ${t("site.title")}`;
     document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t); });
     document.querySelectorAll("[data-placeholder-t]").forEach((el) => { el.placeholder = t(el.dataset.placeholderT); });

@@ -5,7 +5,7 @@
 
 import { withBase } from "./base-path.js?v=6";
 import { MODULES } from "./modules-data.js?v=21";
-import { getLang, localizedDocPath, t } from "./i18n.js?v=3";
+import { getLang, localizedDocPath, t } from "./i18n.js?v=4";
 
 /** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter
  *  значений (title, source) через innerHTML (аудит, 2026-07-21). */
@@ -42,16 +42,16 @@ export async function loadMarkdownDoc(path) {
 }
 
 const STATUS_BADGE = {
-  certified: { cls: "badge-certified", label: "Подтверждено шейхом" },
-  draft: { cls: "badge-draft", label: "Черновик, ждёт подтверждения шейха" },
-  archive: { cls: "badge-archive", label: "Вне сертифицируемой программы" },
+  certified: { cls: "badge-certified", key: "status.certified" },
+  draft: { cls: "badge-draft", key: "status.author" },
+  archive: { cls: "badge-archive", key: "status.stub" },
   author: null,
 };
 
 export function statusBadgeHtml(status) {
   const s = STATUS_BADGE[status];
   if (!s) return "";
-  return `<span class="badge ${s.cls}">${s.label}</span>`;
+  return `<span class="badge ${s.cls}">${t(s.key)}</span>`;
 }
 
 /** Рендерит doc {meta, body} в контейнер: заголовок, значок статуса, тело markdown. */
@@ -63,7 +63,7 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
     ${showTitle && doc.meta.title ? `<h1>${esc(doc.meta.title)}</h1>` : ""}
     <div class="doc-meta">
       ${statusBadgeHtml(doc.meta.status)}
-      ${doc.meta.source ? `<p class="form-note">Источник: ${esc(doc.meta.source)}</p>` : ""}
+      ${doc.meta.source ? `<p class="form-note">${t("ml.source")} ${esc(doc.meta.source)}</p>` : ""}
     </div>
     <div class="doc-body">${html}</div>
   `;
@@ -177,7 +177,7 @@ export function addReadingAids(container) {
   if (metaEl) {
     const time = document.createElement("p");
     time.className = "form-note";
-    time.textContent = `≈ ${minutes} мин чтения`;
+    time.textContent = `≈ ${minutes} ${t("ml.readTime")}`;
     metaEl.appendChild(time);
   }
 
@@ -186,9 +186,9 @@ export function addReadingAids(container) {
     headings.forEach((h, i) => { h.id = `sec-${i}`; });
     const toc = document.createElement("nav");
     toc.className = "doc-toc";
-    toc.setAttribute("aria-label", "Оглавление");
+    toc.setAttribute("aria-label", t("ml.toc"));
     toc.innerHTML = `
-      <p class="doc-toc__title">Оглавление</p>
+      <p class="doc-toc__title">${t("ml.toc")}</p>
       <ol>${headings.map((h) => `<li><a href="#${h.id}">${h.textContent}</a></li>`).join("")}</ol>`;
     bodyEl.before(toc);
     // Пункты появляются "лесенкой" один за другим — вся группа видна разом
@@ -230,7 +230,7 @@ export function addReadingAids(container) {
     btn.id = "back-to-top";
     btn.className = "no-print";
     btn.type = "button";
-    btn.setAttribute("aria-label", "Наверх");
+    btn.setAttribute("aria-label", t("ml.backToTop"));
     btn.textContent = "↑";
     document.body.appendChild(btn);
     const toggle = () => btn.classList.toggle("is-visible", window.scrollY > 600);
@@ -347,14 +347,13 @@ export function openContentLinkModal({ href, kind }, label) {
   overlay.className = "rp-modal-overlay";
   overlay.innerHTML = `
     <div class="rp-modal" role="dialog" aria-modal="true" aria-labelledby="rp-modal-title">
-      <button class="rp-modal__close" type="button" aria-label="Закрыть">×</button>
-      <p class="rp-modal__eyebrow">${kind === "module" ? "Другой модуль курса" : "Другая книга / справочник"}</p>
+      <button class="rp-modal__close" type="button" aria-label="${t("modal.close")}">×</button>
+      <p class="rp-modal__eyebrow">${kind === "module" ? t("ml.linkModule") : t("ml.linkBook")}</p>
       <h3 id="rp-modal-title" class="rp-modal__title">${label}</h3>
-      <p class="form-note">Переход откроет её на новой странице — место в текущем уроке
-        не потеряется, можно будет вернуться назад.</p>
+      <p class="form-note">${t("ml.linkNote")}</p>
       <div class="rp-modal__actions">
-        <a class="btn btn-primary" href="${href}">Открыть →</a>
-        <button class="btn btn-outline" type="button" data-close>Остаться здесь</button>
+        <a class="btn btn-primary" href="${href}">${t("ml.linkOpen")}</a>
+        <button class="btn btn-outline" type="button" data-close>${t("ml.linkStay")}</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -402,14 +401,12 @@ export function applyPaywall(bodyEl) {
   const paywall = document.createElement("div");
   paywall.className = "card paywall-card";
   paywall.innerHTML = `
-    <h3>Это лишь небольшой бесплатный отрывок</h3>
-    <p class="form-note">Полный текст, экзамен по нему и весь курс целиком —
-      11 модулей от основ якына до практики под супервизией наставника —
-      открываются только после покупки курса.</p>
-    <p class="paywall-card__price">30 000 ₽</p>
+    <h3>${t("ml.paywallTitle")}</h3>
+    <p class="form-note">${t("ml.paywallText")}</p>
+    <p class="paywall-card__price">${t("ml.paywallPrice")}</p>
     <div class="book-exam-cta__actions">
-      <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать лекарю в Telegram</a>
-      <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже оплатили? Войти</a>
+      <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">${t("ml.paywallCta")}</a>
+      <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">${t("ml.paywallLogin")}</a>
     </div>`;
   fade.after(paywall);
 }
@@ -545,10 +542,8 @@ export function applyAdminOnlyWall(bodyEl) {
   const wall = document.createElement("div");
   wall.className = "card paywall-card";
   wall.innerHTML = `
-    <h3>Этот раздел виден только администратору школы</h3>
-    <p class="form-note">Здесь — внутренний разбор материалов, не входящих в
-      сертифицируемую программу курса. Он не продаётся и не открывается по
-      оплате — обычная часть курса вам доступна в разделе «Модули».</p>`;
+    <h3>${t("ml.adminOnly")}</h3>
+    <p class="form-note">${t("ml.adminOnlyText")}</p>`;
   bodyEl.after(wall);
 }
 
@@ -557,13 +552,11 @@ export function applyRegisterWall(bodyEl) {
   const wall = document.createElement("div");
   wall.className = "card paywall-card";
   wall.innerHTML = `
-    <h3>Зарегистрируйтесь, чтобы прочитать бесплатный отрывок</h3>
-    <p class="form-note">Регистрация бесплатна и займёт меньше минуты.
-      После входа откроется небольшой отрывок — полный текст, экзамены и
-      весь курс целиком — 30 000 ₽.</p>
+    <h3>${t("ml.registerTitle")}</h3>
+    <p class="form-note">${t("ml.registerText")}</p>
     <div class="book-exam-cta__actions">
-      <a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Зарегистрироваться бесплатно</a>
-      <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже есть аккаунт? Войти</a>
+      <a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">${t("ml.registerCta")}</a>
+      <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">${t("ml.registerLogin")}</a>
     </div>`;
   bodyEl.after(wall);
 }

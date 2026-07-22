@@ -47,8 +47,8 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=15";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, applyAdminOnlyWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=21";
-    import { t } from "./js/i18n.js?v=3";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, applyAdminOnlyWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=22";
+    import { t, getLang } from "./js/i18n.js?v=4";
     import { bookKey, MODULES } from "./js/modules-data.js?v=33";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=9";
@@ -56,6 +56,7 @@
 
     renderHeader("learn");
     renderFooter();
+    document.documentElement.lang = getLang();
     // Translate static HTML elements marked with data-t
     document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t); });
 

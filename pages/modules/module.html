@@ -25,14 +25,15 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=15";
     import { getModule, bookKey } from "../js/modules-data.js?v=33";
-    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal } from "../js/markdown-loader.js?v=21";
-    import { t, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=3";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal } from "../js/markdown-loader.js?v=22";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=4";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=9";
     import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=18";
 
     renderHeader("learn");
     renderFooter();
+    document.documentElement.lang = getLang();
 
     const params = new URLSearchParams(location.search);
     const id = params.get("id");
