@@ -151,9 +151,10 @@ p { margin: 0 0 var(--rp-space-4); }
 .theme-switcher__label { font-size: var(--rp-fs-sm); color: var(--rp-zone-text, var(--rp-learn-text)); opacity: 0.7; display: none; }
 @media (min-width: 64rem) { .theme-switcher__label { display: inline; } }
 .theme-switcher__btn {
-  font: inherit; font-size: var(--rp-fs-sm); font-weight: 700; cursor: pointer;
+  font: inherit; font-size: 0; font-weight: 700; cursor: pointer;
   width: 1.6rem; height: 1.6rem; padding: 0; border-radius: var(--rp-radius-pill);
   border: 2px solid transparent; box-shadow: 0 0 0 1px var(--rp-zone-border, var(--rp-learn-border));
+  overflow: hidden; color: transparent;
 }
 .theme-switcher__btn[aria-pressed="true"] { border-color: var(--rp-zone-accent, var(--rp-learn-accent)); }
 .theme-switcher__btn[data-theme="emerald"] { background: linear-gradient(135deg, #245038, #16281d); }
