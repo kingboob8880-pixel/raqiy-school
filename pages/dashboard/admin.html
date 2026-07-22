@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет админа — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=46">
+<link rel="stylesheet" href="../../design/base.css?v=48">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -69,14 +69,14 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=14";
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=15";
     import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=9";
     import {
       listStudents, setStudentPaid, deleteStudent, sendMessage, sendMediaMessage, watchMessages, markThreadRead,
       countUnreadFromStudent, daysSince, computeOverallProgress, computeAverageScore,
       setCertificateGranted, setRukyaProAccess,
     } from "../../integration/firestore.js?v=18";
-    import { renderMessages, wireChatForm, scrollToBottom } from "../js/chat-ui.js?v=2";
+    import { renderMessages, wireChatForm, scrollToBottom, wireVoicePlayers } from "../js/chat-ui.js?v=3";
 
     renderHeader("admin");
     renderFooter();
@@ -195,8 +195,9 @@
       activeThreadUid = uid;
       const root = document.getElementById(`thread-msgs-${uid}`);
       if (!root) return;
+      wireVoicePlayers(root);
       unwatchThread = watchMessages(uid, (msgs) => {
-        renderMessages(root, msgs);
+        renderMessages(root, msgs, "admin");
         scrollToBottom(root);
         markThreadRead(uid, "admin")
           .then(() => updateUnreadBadge(uid, 0))

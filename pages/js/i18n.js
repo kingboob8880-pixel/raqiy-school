@@ -283,6 +283,20 @@ const S = {
   "dash.fileAriaLabel": { ru: "Прикрепить файл", en: "Attach file", uz: "Fayl biriktirish" },
   "dash.module":       { ru: "Модуль", en: "Module", uz: "Modul" },
   "dash.continueLearn":{ ru: "Продолжить обучение", en: "Continue learning", uz: "O'qishni davom ettirish" },
+
+  // ── Chat ──
+  "chat.today":     { ru: "Сегодня", en: "Today", uz: "Bugun" },
+  "chat.yesterday": { ru: "Вчера", en: "Yesterday", uz: "Kecha" },
+  "chat.empty":     { ru: "Сообщений пока нет", en: "No messages yet", uz: "Hozircha xabarlar yo'q" },
+  "chat.emptyHint": { ru: "Напишите первое сообщение, чтобы начать переписку", en: "Send the first message to start the conversation", uz: "Suhbatni boshlash uchun birinchi xabarni yuboring" },
+  "chat.play":      { ru: "Воспроизвести", en: "Play", uz: "Ijro etish" },
+  "chat.videoError":{ ru: "Не удалось загрузить видео", en: "Failed to load video", uz: "Videoni yuklab bo'lmadi" },
+  "chat.micError":  { ru: "Не удалось получить доступ к микрофону", en: "Microphone access denied", uz: "Mikrofonga ruxsat berilmadi" },
+  "chat.camError":  { ru: "Не удалось получить доступ к камере и микрофону", en: "Camera and microphone access denied", uz: "Kamera va mikrofonga ruxsat berilmadi" },
+  "chat.recVoice":  { ru: "Записать голосовое сообщение", en: "Record voice message", uz: "Ovozli xabar yozish" },
+  "chat.recVideo":  { ru: "Записать видеообращение", en: "Record video message", uz: "Video xabar yozish" },
+  "chat.attachFile":{ ru: "Прикрепить файл", en: "Attach file", uz: "Fayl biriktirish" },
+  "chat.stop":      { ru: "Остановить", en: "Stop", uz: "To'xtatish" },
 };
 
 // ───── Module titles ─────
