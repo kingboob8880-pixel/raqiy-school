@@ -105,18 +105,29 @@
 
     function examCtaHtml(progress) {
       const lesson = findLesson(docPath);
-      if (!lesson?.exam) return "";
-      const state = progress?.books?.[bookKey(docPath)];
-      const done = state?.status === "done";
-      return `
-        <div class="card book-exam-cta" ${done ? `style="border-color: var(--rp-status-success);"` : ""}>
-          <h3>${done ? t("book.examdone") : t("book.examcta")}</h3>
-          <p class="form-note">${done ? `${t("quiz.result")} — ${Math.round(state.quizScore * 100)}%.` : t("book.threshold")}</p>
-          <div class="book-exam-cta__actions">
-            <a class="btn btn-outline" href="${withBase("/pages/tests/index.html")}">${t("book.gototests")}</a>
-            <a class="btn btn-primary" href="quiz/index.html?exam=${encodeURIComponent(lesson.exam)}">${done ? t("book.retake") : t("book.takeexam")}</a>
-          </div>
-        </div>`;
+      let html = "";
+      // Экзамен по конкретной книге (если есть)
+      if (lesson?.exam) {
+        const state = progress?.books?.[bookKey(docPath)];
+        const done = state?.status === "done";
+        html += `
+          <div class="card book-exam-cta" ${done ? `style="border-color: var(--rp-status-success);"` : ""}>
+            <h3>${done ? t("book.examdone") : t("book.examcta")}</h3>
+            <p class="form-note">${done ? `${t("quiz.result")} — ${Math.round(state.quizScore * 100)}%.` : t("book.threshold")}</p>
+            <div class="book-exam-cta__actions">
+              <a class="btn btn-outline" href="${withBase("/pages/tests/index.html")}">${t("book.gototests")}</a>
+              <a class="btn btn-primary" href="quiz/index.html?exam=${encodeURIComponent(lesson.exam)}">${done ? t("book.retake") : t("book.takeexam")}</a>
+            </div>
+          </div>`;
+      }
+      // Итоговый тест по модулю — всегда, если найден модуль-владелец
+      if (owningModule) {
+        html += `
+          <div style="margin-top: var(--rp-space-4);">
+            <a class="btn btn-primary" href="${withBase("/pages/quiz/index.html")}?module=${owningModule.id}">${t("module.quiz")}</a>
+          </div>`;
+      }
+      return html;
     }
 
     if (!docPath) {
