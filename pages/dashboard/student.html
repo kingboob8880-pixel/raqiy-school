@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет ученика — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=45">
+<link rel="stylesheet" href="../../design/base.css?v=46">
 <style>
   .modal-overlay {
     position: fixed; inset: 0; z-index: 1000;
@@ -156,7 +156,7 @@
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=14";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=9";
-    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage } from "../../integration/firestore.js?v=17";
+    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage } from "../../integration/firestore.js?v=18";
     import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress, computeAchievements } from "../js/modules-data.js?v=33";
     import { withBase } from "../js/base-path.js?v=6";
     import { renderMessages, wireChatForm, scrollToBottom } from "../js/chat-ui.js?v=2";

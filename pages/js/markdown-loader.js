@@ -407,37 +407,117 @@ export function applyPaywall(bodyEl) {
 /** Гость без регистрации — текст не показываем вообще, только призыв
  * зарегистрироваться. Иначе регистрация не даёт никакой разницы в доступе
  * по сравнению с обычным посетителем сайта. */
-/** Личная заметка ученика к книге/модулю — общая для book.html и
- * modules/module.html (веб-исследование лучших LMS-практик, "оживление
- * обучающей системы", 2026-07-20): возможность аннотировать текст —
- * стандартный паттерн у читалок и курсов, у нас не было вообще. Не
- * импортирует firestore.js напрямую (этот файл — только рендер/DOM,
- * без знания о бэкенде) — сохранение передаётся колбэком onSave(text)
- * от вызывающей страницы. Ручное сохранение по кнопке, не автосейв на
- * каждый символ — меньше записей в Firestore, понятнее момент "сохранено". */
-export function setupNoteCard(container, existingNote, onSave) {
-  container.className = "card no-print";
+/** Чеклист самопроверки «Понял / Не понял» — заменяет прежние "Мои заметки"
+ * (решение автора, 2026-07-22): ученик отмечает ключевые понятия урока как
+ * усвоенные или нет. Понятия извлекаются из h2/h3-заголовков тела урока —
+ * то есть всегда соответствуют реальному содержимому, не нужно вести отдельный
+ * список. Сохранение — автоматическое при каждом клике (один ключ-значение,
+ * не тяжёлый текст), колбэком onSave(understanding) от вызывающей страницы.
+ * @param {HTMLElement} container — пустой div, куда рендерится карточка.
+ * @param {HTMLElement} bodyEl — .doc-body, откуда берутся заголовки.
+ * @param {Object|null} existing — сохранённый объект { slug: true|false }.
+ * @param {function(Object):Promise} onSave — персистит understanding-объект.
+ */
+export function setupSelfCheck(container, bodyEl, existing, onSave) {
+  if (!bodyEl) return;
+  const headings = Array.from(bodyEl.querySelectorAll("h2, h3"));
+  if (!headings.length) return; // нечего проверять — у модуля нет заголовков
+
+  const understanding = existing ? { ...existing } : {};
+
+  /** Слаг заголовка — детерминированный ключ для Firestore. */
+  function slug(text) {
+    return text.toLowerCase().replace(/[^a-zа-яёЇїіґ0-9]+/gi, "-").replace(/^-|-$/g, "").slice(0, 60);
+  }
+
+  const items = headings.map((h) => {
+    const text = h.textContent.trim();
+    const key = slug(text);
+    return { text, key };
+  });
+  // Убираем дубликаты по ключу (бывает, что h2 и h3 генерируют одинаковый slug)
+  const seen = new Set();
+  const unique = items.filter((it) => { if (seen.has(it.key)) return false; seen.add(it.key); return true; });
+  if (!unique.length) return;
+
+  const total = unique.length;
+  const countUnderstood = () => unique.filter((it) => understanding[it.key] === true).length;
+  const countNotUnderstood = () => unique.filter((it) => understanding[it.key] === false).length;
+
+  container.className = "card no-print self-check";
   container.innerHTML = `
-    <h3>Мои заметки</h3>
-    <p class="form-note">Видны только вам — не часть текста книги.</p>
-    <textarea id="note-text" class="text-input" style="width:100%; min-height:5rem; resize:vertical;"
-      placeholder="Мысли, вопросы, то, что хочется запомнить…">${existingNote ? existingNote.replace(/</g, "&lt;") : ""}</textarea>
-    <div class="hero-actions" style="margin-top: var(--rp-space-3); justify-content:flex-start;">
-      <button id="note-save" class="btn btn-outline btn-sm" type="button">Сохранить заметку</button>
-      <span id="note-status" class="form-note" role="status" aria-live="polite"></span>
-    </div>`;
-  const textarea = container.querySelector("#note-text");
-  const status = container.querySelector("#note-status");
-  container.querySelector("#note-save").addEventListener("click", async () => {
-    status.textContent = "Сохранение…";
+    <h3>Самопроверка</h3>
+    <p class="form-note">Отметьте, что усвоили, а что нужно перечитать.</p>
+    <div class="self-check__progress">
+      <div class="self-check__bar"><div class="self-check__fill"></div></div>
+      <span class="self-check__counter"></span>
+    </div>
+    <ul class="self-check__list" role="list"></ul>
+    <span class="self-check__status form-note" role="status" aria-live="polite"></span>`;
+
+  const listEl = container.querySelector(".self-check__list");
+  const fillEl = container.querySelector(".self-check__fill");
+  const counterEl = container.querySelector(".self-check__counter");
+  const statusEl = container.querySelector(".self-check__status");
+
+  function updateProgress() {
+    const done = countUnderstood();
+    const pct = Math.round((done / total) * 100);
+    fillEl.style.width = pct + "%";
+    counterEl.textContent = `${done} из ${total}`;
+  }
+
+  async function persist() {
+    statusEl.textContent = "Сохранение…";
     try {
-      await onSave(textarea.value);
-      status.textContent = "Сохранено ✓";
+      await onSave(understanding);
+      statusEl.textContent = "Сохранено ✓";
+      setTimeout(() => { statusEl.textContent = ""; }, 2000);
     } catch (err) {
       console.warn(err);
-      status.textContent = "Не удалось сохранить — проверьте связь с интернетом.";
+      statusEl.textContent = "Ошибка сохранения";
     }
+  }
+
+  unique.forEach((item) => {
+    const li = document.createElement("li");
+    li.className = "self-check__item";
+    const state = understanding[item.key]; // true | false | undefined
+
+    li.innerHTML = `
+      <span class="self-check__label">${esc(item.text)}</span>
+      <span class="self-check__btns">
+        <button type="button" class="self-check__btn self-check__btn--yes${state === true ? " active" : ""}"
+          aria-label="Понял: ${esc(item.text)}" title="Понял">Понял</button>
+        <button type="button" class="self-check__btn self-check__btn--no${state === false ? " active" : ""}"
+          aria-label="Не понял: ${esc(item.text)}" title="Не понял">Не понял</button>
+      </span>`;
+
+    const btnYes = li.querySelector(".self-check__btn--yes");
+    const btnNo = li.querySelector(".self-check__btn--no");
+
+    btnYes.addEventListener("click", () => {
+      const wasActive = understanding[item.key] === true;
+      if (wasActive) { delete understanding[item.key]; } else { understanding[item.key] = true; }
+      btnYes.classList.toggle("active", !wasActive);
+      btnNo.classList.remove("active");
+      updateProgress();
+      persist();
+    });
+
+    btnNo.addEventListener("click", () => {
+      const wasActive = understanding[item.key] === false;
+      if (wasActive) { delete understanding[item.key]; } else { understanding[item.key] = false; }
+      btnNo.classList.toggle("active", !wasActive);
+      btnYes.classList.remove("active");
+      updateProgress();
+      persist();
+    });
+
+    listEl.appendChild(li);
   });
+
+  updateProgress();
 }
 
 /** Раздел "Архив" (content/archive/index.md) — разбор материалов, исключённых

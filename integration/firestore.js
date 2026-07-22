@@ -204,20 +204,14 @@ export async function getFullBookContent(docId) {
   }
 }
 
-/** Личная заметка ученика к книге — веб-исследование лучших LMS-практик
- * (курс "оживление обучающей системы", 2026-07-20) показало, что
- * возможность делать заметки/аннотации прямо у текста превращает чтение
- * в двустороннее взаимодействие, а не пассивный просмотр — паттерн есть
- * почти у всех крупных читалок (заметки/хайлайты), у нас не было вообще.
- * Хранится в уже существующей структуре progress.books.{bookKey} — та же,
- * что и статус/результат теста, новой коллекции/правил не потребовалось
- * (integration/firestore.rules уже разрешает ученику править progress
- * своего документа, кроме поля paid). Видна только на этом modules/book
- * от источника ученику и админу — clients.rules не открывают чужие
- * students/{uid} документы. */
-export async function saveBookNote(uid, bookKey, note) {
+/** Чеклист самопроверки «Понял / Не понял» — заменяет прежние "Мои заметки"
+ * (решение автора, 2026-07-22). understanding — объект { slug: true|false },
+ * где slug — детерминированный ключ из текста h2/h3 заголовка урока. Хранится
+ * в уже существующей структуре progress.books.{bookKey} — та же, что и
+ * статус/результат теста, новой коллекции/правил не потребовалось. */
+export async function saveUnderstanding(uid, bookKey, understanding) {
   await updateDoc(doc(db, "students", uid), {
-    [`progress.books.${bookKey}.note`]: note,
+    [`progress.books.${bookKey}.understanding`]: understanding,
   });
 }
 
