@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Теоретик и практик — как правильно формулировать мольбу"
 book: "/content/module-1/teoretik-i-praktik.md"
-status: author
+status: certified
 ---
 
 1. С чего, по автору, начинается правильность мольбы?

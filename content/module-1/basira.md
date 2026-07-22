@@ -2,7 +2,7 @@
 title: "Басира — духовное зрение сердцем"
 module: 1
 source: "Басира.docx, Духовное зрения басыра.pdf — папка Лекарь"
-status: author
+status: certified
 ---
 
 ## Что такое басира

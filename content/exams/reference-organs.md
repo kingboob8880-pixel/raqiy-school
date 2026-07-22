@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Словарь органов тела"
 book: "/content/reference/organs.md"
-status: author
+status: certified
 ---
 
 1. Сколько разделов включает словарь органов тела в сертифицированной части книги?

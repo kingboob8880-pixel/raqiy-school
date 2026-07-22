@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Я заклинаю"
 book: "/content/module-2/ya-zaklinayu.md"
-status: author
+status: certified
 ---
 
 1. Как звучит формула рукьи Джибриля, когда раки читает её над самим собой?

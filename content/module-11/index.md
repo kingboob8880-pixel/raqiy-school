@@ -2,7 +2,7 @@
 title: "Работа в системе RUKYA Pro"
 module: 11
 source: "Авторский модуль курса — финальный практикум (project.md §4)"
-status: author
+status: certified
 ---
 
 ## Финальный практикум перед самостоятельным приёмом

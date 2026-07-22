@@ -2,7 +2,7 @@
 title: "Метод уединения с таухидом"
 module: 1
 source: "Книги Лекарь — папка Лекарь"
-status: author
+status: certified
 ---
 
 ## Метод уединения

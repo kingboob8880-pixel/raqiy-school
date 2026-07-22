@@ -2,7 +2,7 @@
 title: "Диагностика недугов души"
 module: 4
 source: "Книги Лекарь — папка Лекарь"
-status: author
+status: certified
 ---
 
 ## Диагностика «Недугов Души»
