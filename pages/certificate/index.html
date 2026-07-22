@@ -135,7 +135,11 @@
       // (доступ только через проверку Firebase после входа) нужен Firebase
       // Storage с правилами доступа — не настроено.
       statusRoot.innerHTML = `
-        <button class="btn btn-outline" onclick="window.print()">Распечатать / сохранить PDF</button>
+        <div style="display:flex; gap:var(--rp-space-3); justify-content:center; flex-wrap:wrap;">
+          <button class="btn btn-primary" id="dl-pdf">Скачать PDF</button>
+          <button class="btn btn-outline" id="dl-png">Скачать PNG</button>
+          <button class="btn btn-outline" onclick="window.print()">Распечатать</button>
+        </div>
         <div class="card" style="max-width: 32rem; margin: var(--rp-space-5) auto; text-align:center;">
           <h3 style="margin-bottom: var(--rp-space-2);">RUKYA PRO — программа для приёма пациентов</h3>
           <p class="form-note">Теперь, когда курс завершён, можно скачать RUKYA PRO — рабочую
@@ -147,6 +151,57 @@
              может показать предупреждение SmartScreen (программа новая, без платной цифровой
              подписи) — это ожидаемо, нужно нажать «Подробнее» → «Выполнить в любом случае».</p>
         </div>`;
+
+      // Скачивание PDF и PNG через html2canvas + jsPDF (CDN)
+      const certEl = root.querySelector(".cert-frame");
+      async function loadHtml2Canvas() {
+        if (window.html2canvas) return;
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+          s.onload = resolve; s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+      async function loadJsPDF() {
+        if (window.jspdf) return;
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js";
+          s.onload = resolve; s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+
+      document.getElementById("dl-png").addEventListener("click", async () => {
+        const btn = document.getElementById("dl-png");
+        btn.disabled = true; btn.textContent = "Подготовка…";
+        try {
+          await loadHtml2Canvas();
+          const canvas = await html2canvas(certEl, { scale: 2, useCORS: true, backgroundColor: "#fbf3e3" });
+          const a = document.createElement("a");
+          a.href = canvas.toDataURL("image/png");
+          a.download = "сертификат-рукия.png";
+          a.click();
+        } catch (e) { console.error(e); alert("Не удалось создать PNG — попробуйте ещё раз."); }
+        btn.disabled = false; btn.textContent = "Скачать PNG";
+      });
+
+      document.getElementById("dl-pdf").addEventListener("click", async () => {
+        const btn = document.getElementById("dl-pdf");
+        btn.disabled = true; btn.textContent = "Подготовка…";
+        try {
+          await loadHtml2Canvas();
+          await loadJsPDF();
+          const canvas = await html2canvas(certEl, { scale: 2, useCORS: true, backgroundColor: "#fbf3e3" });
+          const imgData = canvas.toDataURL("image/png");
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width / 2, canvas.height / 2] });
+          pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
+          pdf.save("сертификат-рукия.pdf");
+        } catch (e) { console.error(e); alert("Не удалось создать PDF — попробуйте ещё раз."); }
+        btn.disabled = false; btn.textContent = "Скачать PDF";
+      });
     });
   </script>
 </body>
