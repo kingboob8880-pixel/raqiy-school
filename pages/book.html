@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../design/tokens.css?v=20">
-<link rel="stylesheet" href="../design/base.css?v=42">
+<link rel="stylesheet" href="../design/base.css?v=43">
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js" defer></script>
 <style>
   /* Общие стили текста урока (.doc-body — таблицы/список/цитаты/заголовки)
@@ -34,7 +34,10 @@
   <main class="container">
     <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; gap: var(--rp-space-3); flex-wrap: wrap;">
       <a id="back-link" href="#" class="btn btn-ghost btn-sm">← Назад</a>
-      <button id="print-btn" class="btn btn-outline btn-sm" type="button" hidden>🖨️ Распечатать / сохранить PDF</button>
+      <div style="display:flex; gap:var(--rp-space-2);">
+        <button id="dl-pdf-btn" class="btn btn-outline btn-sm" type="button" hidden>📥 Скачать PDF</button>
+        <button id="print-btn" class="btn btn-outline btn-sm" type="button" hidden>🖨️ Распечатать</button>
+      </div>
     </div>
     <div id="doc-root" class="card" style="margin-top: var(--rp-space-4);">
       <p class="skeleton-loading">Загрузка…</p>
@@ -45,7 +48,7 @@
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=14";
     import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, applyAdminOnlyWall, setupNoteCard, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=18";
-    import { bookKey, MODULES } from "./js/modules-data.js?v=30";
+    import { bookKey, MODULES } from "./js/modules-data.js?v=31";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=9";
     import { getFullBookContent, saveBookNote } from "../integration/firestore.js?v=17";
@@ -128,6 +131,23 @@
           noteRoot.after(ctaRoot);
           const printBtn = document.getElementById("print-btn");
           printBtn.addEventListener("click", () => window.print());
+          const dlPdfBtn = document.getElementById("dl-pdf-btn");
+          dlPdfBtn.addEventListener("click", async () => {
+            dlPdfBtn.disabled = true; dlPdfBtn.textContent = "Подготовка…";
+            try {
+              if (!window.html2canvas) await new Promise((r, j) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"; s.onload = r; s.onerror = j; document.head.appendChild(s); });
+              if (!window.jspdf) await new Promise((r, j) => { const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"; s.onload = r; s.onerror = j; document.head.appendChild(s); });
+              const canvas = await html2canvas(root, { scale: 1.5, useCORS: true, backgroundColor: getComputedStyle(document.body).getPropertyValue("--rp-zone-surface").trim() || "#fff" });
+              const imgData = canvas.toDataURL("image/png");
+              const { jsPDF } = window.jspdf;
+              const pW = canvas.width / 1.5; const pH = canvas.height / 1.5;
+              const pdf = new jsPDF({ orientation: pH > pW ? "portrait" : "landscape", unit: "px", format: [pW, pH] });
+              pdf.addImage(imgData, "PNG", 0, 0, pW, pH);
+              const title = doc.meta?.title || "урок";
+              pdf.save(`${title.replace(/[^a-zA-Zа-яА-ЯёЁ0-9 -]/g, "")}.pdf`);
+            } catch (e) { console.error(e); alert("Не удалось создать PDF — попробуйте ещё раз."); }
+            dlPdfBtn.disabled = false; dlPdfBtn.textContent = "📥 Скачать PDF";
+          });
           watchAuth(async (user) => {
             if (!user) {
               if (bodyEl) applyRegisterWall(bodyEl);
@@ -178,7 +198,7 @@
             // Кнопка печати — только когда есть что печатать (независимая
             // проверка, 2026-07-19): раньше показывалась сразу всем, включая
             // гостя за стеной регистрации.
-            if (unlocked) printBtn.hidden = false;
+            if (unlocked) { printBtn.hidden = false; dlPdfBtn.hidden = false; }
             // Экзамен по книге — только после полного текста (project.md §18):
             // нет смысла сдавать тест по книге, которую не дали дочитать.
             if (unlocked) ctaRoot.innerHTML = examCtaHtml(profile?.progress);

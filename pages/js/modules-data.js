@@ -242,3 +242,104 @@ export function computeLevelBadges(progress) {
     return { level, doneCount, total: modules.length, complete: doneCount === modules.length };
   });
 }
+
+/** Система достижений — вычисляются из имеющегося прогресса без новых полей
+ * в Firestore. Каждое достижение: { id, icon, title, description, earned,
+ * progress (текущее), goal (целевое) }. progress/goal дают числовую шкалу
+ * для прогресс-бара у незаработанных достижений. */
+export function computeAchievements(progress, activityDates) {
+  const modules = MODULES;
+  const doneModules = modules.filter((m) => progress?.[m.id]?.status === "done").length;
+
+  // Количество сданных книжных экзаменов
+  const books = progress?.books || {};
+  const doneBooks = Object.values(books).filter((b) => b?.status === "done").length;
+
+  // Все баллы тестов (модулей + книг)
+  const moduleScores = Object.entries(progress || {})
+    .filter(([k, v]) => k !== "activityDates" && k !== "books" && typeof v === "object" && v?.quizScore != null)
+    .map(([, v]) => v.quizScore);
+  const bookScores = Object.values(books)
+    .filter((b) => b?.quizScore != null)
+    .map((b) => b.quizScore);
+  const allScores = [...moduleScores, ...bookScores];
+  const allAbove90 = allScores.length > 0 && allScores.every((s) => s >= 0.9);
+
+  // Стрик
+  const dates = activityDates || [];
+  const streakNow = computeStreakFromDates(dates);
+  const maxStreak = computeMaxStreak(dates);
+
+  return [
+    {
+      id: "first-book", icon: "📖", title: "Первая книга",
+      description: "Сдать экзамен по первой книге",
+      earned: doneBooks >= 1, progress: Math.min(doneBooks, 1), goal: 1,
+    },
+    {
+      id: "first-module", icon: "✅", title: "Первый модуль",
+      description: "Завершить первый модуль целиком",
+      earned: doneModules >= 1, progress: Math.min(doneModules, 1), goal: 1,
+    },
+    {
+      id: "bookworm", icon: "📚", title: "Книгочей",
+      description: "Сдать 10 книжных экзаменов",
+      earned: doneBooks >= 10, progress: Math.min(doneBooks, 10), goal: 10,
+    },
+    {
+      id: "streak-7", icon: "🔥", title: "Усердный",
+      description: "7 дней активности подряд",
+      earned: maxStreak >= 7, progress: Math.min(streakNow, 7), goal: 7,
+    },
+    {
+      id: "halfway", icon: "🏔️", title: "Половина пути",
+      description: "Пройти 6 модулей из 11",
+      earned: doneModules >= 6, progress: Math.min(doneModules, 6), goal: 6,
+    },
+    {
+      id: "honor", icon: "⭐", title: "Отличник",
+      description: "Все тесты сдать на 90%+",
+      earned: allAbove90,
+      progress: allScores.filter((s) => s >= 0.9).length,
+      goal: Math.max(allScores.length, 1),
+    },
+    {
+      id: "streak-30", icon: "💎", title: "Марафонец",
+      description: "30 дней активности подряд",
+      earned: maxStreak >= 30, progress: Math.min(streakNow, 30), goal: 30,
+    },
+    {
+      id: "graduate", icon: "🎓", title: "Выпускник",
+      description: "Завершить все 11 модулей курса",
+      earned: doneModules === 11, progress: doneModules, goal: 11,
+    },
+  ];
+}
+
+/** Максимальный стрик за всю историю (для достижений "7 дней подряд" и т.д.) */
+function computeMaxStreak(activityDates) {
+  if (!activityDates || !activityDates.length) return 0;
+  const sorted = [...activityDates].sort();
+  let max = 1, cur = 1;
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = new Date(sorted[i - 1]);
+    const next = new Date(sorted[i]);
+    const diffDays = Math.round((next - prev) / (1000 * 60 * 60 * 24));
+    if (diffDays === 1) { cur++; max = Math.max(max, cur); }
+    else if (diffDays > 1) { cur = 1; }
+  }
+  return max;
+}
+
+/** Текущий стрик (сегодня/вчера назад) — повтор логики computeStreak из
+ * firestore.js, но без серверного timestamp. */
+function computeStreakFromDates(activityDates) {
+  if (!activityDates || !activityDates.length) return 0;
+  const set = new Set(activityDates);
+  const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const cursor = new Date();
+  if (!set.has(fmt(cursor))) cursor.setDate(cursor.getDate() - 1);
+  let streak = 0;
+  while (set.has(fmt(cursor))) { streak++; cursor.setDate(cursor.getDate() - 1); }
+  return streak;
+}
