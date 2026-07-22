@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Тест — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=46">
+<link rel="stylesheet" href="../../design/base.css?v=47">
 </head>
 <body data-zone="learn">
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
@@ -17,7 +17,8 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=14";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=15";
+    import { t, moduleTitle } from "../js/i18n.js?v=2";
     import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=33";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
     import { loadExamDoc } from "../js/exam-loader.js?v=8";
@@ -87,22 +88,22 @@
       if (kind === "guest") {
         return `
           <div class="card paywall-card">
-            <h3>Зарегистрируйтесь, чтобы пройти тест</h3>
-            <p class="form-note">Экзамены — часть платного курса. Регистрация бесплатна и займёт меньше минуты.</p>
+            <h3>${t("quiz.guestWall")}</h3>
+            <p class="form-note">${t("quiz.guestNote")}</p>
             <div class="book-exam-cta__actions">
-              <a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Зарегистрироваться бесплатно</a>
-              <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">Уже есть аккаунт? Войти</a>
+              <a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">${t("quiz.freeSignup")}</a>
+              <a class="btn btn-outline" href="${withBase("/pages/auth/login.html")}">${t("quiz.haveAccount")}</a>
             </div>
           </div>`;
       }
       return `
         <div class="card paywall-card">
-          <h3>Экзамены открываются после оплаты курса</h3>
-          <p class="form-note">Пока доступны бесплатные ознакомительные отрывки книг. Экзамены, как и полный текст курса, входят в оплату целиком.</p>
+          <h3>${t("quiz.paidWall")}</h3>
+          <p class="form-note">${t("quiz.paidNote")}</p>
           <p class="paywall-card__price">30 000 ₽</p>
           <div class="book-exam-cta__actions">
-            <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">Написать лекарю в Telegram</a>
-            <a class="btn btn-outline" href="${withBase("/pages/dashboard/student.html")}">Вернуться в кабинет</a>
+            <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener">${t("quiz.contactTg")}</a>
+            <a class="btn btn-outline" href="${withBase("/pages/dashboard/student.html")}">${t("quiz.backDash")}</a>
           </div>
         </div>`;
     }
@@ -116,7 +117,7 @@
       if (isBookQuiz) {
         const owner = MODULES.find((m) => m.lessons.some((l) => l.exam === examPath));
         const lesson = owner?.lessons.find((l) => l.exam === examPath);
-        if (!owner || !lesson) { root.innerHTML = `<p>Экзамен не найден.</p>`; return; }
+        if (!owner || !lesson) { root.innerHTML = `<p>${t("quiz.notFound")}</p>`; return; }
         try {
           const exam = await loadExamDoc(examPath);
           mod = owner;
@@ -128,12 +129,12 @@
         mod = getModule(params_moduleId);
         const rawQ = QUIZZES[params_moduleId];
         questions = rawQ ? shuffleQuiz(rawQ) : null;
-        quizTitle = mod ? `Модуль ${mod.id}. ${mod.title}` : "";
+        quizTitle = mod ? `${t("module.n")} ${mod.id}. ${moduleTitle(mod)}` : "";
         resultKey = mod?.id;
       }
 
       if (!mod || !questions || !questions.length) {
-        root.innerHTML = `<p>Тест для ${isBookQuiz ? "этой книги" : "этого модуля"} пока не готов.</p>`;
+        root.innerHTML = `<p>${t("quiz.notReady")}</p>`;
         return;
       }
 
@@ -171,7 +172,7 @@
         const pct = ((current) / questions.length) * 100;
 
         root.innerHTML = `
-          <a class="btn btn-ghost btn-sm" href="${exitHref}" style="margin-bottom: var(--rp-space-3);">← Прервать тест</a>
+          <a class="btn btn-ghost btn-sm" href="${exitHref}" style="margin-bottom: var(--rp-space-3);">${t("quiz.abort")}</a>
           <div class="quiz-header">
             <p class="quiz-header__title">${quizTitle}</p>
             <span class="quiz-timer" id="timer-display"><span class="quiz-timer__icon">⏱</span> <span id="timer-text">${timer.display}</span></span>
@@ -186,9 +187,9 @@
             <div id="options"></div>
             <p id="quiz-feedback" class="quiz-feedback" role="status" aria-live="polite"></p>
             <div class="quiz-nav">
-              <button id="prev-btn" class="btn btn-ghost btn-sm" ${current === 0 ? "disabled" : ""}>← Назад</button>
+              <button id="prev-btn" class="btn btn-ghost btn-sm" ${current === 0 ? "disabled" : ""}>${t("quiz.prev")}</button>
               <span class="quiz-nav__counter">${current + 1} / ${questions.length}</span>
-              <button id="next-btn" class="btn btn-primary btn-sm" disabled>Далее →</button>
+              <button id="next-btn" class="btn btn-primary btn-sm" disabled>${t("quiz.forward")}</button>
             </div>
           </div>
         `;
@@ -230,9 +231,9 @@
             if (i === q.correct) btn.classList.add("is-correct");
             optionsRoot.appendChild(btn);
           });
-          feedbackEl.textContent = answers[current] === q.correct ? "✅ Верно!" : "❌ Неверно — правильный ответ отмечен выше.";
+          feedbackEl.textContent = answers[current] === q.correct ? t("quiz.correct") : t("quiz.incorrect");
           nextBtn.disabled = false;
-          nextBtn.textContent = current < questions.length - 1 ? "Далее →" : "Завершить ✓";
+          nextBtn.textContent = current < questions.length - 1 ? t("quiz.forward") : t("quiz.finishBtn");
         } else {
           // Свежий вопрос — ждём ответ
           q.options.forEach((opt, i) => {
@@ -251,9 +252,9 @@
               btn.classList.add(isCorrect ? "is-correct" : "is-wrong");
               if (!isCorrect) optionsRoot.children[q.correct].classList.add("is-correct");
               [...optionsRoot.children].forEach((c) => { c.disabled = true; });
-              feedbackEl.textContent = isCorrect ? "✅ Верно!" : "❌ Неверно — правильный ответ отмечен выше.";
+              feedbackEl.textContent = isCorrect ? t("quiz.correct") : t("quiz.incorrect");
               nextBtn.disabled = false;
-              nextBtn.textContent = current < questions.length - 1 ? "Далее →" : "Завершить ✓";
+              nextBtn.textContent = current < questions.length - 1 ? t("quiz.forward") : t("quiz.finishBtn");
               nextBtn.focus();
 
               // Обновить точки
@@ -294,7 +295,7 @@
         }
 
         const backHref = isBookQuiz ? `../modules/module.html?id=${mod.id}` : "../dashboard/student.html";
-        const backLabel = isBookQuiz ? "Вернуться к модулю" : "Вернуться в кабинет";
+        const backLabel = isBookQuiz ? t("quiz.backModule") : t("quiz.backDash");
 
         // SVG-кольцо
         const R = 54, C = 2 * Math.PI * R;
@@ -304,12 +305,12 @@
         // Время
         const mins = Math.floor(timer.elapsed / 60);
         const secs = timer.elapsed % 60;
-        const timeStr = mins > 0 ? `${mins} мин ${secs} сек` : `${secs} сек`;
+        const timeStr = mins > 0 ? `${mins} ${t("quiz.min")} ${secs} ${t("quiz.sec")}` : `${secs} ${t("quiz.sec")}`;
 
         // Разбор ответов (всегда показываем)
         const reviewHtml = `
           <div class="card" style="margin-top: var(--rp-space-4); text-align:left;">
-            <h3>Разбор ответов</h3>
+            <h3>${t("quiz.reviewTitle")}</h3>
             <ol class="quiz-review">
               ${questions.map((q, i) => {
                 const isCorrect = answers[i] === q.correct;
@@ -319,8 +320,8 @@
                       <span class="quiz-review__num ${isCorrect ? "is-correct" : "is-wrong"}">${i + 1}</span>
                       <span>${q.q}</span>
                     </p>
-                    ${!isCorrect ? `<p class="form-note" style="margin-left:2rem;">Ваш ответ: ${q.options[answers[i]] ?? "—"}</p>` : ""}
-                    <p class="form-note" style="margin-left:2rem;">Правильный ответ: ${q.options[q.correct]}</p>
+                    ${!isCorrect ? `<p class="form-note" style="margin-left:2rem;">${t("quiz.yourAnswer")}: ${q.options[answers[i]] ?? "—"}</p>` : ""}
+                    <p class="form-note" style="margin-left:2rem;">${t("quiz.rightAnswer")}: ${q.options[q.correct]}</p>
                   </li>`;
               }).join("")}
             </ol>
@@ -329,7 +330,7 @@
         root.innerHTML = `
           <div class="card quiz-result ${passed ? "quiz-result--passed" : "quiz-result--failed"}" style="text-align:center;">
             <div class="quiz-result__icon" aria-hidden="true">${passed ? "🎉" : "📖"}</div>
-            <h2>${passed ? "Тест пройден!" : "Тест не пройден"}</h2>
+            <h2>${passed ? t("quiz.passed") : t("quiz.failed")}</h2>
 
             <svg class="quiz-result__ring" width="140" height="140" viewBox="0 0 120 120">
               <circle class="quiz-result__ring-bg" cx="60" cy="60" r="${R}"/>
@@ -342,26 +343,26 @@
               <text class="quiz-result__ring-text" x="60" y="60">${pctNum}%</text>
             </svg>
 
-            <p class="quiz-result__score-label">Порог прохождения — ${Math.round(QUIZ_PASS_THRESHOLD * 100)}%</p>
+            <p class="quiz-result__score-label">${t("quiz.passLine")} — ${Math.round(QUIZ_PASS_THRESHOLD * 100)}%</p>
 
             <div class="quiz-result__stats">
               <div class="quiz-result__stat">
                 <div class="quiz-result__stat-value">${correctCount}/${questions.length}</div>
-                <div class="quiz-result__stat-label">правильных</div>
+                <div class="quiz-result__stat-label">${t("quiz.correctCount")}</div>
               </div>
               <div class="quiz-result__stat">
                 <div class="quiz-result__stat-value">${timeStr}</div>
-                <div class="quiz-result__stat-label">затрачено</div>
+                <div class="quiz-result__stat-label">${t("quiz.timeSpent")}</div>
               </div>
             </div>
 
-            ${saveFailed ? `<p class="field-error">Не удалось сохранить результат (нет связи). Попробуйте пройти тест ещё раз позже.</p>` : ""}
-            ${!currentUser ? `<p class="form-note">Вы не вошли в кабинет — результат не сохранён. <a href="${withBase("/pages/auth/login.html")}">Войдите</a>, чтобы прогресс учитывался.</p>` : ""}
+            ${saveFailed ? `<p class="field-error">${t("quiz.saveFailed")}</p>` : ""}
+            ${!currentUser ? `<p class="form-note">${t("quiz.notLoggedIn")} <a href="${withBase("/pages/auth/login.html")}">${t("auth.login")}</a></p>` : ""}
 
             <div class="quiz-result__actions">
               ${passed
                 ? `<a class="btn btn-primary" href="${backHref}">${backLabel}</a>`
-                : `<button class="btn btn-primary" onclick="location.reload()">Попробовать ещё раз</button>
+                : `<button class="btn btn-primary" onclick="location.reload()">${t("quiz.retry")}</button>
                    <a class="btn btn-outline" href="${backHref}">${backLabel}</a>`}
             </div>
           </div>
@@ -392,8 +393,8 @@
       } catch (err) {
         console.warn(err);
         root.innerHTML = `
-          <p class="field-error">Не удалось проверить доступ — проверьте связь с интернетом.</p>
-          <button class="btn btn-outline btn-sm" type="button" onclick="location.reload()">Повторить</button>`;
+          <p class="field-error">${t("quiz.accessError")}</p>
+          <button class="btn btn-outline btn-sm" type="button" onclick="location.reload()">${t("quiz.retry")}</button>`;
         return;
       }
       if (!unlocked) { root.innerHTML = accessWallHtml("unpaid"); return; }

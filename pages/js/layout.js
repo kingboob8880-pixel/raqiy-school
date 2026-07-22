@@ -5,6 +5,7 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
 import { watchAuth, isAdmin } from "../../integration/auth.js?v=9";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=2";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
@@ -24,7 +25,7 @@ export function renderHeader(zone = "learn") {
     skipLink.id = "skip-link";
     skipLink.className = "skip-link";
     skipLink.href = `#${mainEl.id}`;
-    skipLink.textContent = "Перейти к содержимому";
+    skipLink.textContent = t("skip.link");
     document.body.prepend(skipLink);
   }
 
@@ -45,30 +46,43 @@ export function renderHeader(zone = "learn") {
   // и на кабинеты, а не только на лендинг/модули/книги.
   const themeSwitcherHtml = `<div class="theme-switcher" id="theme-switcher"></div>`;
 
+  // Переключатель языка — три кнопки РУ/EN/UZ в углу шапки.
+  const currentLang = getLang();
+  const langBtnsHtml = LANGS.map((l) =>
+    `<button type="button" class="lang-switcher__btn${l.code === currentLang ? " is-active" : ""}" data-lang="${l.code}" title="${l.full}">${l.label}</button>`
+  ).join("");
+  const langSwitcherHtml = `<div class="lang-switcher">${langBtnsHtml}</div>`;
+
   root.innerHTML = `
     <header class="site-header">
       <div class="container site-header__row">
         <a class="site-header__brand" href="${withBase("/pages/index.html")}">
           <span class="site-header__brand-mark">ش</span>
-          Онлайн-школа рукии
+          ${t("site.title")}
         </a>
         <nav class="site-header__nav" id="site-nav">
-          <a data-nav="about" href="${withBase("/pages/about.html")}"><span aria-hidden="true">🧑‍⚕️</span>Об авторе</a>
-          <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>Модули</a>
-          <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>Тесты</a>
-          <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}" hidden><span aria-hidden="true">🗃</span>Архив</a>
-          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>Кабинет</a>
+          <a data-nav="about" href="${withBase("/pages/about.html")}"><span aria-hidden="true">🧑‍⚕️</span>${t("nav.about")}</a>
+          <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>${t("nav.modules")}</a>
+          <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>${t("nav.tests")}</a>
+          <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}" hidden><span aria-hidden="true">🗃</span>${t("nav.archive")}</a>
+          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}</a>
         </nav>
         <div class="site-header__actions">
+          ${langSwitcherHtml}
           ${themeSwitcherHtml}
-          <a class="btn btn-outline btn-sm" id="auth-btn" href="${withBase("/pages/auth/login.html")}">Войти</a>
-          <button type="button" class="site-header__menu-btn" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню">
+          <a class="btn btn-outline btn-sm" id="auth-btn" href="${withBase("/pages/auth/login.html")}">${t("auth.login")}</a>
+          <button type="button" class="site-header__menu-btn" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="${t("menu.open")}">
             <span aria-hidden="true">☰</span>
           </button>
         </div>
       </div>
     </header>
   `;
+
+  // Обработчики переключателя языка
+  root.querySelectorAll(".lang-switcher__btn").forEach((btn) => {
+    btn.addEventListener("click", () => setLang(btn.dataset.lang));
+  });
 
   // Подсветка активного пункта меню — по сегменту пути, не по точному URL
   // (страница книги/модуля живёт под /pages/modules/ или /pages/book.html,
@@ -128,10 +142,10 @@ export function renderHeader(zone = "learn") {
     // Кнопка «Войти» → скрыть для залогиненных (аудит, 2026-07-21).
     if (authBtn) {
       if (user) {
-        authBtn.textContent = user.displayName || user.email?.split("@")[0] || "Кабинет";
+        authBtn.textContent = user.displayName || user.email?.split("@")[0] || t("nav.dashboard");
         authBtn.href = withBase("/pages/dashboard/student.html");
       } else {
-        authBtn.textContent = "Войти";
+        authBtn.textContent = t("auth.login");
         authBtn.href = withBase("/pages/auth/login.html");
       }
     }
@@ -170,7 +184,7 @@ export function renderFooter() {
   root.innerHTML = `
     <footer class="footer">
       <div class="container">
-        <p>Онлайн-школа рукии · Лекарь Абу Мухаммад · Основатель школы</p>
+        <p>${t("footer.text")}</p>
         <p><a href="https://t.me/ruqoq">t.me/ruqoq</a></p>
       </div>
     </footer>
