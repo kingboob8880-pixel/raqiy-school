@@ -13,6 +13,7 @@ import {
   ref, uploadBytes, getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=1";
+import { notifyChat, notifyProgress } from "./notify.js?v=1";
 
 /** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
  * журнала активности (стрики, project.md, решение 2026-07-18). */
@@ -29,7 +30,7 @@ export async function markModuleProgress(uid, moduleId, status) {
   });
 }
 
-export async function recordQuizResult(uid, moduleId, scoreRatio) {
+export async function recordQuizResult(uid, moduleId, scoreRatio, studentName) {
   const passed = scoreRatio >= QUIZ_PASS_THRESHOLD;
   const update = {
     [`progress.${moduleId}.quizScore`]: scoreRatio,
@@ -39,11 +40,12 @@ export async function recordQuizResult(uid, moduleId, scoreRatio) {
   };
   if (passed) update[`progress.${moduleId}.passedAt`] = serverTimestamp();
   await updateDoc(doc(db, "students", uid), update);
+  notifyProgress(studentName || uid, `тест ${moduleId}`, scoreRatio);
 }
 
 /** Экзамен по отдельной книге (не по модулю целиком, project.md §5) —
  * bookKey — плоский ключ из pages/js/modules-data.js#bookKey(doc). */
-export async function recordBookQuizResult(uid, bookKey, scoreRatio) {
+export async function recordBookQuizResult(uid, bookKey, scoreRatio, studentName) {
   const passed = scoreRatio >= QUIZ_PASS_THRESHOLD;
   const update = {
     [`progress.books.${bookKey}.quizScore`]: scoreRatio,
@@ -53,6 +55,7 @@ export async function recordBookQuizResult(uid, bookKey, scoreRatio) {
   };
   if (passed) update[`progress.books.${bookKey}.passedAt`] = serverTimestamp();
   await updateDoc(doc(db, "students", uid), update);
+  notifyProgress(studentName || uid, `книга ${bookKey}`, scoreRatio);
 }
 
 /** Дней подряд с активностью (тест сдавался/пересдавался), включая сегодня
@@ -88,10 +91,11 @@ export async function deleteStudent(uid) {
   await deleteDoc(doc(db, "students", uid));
 }
 
-export async function sendMessage(uid, from, text) {
+export async function sendMessage(uid, from, text, studentName) {
   await addDoc(collection(db, "students", uid, "messages"), {
     from, text, createdAt: serverTimestamp(), read: false,
   });
+  if (from === "student") notifyChat(studentName || uid, text);
 }
 
 /** Отправка медиа-сообщения (голос/видео/файл) — загружает файл в
@@ -100,7 +104,7 @@ export async function sendMessage(uid, from, text) {
  * type: 'voice' | 'video' | 'file'. duration в секундах (для голоса/видео).
  * Правила Storage (integration/storage.rules) должны разрешать запись
  * авторизованным пользователям в chat/{uid}/ . */
-export async function sendMediaMessage(uid, from, file, type, duration) {
+export async function sendMediaMessage(uid, from, file, type, duration, studentName) {
   const ts = Date.now();
   const safeName = (file.name || (type === "voice" ? "voice.webm" : type === "video" ? "video.webm" : "file")).replace(/[^a-zA-Z0-9._-]/g, "_");
   const path = `chat/${uid}/${ts}_${safeName}`;
@@ -115,6 +119,7 @@ export async function sendMediaMessage(uid, from, file, type, duration) {
     mimeType: file.type || null,
     createdAt: serverTimestamp(), read: false,
   });
+  if (from === "student") notifyChat(studentName || uid, null);
 }
 
 export async function listMessages(uid) {

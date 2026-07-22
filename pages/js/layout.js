@@ -4,7 +4,7 @@
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
-import { watchAuth, isAdmin } from "../../integration/auth.js?v=8";
+import { watchAuth, isAdmin } from "../../integration/auth.js?v=9";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
