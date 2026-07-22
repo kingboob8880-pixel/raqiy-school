@@ -1106,8 +1106,55 @@ main.container { padding-block: var(--rp-space-6); }
   border-radius: var(--rp-radius-sm); border: 1px solid color-mix(in srgb, var(--rp-zone-border, var(--rp-learn-border)) 55%, var(--rp-zone-text, var(--rp-learn-text)) 45%);
   background: var(--rp-zone-surface, #fff); color: var(--rp-zone-text, inherit);
 }
-.chat-form { display: flex; gap: var(--rp-space-2); align-items: flex-end; }
+.chat-form { display: flex; gap: var(--rp-space-2); align-items: flex-end; flex-wrap: wrap; }
 .chat-form button:disabled { opacity: 0.5; cursor: default; }
+
+/* Медиа-кнопки (голос/видео/файл) */
+.chat-media-bar { display: flex; gap: 0.25rem; align-items: center; }
+.chat-media-btn {
+  background: none; border: none; cursor: pointer; font-size: 1.25rem;
+  padding: 0.35rem; border-radius: var(--rp-radius-sm); line-height: 1;
+  transition: background 0.15s;
+}
+.chat-media-btn:hover { background: color-mix(in srgb, var(--rp-zone-text) 10%, transparent); }
+.chat-media-btn.is-recording { background: var(--rp-status-danger-bg); animation: rec-pulse 1s ease-in-out infinite; }
+@keyframes rec-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* Индикатор записи */
+.chat-rec-indicator {
+  display: flex; align-items: center; gap: var(--rp-space-2);
+  width: 100%; padding: 0.5rem 0.75rem;
+  background: var(--rp-status-danger-bg); border-radius: var(--rp-radius-sm);
+  font-size: var(--rp-fs-sm); color: var(--rp-status-danger);
+}
+.chat-rec-dot {
+  width: 0.6rem; height: 0.6rem; border-radius: 50%;
+  background: var(--rp-status-danger); animation: rec-pulse 1s ease-in-out infinite;
+}
+.chat-rec-time { font-variant-numeric: tabular-nums; font-weight: 600; }
+.chat-rec-stop { color: var(--rp-status-danger); border-color: var(--rp-status-danger); }
+
+/* Медиа-сообщения */
+.msg__media { margin-bottom: 0.15rem; }
+.msg__voice audio { width: 100%; max-width: 15rem; height: 2rem; }
+.msg__voice { display: flex; align-items: center; gap: 0.5rem; }
+.msg__duration { font-size: 0.75rem; opacity: 0.7; white-space: nowrap; }
+.msg__video video { max-width: 18rem; max-height: 14rem; border-radius: var(--rp-radius-sm); display: block; }
+.msg__file-preview { max-width: 14rem; max-height: 10rem; border-radius: var(--rp-radius-sm); display: block; margin-bottom: 0.35rem; }
+.msg__file-card {
+  display: flex; align-items: center; gap: 0.5rem;
+  text-decoration: none; color: inherit;
+  padding: 0.4rem 0.6rem; border-radius: var(--rp-radius-sm);
+  background: color-mix(in srgb, var(--rp-zone-text) 8%, transparent);
+  transition: background 0.15s;
+}
+.msg__file-card:hover { background: color-mix(in srgb, var(--rp-zone-text) 14%, transparent); }
+.msg-student .msg__file-card { background: rgba(255,255,255,0.15); }
+.msg-student .msg__file-card:hover { background: rgba(255,255,255,0.25); }
+.msg__file-icon { font-size: 1.5rem; line-height: 1; }
+.msg__file-info { display: flex; flex-direction: column; min-width: 0; }
+.msg__file-name { font-size: var(--rp-fs-sm); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 12rem; }
+.msg__file-size { font-size: 0.7rem; opacity: 0.65; }
 
 /* ---------- Инструменты админа: поиск/фильтр учеников, действия в строке таблицы ---------- */
 .admin-toolbar { display: flex; gap: var(--rp-space-2); margin-bottom: var(--rp-space-3); flex-wrap: wrap; }
