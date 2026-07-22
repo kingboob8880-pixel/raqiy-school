@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Модуль — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=49">
+<link rel="stylesheet" href="../../design/base.css?v=50">
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js" defer></script>
 <!-- Общие стили текста урока (.doc-body) и списка "Уроки" (.lesson-list/
      .lesson-link) теперь в design/base.css — раньше дублировались/жили
@@ -23,13 +23,14 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=15";
-    import { getModule, bookKey } from "../js/modules-data.js?v=33";
-    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal } from "../js/markdown-loader.js?v=22";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=4";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=16";
+    import { getModule, bookKey, isModuleUnlocked } from "../js/modules-data.js?v=34";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal } from "../js/markdown-loader.js?v=23";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=5";
+    import { ASSIGNMENTS } from "../js/assignments-data.js?v=1";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=9";
-    import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=18";
+    import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=19";
 
     renderHeader("learn");
     renderFooter();
@@ -77,6 +78,31 @@
       staggerReveal(Array.from(list.querySelectorAll("li")), { step: 45, max: 350 });
     }
 
+    const ASSIGN_ICONS = { reflection: "\u{1F4DD}", practice: "\u{1F3CB}️", daily: "\u{1F4C5}" };
+
+    function renderAssignments() {
+      const section = document.getElementById("assignments-section");
+      if (!section) return;
+      const items = ASSIGNMENTS[mod.id];
+      if (!items || !items.length) return;
+      section.innerHTML = `
+        <h2 style="text-align:left;">${t("module.assignments")}</h2>
+        <div class="assignments-grid">${items.map((a) => `
+          <div class="card lift assignment-card">
+            <div class="assignment-card__header">
+              <span class="assignment-card__icon">${ASSIGN_ICONS[a.type] || "\u{1F4DD}"}</span>
+              <span class="assignment-card__type">${t("assign." + a.type)}</span>
+              <span class="assignment-card__duration">${t("assign.duration")}: ${a.duration}</span>
+            </div>
+            <h3 class="assignment-card__title">${a.title}</h3>
+            <p class="assignment-card__desc">${a.description}</p>
+          </div>`).join("")}
+        </div>
+      `;
+      section.hidden = false;
+      staggerReveal(Array.from(section.querySelectorAll(".assignment-card")), { step: 60, max: 400 });
+    }
+
     if (!mod) {
       root.innerHTML = "<p>Модуль не найден.</p>";
     } else {
@@ -105,6 +131,7 @@
           <a class="btn btn-primary" href="../quiz/index.html?module=${mod.id}">${t("module.quiz")}</a>
           ${mod.status !== "certified" ? `<p class="form-note" style="margin-top: var(--rp-space-2);">${t("module.notcert")}</p>` : ""}
         </div>
+        <div id="assignments-section" style="margin-top: var(--rp-space-6);" hidden></div>
       `;
 
       // Тот же паввол, что на странице отдельного урока (book.html) — раньше
@@ -124,6 +151,17 @@
             return;
           }
           const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
+          // Module lock check — students cannot access module N+1 until module N quiz is passed
+          if (!admin && !isModuleUnlocked(mod.id, profile?.progress)) {
+            root.innerHTML = `
+              <div class="card" style="text-align:center; padding: var(--rp-space-6);">
+                <p style="font-size:2rem;">🔒</p>
+                <h2>${t("module.locked")}</h2>
+                <p class="form-note">${t("module.lockedmsg")} ${mod.id - 1}</p>
+                <a class="btn btn-primary" href="module.html?id=${mod.id - 1}" style="margin-top: var(--rp-space-4);">← ${t("module.n")} ${mod.id - 1}</a>
+              </div>`;
+            return;
+          }
           const unlocked = admin || !!profile?.paid;
           if (bodyEl && !unlocked) applyPaywall(bodyEl);
           // Самопроверка — та же общая функция, что на book.html (js/markdown-loader.js).
@@ -151,7 +189,10 @@
           } catch (e) { console.warn("module content enrichment", e); }
           // Кнопка теста — показываем всегда когда есть доступ, даже если
           // выше произошла ошибка обогащения контента.
-          if (unlocked) document.getElementById("quiz-cta").hidden = false;
+          if (unlocked) {
+            document.getElementById("quiz-cta").hidden = false;
+            renderAssignments();
+          }
           if (mod.lessons.length) renderLessons(profile?.progress);
         });
       }).catch((err) => {

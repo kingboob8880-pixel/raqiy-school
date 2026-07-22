@@ -4,8 +4,8 @@
 // странице отдельным <script> из CDN — см. pages/book.html/module.html).
 
 import { withBase } from "./base-path.js?v=6";
-import { MODULES } from "./modules-data.js?v=21";
-import { getLang, localizedDocPath, t } from "./i18n.js?v=4";
+import { MODULES } from "./modules-data.js?v=34";
+import { getLang, localizedDocPath, t } from "./i18n.js?v=5";
 
 /** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter
  *  значений (title, source) через innerHTML (аудит, 2026-07-21). */
@@ -98,7 +98,7 @@ export function renderDocInto(container, doc, { showTitle = true } = {}) {
         img.src = withBase(src);
       }
     });
-    enhanceDuaBlocks(bodyEl); enhanceContentLinks(bodyEl);
+    enhanceDuaBlocks(bodyEl); enhanceContentLinks(bodyEl); enhanceVideoEmbeds(bodyEl);
   }
 }
 
@@ -280,8 +280,69 @@ export function enhanceDuaBlocks(bodyEl) {
     wrap.setAttribute("role", "group"); // группа связанных абзацев для ассистивных технологий
     group[0].before(wrap);
     group.forEach((node) => wrap.appendChild(node));
+    // Добавляем кнопку озвучки арабского текста (Web Speech API TTS)
+    addDuaPlayButton(wrap);
     i = j;
   }
+}
+
+/** Кнопка озвучки арабского текста внутри .dua-block через Web Speech API.
+ *  Ищет первый абзац с lang="ar" в блоке и читает его вслух арабским
+ *  голосом браузера. Если арабский голос недоступен — кнопка disabled
+ *  с тултипом. Состояния: play / pause / ready. */
+function addDuaPlayButton(block) {
+  const arabicEl = block.querySelector('[lang="ar"]');
+  if (!arabicEl) return;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "dua-block__play";
+  btn.setAttribute("aria-label", "Play");
+  btn.textContent = "▶";
+
+  // Проверяем наличие арабского голоса
+  const synth = window.speechSynthesis;
+  if (!synth) { btn.disabled = true; btn.title = t("dua.novoice"); block.prepend(btn); return; }
+
+  let arVoice = null;
+  function findArVoice() {
+    const voices = synth.getVoices();
+    arVoice = voices.find((v) => v.lang.startsWith("ar")) || null;
+  }
+  findArVoice();
+  if (synth.onvoiceschanged !== undefined) {
+    synth.addEventListener("voiceschanged", findArVoice, { once: true });
+  }
+
+  let utterance = null;
+
+  btn.addEventListener("click", () => {
+    if (synth.speaking && utterance) {
+      synth.cancel();
+      btn.textContent = "▶";
+      btn.classList.remove("dua-block__play--active");
+      utterance = null;
+      return;
+    }
+    const text = arabicEl.textContent.trim();
+    if (!text) return;
+
+    // Повторная проверка голоса (мог подгрузиться позже)
+    if (!arVoice) findArVoice();
+    if (!arVoice) { btn.disabled = true; btn.title = t("dua.novoice"); return; }
+
+    utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ar";
+    utterance.voice = arVoice;
+    utterance.rate = 0.85;
+    utterance.onend = () => { btn.textContent = "▶"; btn.classList.remove("dua-block__play--active"); utterance = null; };
+    utterance.onerror = () => { btn.textContent = "▶"; btn.classList.remove("dua-block__play--active"); utterance = null; };
+    btn.textContent = "⏸";
+    btn.classList.add("dua-block__play--active");
+    synth.speak(utterance);
+  });
+
+  block.prepend(btn);
 }
 
 /** Ссылки внутри текста книг/модулей на другие разделы курса пишутся в
@@ -329,6 +390,42 @@ export function enhanceContentLinks(bodyEl) {
       e.preventDefault();
       openContentLinkModal(resolved, label);
     });
+  });
+}
+
+/** Заменяет ссылки [video](url) на встроенные видеоплееры:
+ *  - YouTube → <iframe> с lazy loading и 16:9 aspect-ratio
+ *  - Локальный .mp4 → <video controls preload="none">
+ *  Идемпотентна через data-атрибут. */
+export function enhanceVideoEmbeds(container) {
+  container.querySelectorAll("a").forEach((a) => {
+    if (a.dataset.videoEmbedDone) return;
+    const linkText = a.textContent.trim().toLowerCase();
+    if (linkText !== "video") return;
+    a.dataset.videoEmbedDone = "1";
+
+    const href = a.getAttribute("href") || "";
+
+    // YouTube
+    const ytMatch = href.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch) {
+      const videoId = ytMatch[1];
+      const wrap = document.createElement("div");
+      wrap.className = "video-embed";
+      wrap.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${videoId}" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" title="Video"></iframe>`;
+      a.replaceWith(wrap);
+      return;
+    }
+
+    // Local .mp4
+    if (href.endsWith(".mp4")) {
+      const src = href.startsWith("/") && !href.startsWith("//") ? withBase(href) : href;
+      const wrap = document.createElement("div");
+      wrap.className = "video-embed";
+      wrap.innerHTML = `<video controls preload="none" src="${esc(src)}"></video>`;
+      a.replaceWith(wrap);
+      return;
+    }
   });
 }
 

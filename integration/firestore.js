@@ -253,3 +253,30 @@ export async function setCertificateGranted(uid, granted) {
 export async function setRukyaProAccess(uid, granted) {
   await updateDoc(doc(db, "students", uid), { rukyaProAccess: granted });
 }
+
+/** Save a bookmark for a lesson */
+export async function saveBookmark(uid, bookId, bookmark) {
+  // bookmark: { id, text, note, createdAt }
+  const docRef = doc(db, "students", uid);
+  const snap = await getDoc(docRef);
+  const data = snap.data() || {};
+  const bookmarks = data.bookmarks || {};
+  const arr = bookmarks[bookId] || [];
+  arr.push(bookmark);
+  await updateDoc(docRef, { [`bookmarks.${bookId}`]: arr });
+}
+
+export async function removeBookmark(uid, bookId, bookmarkId) {
+  const docRef = doc(db, "students", uid);
+  const snap = await getDoc(docRef);
+  const data = snap.data() || {};
+  const bookmarks = data.bookmarks || {};
+  const arr = (bookmarks[bookId] || []).filter(b => b.id !== bookmarkId);
+  await updateDoc(docRef, { [`bookmarks.${bookId}`]: arr });
+}
+
+export async function getBookmarks(uid, bookId) {
+  const docRef = doc(db, "students", uid);
+  const snap = await getDoc(docRef);
+  return snap.data()?.bookmarks?.[bookId] || [];
+}

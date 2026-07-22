@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../design/tokens.css?v=20">
-<link rel="stylesheet" href="../design/base.css?v=49">
+<link rel="stylesheet" href="../design/base.css?v=50">
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js" defer></script>
 <style>
   /* Общие стили текста урока (.doc-body — таблицы/список/цитаты/заголовки)
@@ -20,6 +20,43 @@
      2026-07-20): у длинных модулей без отдельных уроков-книг (напр.
      module-6/index.md, ~2800 слов) не было вообще никакой навигации по
      тексту, хотя он длиннее многих отдельных книг. */
+  /* Bookmarks */
+  .bookmark-fab { position: fixed; bottom: var(--rp-space-5, 1.5rem); right: var(--rp-space-5, 1.5rem); z-index: 100;
+    width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer;
+    font-size: 1.25rem; background: var(--rp-accent, #b0842c); color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2); display: none; align-items: center; justify-content: center; }
+  .bookmark-fab:hover { transform: scale(1.1); }
+  .bookmark-fab.is-visible { display: flex; }
+  .bookmark-panel { position: fixed; top: 0; right: -360px; width: 340px; height: 100vh; z-index: 200;
+    background: var(--rp-zone-surface, #fff); border-left: 1px solid var(--rp-border, #e5e5e5);
+    transition: right 0.3s ease; overflow-y: auto; padding: var(--rp-space-4, 1rem); }
+  .bookmark-panel.is-open { right: 0; }
+  .bookmark-panel__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--rp-space-4, 1rem); }
+  .bookmark-panel__close { background: none; border: none; cursor: pointer; font-size: 1.25rem; color: inherit; }
+  .bookmark-item { border: 1px solid var(--rp-border, #e5e5e5); border-radius: 8px;
+    padding: var(--rp-space-3, 0.75rem); margin-bottom: var(--rp-space-3, 0.75rem); cursor: pointer; }
+  .bookmark-item:hover { background: rgba(0,0,0,0.03); }
+  .bookmark-item__text { font-style: italic; font-size: 0.9rem; margin-bottom: var(--rp-space-2, 0.5rem);
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .bookmark-item__note { font-size: 0.85rem; color: var(--rp-text-muted, #888); margin-bottom: var(--rp-space-2, 0.5rem); }
+  .bookmark-item__actions { display: flex; justify-content: flex-end; }
+  .bookmark-item__delete { background: none; border: none; cursor: pointer; color: var(--rp-status-error, #dc3545); font-size: 0.85rem; }
+  .bookmark-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.3); z-index: 150; }
+  .bookmark-overlay.is-open { display: block; }
+  .bookmark-add-dialog { position: fixed; bottom: 80px; right: var(--rp-space-5, 1.5rem); z-index: 250;
+    background: var(--rp-zone-surface, #fff); border: 1px solid var(--rp-border, #e5e5e5);
+    border-radius: 8px; padding: var(--rp-space-4, 1rem); width: 320px; max-width: 90vw;
+    box-shadow: 0 4px 16px rgba(0,0,0,.15); display: none; }
+  .bookmark-add-dialog.is-open { display: block; }
+  .bookmark-add-dialog__preview { font-style: italic; font-size: 0.9rem; max-height: 80px; overflow: hidden;
+    border-left: 3px solid var(--rp-accent, #b0842c); padding-left: var(--rp-space-3, 0.75rem);
+    margin-bottom: var(--rp-space-3, 0.75rem); }
+  .bookmark-add-dialog textarea { width: 100%; min-height: 60px; resize: vertical;
+    margin-bottom: var(--rp-space-3, 0.75rem); padding: var(--rp-space-2, 0.5rem);
+    border: 1px solid var(--rp-border, #e5e5e5); border-radius: 4px; font: inherit;
+    background: var(--rp-zone-surface, #fff); color: inherit; }
+  .bookmark-add-dialog__actions { display: flex; gap: var(--rp-space-2, 0.5rem); justify-content: flex-end; }
   @media print {
     .no-print { display: none !important; }
     body { background: #fff; }
@@ -45,14 +82,33 @@
   </main>
   <div id="site-footer" class="no-print"></div>
 
+  <!-- Bookmarks UI -->
+  <button id="bookmark-fab" class="bookmark-fab no-print">📌</button>
+  <div id="bookmark-panel" class="bookmark-panel no-print">
+    <div class="bookmark-panel__header">
+      <h3 id="bookmark-panel-title"></h3>
+      <button id="bookmark-panel-close" class="bookmark-panel__close">✕</button>
+    </div>
+    <div id="bookmark-list"></div>
+  </div>
+  <div id="bookmark-overlay" class="bookmark-overlay"></div>
+  <div id="bookmark-add-dialog" class="bookmark-add-dialog no-print">
+    <div id="bookmark-add-preview" class="bookmark-add-dialog__preview"></div>
+    <textarea id="bookmark-add-note"></textarea>
+    <div class="bookmark-add-dialog__actions">
+      <button id="bookmark-add-cancel" class="btn btn-ghost btn-sm"></button>
+      <button id="bookmark-add-save" class="btn btn-primary btn-sm"></button>
+    </div>
+  </div>
+
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/layout.js?v=15";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, applyAdminOnlyWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=22";
-    import { t, getLang } from "./js/i18n.js?v=4";
-    import { bookKey, MODULES } from "./js/modules-data.js?v=33";
+    import { renderHeader, renderFooter } from "./js/layout.js?v=16";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, applyAdminOnlyWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=23";
+    import { t, getLang } from "./js/i18n.js?v=5";
+    import { bookKey, MODULES, isModuleUnlocked } from "./js/modules-data.js?v=34";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=9";
-    import { getFullBookContent, saveUnderstanding } from "../integration/firestore.js?v=18";
+    import { getFullBookContent, saveUnderstanding, saveBookmark, removeBookmark, getBookmarks } from "../integration/firestore.js?v=19";
 
     renderHeader("learn");
     renderFooter();
@@ -173,6 +229,17 @@
               if (bodyEl) applyAdminOnlyWall(bodyEl);
               return;
             }
+            // Module lock check — students cannot access lessons in locked modules
+            if (owningModule && !admin && !isModuleUnlocked(owningModule.id, profile?.progress)) {
+              root.innerHTML = `
+                <div style="text-align:center; padding: var(--rp-space-6);">
+                  <p style="font-size:2rem;">🔒</p>
+                  <h2>${t("module.locked")}</h2>
+                  <p class="form-note">${t("module.lockedmsg")} ${owningModule.id - 1}</p>
+                  <a class="btn btn-primary" href="modules/module.html?id=${owningModule.id - 1}" style="margin-top: var(--rp-space-4);">← ${t("module.n")} ${owningModule.id - 1}</a>
+                </div>`;
+              return;
+            }
             const unlocked = admin || !!profile?.paid;
             if (bodyEl && !unlocked) applyPaywall(bodyEl);
             // Самопроверка — любому вошедшему, вне зависимости от оплаты
@@ -217,12 +284,155 @@
             // Экзамен по книге — только после полного текста (project.md §18):
             // нет смысла сдавать тест по книге, которую не дали дочитать.
             if (unlocked) ctaRoot.innerHTML = examCtaHtml(profile?.progress);
+            // Init bookmarks for authenticated users
+            initBookmarks(user.uid, bookKey(docPath));
           });
         })
         .catch((err) => {
           root.innerHTML = `<p class="field-error">${t("book.loaderror")}: ${err.message}</p>`;
         });
     }
+
+    // ── Bookmarks ──
+    let bookmarkUser = null;
+    let bookmarkDocId = null;
+    let pendingBookmarkText = "";
+
+    function initBookmarks(uid, docId) {
+      bookmarkUser = uid;
+      bookmarkDocId = docId;
+      const fab = document.getElementById("bookmark-fab");
+      fab.classList.add("is-visible");
+      fab.title = t("bookmark.add");
+      document.getElementById("bookmark-panel-title").textContent = t("bookmark.panel");
+      document.getElementById("bookmark-add-note").placeholder = t("bookmark.note");
+      document.getElementById("bookmark-add-cancel").textContent = t("common.cancel");
+      document.getElementById("bookmark-add-save").textContent = t("bookmark.save");
+    }
+
+    function generateBookmarkId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    async function loadBookmarkList() {
+      if (!bookmarkUser || !bookmarkDocId) return;
+      const list = document.getElementById("bookmark-list");
+      try {
+        const bms = await getBookmarks(bookmarkUser, bookmarkDocId);
+        if (!bms.length) {
+          list.innerHTML = `<p class="form-note">${t("bookmark.empty")}</p>`;
+          return;
+        }
+        list.innerHTML = bms.map(b => {
+          const safeText = (b.text || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+          const safeNote = b.note ? b.note.replace(/&/g, "&amp;").replace(/</g, "&lt;") : "";
+          return `
+          <div class="bookmark-item" data-id="${b.id}" data-text="${safeText}">
+            <div class="bookmark-item__text">"${safeText}"</div>
+            ${safeNote ? `<div class="bookmark-item__note">${safeNote}</div>` : ""}
+            <div class="bookmark-item__actions">
+              <button class="bookmark-item__delete" data-id="${b.id}">✕</button>
+            </div>
+          </div>`;
+        }).join("");
+      } catch (e) { console.warn("loadBookmarks", e); list.innerHTML = ""; }
+    }
+
+    function scrollToBookmarkText(text) {
+      if (!text) return;
+      const bodyEl = document.querySelector(".doc-body");
+      if (!bodyEl) return;
+      const snippet = text.slice(0, 60);
+      const walker = document.createTreeWalker(bodyEl, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const nodeText = walker.currentNode.textContent;
+        if (nodeText.includes(snippet)) {
+          const range = document.createRange();
+          const startIdx = nodeText.indexOf(snippet);
+          range.setStart(walker.currentNode, startIdx);
+          range.setEnd(walker.currentNode, Math.min(startIdx + text.length, nodeText.length));
+          const rect = range.getBoundingClientRect();
+          window.scrollTo({ top: window.scrollY + rect.top - 100, behavior: "smooth" });
+          try {
+            const mark = document.createElement("mark");
+            mark.style.background = "var(--rp-accent-light, #fef3c7)";
+            range.surroundContents(mark);
+            setTimeout(() => { if (mark.parentNode) mark.replaceWith(...mark.childNodes); }, 2500);
+          } catch { /* cross-element range */ }
+          break;
+        }
+      }
+    }
+
+    // FAB click
+    document.getElementById("bookmark-fab").addEventListener("click", () => {
+      const sel = window.getSelection();
+      const selectedText = sel?.toString().trim();
+      if (selectedText && selectedText.length > 0) {
+        pendingBookmarkText = selectedText;
+        document.getElementById("bookmark-add-preview").textContent =
+          `"${selectedText.slice(0, 200)}${selectedText.length > 200 ? "…" : ""}"`;
+        document.getElementById("bookmark-add-note").value = "";
+        document.getElementById("bookmark-add-dialog").classList.add("is-open");
+      } else {
+        const panel = document.getElementById("bookmark-panel");
+        const overlay = document.getElementById("bookmark-overlay");
+        panel.classList.toggle("is-open");
+        overlay.classList.toggle("is-open");
+        if (panel.classList.contains("is-open")) loadBookmarkList();
+      }
+    });
+
+    // Panel close
+    document.getElementById("bookmark-panel-close").addEventListener("click", () => {
+      document.getElementById("bookmark-panel").classList.remove("is-open");
+      document.getElementById("bookmark-overlay").classList.remove("is-open");
+    });
+    document.getElementById("bookmark-overlay").addEventListener("click", () => {
+      document.getElementById("bookmark-panel").classList.remove("is-open");
+      document.getElementById("bookmark-overlay").classList.remove("is-open");
+    });
+
+    // Add bookmark dialog
+    document.getElementById("bookmark-add-cancel").addEventListener("click", () => {
+      document.getElementById("bookmark-add-dialog").classList.remove("is-open");
+      pendingBookmarkText = "";
+    });
+    document.getElementById("bookmark-add-save").addEventListener("click", async () => {
+      if (!pendingBookmarkText || !bookmarkUser || !bookmarkDocId) return;
+      const btn = document.getElementById("bookmark-add-save");
+      btn.disabled = true;
+      try {
+        await saveBookmark(bookmarkUser, bookmarkDocId, {
+          id: generateBookmarkId(),
+          text: pendingBookmarkText.slice(0, 500),
+          note: document.getElementById("bookmark-add-note").value.trim() || null,
+          createdAt: new Date().toISOString(),
+        });
+        document.getElementById("bookmark-add-dialog").classList.remove("is-open");
+        pendingBookmarkText = "";
+      } catch (e) { console.error("saveBookmark", e); }
+      btn.disabled = false;
+    });
+
+    // Bookmark list interactions (click to scroll, delete button)
+    document.getElementById("bookmark-list").addEventListener("click", async (e) => {
+      const delBtn = e.target.closest(".bookmark-item__delete");
+      if (delBtn) {
+        e.stopPropagation();
+        try {
+          await removeBookmark(bookmarkUser, bookmarkDocId, delBtn.dataset.id);
+          loadBookmarkList();
+        } catch (err) { console.error("removeBookmark", err); }
+        return;
+      }
+      const item = e.target.closest(".bookmark-item");
+      if (item) {
+        document.getElementById("bookmark-panel").classList.remove("is-open");
+        document.getElementById("bookmark-overlay").classList.remove("is-open");
+        scrollToBookmarkText(item.dataset.text);
+      }
+    });
   </script>
 </body>
 </html>
