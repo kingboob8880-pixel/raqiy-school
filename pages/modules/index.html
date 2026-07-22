@@ -15,9 +15,9 @@
     <h1 id="page-title">Путь ученика</h1>
     <p class="form-note" id="page-subtitle">11 этапов — от основ убеждённости до самостоятельного приёма пациентов в RUKYA Pro.</p>
     <div class="search-field">
-      <input type="search" id="module-search" placeholder="Поиск по модулям и книгам…" aria-label="Поиск по модулям и книгам">
+      <input type="search" id="module-search" placeholder="Поиск по модулям и книгам…" data-placeholder-t="modules.search" aria-label="Поиск по модулям и книгам">
     </div>
-    <p id="search-empty" class="form-note" hidden>Ничего не найдено.</p>
+    <p id="search-empty" class="form-note" data-t="modules.noResults" hidden>Ничего не найдено.</p>
     <div id="path-root"></div>
   </main>
   <div id="site-footer"></div>
@@ -25,8 +25,8 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=15";
     import { MODULES } from "../js/modules-data.js?v=33";
-    import { statusBadgeHtml } from "../js/markdown-loader.js?v=21";
-    import { t, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=3";
+    import { statusBadgeHtml } from "../js/markdown-loader.js?v=22";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=4";
 
     renderHeader("learn");
     renderFooter();
@@ -135,6 +135,10 @@
 
     renderList("");
     document.getElementById("module-search").addEventListener("input", (e) => renderList(e.target.value));
+
+    document.documentElement.lang = getLang();
+    document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+    document.querySelectorAll("[data-placeholder-t]").forEach(el => { el.placeholder = t(el.dataset.placeholderT); });
   </script>
 </body>
 </html>

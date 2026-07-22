@@ -46,10 +46,11 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=15";
-    import { t } from "../js/i18n.js?v=3";
+    import { t, getLang } from "../js/i18n.js?v=4";
     import { registerStudent, friendlyAuthError } from "../../integration/auth.js?v=9";
     renderHeader("learn");
     renderFooter();
+    document.documentElement.lang = getLang();
     document.title = `${t("auth.signupTitle")} — ${t("site.title")}`;
     document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t); });
 

@@ -58,9 +58,12 @@
     import { MODULES } from "../js/modules-data.js?v=33";
     import { watchAuth, getStudentProfile } from "../../integration/auth.js?v=9";
     import { withBase } from "../js/base-path.js?v=6";
+    import { t, getLang } from "../js/i18n.js?v=4";
 
     renderHeader("learn");
     renderFooter();
+    document.documentElement.lang = getLang();
+    document.title = t("cert.pageTitle");
 
     const introEl = document.getElementById("cert-intro");
     const root = document.getElementById("cert-root");
@@ -75,22 +78,22 @@
             <div class="cert__inset" aria-hidden="true"></div>
             <svg class="cert__spark cert__spark--tl" viewBox="0 0 100 100" aria-hidden="true">${SPARK_PATH}</svg>
             <svg class="cert__spark cert__spark--br" viewBox="0 0 100 100" aria-hidden="true">${SPARK_PATH}</svg>
-            ${sample ? `<span class="cert__watermark" aria-hidden="true">Пример</span>` : ""}
+            ${sample ? `<span class="cert__watermark" data-t="cert.sample" aria-hidden="true">Пример</span>` : ""}
             <p class="cert__basmala" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
-            <p class="cert__eyebrow">Сертификат о завершении</p>
+            <p class="cert__eyebrow" data-t="cert.completion">Сертификат о завершении</p>
             <div class="cert__name">${name}</div>
-            <p class="cert__desc">прошёл(-ла) полный курс подготовки заклинателя (раки) — 11 модулей,
+            <p class="cert__desc" data-t="cert.desc">прошёл(-ла) полный курс подготовки заклинателя (раки) — 11 модулей,
                25 книг, от основ убеждённости до итоговой практики под супервизией наставника.</p>
             <div class="cert__divider" aria-hidden="true"></div>
             <div class="cert__footer">
               <div class="cert__sign">
                 <div class="cert__sign-name">Абу Мухаммад</div>
-                <div class="cert__sign-role">Основатель школы</div>
+                <div class="cert__sign-role" data-t="cert.founder">Основатель школы</div>
               </div>
-              <div class="cert__seal">РУКИЯ<br>${new Date().getFullYear()}</div>
+              <div class="cert__seal" data-t="cert.sealText">РУКИЯ<br>${new Date().getFullYear()}</div>
               <div class="cert__date">
                 <div class="cert__date-value">${dateStr}</div>
-                <div class="cert__date-label">Дата выдачи</div>
+                <div class="cert__date-label" data-t="cert.dateLabel">Дата выдачи</div>
               </div>
             </div>
           </div>
@@ -99,9 +102,9 @@
 
     // Показываем образец сразу всем, без входа — так лендинг может честно
     // показать, что получит ученик в конце (project.md, решение 2026-07-17).
-    introEl.textContent = "Так будет выглядеть ваш сертификат после завершения курса — это пример, не настоящий документ.";
+    introEl.textContent = t("cert.sampleIntro");
     root.innerHTML = certHtml({ name: "Абдуллах", sample: true, dateStr: new Date().toLocaleDateString("ru-RU") });
-    statusRoot.innerHTML = `<a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Начать бесплатно →</a>`;
+    statusRoot.innerHTML = `<a class="btn btn-primary" data-t="cert.startFree" href="${withBase("/pages/auth/register.html")}">Начать бесплатно →</a>`;
 
     watchAuth(async (user) => {
       if (!user) return; // гость уже видит образец выше, дальше ничего не грузим
@@ -112,15 +115,15 @@
       if (!allDone) {
         statusRoot.innerHTML = `
           <div class="card" style="max-width: 32rem; margin: 0 auto; text-align:center;">
-            <h3 style="margin-bottom: var(--rp-space-2);">Ваш сертификат ещё не готов</h3>
-            <p class="form-note">Пройдено модулей: ${done} из ${MODULES.length}. Сертификат
-               выдаётся после завершения всех модулей и прохождения всех тестов.</p>
-            <a class="btn btn-primary" href="${withBase("/pages/modules/index.html")}">Продолжить обучение</a>
+            <h3 data-t="cert.notReady" style="margin-bottom: var(--rp-space-2);">Ваш сертификат ещё не готов</h3>
+            <p class="form-note"><span data-t="cert.modulesOf">Пройдено модулей:</span> ${done} <span data-t="cert.of">из</span> ${MODULES.length}. <span data-t="cert.notReadyNote">Сертификат
+               выдаётся после завершения всех модулей и прохождения всех тестов.</span></p>
+            <a class="btn btn-primary" data-t="cert.continue" href="${withBase("/pages/modules/index.html")}">Продолжить обучение</a>
           </div>`;
         return;
       }
 
-      introEl.textContent = "Поздравляем — курс пройден полностью. Вот ваш сертификат:";
+      introEl.textContent = t("cert.congrats");
       const completionDate = profile?.completedAt?.toDate?.() ?? new Date();
       root.innerHTML = certHtml({ name: profile.name || "Ученик", sample: false, dateStr: completionDate.toLocaleDateString("ru-RU") });
       // Скачивание RUKYA PRO — программа для приёма пациентов, обещанная в
@@ -136,18 +139,18 @@
       // Storage с правилами доступа — не настроено.
       statusRoot.innerHTML = `
         <div style="display:flex; gap:var(--rp-space-3); justify-content:center; flex-wrap:wrap;">
-          <button class="btn btn-primary" id="dl-pdf">Скачать PDF</button>
-          <button class="btn btn-outline" id="dl-png">Скачать PNG</button>
-          <button class="btn btn-outline" onclick="window.print()">Распечатать</button>
+          <button class="btn btn-primary" id="dl-pdf" data-t="cert.dlPdf">Скачать PDF</button>
+          <button class="btn btn-outline" id="dl-png" data-t="cert.dlPng">Скачать PNG</button>
+          <button class="btn btn-outline" data-t="cert.print" onclick="window.print()">Распечатать</button>
         </div>
         <div class="card" style="max-width: 32rem; margin: var(--rp-space-5) auto; text-align:center;">
-          <h3 style="margin-bottom: var(--rp-space-2);">RUKYA PRO — программа для приёма пациентов</h3>
-          <p class="form-note">Теперь, когда курс завершён, можно скачать RUKYA PRO — рабочую
+          <h3 data-t="cert.proTitle" style="margin-bottom: var(--rp-space-2);">RUKYA PRO — программа для приёма пациентов</h3>
+          <p class="form-note" data-t="cert.proDesc">Теперь, когда курс завершён, можно скачать RUKYA PRO — рабочую
              программу для ведения пациентов (из Модуля 11). Работает офлайн, без браузера,
              все данные хранятся только на вашем компьютере.</p>
           <a class="btn btn-primary" style="margin-top: var(--rp-space-3);"
              href="${withBase("/assets/downloads/RUKYA-PRO-Setup-1.0.0.exe")}" download>Скачать RUKYA PRO (.exe, ~87 МБ) →</a>
-          <p class="form-note" style="margin-top: var(--rp-space-2);">При первом запуске Windows
+          <p class="form-note" data-t="cert.proSmartscreen" style="margin-top: var(--rp-space-2);">При первом запуске Windows
              может показать предупреждение SmartScreen (программа новая, без платной цифровой
              подписи) — это ожидаемо, нужно нажать «Подробнее» → «Выполнить в любом случае».</p>
         </div>`;
@@ -175,7 +178,7 @@
 
       document.getElementById("dl-png").addEventListener("click", async () => {
         const btn = document.getElementById("dl-png");
-        btn.disabled = true; btn.textContent = "Подготовка…";
+        btn.disabled = true; btn.textContent = t("cert.preparing");
         try {
           await loadHtml2Canvas();
           const canvas = await html2canvas(certEl, { scale: 2, useCORS: true, backgroundColor: "#fbf3e3" });
@@ -183,13 +186,13 @@
           a.href = canvas.toDataURL("image/png");
           a.download = "сертификат-рукия.png";
           a.click();
-        } catch (e) { console.error(e); alert("Не удалось создать PNG — попробуйте ещё раз."); }
-        btn.disabled = false; btn.textContent = "Скачать PNG";
+        } catch (e) { console.error(e); alert(t("cert.pngError")); }
+        btn.disabled = false; btn.textContent = t("cert.dlPng");
       });
 
       document.getElementById("dl-pdf").addEventListener("click", async () => {
         const btn = document.getElementById("dl-pdf");
-        btn.disabled = true; btn.textContent = "Подготовка…";
+        btn.disabled = true; btn.textContent = t("cert.preparing");
         try {
           await loadHtml2Canvas();
           await loadJsPDF();
@@ -199,9 +202,13 @@
           const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [canvas.width / 2, canvas.height / 2] });
           pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
           pdf.save("сертификат-рукия.pdf");
-        } catch (e) { console.error(e); alert("Не удалось создать PDF — попробуйте ещё раз."); }
-        btn.disabled = false; btn.textContent = "Скачать PDF";
+        } catch (e) { console.error(e); alert(t("cert.pdfError")); }
+        btn.disabled = false; btn.textContent = t("cert.dlPdf");
       });
+    });
+
+    document.querySelectorAll("[data-t]").forEach(el => {
+      el.textContent = t(el.dataset.t);
     });
   </script>
 </body>

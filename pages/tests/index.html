@@ -23,12 +23,13 @@
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=15";
     import { MODULES, bookKey } from "../js/modules-data.js?v=33";
-    import { t, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=3";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=4";
     import { watchAuth, getStudentProfile } from "../../integration/auth.js?v=9";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
     renderFooter();
+    document.documentElement.lang = getLang();
     document.title = `${t("tests.title")} — ${t("site.title")}`;
     document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t); });
 

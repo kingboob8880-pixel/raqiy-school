@@ -18,7 +18,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=15";
-    import { t, moduleTitle } from "../js/i18n.js?v=3";
+    import { t, getLang, moduleTitle } from "../js/i18n.js?v=4";
     import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=33";
     import { QUIZZES } from "../js/quiz-data.js?v=7";
     import { loadExamDoc } from "../js/exam-loader.js?v=8";
@@ -28,6 +28,7 @@
 
     renderHeader("learn");
     renderFooter();
+    document.documentElement.lang = getLang();
 
     const params = new URLSearchParams(location.search);
     const params_moduleId = Number(params.get("module"));
@@ -64,7 +65,7 @@
     }
 
     /* ── Буквы вариантов ────────────────────────────────────────── */
-    const LETTERS = ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З"];
+    const LETTERS = getLang() === "ru" ? ["А", "Б", "В", "Г", "Д", "Е", "Ж", "З"] : ["A", "B", "C", "D", "E", "F", "G", "H"];
 
     /* ── Таймер ─────────────────────────────────────────────────── */
     function createTimer() {
@@ -162,7 +163,7 @@
           else if (answeredFlags[i]) {
             cls += answers[i] === questions[i].correct ? " is-correct-dot" : " is-wrong-dot";
           }
-          return `<button type="button" class="${cls}" data-go="${i}" title="Вопрос ${i + 1}" aria-label="Вопрос ${i + 1}"></button>`;
+          return `<button type="button" class="${cls}" data-go="${i}" title="${t("quiz.question")} ${i + 1}" aria-label="${t("quiz.question")} ${i + 1}"></button>`;
         }).join("");
       }
 
