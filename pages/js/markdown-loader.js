@@ -5,6 +5,7 @@
 
 import { withBase } from "./base-path.js?v=6";
 import { MODULES } from "./modules-data.js?v=21";
+import { getLang, localizedDocPath, t } from "./i18n.js?v=2";
 
 /** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter
  *  значений (title, source) через innerHTML (аудит, 2026-07-21). */
@@ -24,11 +25,20 @@ export function parseFrontMatter(raw) {
   return { meta, body: match[2] };
 }
 
+/** Загружает markdown-документ — сначала пробует локализованный путь
+ * (content/en/... или content/uz/...), при 404 — fallback на русский
+ * оригинал. Так контент можно переводить постепенно, файл за файлом. */
 export async function loadMarkdownDoc(path) {
+  const lang = getLang();
+  if (lang !== "ru") {
+    const localPath = localizedDocPath(path);
+    const localRes = await fetch(withBase(localPath));
+    if (localRes.ok) return parseFrontMatter(await localRes.text());
+    // Перевод не найден — загружаем русский оригинал
+  }
   const res = await fetch(withBase(path));
-  if (!res.ok) throw new Error(`Не удалось загрузить ${path}: HTTP ${res.status}`);
-  const raw = await res.text();
-  return parseFrontMatter(raw);
+  if (!res.ok) throw new Error(`${t("book.loaderror")}: ${path} (HTTP ${res.status})`);
+  return parseFrontMatter(await res.text());
 }
 
 const STATUS_BADGE = {
@@ -446,8 +456,8 @@ export function setupSelfCheck(container, bodyEl, existing, onSave) {
 
   container.className = "card no-print self-check";
   container.innerHTML = `
-    <h3>Самопроверка</h3>
-    <p class="form-note">Отметьте, что усвоили, а что нужно перечитать.</p>
+    <h3>${t("selfcheck.title")}</h3>
+    <p class="form-note">${t("selfcheck.hint")}</p>
     <div class="self-check__progress">
       <div class="self-check__bar"><div class="self-check__fill"></div></div>
       <span class="self-check__counter"></span>
@@ -464,18 +474,18 @@ export function setupSelfCheck(container, bodyEl, existing, onSave) {
     const done = countUnderstood();
     const pct = Math.round((done / total) * 100);
     fillEl.style.width = pct + "%";
-    counterEl.textContent = `${done} из ${total}`;
+    counterEl.textContent = `${done} ${t("selfcheck.of")} ${total}`;
   }
 
   async function persist() {
-    statusEl.textContent = "Сохранение…";
+    statusEl.textContent = t("selfcheck.saving");
     try {
       await onSave(understanding);
-      statusEl.textContent = "Сохранено ✓";
+      statusEl.textContent = t("selfcheck.saved");
       setTimeout(() => { statusEl.textContent = ""; }, 2000);
     } catch (err) {
       console.warn(err);
-      statusEl.textContent = "Ошибка сохранения";
+      statusEl.textContent = t("selfcheck.error");
     }
   }
 
@@ -488,9 +498,9 @@ export function setupSelfCheck(container, bodyEl, existing, onSave) {
       <span class="self-check__label">${esc(item.text)}</span>
       <span class="self-check__btns">
         <button type="button" class="self-check__btn self-check__btn--yes${state === true ? " active" : ""}"
-          aria-label="Понял: ${esc(item.text)}" title="Понял">Понял</button>
+          aria-label="${t("selfcheck.yes")}: ${esc(item.text)}" title="${t("selfcheck.yes")}">${t("selfcheck.yes")}</button>
         <button type="button" class="self-check__btn self-check__btn--no${state === false ? " active" : ""}"
-          aria-label="Не понял: ${esc(item.text)}" title="Не понял">Не понял</button>
+          aria-label="${t("selfcheck.no")}: ${esc(item.text)}" title="${t("selfcheck.no")}">${t("selfcheck.no")}</button>
       </span>`;
 
     const btnYes = li.querySelector(".self-check__btn--yes");

@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Модуль — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=46">
+<link rel="stylesheet" href="../../design/base.css?v=47">
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js" defer></script>
 <!-- Общие стили текста урока (.doc-body) и списка "Уроки" (.lesson-list/
      .lesson-link) теперь в design/base.css — раньше дублировались/жили
@@ -23,9 +23,10 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=14";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=15";
     import { getModule, bookKey } from "../js/modules-data.js?v=33";
-    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal } from "../js/markdown-loader.js?v=20";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal } from "../js/markdown-loader.js?v=21";
+    import { t, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=2";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=9";
     import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=18";
@@ -45,8 +46,8 @@
     function lessonMetaHtml(l, progress) {
       const hasQuiz = !!l.exam;
       const done = progress?.books?.[bookKey(l.doc)]?.status === "done";
-      if (done) return `<span class="lesson-link__meta">✓ Книга и тест пройдены</span>`;
-      if (hasQuiz) return `<span class="lesson-link__meta">📝 Экзамен по книге · порог 70%</span>`;
+      if (done) return `<span class="lesson-link__meta">${t("lesson.done")}</span>`;
+      if (hasQuiz) return `<span class="lesson-link__meta">${t("lesson.exam")}</span>`;
       return "";
     }
 
@@ -57,7 +58,7 @@
           <span class="lesson-link__marker" aria-hidden="true">${i + 1}</span>
           <span class="lesson-link__body">
             <span class="lesson-link__text">
-              <span class="lesson-link__title">${l.title}</span>
+              <span class="lesson-link__title">${lessonTitle(l)}</span>
               ${lessonMetaHtml(l, progress)}
             </span>
           </span>
@@ -78,30 +79,30 @@
     if (!mod) {
       root.innerHTML = "<p>Модуль не найден.</p>";
     } else {
-      document.title = `Модуль ${mod.id}. ${mod.title} — Онлайн-школа рукии`;
+      document.title = `${t("module.n")} ${mod.id}. ${moduleTitle(mod)} — ${t("site.title")}`;
       const lessonsHtml = mod.lessons.length
         ? `<ol class="lesson-list" id="lesson-list">${mod.lessons.map((l, i) => lessonLinkHtml(l, i, null)).join("")}</ol>`
-        : `<p class="form-note">Отдельных уроков-первоисточников нет — весь текст модуля на его собственной странице ниже.</p>`;
+        : `<p class="form-note">${t("module.nolessons")}</p>`;
 
       root.innerHTML = `
         <div class="book-hero">
           ${mod.cover ? `<img class="book-hero__cover" src="${withBase(mod.cover)}" alt="" loading="lazy">` : ""}
           <div class="book-hero__spine"></div>
           <div class="book-hero__body">
-            <p class="form-note">Модуль ${mod.id} · ${mod.level}</p>
-            <h1>${mod.title}</h1>
+            <p class="form-note">${t("module.n")} ${mod.id} · ${localLevel(mod.level)}</p>
+            <h1>${moduleTitle(mod)}</h1>
             ${statusBadgeHtml(mod.status)}
             ${mod.intro_video ? `<video class="book-hero__video" controls preload="none" src="${withBase(mod.intro_video)}"></video>` : ""}
           </div>
         </div>
-        <h2 style="text-align:left;">Уроки</h2>
+        <h2 style="text-align:left;">${t("module.lessons")}</h2>
         ${lessonsHtml}
-        <h2 style="margin-top: var(--rp-space-6); text-align:left;">Текст модуля</h2>
-        <div id="module-doc" class="card skeleton-loading">Загрузка…</div>
+        <h2 style="margin-top: var(--rp-space-6); text-align:left;">${t("module.text")}</h2>
+        <div id="module-doc" class="card skeleton-loading">${t("common.loading")}</div>
         <div id="module-note" style="margin-top: var(--rp-space-4);"></div>
         <div id="quiz-cta" style="margin-top: var(--rp-space-6);" hidden>
-          <a class="btn btn-primary" href="../quiz/index.html?module=${mod.id}">Пройти тест по модулю →</a>
-          ${mod.status !== "certified" ? `<p class="form-note" style="margin-top: var(--rp-space-2);">Модуль ещё не подтверждён шейхом — тест можно пройти для практики, но материал может измениться.</p>` : ""}
+          <a class="btn btn-primary" href="../quiz/index.html?module=${mod.id}">${t("module.quiz")}</a>
+          ${mod.status !== "certified" ? `<p class="form-note" style="margin-top: var(--rp-space-2);">${t("module.notcert")}</p>` : ""}
         </div>
       `;
 
