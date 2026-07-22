@@ -13,7 +13,7 @@ import {
   ref, uploadBytes, getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=1";
-import { notifyChat, notifyProgress } from "./notify.js?v=1";
+// Уведомления теперь через Cloud Functions (functions/index.js)
 
 /** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
  * журнала активности (стрики, project.md, решение 2026-07-18). */
@@ -40,7 +40,6 @@ export async function recordQuizResult(uid, moduleId, scoreRatio, studentName) {
   };
   if (passed) update[`progress.${moduleId}.passedAt`] = serverTimestamp();
   await updateDoc(doc(db, "students", uid), update);
-  notifyProgress(studentName || uid, `тест ${moduleId}`, scoreRatio);
 }
 
 /** Экзамен по отдельной книге (не по модулю целиком, project.md §5) —
@@ -55,7 +54,6 @@ export async function recordBookQuizResult(uid, bookKey, scoreRatio, studentName
   };
   if (passed) update[`progress.books.${bookKey}.passedAt`] = serverTimestamp();
   await updateDoc(doc(db, "students", uid), update);
-  notifyProgress(studentName || uid, `книга ${bookKey}`, scoreRatio);
 }
 
 /** Дней подряд с активностью (тест сдавался/пересдавался), включая сегодня
@@ -95,7 +93,6 @@ export async function sendMessage(uid, from, text, studentName) {
   await addDoc(collection(db, "students", uid, "messages"), {
     from, text, createdAt: serverTimestamp(), read: false,
   });
-  if (from === "student") notifyChat(studentName || uid, text);
 }
 
 /** Отправка медиа-сообщения (голос/видео/файл) — загружает файл в
@@ -119,7 +116,6 @@ export async function sendMediaMessage(uid, from, file, type, duration, studentN
     mimeType: file.type || null,
     createdAt: serverTimestamp(), read: false,
   });
-  if (from === "student") notifyChat(studentName || uid, null);
 }
 
 export async function listMessages(uid) {
