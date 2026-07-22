@@ -6,15 +6,16 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Тесты и экзамены — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=44">
+<link rel="stylesheet" href="../../design/base.css?v=45">
 </head>
 <body data-zone="learn">
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header"></div>
   <main class="container">
     <h1>Тесты и экзамены</h1>
-    <p class="form-note">Экзамен по каждой прочитанной книге — короткий, сразу после чтения (порог 70%). Итоговый тест — по всему модулю целиком.</p>
+    <p class="form-note" style="margin-bottom: var(--rp-space-4);">Экзамен по каждой прочитанной книге — короткий, сразу после чтения (порог 70%). Итоговый тест — по всему модулю целиком.</p>
     <div id="tests-summary" hidden></div>
+    <div id="tests-filter" hidden></div>
     <div id="tests-root" class="skeleton-loading">Загрузка…</div>
   </main>
   <div id="site-footer"></div>
@@ -30,66 +31,172 @@
 
     function statusBadge(state) {
       if (state?.status === "done") return `<span class="badge badge-passed">✓ ${Math.round(state.quizScore * 100)}%</span>`;
-      if (state?.status === "in_progress") return `<span class="badge badge-pending">Не сдано — ${Math.round(state.quizScore * 100)}%</span>`;
-      return `<span class="badge badge-pending">Не пройден</span>`;
+      if (state?.status === "in_progress") return `<span class="badge badge-pending">✗ ${Math.round(state.quizScore * 100)}%</span>`;
+      return `<span class="badge badge-pending">—</span>`;
     }
 
-    // Сводка сдачи вверху страницы — раньше было видно только по одной
-    // карточке модуля за раз, не было ни одной цифры "сколько всего уже
-    // сдано" (запрос "сделай тесты и экзамен лучше и красивее", 2026-07-20).
-    // "Прогресс виден = в 3.5 раза выше завершаемость" — тот же вывод, что
-    // уже применялся к прогресс-бару кабинета (course-improvement-plan.md).
+    /* ── Статистика ── */
     function computeTestStats(progress) {
-      let total = 0, passed = 0, scoreSum = 0, scoreCount = 0;
+      let total = 0, passed = 0, failed = 0, scoreSum = 0, scoreCount = 0;
       MODULES.forEach((m) => {
         m.lessons.forEach((l) => {
           if (!l.exam) return;
           total++;
           const state = progress?.books?.[bookKey(l.doc)];
           if (state?.status === "done") { passed++; scoreSum += state.quizScore; scoreCount++; }
+          else if (state?.status === "in_progress") { failed++; }
         });
         total++;
         const state = progress?.[m.id];
         if (state?.status === "done") { passed++; scoreSum += state.quizScore; scoreCount++; }
+        else if (state?.status === "in_progress") { failed++; }
       });
-      return { total, passed, avg: scoreCount ? Math.round((scoreSum / scoreCount) * 100) : null };
+      const notStarted = total - passed - failed;
+      return { total, passed, failed, notStarted, avg: scoreCount ? Math.round((scoreSum / scoreCount) * 100) : null };
     }
 
+    /* ── Статус карточки модуля ── */
+    function moduleTestStats(m, progress) {
+      let total = 0, passed = 0;
+      m.lessons.forEach((l) => {
+        if (!l.exam) return;
+        total++;
+        if (progress?.books?.[bookKey(l.doc)]?.status === "done") passed++;
+      });
+      total++; // итоговый тест модуля
+      if (progress?.[m.id]?.status === "done") passed++;
+      return { total, passed };
+    }
+
+    /* ── Сводка ── */
     function renderSummary(progress) {
       const el = document.getElementById("tests-summary");
       if (!progress) { el.hidden = true; return; }
-      const { total, passed, avg } = computeTestStats(progress);
+      const { total, passed, failed, notStarted, avg } = computeTestStats(progress);
       const percent = total ? Math.round((passed / total) * 100) : 0;
       el.hidden = false;
       el.innerHTML = `
-        <div class="card" style="margin-bottom: var(--rp-space-5);">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap: var(--rp-space-3); flex-wrap:wrap;">
-            <p style="margin:0; font-family: var(--rp-font-heading); font-size: var(--rp-fs-lg);">Сдано ${passed} из ${total}</p>
-            ${avg !== null ? `<p class="form-note" style="margin:0;">Средний балл по сданным — ${avg}%</p>` : ""}
+        <div class="tests-summary">
+          <div class="tests-stat-card">
+            <div class="tests-stat-card__value" style="color: var(--rp-status-success);">${passed}</div>
+            <div class="tests-stat-card__label">Сдано</div>
           </div>
-          <div class="quiz-progress" style="margin-top: var(--rp-space-3); margin-bottom:0;" role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
-            <div class="quiz-progress__bar" style="width:${percent}%"></div>
+          <div class="tests-stat-card">
+            <div class="tests-stat-card__value" style="color: var(--rp-status-danger);">${failed}</div>
+            <div class="tests-stat-card__label">Не сдано</div>
           </div>
+          <div class="tests-stat-card">
+            <div class="tests-stat-card__value">${notStarted}</div>
+            <div class="tests-stat-card__label">Не начато</div>
+          </div>
+          ${avg !== null ? `
+          <div class="tests-stat-card">
+            <div class="tests-stat-card__value">${avg}%</div>
+            <div class="tests-stat-card__label">Средний балл</div>
+          </div>` : ""}
+        </div>
+        <div class="quiz-progress" style="margin-bottom: var(--rp-space-5);" role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+          <div class="quiz-progress__bar" style="width:${percent}%"></div>
         </div>`;
     }
 
+    /* ── Фильтрация ── */
+    let activeFilter = "all";
+
+    function renderFilter(progress) {
+      const filterEl = document.getElementById("tests-filter");
+      if (!progress) { filterEl.hidden = true; return; }
+      filterEl.hidden = false;
+      const { passed, failed, notStarted } = computeTestStats(progress);
+      filterEl.innerHTML = `
+        <div class="tests-filter">
+          <button class="tests-filter__btn ${activeFilter === "all" ? "is-active" : ""}" data-filter="all">Все</button>
+          <button class="tests-filter__btn ${activeFilter === "done" ? "is-active" : ""}" data-filter="done">Сдано (${passed})</button>
+          <button class="tests-filter__btn ${activeFilter === "failed" ? "is-active" : ""}" data-filter="failed">Не сдано (${failed})</button>
+          <button class="tests-filter__btn ${activeFilter === "pending" ? "is-active" : ""}" data-filter="pending">Не начато (${notStarted})</button>
+        </div>`;
+      filterEl.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-filter]");
+        if (!btn) return;
+        activeFilter = btn.dataset.filter;
+        render(progress);
+      });
+    }
+
+    /* ── Основной рендер ── */
     function render(progress) {
       renderSummary(progress);
+      renderFilter(progress);
       const root = document.getElementById("tests-root");
+
       root.innerHTML = MODULES.map((m) => {
-        const bookRows = m.lessons.filter((l) => l.exam).map((l) => `
+        const mStats = moduleTestStats(m, progress);
+        const allDone = mStats.passed === mStats.total;
+        const partial = mStats.passed > 0 && !allDone;
+
+        // Фильтрация: проверяем, есть ли в модуле тесты, подходящие под фильтр
+        if (activeFilter !== "all" && progress) {
+          const hasMatching = m.lessons.some((l) => {
+            if (!l.exam) return false;
+            const st = progress?.books?.[bookKey(l.doc)];
+            if (activeFilter === "done") return st?.status === "done";
+            if (activeFilter === "failed") return st?.status === "in_progress";
+            if (activeFilter === "pending") return !st?.status;
+            return true;
+          });
+          const moduleSt = progress?.[m.id];
+          const moduleMatches =
+            activeFilter === "done" ? moduleSt?.status === "done" :
+            activeFilter === "failed" ? moduleSt?.status === "in_progress" :
+            activeFilter === "pending" ? !moduleSt?.status : true;
+          if (!hasMatching && !moduleMatches) return "";
+        }
+
+        const bookRows = m.lessons.filter((l) => {
+          if (!l.exam) return false;
+          if (!progress || activeFilter === "all") return true;
+          const st = progress?.books?.[bookKey(l.doc)];
+          if (activeFilter === "done") return st?.status === "done";
+          if (activeFilter === "failed") return st?.status === "in_progress";
+          if (activeFilter === "pending") return !st?.status;
+          return true;
+        }).map((l) => `
           <li><a class="test-item" href="${withBase("/pages/quiz/index.html")}?exam=${encodeURIComponent(l.exam)}">
             <span>${l.title}</span>${statusBadge(progress?.books?.[bookKey(l.doc)])}
           </a></li>`).join("");
 
+        // Проверяем, показывать ли итоговый тест по фильтру
+        const moduleSt = progress?.[m.id];
+        let showModuleTest = true;
+        if (progress && activeFilter !== "all") {
+          if (activeFilter === "done") showModuleTest = moduleSt?.status === "done";
+          else if (activeFilter === "failed") showModuleTest = moduleSt?.status === "in_progress";
+          else if (activeFilter === "pending") showModuleTest = !moduleSt?.status;
+        }
+
+        if (!bookRows && !showModuleTest) return "";
+
+        const progressBadge = allDone
+          ? `<span class="test-module-card__progress-badge all-done">✓ Всё сдано</span>`
+          : partial
+            ? `<span class="test-module-card__progress-badge partial">${mStats.passed}/${mStats.total}</span>`
+            : "";
+
         return `
-          <div class="card" style="margin-bottom: var(--rp-space-5);">
-            <p class="form-note" style="margin-bottom: 0.2rem;">Модуль ${m.id} · ${m.level}</p>
-            <h2 style="margin-bottom: var(--rp-space-3);">${m.title}</h2>
-            ${bookRows ? `<ul class="test-list">${bookRows}</ul>` : `<p class="form-note">Отдельных экзаменов по книгам здесь нет — только итоговый тест ниже.</p>`}
+          <div class="test-module-card">
+            <div class="test-module-card__header">
+              <div class="test-module-card__num">${m.id}</div>
+              <div class="test-module-card__meta">
+                <p class="test-module-card__level">${m.level}</p>
+                <h2 class="test-module-card__title">${m.title}</h2>
+              </div>
+              ${progressBadge}
+            </div>
+            ${bookRows ? `<ul class="test-list">${bookRows}</ul>` : `<p class="form-note" style="margin-bottom: var(--rp-space-3);">Отдельных экзаменов по книгам нет — только итоговый тест.</p>`}
+            ${showModuleTest ? `
             <a class="test-item test-item--module" href="${withBase("/pages/quiz/index.html")}?module=${m.id}">
               <span>Итоговый тест по модулю</span>${statusBadge(progress?.[m.id])}
-            </a>
+            </a>` : ""}
           </div>`;
       }).join("");
     }

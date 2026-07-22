@@ -1210,57 +1210,118 @@ main.container { padding-block: var(--rp-space-6); }
 }
 
 /* ---------- Квиз ---------- */
-.quiz-progress { height: 0.5rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); overflow: hidden; margin-bottom: var(--rp-space-5); }
-.quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.3s ease; }
-.quiz-option { display: block; width: 100%; min-height: 2.75rem; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; }
+
+/* Шапка экзамена: заголовок + таймер */
+.quiz-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--rp-space-3); flex-wrap: wrap; margin-bottom: var(--rp-space-2); }
+.quiz-header__title { margin: 0; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+.quiz-timer { display: inline-flex; align-items: center; gap: 0.35rem; font-variant-numeric: tabular-nums; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); padding: 0.2rem 0.6rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); }
+.quiz-timer__icon { font-size: 0.85em; }
+
+/* Прогресс-бар */
+.quiz-progress { height: 0.5rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); overflow: hidden; margin-bottom: var(--rp-space-3); }
+.quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+
+/* Навигационные точки */
+.quiz-dots { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-bottom: var(--rp-space-5); }
+.quiz-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; border: none; padding: 0; background: var(--rp-learn-surface-raised); cursor: pointer; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; }
+.quiz-dot:hover { transform: scale(1.3); }
+.quiz-dot.is-current { background: var(--rp-learn-accent); transform: scale(1.35); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rp-learn-accent) 30%, transparent); }
+.quiz-dot.is-answered { background: var(--rp-learn-text-muted); }
+.quiz-dot.is-correct-dot { background: var(--rp-status-success); }
+.quiz-dot.is-wrong-dot { background: var(--rp-status-danger); }
+
+/* Карточка вопроса — анимированный контейнер */
+.quiz-card { animation: quizFadeIn 0.3s ease; }
+@keyframes quizFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.quiz-card__number { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--rp-learn-accent); color: var(--rp-learn-bg, #fff); font-weight: 700; font-size: var(--rp-fs-sm); margin-bottom: var(--rp-space-2); }
+.quiz-card__question { font-size: var(--rp-fs-lg); font-family: var(--rp-font-heading); line-height: 1.4; margin-bottom: var(--rp-space-4); }
+
+/* Варианты ответа */
+.quiz-option { display: flex; align-items: flex-start; gap: var(--rp-space-3); width: 100%; min-height: 2.75rem; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 2px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; transition: border-color 0.2s, background 0.2s, transform 0.15s; }
+.quiz-option:hover:not(:disabled) { border-color: var(--rp-learn-accent); transform: translateX(4px); }
 .quiz-option[aria-pressed="true"] { border-color: var(--rp-learn-accent); background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface)); }
-/* Мгновенная обратная связь по вопросу (план улучшения курса, 2026-07-18,
-   второй проход — retrieval practice). Фон смешан с текущим --rp-learn-surface
-   через color-mix, а не жёстко-светлый цвет — иначе на тёмной теме "изумруд"
-   светлый текст становился нечитаемым (было 1.1:1, ниже WCAG AA 4.5:1),
-   смешивание сохраняет контраст ~9-10:1 на всех темах. */
+.quiz-option__letter { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 2px solid var(--rp-learn-border); font-weight: 700; font-size: var(--rp-fs-sm); transition: background 0.2s, border-color 0.2s, color 0.2s; }
+.quiz-option:hover:not(:disabled) .quiz-option__letter { border-color: var(--rp-learn-accent); }
+.quiz-option[aria-pressed="true"] .quiz-option__letter { background: var(--rp-learn-accent); border-color: var(--rp-learn-accent); color: var(--rp-learn-bg, #fff); }
+/* Обратная связь: color-mix для контраста на всех темах */
 .quiz-option.is-correct { border-color: var(--rp-status-success); background: color-mix(in srgb, var(--rp-status-success) 18%, var(--rp-learn-surface)); font-weight: 700; }
+.quiz-option.is-correct .quiz-option__letter { background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff; }
 .quiz-option.is-wrong { border-color: var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 18%, var(--rp-learn-surface)); }
+.quiz-option.is-wrong .quiz-option__letter { background: var(--rp-status-danger); border-color: var(--rp-status-danger); color: #fff; }
 .quiz-option:disabled { cursor: default; }
-/* Цвет текста — var(--rp-learn-text), не --rp-status-success/danger: та пара
-   калибрована под светлую зону по умолчанию и на тёмной теме "изумруд" как
-   текст даёт ~2.4:1 (ниже WCAG AA). Правильно/неправильно различаем иконкой
-   (✅/❌ в тексте), не только цветом — так же надёжнее для дальтоников. */
 .quiz-feedback { font-size: var(--rp-fs-sm); font-weight: 700; margin: var(--rp-space-2) 0 var(--rp-space-4); min-height: 1.2em; color: var(--rp-learn-text); }
 
-/* Экран результата — раньше голый заголовок + текстовый %, без визуального
-   акцента "сдал/не сдал" (запрос "сделай тесты и экзамен лучше и красивее",
-   2026-07-20). Не полагаемся на один цвет рамки как единственный сигнал —
-   заголовок и иконка тоже меняются, рамка лишь усиливает. */
-.quiz-result { border-width: 2px; }
-.quiz-result--passed { border-color: var(--rp-status-success); }
-.quiz-result__icon { font-size: 2.5rem; line-height: 1; margin-bottom: var(--rp-space-2); }
-.quiz-result__score { font-size: var(--rp-fs-2xl); font-family: var(--rp-font-heading); margin: var(--rp-space-2) 0; }
+/* Навигация внизу вопроса */
+.quiz-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-3); }
+.quiz-nav__counter { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
 
-/* Разбор ответов на экране результата непройденного теста (project.md §22,
-   backlog "постраничный разбор ответов после несданного теста", 2026-07-20). */
+/* Экран результата */
+.quiz-result { border-width: 2px; animation: quizFadeIn 0.4s ease; }
+.quiz-result--passed { border-color: var(--rp-status-success); }
+.quiz-result--failed { border-color: var(--rp-status-danger); }
+.quiz-result__icon { font-size: 3rem; line-height: 1; margin-bottom: var(--rp-space-3); }
+
+/* SVG-кольцо результата */
+.quiz-result__ring { display: block; margin: 0 auto var(--rp-space-3); }
+.quiz-result__ring-bg { fill: none; stroke: var(--rp-learn-surface-raised); stroke-width: 8; }
+.quiz-result__ring-fg { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1); }
+.quiz-result__ring-text { font-family: var(--rp-font-heading); font-size: 1.6rem; font-weight: 700; fill: var(--rp-learn-text); text-anchor: middle; dominant-baseline: central; }
+.quiz-result__score-label { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-bottom: var(--rp-space-3); }
+
+/* Статистика результата */
+.quiz-result__stats { display: flex; justify-content: center; gap: var(--rp-space-5); margin: var(--rp-space-4) 0; flex-wrap: wrap; }
+.quiz-result__stat { text-align: center; }
+.quiz-result__stat-value { font-family: var(--rp-font-heading); font-size: var(--rp-fs-xl); font-weight: 700; }
+.quiz-result__stat-label { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+.quiz-result__actions { display: flex; gap: var(--rp-space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--rp-space-4); }
+
+/* Разбор ответов */
 .quiz-review { list-style: none; margin: var(--rp-space-3) 0 0; padding: 0; }
-.quiz-review__item { padding: var(--rp-space-3) 0; border-top: 1px solid var(--rp-learn-border); }
-.quiz-review__item:first-child { border-top: none; padding-top: 0; }
-.quiz-review__q { font-weight: 700; margin-bottom: var(--rp-space-1); }
-.quiz-review__item.is-wrong .quiz-review__q { color: var(--rp-status-danger); }
+.quiz-review__item { padding: var(--rp-space-3); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); }
+.quiz-review__q { font-weight: 700; margin-bottom: var(--rp-space-1); display: flex; align-items: flex-start; gap: var(--rp-space-2); }
+.quiz-review__num { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 1.4rem; height: 1.4rem; border-radius: 50%; font-size: 0.7rem; font-weight: 700; color: #fff; }
+.quiz-review__num.is-correct { background: var(--rp-status-success); }
+.quiz-review__num.is-wrong { background: var(--rp-status-danger); }
 
 .skeleton-loading { padding: var(--rp-space-6) 0; text-align: center; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
 
 /* ---------- Список тестов/экзаменов (pages/tests/index.html) ---------- */
-.test-list { list-style: none; margin: 0 0 var(--rp-space-4); padding: 0; }
+
+/* Сводка вверху страницы */
+.tests-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: var(--rp-space-3); margin-bottom: var(--rp-space-5); }
+.tests-stat-card { text-align: center; padding: var(--rp-space-4); border-radius: var(--rp-radius-md); background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); }
+.tests-stat-card__value { font-family: var(--rp-font-heading); font-size: var(--rp-fs-2xl); font-weight: 700; }
+.tests-stat-card__label { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+
+/* Фильтр-табы */
+.tests-filter { display: flex; gap: var(--rp-space-2); margin-bottom: var(--rp-space-5); flex-wrap: wrap; }
+.tests-filter__btn { font: inherit; font-size: var(--rp-fs-sm); font-weight: 600; padding: 0.35rem 0.9rem; border-radius: var(--rp-radius-pill); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+.tests-filter__btn:hover { border-color: var(--rp-learn-accent); }
+.tests-filter__btn.is-active { background: var(--rp-learn-accent); border-color: var(--rp-learn-accent); color: var(--rp-learn-bg, #fff); }
+
+/* Карточка модуля */
+.test-module-card { border-radius: var(--rp-radius-lg); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); padding: var(--rp-space-4) var(--rp-space-5); margin-bottom: var(--rp-space-4); transition: border-color 0.2s; }
+.test-module-card:hover { border-color: var(--rp-learn-accent); }
+.test-module-card__header { display: flex; align-items: center; gap: var(--rp-space-3); margin-bottom: var(--rp-space-3); }
+.test-module-card__num { display: inline-flex; align-items: center; justify-content: center; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface)); color: var(--rp-learn-accent); font-weight: 700; font-size: var(--rp-fs-sm); flex-shrink: 0; }
+.test-module-card__meta { flex: 1; }
+.test-module-card__level { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; }
+.test-module-card__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-lg); margin: 0; }
+.test-module-card__progress-badge { font-size: var(--rp-fs-sm); font-weight: 700; padding: 0.2rem 0.6rem; border-radius: var(--rp-radius-pill); }
+.test-module-card__progress-badge.all-done { background: var(--rp-color-green-100); color: var(--rp-color-green-800); }
+.test-module-card__progress-badge.partial { background: var(--rp-color-gold-100); color: var(--rp-color-ink-900); }
+
+.test-list { list-style: none; margin: 0 0 var(--rp-space-3); padding: 0; }
 .test-list li { margin-bottom: var(--rp-space-2); }
 .test-item {
   display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-3);
   padding: var(--rp-space-3) var(--rp-space-4); border-radius: var(--rp-radius-md);
   border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface);
-  text-decoration: none; color: inherit;
+  text-decoration: none; color: inherit; transition: background 0.2s, border-color 0.2s, transform 0.15s;
 }
-/* Тот же класс бага, что уже чинили у .lesson-link:hover — жёстко светлый
-   фон при наведении + унаследованный светлый текст темы "изумруд" =
-   нечитаемо (независимая проверка, 2026-07-20). */
-.test-item:hover { background: var(--rp-learn-surface-raised); color: var(--rp-learn-text); }
-.test-item--module { border-style: dashed; font-weight: 700; }
+.test-item:hover { background: var(--rp-learn-surface-raised); color: var(--rp-learn-text); border-color: var(--rp-learn-accent); transform: translateX(4px); }
+.test-item--module { border-width: 2px; border-style: dashed; font-weight: 700; }
+.test-item--module:hover { border-style: solid; }
 
 .footer { padding: var(--rp-space-6) 0; text-align: center; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
 
