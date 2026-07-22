@@ -1099,7 +1099,7 @@ main.container { padding-block: var(--rp-space-6); }
    мобильном), имя отправителя над пузырём не нужно в 1:1 (только
    выравнивание + цвет), группировка — по отправителю + разрыв < 5 мин
    (план улучшения курса, 2026-07-19). Рендер — pages/js/chat-ui.js. */
-.msg-list { display: flex; flex-direction: column; max-height: 20rem; overflow-y: auto; margin-bottom: var(--rp-space-3); padding-right: 2px; }
+.msg-list { display: flex; flex-direction: column; max-height: 28rem; overflow-y: auto; margin-bottom: var(--rp-space-3); padding-right: 2px; }
 .msg {
   position: relative; margin-top: var(--rp-space-3);
   padding: 0.5rem 2.9rem 0.5rem 0.75rem; border-radius: var(--rp-radius-md);
@@ -1162,10 +1162,49 @@ main.container { padding-block: var(--rp-space-6); }
 
 /* Медиа-сообщения */
 .msg__media { margin-bottom: 0.15rem; }
-.msg__voice audio { width: 100%; max-width: 15rem; height: 2rem; }
-.msg__voice { display: flex; align-items: center; gap: 0.5rem; }
-.msg__duration { font-size: 0.75rem; opacity: 0.7; white-space: nowrap; }
+
+/* Кастомный голосовой плеер — play/pause + волна + таймер */
+.msg__voice-player {
+  display: flex; align-items: center; gap: 0.5rem;
+  min-width: 11rem; max-width: 16rem;
+}
+.msg__voice-player audio { display: none; }
+.vp-btn {
+  flex-shrink: 0; width: 2.2rem; height: 2.2rem; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.2); color: inherit; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+}
+.msg-admin .vp-btn { background: color-mix(in srgb, var(--rp-zone-accent) 15%, transparent); }
+.vp-btn:hover { background: rgba(255,255,255,0.35); }
+.msg-admin .vp-btn:hover { background: color-mix(in srgb, var(--rp-zone-accent) 28%, transparent); }
+.vp-btn:disabled { opacity: 0.35; cursor: default; }
+.vp-wave {
+  flex: 1; display: flex; align-items: center; gap: 1.5px; height: 1.75rem; cursor: pointer;
+}
+.vp-bar {
+  flex: 1; min-width: 2px; border-radius: 1px;
+  background: rgba(255,255,255,0.35); transition: background 0.08s;
+}
+.msg-admin .vp-bar { background: color-mix(in srgb, var(--rp-zone-text) 20%, transparent); }
+.vp-bar--active { background: rgba(255,255,255,0.88); }
+.msg-admin .vp-bar--active { background: var(--rp-zone-accent); }
+.vp-time {
+  font-size: 0.7rem; opacity: 0.75; white-space: nowrap;
+  font-variant-numeric: tabular-nums; min-width: 2.2rem; text-align: right;
+}
+
+/* Галочки прочтения ✓ / ✓✓ */
+.msg__tick { margin-left: 0.15rem; vertical-align: middle; opacity: 0.5; }
+.msg__tick--read { opacity: 1; }
+.msg-student .msg__tick--read { color: rgba(255,255,255,0.9); }
+.msg-admin .msg__tick--read { color: var(--rp-zone-accent); }
+
+/* Видео */
 .msg__video video { max-width: 18rem; max-height: 14rem; border-radius: var(--rp-radius-sm); display: block; }
+.msg__media-err { font-size: var(--rp-fs-sm); opacity: 0.7; margin: 0; padding: 0.25rem 0; }
+.msg__media-err[hidden] { display: none; }
+
+/* Файлы */
 .msg__file-preview { max-width: 14rem; max-height: 10rem; border-radius: var(--rp-radius-sm); display: block; margin-bottom: 0.35rem; }
 .msg__file-card {
   display: flex; align-items: center; gap: 0.5rem;
@@ -1405,3 +1444,20 @@ main.container { padding-block: var(--rp-space-6); }
   border-color: var(--rp-status-danger);
 }
 .self-check__status { display: block; margin-top: var(--rp-space-2); min-height: 1.2em; }
+
+/* ---------- Переключатель языка ---------- */
+.lang-switcher {
+  display: flex; gap: 2px; border-radius: var(--rp-radius-sm);
+  overflow: hidden; border: 1.5px solid color-mix(in srgb, var(--rp-zone-text) 20%, transparent);
+}
+.lang-switcher__btn {
+  background: transparent; color: var(--rp-zone-text);
+  border: none; padding: 0.2rem 0.45rem; font-size: var(--rp-fs-xs);
+  font-weight: 600; cursor: pointer; transition: all 0.15s ease;
+  line-height: 1.2;
+}
+.lang-switcher__btn:hover { background: color-mix(in srgb, var(--rp-zone-text) 10%, transparent); }
+.lang-switcher__btn.is-active {
+  background: var(--rp-zone-accent, var(--rp-learn-accent));
+  color: var(--rp-zone-accent-contrast, #fff);
+}

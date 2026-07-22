@@ -5,7 +5,7 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
 import { watchAuth, isAdmin } from "../../integration/auth.js?v=9";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=2";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=3";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
