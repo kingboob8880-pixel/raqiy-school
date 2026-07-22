@@ -78,6 +78,12 @@
         <p id="welcome-back-text" class="form-note"></p>
       </div>
 
+      <div id="cert-banner" class="card" style="border-color: var(--rp-color-gold-500); margin-bottom: var(--rp-space-5); text-align:center;" hidden>
+        <h3 style="margin-bottom: var(--rp-space-2);">🎓 Сертификат получен!</h3>
+        <p class="form-note">Наставник выдал вам сертификат о завершении курса.</p>
+        <a class="btn btn-primary" style="margin-top: var(--rp-space-3);" id="cert-banner-link">Открыть сертификат →</a>
+      </div>
+
       <h2>Продолжить обучение</h2>
       <div id="continue-card" class="card continue-card" style="margin-bottom: var(--rp-space-6);"><p class="form-note">Загрузка…</p></div>
 
@@ -298,6 +304,12 @@
       document.getElementById("badge-row").innerHTML = computeLevelBadges(profile?.progress).map((b) => `
         <span class="level-badge ${b.complete ? "level-badge--complete" : ""}">${b.complete ? "🏅" : "⏳"} ${b.level} ${b.doneCount}/${b.total}</span>
       `).join("");
+
+      // Баннер сертификата — показываем когда наставник выдал вручную или все модули пройдены
+      if (!!profile?.certificateGranted || MODULES.every((m) => profile?.progress?.[m.id]?.status === "done")) {
+        document.getElementById("cert-banner").hidden = false;
+        document.getElementById("cert-banner-link").href = withBase("/pages/certificate/index.html");
+      }
 
       // Rukya Pro — доступ открыт если есть сертификат (ручной или автоматический)
       // или админ дал доступ вручную через кнопку rukyaProAccess.
