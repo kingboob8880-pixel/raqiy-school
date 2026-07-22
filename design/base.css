@@ -1352,3 +1352,56 @@ main.container { padding-block: var(--rp-space-6); }
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .toast.is-visible { opacity: 0.96; transform: translateY(0); }
+
+/* ---------- Чеклист самопроверки «Понял / Не понял» ----------
+   Заменяет прежние "Мои заметки" (решение автора, 2026-07-22).
+   Ученик отмечает ключевые разделы урока как усвоенные или нет. */
+.self-check h3 { margin-top: 0; }
+.self-check__progress {
+  display: flex; align-items: center; gap: var(--rp-space-3);
+  margin-bottom: var(--rp-space-4);
+}
+.self-check__bar {
+  flex: 1; height: 0.45rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-zone-text) 12%, transparent);
+  overflow: hidden;
+}
+.self-check__fill {
+  height: 100%; width: 0; border-radius: var(--rp-radius-pill);
+  background: var(--rp-status-success); transition: width 0.35s ease;
+}
+.self-check__counter { font-size: var(--rp-fs-sm); font-weight: 600; white-space: nowrap; }
+.self-check__list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: var(--rp-space-2);
+}
+.self-check__item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--rp-space-3); padding: var(--rp-space-2) var(--rp-space-3);
+  border-radius: var(--rp-radius-sm);
+  background: color-mix(in srgb, var(--rp-zone-text) 4%, transparent);
+  transition: background 0.2s ease;
+}
+.self-check__label {
+  flex: 1; font-size: var(--rp-fs-sm); line-height: 1.35;
+}
+.self-check__btns {
+  display: flex; gap: var(--rp-space-1); flex-shrink: 0;
+}
+.self-check__btn {
+  border: 1.5px solid color-mix(in srgb, var(--rp-zone-text) 20%, transparent);
+  background: transparent; color: var(--rp-zone-text);
+  padding: 0.25rem 0.65rem; border-radius: var(--rp-radius-sm);
+  font-size: var(--rp-fs-xs); font-weight: 600; cursor: pointer;
+  transition: all 0.15s ease; white-space: nowrap;
+}
+.self-check__btn:hover { border-color: color-mix(in srgb, var(--rp-zone-text) 40%, transparent); }
+.self-check__btn--yes.active {
+  background: var(--rp-status-success); color: #fff;
+  border-color: var(--rp-status-success);
+}
+.self-check__btn--no.active {
+  background: var(--rp-status-danger); color: #fff;
+  border-color: var(--rp-status-danger);
+}
+.self-check__status { display: block; margin-top: var(--rp-space-2); min-height: 1.2em; }
