@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Очищение разума — авторские формулы по функциям тела и психики"
 book: "/content/module-5/ochishchenie-razuma.md"
-status: author
+status: certified
 ---
 
 1. По какому принципу построены формулы этого урока?

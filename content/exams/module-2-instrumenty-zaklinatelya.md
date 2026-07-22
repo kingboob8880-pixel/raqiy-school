@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Инструменты заклинателя"
 book: "/content/module-2/instrumenty-zaklinatelya.md"
-status: author
+status: certified
 ---
 
 1. Какое правило из хадиса (Муслим, 2200) лежит в основе проверки любой практики?

@@ -1,7 +1,7 @@
 ---
 title: "Экзамен: Границы веры — единственность Истины и вопрос заступничества"
 book: "/content/module-9/granitsy-very-i-zastupnichestvo.md"
-status: author
+status: certified
 ---
 
 1. Согласно аяту 22:62, чем является всё, к чему взывают помимо Аллаха?
