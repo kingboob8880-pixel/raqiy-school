@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>probe</title>
+<link rel="stylesheet" href="../../design/tokens.css?v=10">
+<link rel="stylesheet" href="../../design/base.css?v=34">
+</head>
+<body data-zone="student">
+  <main class="container" style="max-width: 40rem; margin: 2rem auto;">
+    <h2 style="margin-top: var(--rp-space-6);">Сообщения от наставника</h2>
+    <div class="card">
+      <div id="messages" class="msg-list" role="log" aria-live="polite"></div>
+      <form id="message-form" class="chat-form">
+        <textarea id="message-text" class="chat-input" rows="1" aria-label="Сообщение наставнику (Enter — отправить, Shift+Enter — новая строка)" placeholder="Написать сообщение…"></textarea>
+        <button class="btn btn-primary btn-sm" type="submit" disabled>Отправить</button>
+      </form>
+    </div>
+
+    <h2 style="margin-top: var(--rp-space-6);">Пустой чат (новый ученик)</h2>
+    <div class="card">
+      <div id="messages-empty" class="msg-list" role="log" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { renderMessages, wireChatForm, scrollToBottom } from "../js/chat-ui.js?v=1";
+
+    function ts(offsetMinutes) {
+      return { toDate: () => new Date(Date.now() - offsetMinutes * 60000) };
+    }
+
+    const msgs = [
+      { from: "student", text: "Ассаляму алейкум, устаз. Хотел спросить про Модуль 4 — можно ли применять опросник, если пациент отказывается говорить о симптомах?", at: ts(60 * 30) },
+      { from: "student", text: "И ещё: сколько раз читать аят аль-Курси за один сеанс?", at: ts(60 * 30 - 2) },
+      { from: "admin", text: "Ва алейкум ассалям. Если пациент отказывается — не настаивайте, это его право. Продолжайте базовым протоколом Модуля 6.", at: ts(60 * 29) },
+      { from: "admin", text: "По аяту аль-Курси — минимум 3 раза, можно больше по состоянию пациента.", at: ts(60 * 29 - 1) },
+      { from: "student", text: "Понял, джазакаллаху хайран!", at: ts(5) },
+      { from: "admin", text: "Ва иякум. Пишите, если будут ещё вопросы по практике.", at: ts(1) },
+    ];
+
+    const root = document.getElementById("messages");
+    renderMessages(root, msgs);
+    scrollToBottom(root);
+    wireChatForm(document.getElementById("message-form"), document.getElementById("message-text"), () => {});
+
+    renderMessages(document.getElementById("messages-empty"), []);
+  </script>
+</body>
+</html>

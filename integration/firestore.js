@@ -8,7 +8,10 @@ import {
   serverTimestamp, query, orderBy, where, arrayUnion, onSnapshot,
   writeBatch, getCountFromServer,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-import { db } from "./firebase-init.js?v=1";
+import { db, storage } from "./firebase-init.js?v=2";
+import {
+  ref, uploadBytes, getDownloadURL,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
 import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=1";
 
 /** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
@@ -88,6 +91,29 @@ export async function deleteStudent(uid) {
 export async function sendMessage(uid, from, text) {
   await addDoc(collection(db, "students", uid, "messages"), {
     from, text, createdAt: serverTimestamp(), read: false,
+  });
+}
+
+/** Отправка медиа-сообщения (голос/видео/файл) — загружает файл в
+ * Firebase Storage, сохраняет ссылку в Firestore. Путь в Storage:
+ * chat/{uid}/{timestamp}_{filename} — изолирован по ученику.
+ * type: 'voice' | 'video' | 'file'. duration в секундах (для голоса/видео).
+ * Правила Storage (integration/storage.rules) должны разрешать запись
+ * авторизованным пользователям в chat/{uid}/ . */
+export async function sendMediaMessage(uid, from, file, type, duration) {
+  const ts = Date.now();
+  const safeName = (file.name || (type === "voice" ? "voice.webm" : type === "video" ? "video.webm" : "file")).replace(/[^a-zA-Z0-9._-]/g, "_");
+  const path = `chat/${uid}/${ts}_${safeName}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file);
+  const mediaUrl = await getDownloadURL(storageRef);
+  await addDoc(collection(db, "students", uid, "messages"), {
+    from, text: null, type, mediaUrl,
+    fileName: file.name || safeName,
+    fileSize: file.size || 0,
+    duration: duration || null,
+    mimeType: file.type || null,
+    createdAt: serverTimestamp(), read: false,
   });
 }
 

@@ -3,6 +3,7 @@
 // лендинг/модули/книги/вход), и --rp-zone-* для кабинетов ученика/админа
 // (project.md §16а, решение 2026-07-16 — "темы должны применяться ко всей
 // системе, включая кабинеты"). Переключатель в шапке виден на любой странице.
+import { withBase } from "./base-path.js?v=6";
 const STORAGE_KEY = "raqiy-site-theme";
 const DEFAULT_THEME = "emerald";
 
@@ -73,7 +74,7 @@ const HERO_COPY = {
 function heroActionsHtml() {
   return `
     <div class="hero-actions">
-      <a class="btn btn-primary" href="auth/register.html">Читать бесплатные отрывки</a>
+      <a class="btn btn-primary" href="${withBase("/pages/auth/register.html")}">Читать бесплатные отрывки</a>
       <a class="btn btn-outline" href="https://t.me/ruqoq" target="_blank" rel="noopener">Купить курс — 30 000 ₽</a>
     </div>
   `;
