@@ -23,6 +23,7 @@ export const MODULES = [
       { title: "Фундаментальное состояние целителя — собранность, дыхание, фокус", doc: "/content/module-1/fundamentalnoe.md" },
       { title: "Басира — духовное зрение сердцем", doc: "/content/module-1/basira.md" },
       { title: "Эхсан и черпание силы от Аллаха", doc: "/content/module-1/ehsan-i-sila.md" },
+      { title: "Волевой акт — искусство удержания намерения в сердце", doc: "/content/module-1/volevoy-akt.md" },
     ],
     intro_video: "/assets/video/rukya-intro.mp4",
   },
@@ -41,7 +42,7 @@ export const MODULES = [
     cover: "/assets/images/covers/zaklinanie-organy-koldovstvo.jpg",
     lessons: [
       { title: "Дозволенность заклинания — где проходит граница", doc: "/content/module-2/dozvolennost-zaklinaniya.md", exam: "/content/exams/module-2-dozvolennost-zaklinaniya.md" },
-      { title: "Что такое заклинание — пять элементов истинной рукьи", doc: "/content/module-2/chto-takoe-zaklinanie.md" },
+      { title: "Что такое заклинание — пять качеств истинного заклинателя", doc: "/content/module-2/chto-takoe-zaklinanie.md" },
       { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md", exam: "/content/exams/module-2-ya-zaklinayu.md" },
       { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md", exam: "/content/exams/module-2-obshchee-ponyatie-zaklinanie.md" },
       // Книга №2 инвентаря — восстановлена по решению автора курса (2026-07-21).
