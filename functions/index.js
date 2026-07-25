@@ -53,6 +53,38 @@ async function tg(method, body) {
   }
 }
 
+/** Уведомление УЧЕНИКУ на сайте (запрос автора, 2026-07-25).
+ *
+ * Пишем в students/{uid}/notifications — клиент подписан на эту коллекцию
+ * живьём (integration/firestore.js#watchNotifications) и показывает
+ * колокольчик в шапке.
+ *
+ * Почему сервер, а не клиент: правила Firestore запрещают создание
+ * уведомлений с клиента. Иначе ученик мог бы подделать себе «доступ
+ * открыт» — и потом искренне не понимать, почему курс не открывается.
+ *
+ * link — куда вести по клику, путь от корня сайта. База (/raqiy-school на
+ * GitHub Pages) добавляется уже на клиенте через withBase().
+ *
+ * Никогда не бросает исключение: уведомление не должно ронять триггер,
+ * внутри которого оно создаётся, — иначе из-за него не ушло бы и
+ * сообщение в Telegram.
+ */
+async function notifyStudent(uid, { type, title, body, link }) {
+  try {
+    await db.collection("students").doc(uid).collection("notifications").add({
+      type,
+      title,
+      body: body || null,
+      link: link || null,
+      read: false,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    logger.error("notifyStudent", uid, type, e);
+  }
+}
+
 // ─────────────────────────────────────────────────
 // УВЕДОМЛЕНИЯ (Gen 1 Firestore triggers)
 // ─────────────────────────────────────────────────
@@ -80,8 +112,25 @@ exports.onChatMessage = functions.firestore
   .document("students/{uid}/messages/{msgId}")
   .onCreate(async (snap, ctx) => {
     const msg = snap.data();
-    if (msg.from !== "student") return;
     const uid = ctx.params.uid;
+
+    // Сообщение ОТ НАСТАВНИКА — уведомляем ученика на сайте. Раньше этот
+    // триггер выходил сразу же на первой строке, и ответ наставника ученик
+    // обнаруживал, только зайдя в кабинет.
+    if (msg.from === "admin") {
+      const kind = { voice: "🎤 Голосовое сообщение", video: "📹 Видеосообщение", file: "📎 Файл" };
+      let preview = msg.text || kind[msg.type] || "Новое сообщение";
+      if (preview.length > 140) preview = preview.slice(0, 140) + "…";
+      await notifyStudent(uid, {
+        type: "message",
+        title: "Сообщение от наставника",
+        body: preview,
+        link: "/pages/dashboard/student.html",
+      });
+      return;
+    }
+
+    if (msg.from !== "student") return;
     const studentDoc = await db.doc(`students/${uid}`).get();
     const name = studentDoc.exists ? (studentDoc.data().name || uid) : uid;
     let preview = msg.text || `(${msg.type || "медиа"})`;
@@ -104,6 +153,36 @@ exports.onProgress = functions.firestore
     const before = change.before.data();
     const after = change.after.data();
     const uid = ctx.params.uid;
+
+    // ── Уведомления ученику о том, что открыл наставник ────────────────
+    // Раньше про это ученик узнавал случайно: зашёл и заметил, что кнопка
+    // появилась. Реагируем только на переход false → true — иначе любое
+    // сохранение профиля (а оно бывает при каждой активности) слало бы
+    // повторное уведомление об уже открытом доступе.
+    if (!before.paid && after.paid) {
+      await notifyStudent(uid, {
+        type: "paid",
+        title: "Открыт полный доступ к курсу",
+        body: "Все 11 модулей и экзамены теперь доступны целиком. Продолжайте с того места, где остановились.",
+        link: "/pages/modules/index.html",
+      });
+    }
+    if (!before.certificateGranted && after.certificateGranted) {
+      await notifyStudent(uid, {
+        type: "certificate",
+        title: "Вам выдан сертификат",
+        body: "Наставник подтвердил завершение курса. Сертификат можно открыть и скачать.",
+        link: "/pages/certificate/index.html",
+      });
+    }
+    if (!before.rukyaProAccess && after.rukyaProAccess) {
+      await notifyStudent(uid, {
+        type: "rukyaPro",
+        title: "Открыт доступ к RUKYA Pro",
+        body: "Программа для приёма пациентов доступна для скачивания в кабинете.",
+        link: "/pages/dashboard/student.html",
+      });
+    }
 
     const lines = [];
     const pB = before.progress || {};

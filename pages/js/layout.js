@@ -5,8 +5,8 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
 import { watchAuth, isAdmin } from "../../integration/auth.js?v=10";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=13";
-import { watchUnreadFromAdmin } from "../../integration/firestore.js?v=20";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=14";
+import { initNotifications, stopNotifications } from "./notifications.js?v=1";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
@@ -67,9 +67,11 @@ export function renderHeader(zone = "learn") {
           <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>${t("nav.tests")}</a>
           <a data-nav="flashcards" href="${withBase("/pages/flashcards/index.html")}"><span aria-hidden="true">🃏</span>${t("nav.flashcards")}</a>
           <a data-nav="glossary" href="${withBase("/pages/glossary/index.html")}"><span aria-hidden="true">📘</span>${t("nav.glossary")}</a>
-          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}<span class="nav-unread" id="nav-unread" hidden></span></a>
+          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}</a>
         </nav>
         <div class="site-header__actions">
+          <!-- Колокольчик монтируется только вошедшему ученику (initNotifications) -->
+          <div class="notif-root" id="notif-root"></div>
           ${langSwitcherHtml}
           ${themeSwitcherHtml}
           <a class="btn btn-outline btn-sm" id="auth-btn" href="${withBase("/pages/auth/login.html")}">${t("auth.login")}</a>
@@ -129,14 +131,16 @@ export function renderHeader(zone = "learn") {
   }
 
   const authBtn = root.querySelector("#auth-btn");
-  const unreadEl = root.querySelector("#nav-unread");
-  // Значок непрочитанных рядом с «Кабинет» на любой странице сайта (запрос
-  // автора, 2026-07-25). Раньше ответ наставника обнаруживался только при
-  // следующем заходе в кабинет — на странице урока/теста ничто о нём не
-  // сообщало. Слушатель живой, поэтому значок загорается прямо во время
-  // чтения книги. Админу он не нужен: у наставника переписка не одна, его
-  // счётчик живёт на chat.html и в кабинете администратора.
-  let unwatchUnread = null;
+  const notifRoot = root.querySelector("#notif-root");
+  // Колокольчик уведомлений на любой странице сайта (запрос автора,
+  // 2026-07-25). Раньше здесь висел отдельный значок непрочитанных
+  // сообщений — он заменён колокольчиком: два счётчика рядом (отдельно
+  // сообщения и отдельно всё остальное) показывали бы разные числа про
+  // пересекающиеся вещи и сбивали бы с толку. Теперь одно число на все
+  // события: ответ наставника, открытие доступа, сертификат, RUKYA Pro.
+  //
+  // Наставнику колокольчик не нужен: у него переписка не одна, его
+  // счётчики живут на chat.html и в кабинете администратора.
   watchAuth(async (user) => {
     if (authBtn) {
       if (user) {
@@ -148,19 +152,15 @@ export function renderHeader(zone = "learn") {
       }
     }
 
-    if (unwatchUnread) { unwatchUnread(); unwatchUnread = null; }
-    if (!unreadEl) return;
-    if (!user) { unreadEl.hidden = true; return; }
+    stopNotifications();
+    if (!notifRoot) return;
+    if (!user) { notifRoot.innerHTML = ""; return; }
 
     try {
-      if (await isAdmin(user.uid)) { unreadEl.hidden = true; return; }
-    } catch { /* нет связи — просто не показываем значок */ return; }
+      if (await isAdmin(user.uid)) { notifRoot.innerHTML = ""; return; }
+    } catch { /* нет связи — колокольчик просто не появится */ return; }
 
-    unwatchUnread = watchUnreadFromAdmin(user.uid, (n) => {
-      unreadEl.textContent = n > 9 ? "9+" : String(n);
-      unreadEl.hidden = n === 0;
-      unreadEl.setAttribute("aria-label", `${n} ${t("chat.unreadAria")}`);
-    });
+    initNotifications(notifRoot, user.uid);
   });
 
   initSiteTheme();

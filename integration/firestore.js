@@ -229,23 +229,57 @@ export function watchThreadSummary(uid, onChange, onError) {
   });
 }
 
-/** Живой счётчик непрочитанных сообщений ОТ наставника для ученика —
- * питает значок в шапке сайта на любой странице (запрос автора,
- * 2026-07-25), чтобы ответ наставника не терялся до следующего захода в
- * кабинет. Дёшево: слушаем только непрочитанные, тела сообщений не нужны,
- * но onSnapshot всё равно их привозит — окна в THREAD_PREVIEW_WINDOW
- * достаточно, значок всё равно показывает максимум «9+». */
-export function watchUnreadFromAdmin(uid, onChange, onError) {
+// watchUnreadFromAdmin удалён 2026-07-25: значок непрочитанных в шапке
+// заменён колокольчиком уведомлений (pages/js/notifications.js), который
+// подписан на students/{uid}/notifications и покрывает не только чат.
+
+/** Живая подписка на уведомления ученика (запрос автора, 2026-07-25).
+ *
+ * Схема: students/{uid}/notifications/{id}
+ *   { type, title, body, link, createdAt, read }
+ *   type: 'message' | 'paid' | 'certificate' | 'rukyaPro'
+ *
+ * Пишет их только сервер (functions/index.js через Admin SDK) — правила
+ * запрещают создание с клиента, чтобы ученик не мог подделать себе
+ * уведомление «доступ открыт».
+ *
+ * Берём последние LIMIT штук по убыванию даты: список уведомлений — это
+ * лента последнего, а не архив. Возвращает функцию отписки. */
+const NOTIF_LIMIT = 30;
+
+export function watchNotifications(uid, onChange, onError) {
   const q = query(
-    collection(db, "students", uid, "messages"),
-    where("from", "==", "admin"),
-    where("read", "==", false),
-    limit(THREAD_PREVIEW_WINDOW),
+    collection(db, "students", uid, "notifications"),
+    orderBy("createdAt", "desc"),
+    limit(NOTIF_LIMIT),
   );
-  return onSnapshot(q, (snap) => onChange(snap.size), (err) => {
-    console.warn("watchUnreadFromAdmin", uid, err);
+  return onSnapshot(q, (snap) => {
+    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }, (err) => {
+    console.warn("watchNotifications", uid, err);
     if (onError) onError(err);
   });
+}
+
+/** Отметить одно уведомление прочитанным. */
+export async function markNotificationRead(uid, notifId) {
+  await updateDoc(doc(db, "students", uid, "notifications", notifId), { read: true });
+}
+
+/** Отметить прочитанными все непрочитанные разом («Прочитать все»).
+ *  Пишем пакетом: по одному update на каждое — это N запросов подряд и
+ *  заметная задержка, если уведомлений накопилось два десятка. */
+export async function markAllNotificationsRead(uid) {
+  const q = query(
+    collection(db, "students", uid, "notifications"),
+    where("read", "==", false),
+    limit(NOTIF_LIMIT),
+  );
+  const snap = await getDocs(q);
+  if (snap.empty) return;
+  const batch = writeBatch(db);
+  snap.docs.forEach((d) => batch.update(d.ref, { read: true }));
+  await batch.commit();
 }
 
 /** Кол-во непрочитанных сообщений ОТ ученика — значок 💬 в списке учеников

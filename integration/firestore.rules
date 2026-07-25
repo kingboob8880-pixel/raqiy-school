@@ -74,6 +74,26 @@ service cloud.firestore {
         allow delete: if isAdmin()
                       || (isOwner(uid) && resource.data.from == 'student');
       }
+
+      // Уведомления ученику (запрос автора, 2026-07-25): сообщение от
+      // наставника, открытие оплаты, выдача сертификата, доступ к RUKYA Pro.
+      // Раньше про всё, кроме сообщений, ученик узнавал случайно — зашёл и
+      // заметил, что кнопка появилась.
+      //
+      // Создаёт их ТОЛЬКО сервер: Cloud Functions работают через Admin SDK и
+      // эти правила обходят. Клиентская запись запрещена полностью — иначе
+      // ученик мог бы подделать себе уведомление «доступ открыт» и ввести
+      // себя же в заблуждение, а при поддержке — и наставника.
+      match /notifications/{notifId} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow create: if false;
+        // Ученик может только пометить прочитанным — ровно одно поле.
+        allow update: if isAdmin()
+                      || (isOwner(uid)
+                          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+                          && request.resource.data.read == true);
+        allow delete: if isAdmin() || isOwner(uid);
+      }
     }
 
     // Полный текст платных книг/модулей (docId = bookKey() из

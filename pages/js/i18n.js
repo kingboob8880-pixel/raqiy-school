@@ -611,6 +611,19 @@ const S = {
   // рабом, причиной, а не источником». Текст вида «ты станешь могучим
   // лекарем» ученик прочёл бы на сайте, а через десять модулей встретил бы
   // прямой запрет на такие мысли — и перестал бы верить курсу.
+  // Уведомления ученику (запрос автора, 2026-07-25). Заголовки и тексты
+  // самих уведомлений приходят с сервера уже готовыми (functions/index.js) —
+  // здесь только подписи интерфейса.
+  "notif.title":     { ru: "Уведомления", en: "Notifications", uz: "Bildirishnomalar" },
+  "notif.empty":     { ru: "Пока ничего нового", en: "Nothing new yet", uz: "Hozircha yangilik yo'q" },
+  "notif.markAll":   { ru: "Прочитать все", en: "Mark all read", uz: "Hammasini o'qilgan deb belgilash" },
+  "notif.open":      { ru: "Открыть", en: "Open", uz: "Ochish" },
+  "notif.now":       { ru: "только что", en: "just now", uz: "hozirgina" },
+  "notif.min":       { ru: "мин", en: "min", uz: "daq" },
+  "notif.hour":      { ru: "ч", en: "h", uz: "soat" },
+  "notif.day":       { ru: "дн", en: "d", uz: "kun" },
+  "notif.yesterday": { ru: "вчера", en: "yesterday", uz: "kecha" },
+
   "value.title":     { ru: "Что даёт этот модуль", en: "What this module gives you", uz: "Bu modul sizga nima beradi" },
   "value.hadithAr":  { ru: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي", en: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي", uz: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي" },
   "value.hadithTr":  { ru: "Ана 'инда занни 'абди би", en: "Ana 'inda zanni 'abdi bi", uz: "Ana 'inda zanni 'abdi bi" },
