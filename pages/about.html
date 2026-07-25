@@ -117,6 +117,41 @@
   .contact-card__icon { font-size: 1.5rem; flex-shrink: 0; }
   .contact-card__label { font-weight: 600; font-size: var(--rp-fs-sm); }
   .contact-card__handle { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+
+  /* Список книг курса (запрос автора, 2026-07-25): одна карточка на модуль,
+     клик ведёт на сам модуль. Сетка в одну колонку — описания разной длины,
+     в две колонки карточки прыгали бы по высоте и список читался бы хуже. */
+  .books-list { display: grid; gap: var(--rp-space-3); margin-top: var(--rp-space-4); }
+  .book-card {
+    display: flex; gap: var(--rp-space-4); align-items: flex-start;
+    padding: var(--rp-space-4); border-radius: var(--rp-radius-md);
+    background: var(--rp-learn-surface-raised); border: 1px solid var(--rp-learn-border);
+    text-decoration: none; color: inherit;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .book-card:hover { box-shadow: var(--rp-shadow-pop); transform: translateY(-2px); }
+  .book-card__num {
+    flex: none; width: 2.5rem; height: 2.5rem; border-radius: var(--rp-radius-pill);
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--rp-color-gold-100); color: var(--rp-color-gold-700);
+    font-family: var(--rp-font-heading); font-weight: 800;
+  }
+  /* Карточка целиком — одна <a>, поэтому внутри только span'ы: им нужен
+     явный display, иначе отступы между заголовком, мета-строкой и
+     описанием просто не применятся (инлайн-элементы игнорируют margin
+     по вертикали). */
+  .book-card__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--rp-space-1); }
+  .book-card__title { display: block; font-weight: 700; line-height: 1.4; }
+  .book-card__meta {
+    font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted);
+    display: flex; gap: var(--rp-space-2); flex-wrap: wrap; align-items: baseline;
+  }
+  .book-card__desc { display: block; font-size: var(--rp-fs-sm); line-height: 1.65; margin-top: var(--rp-space-1); }
+  .book-card__go { flex: none; align-self: center; opacity: 0.5; font-size: 1.1rem; }
+  @media (max-width: 34rem) {
+    .book-card { gap: var(--rp-space-3); padding: var(--rp-space-3); }
+    .book-card__go { display: none; }
+  }
 </style>
 </head>
 <body data-zone="learn">
@@ -206,6 +241,14 @@
     </div>
 
     <section class="about-section reveal" style="margin-top: var(--rp-space-6);">
+      <h2><span>✍️</span> <span data-t="about.books.title">Мои книги</span></h2>
+      <p data-t="about.books.intro">Я, лекарь <strong>Абу Мухаммад</strong>, — автор всех книг этого курса. Они писались не как теория,
+         а как записи живой практики: то, что я проверял на приёме, разбирал с учениками и сверял с Кораном и Сунной.
+         Материал собран в <strong>11 модулей</strong>; ниже — коротко о каждом. Нажмите на книгу, чтобы открыть её.</p>
+      <div class="books-list" id="books-list"></div>
+    </section>
+
+    <section class="about-section reveal" style="margin-top: var(--rp-space-6);">
       <h2><span>📚</span> <span data-t="about.school.title">Онлайн-школа рукии</span></h2>
       <p>Весь накопленный опыт я оформил в <strong>полноценный курс подготовки заклинателя (раки)</strong> — 11 модулей,
          25 книг, от основ убеждённости до самостоятельного приёма пациентов. Каждый источник прошёл триаж по критерию подлинности
@@ -256,10 +299,51 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=18";
-    import { t, getLang } from "./js/i18n.js?v=8";
+    import { t, getLang, moduleTitle, localLevel } from "./js/i18n.js?v=9";
+    import { MODULES } from "./js/modules-data.js?v=34";
     renderHeader("learn");
     renderFooter();
     document.documentElement.lang = getLang();
+
+    // Список книг курса (запрос автора, 2026-07-25). Названия, уровень и
+    // число уроков берутся из modules-data.js — единственного источника
+    // правды о составе курса, поэтому список не разъедется с «Путём ученика»
+    // при добавлении/переименовании модулей. Здесь хранятся только описания:
+    // ключ i18n "about.books.N" на модуль.
+    /** Русское склонение: 1 урок / 2–4 урока / 0 и 5–20 уроков, с учётом
+     *  сотен и десятков. Наивное `n < 5 ? "урока" : "уроков"` давало бы
+     *  «0 урока» у Модуля 11, где отдельных уроков-книг нет вовсе. */
+    function lessonWord(n) {
+      const mod100 = n % 100;
+      const mod10 = n % 10;
+      if (mod100 >= 11 && mod100 <= 14) return t("about.books.lesson5");
+      if (mod10 === 1) return t("about.books.lesson1");
+      if (mod10 >= 2 && mod10 <= 4) return t("about.books.lesson2");
+      return t("about.books.lesson5");
+    }
+
+    function bookCardHtml(m) {
+      const n = m.lessons.length;
+      // У Модуля 11 отдельных уроков нет — он сам целиком практикум,
+      // поэтому «0 уроков» не пишем вовсе, только уровень.
+      const countHtml = n
+        ? `<span aria-hidden="true">·</span><span>${n} ${lessonWord(n)}</span>`
+        : "";
+      return `
+        <a class="book-card" href="modules/module.html?id=${m.id}">
+          <span class="book-card__num" aria-hidden="true">${m.id}</span>
+          <span class="book-card__body">
+            <span class="book-card__title">${moduleTitle(m)}</span>
+            <span class="book-card__meta">
+              <span>${localLevel(m.level)}</span>
+              ${countHtml}
+            </span>
+            <span class="book-card__desc">${t("about.books." + m.id)}</span>
+          </span>
+          <span class="book-card__go" aria-hidden="true">→</span>
+        </a>`;
+    }
+    document.getElementById("books-list").innerHTML = MODULES.map(bookCardHtml).join("");
 
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
       const io = new IntersectionObserver((entries) => {
