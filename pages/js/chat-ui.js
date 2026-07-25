@@ -2,7 +2,7 @@
 // pages/dashboard/student.html и pages/dashboard/admin.html.
 // v3: кастомный голосовой плеер (волна+play/pause), галочки прочтения,
 //     обработка ошибок медиа, i18n дат.
-import { t, getLang } from "./i18n.js?v=3";
+import { t, getLang } from "./i18n.js?v=6";
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));

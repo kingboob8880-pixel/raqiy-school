@@ -5,7 +5,7 @@
 
 import { withBase } from "./base-path.js?v=6";
 import { MODULES } from "./modules-data.js?v=34";
-import { getLang, localizedDocPath, t } from "./i18n.js?v=5";
+import { getLang, localizedDocPath, t } from "./i18n.js?v=6";
 
 /** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter
  *  значений (title, source) через innerHTML (аудит, 2026-07-21). */
@@ -305,7 +305,10 @@ function addDuaPlayButton(block, audioId) {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "dua-block__play";
-  btn.setAttribute("aria-label", "Play");
+  // Раньше здесь было жёстко "Play" — единственная строка интерфейса,
+  // не проходившая через i18n (аудит 2026-07-25).
+  btn.setAttribute("aria-label", t("dua.play"));
+  btn.title = t("dua.play");
   btn.textContent = "▶";
 
   let audio = null;
@@ -369,9 +372,24 @@ function addDuaPlayButton(block, audioId) {
     playSpeechFallback(text);
   });
 
+  /** Ни аудиофайла, ни арабского голоса в системе. Раньше кнопка просто
+   *  становилась disabled с title-подсказкой — на тач-устройствах title
+   *  не показывается вообще, и клик выглядел как "кнопка сломана"
+   *  (аудит 2026-07-25). Теперь причина видна прямо в блоке. */
+  function showNoVoiceNote() {
+    btn.disabled = true;
+    btn.title = t("dua.novoice");
+    btn.setAttribute("aria-label", t("dua.novoice"));
+    if (!block.querySelector(".dua-block__novoice")) {
+      const note = document.createElement("p");
+      note.className = "form-note dua-block__novoice";
+      note.textContent = t("dua.novoice");
+      block.appendChild(note);
+    }
+  }
+
   function playSpeechFallback(text) {
-    if (!synth) { btn.disabled = true; btn.title = t("dua.novoice"); return; }
-    if (!arVoice) { btn.disabled = true; btn.title = t("dua.novoice"); return; }
+    if (!synth || !arVoice) { showNoVoiceNote(); return; }
     utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "ar"; utterance.voice = arVoice; utterance.rate = 0.85;
     utterance.onend = () => { btn.textContent = "▶"; btn.classList.remove("dua-block__play--active"); utterance = null; };
@@ -482,7 +500,7 @@ export function openContentLinkModal({ href, kind }, label) {
   overlay.className = "rp-modal-overlay";
   overlay.innerHTML = `
     <div class="rp-modal" role="dialog" aria-modal="true" aria-labelledby="rp-modal-title">
-      <button class="rp-modal__close" type="button" aria-label="${t("modal.close")}">×</button>
+      <button class="rp-modal__close" type="button" aria-label="${t("common.close")}">×</button>
       <p class="rp-modal__eyebrow">${kind === "module" ? t("ml.linkModule") : t("ml.linkBook")}</p>
       <h3 id="rp-modal-title" class="rp-modal__title">${label}</h3>
       <p class="form-note">${t("ml.linkNote")}</p>

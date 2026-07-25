@@ -4,8 +4,8 @@
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
-import { watchAuth, isAdmin } from "../../integration/auth.js?v=9";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=5";
+import { watchAuth, isAdmin } from "../../integration/auth.js?v=10";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=6";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
@@ -109,10 +109,16 @@ export function renderHeader(zone = "learn") {
   const navToggle = root.querySelector("#site-nav-toggle");
   const navEl = root.querySelector("#site-nav");
   if (navToggle && navEl) {
-    const closeNav = () => { navEl.classList.remove("is-open"); navToggle.setAttribute("aria-expanded", "false"); };
-    navToggle.addEventListener("click", () => {
-      const open = navEl.classList.toggle("is-open");
+    // aria-label меняется вместе с состоянием: раньше кнопка всегда
+    // говорила "Открыть меню", даже когда меню уже открыто и клик его
+    // закрывает — скринридер объявлял неверное действие (аудит 2026-07-25).
+    const setNavLabel = (open) => {
       navToggle.setAttribute("aria-expanded", String(open));
+      navToggle.setAttribute("aria-label", t(open ? "menu.close" : "menu.open"));
+    };
+    const closeNav = () => { navEl.classList.remove("is-open"); setNavLabel(false); };
+    navToggle.addEventListener("click", () => {
+      setNavLabel(navEl.classList.toggle("is-open"));
     });
     navEl.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeNav));
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeNav(); });

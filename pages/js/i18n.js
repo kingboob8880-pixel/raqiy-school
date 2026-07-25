@@ -33,6 +33,7 @@ const S = {
   "auth.login":        { ru: "Войти", en: "Sign in", uz: "Kirish" },
   "skip.link":         { ru: "Перейти к содержимому", en: "Skip to content", uz: "Kontentga o'tish" },
   "menu.open":         { ru: "Открыть меню", en: "Open menu", uz: "Menyuni ochish" },
+  "menu.close":        { ru: "Закрыть меню", en: "Close menu", uz: "Menyuni yopish" },
 
   // Footer
   "footer.text":       { ru: "Онлайн-школа рукии · Лекарь Абу Мухаммад · Основатель школы", en: "Online Ruqyah School · Healer Abu Muhammad · School Founder", uz: "Onlayn ruqya maktabi · Tabib Abu Muhammad · Maktab asoschisi" },
@@ -137,7 +138,7 @@ const S = {
   "common.cancel":     { ru: "Отмена", en: "Cancel", uz: "Bekor qilish" },
   "common.send":       { ru: "Отправить", en: "Send", uz: "Yuborish" },
   "common.close":      { ru: "Закрыть", en: "Close", uz: "Yopish" },
-  "common.nojs":       { ru: "Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.", en: "This site requires JavaScript. Please enable it in your browser settings.", uz: "Sayt ishlashi uchun JavaScript kerak. Brauzер sozlamalarida uni yoqing." },
+  "common.nojs":       { ru: "Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.", en: "This site requires JavaScript. Please enable it in your browser settings.", uz: "Sayt ishlashi uchun JavaScript kerak. Brauzer sozlamalarida uni yoqing." },
 
   // Achievements
   "ach.first-book":    { ru: "Первая книга", en: "First Book", uz: "Birinchi kitob" },
@@ -535,7 +536,8 @@ const S = {
   "dash.score":          { ru: "Результат", en: "Score", uz: "Natija" },
 
   // ── Audio dua ──
-  "dua.novoice":         { ru: "Озвучка недоступна", en: "Voice unavailable", uz: "Ovoz mavjud emas" },
+  "dua.play":            { ru: "Прослушать произношение", en: "Listen to pronunciation", uz: "Talaffuzni tinglash" },
+  "dua.novoice":         { ru: "Озвучка пока недоступна — в вашей системе нет арабского голоса.", en: "Audio unavailable — your system has no Arabic voice installed.", uz: "Ovoz hozircha mavjud emas — tizimingizda arab ovozi yo'q." },
 
   // ── Bookmarks ──
   "bookmark.add":        { ru: "Добавить закладку", en: "Add bookmark", uz: "Xatcho'p qo'shish" },
@@ -543,6 +545,8 @@ const S = {
   "bookmark.note":       { ru: "Заметка...", en: "Note...", uz: "Eslatma..." },
   "bookmark.empty":      { ru: "Нет закладок", en: "No bookmarks", uz: "Xatcho'plar yo'q" },
   "bookmark.save":       { ru: "Сохранить", en: "Save", uz: "Saqlash" },
+  "bookmark.saved":      { ru: "Закладка сохранена", en: "Bookmark saved", uz: "Xatcho'p saqlandi" },
+  "bookmark.deleted":    { ru: "Закладка удалена", en: "Bookmark deleted", uz: "Xatcho'p o'chirildi" },
 
   // ── Module locking ──
   "module.locked":       { ru: "Модуль заблокирован", en: "Module locked", uz: "Modul bloklangan" },
