@@ -3,6 +3,20 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
+
+/* ⚠ Атрибут hidden ДОЛЖЕН прятать элемент — всегда.
+   Браузер применяет к нему `display: none` правилом нулевой специфичности,
+   поэтому ЛЮБОЙ класс с явным display (flex/grid/block) его перебивает, и
+   элемент остаётся на экране, хотя код считает его скрытым.
+
+   На этом развалился весь мессенджер (скриншот автора, 2026-07-25):
+   одновременно показывались заглушка «выберите ученика», сама переписка,
+   строка поиска и ВСЕ меню «⋯» над сообщениями — у каждого из этих классов
+   был свой display. До этого ту же мину дважды латали точечно
+   (.chat-rec-indicator, .msg__media-err), не закрывая причину.
+
+   Одно правило закрывает и текущие случаи, и будущие. */
+[hidden] { display: none !important; }
 /* Видимый фокус клавиатуры на всех темах (WCAG 2.4.7) — единое кольцо через
    :focus-visible, не полагаемся на браузерный дефолт (плохо виден на цветных
    кнопках/пилюлях). План улучшения курса, 2026-07-18, доступность. */
@@ -1414,12 +1428,17 @@ main.container { padding-block: var(--rp-space-6); }
 .msg:hover .msg__menu-btn, .msg__menu-btn:focus-visible, .msg__menu-btn[aria-expanded="true"] { opacity: 0.75; }
 .msg__menu-btn:hover { opacity: 1; }
 @media (hover: none) { .msg__menu-btn { opacity: 0.6; } }
+/* position: fixed, а не absolute. Список сообщений прокручивается
+   (overflow-y: auto), и абсолютно спозиционированное меню обрезалось его
+   краем — у сообщений внизу переписки половина пунктов уходила под обрез
+   (скриншот автора, 2026-07-25). Координаты считает wireMessageActions()
+   в момент открытия. */
 .msg-menu {
-  position: absolute; top: 1.5rem; right: 0; z-index: 30; min-width: 9rem;
+  position: fixed; z-index: 300; min-width: 9rem;
   display: flex; flex-direction: column; overflow: hidden;
   background: var(--rp-zone-surface); color: var(--rp-zone-text);
   border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
-  box-shadow: var(--rp-shadow-card);
+  box-shadow: var(--rp-shadow-pop);
 }
 .msg-menu__item { font: inherit; font-size: var(--rp-fs-sm); text-align: left; cursor: pointer; padding: 0.5rem 0.75rem; border: none; background: transparent; color: inherit; }
 .msg-menu__item:hover { background: color-mix(in srgb, var(--rp-zone-accent) 12%, transparent); }
@@ -2058,3 +2077,17 @@ main.container { padding-block: var(--rp-space-6); }
 }
 @media (prefers-reduced-motion: reduce) { .notif-toast { transition: opacity 0.2s ease; transform: none; } }
 @media print { .notif-root, .notif-toast { display: none !important; } }
+
+/* Кнопка «вниз» над списком сообщений — появляется, когда переписка
+   отмотана вверх (chat-ui.js#wireScrollDown). В длинном треде без неё
+   приходилось крутить до конца вручную. */
+.msg-scroll-down {
+  position: absolute; right: var(--rp-space-4); bottom: 5.5rem; z-index: 40;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface);
+  color: var(--rp-zone-text); font-size: 1rem; line-height: 1;
+  box-shadow: var(--rp-shadow-card);
+}
+.msg-scroll-down:hover { background: color-mix(in srgb, var(--rp-zone-accent) 15%, var(--rp-zone-surface)); }
+/* Контейнер переписки — точка отсчёта для кнопки */
+.messenger__view { position: relative; }

@@ -350,6 +350,8 @@ const S = {
   "chat.videoSent":     { ru: "Видео отправлено", en: "Video sent", uz: "Video yuborildi" },
   "chat.fileSent":      { ru: "Файл отправлен", en: "File sent", uz: "Fayl yuborildi" },
   "chat.unreadAria":    { ru: "непрочитанных сообщений", en: "unread messages", uz: "o'qilmagan xabar" },
+  "chat.sendFailed":    { ru: "Сообщение не отправлено — проверьте связь. Текст сохранён в поле.", en: "Message not sent — check your connection. The text is kept in the box.", uz: "Xabar yuborilmadi — aloqani tekshiring. Matn maydonda saqlandi." },
+  "chat.toBottom":      { ru: "К последним сообщениям", en: "Jump to latest", uz: "So'nggi xabarlarga" },
 
   // ── Landing page ──
   "landing.title":      { ru: "Онлайн-школа рукии — лечение Кораном и Сунной", en: "Online Ruqyah School — Healing through Quran and Sunnah", uz: "Onlayn ruqya maktabi — Qur'on va Sunna bilan davolash" },
