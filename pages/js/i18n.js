@@ -46,7 +46,7 @@ const S = {
   "module.lessons":    { ru: "Уроки", en: "Lessons", uz: "Darslar" },
   "module.text":       { ru: "Текст модуля", en: "Module text", uz: "Modul matni" },
   "module.quiz":       { ru: "Пройти тест по модулю →", en: "Take module test →", uz: "Modul testini topshirish →" },
-  "module.notcert":    { ru: "Модуль ещё не подтверждён шейхом — тест можно пройти для практики, но материал может измениться.", en: "Module not yet certified by sheikh — test available for practice, but content may change.", uz: "Modul shayx tomonidan tasdiqlanmagan — test mashq uchun, lekin mazmun o'zgarishi mumkin." },
+  "module.notcert":    { ru: "Модуль ещё дорабатывается — тест можно пройти для практики, но материал может измениться.", en: "This module is still being finalised — the test is available for practice, but the content may change.", uz: "Modul hali yakunlanmoqda — testni mashq uchun topshirish mumkin, lekin mazmun o'zgarishi mumkin." },
   "module.nolessons":  { ru: "Отдельных уроков-первоисточников нет — весь текст модуля на его собственной странице ниже.", en: "No separate source lessons — full module text is on this page below.", uz: "Alohida dars-manbalar yo'q — modul matni to'liq shu sahifada." },
   "module.n":          { ru: "Модуль", en: "Module", uz: "Modul" },
 
@@ -96,7 +96,8 @@ const S = {
   "level.Продвинутый": { ru: "Продвинутый", en: "Advanced", uz: "Yuqori" },
 
   // Status badges
-  "status.certified":  { ru: "Подтверждено шейхом", en: "Certified by sheikh", uz: "Shayx tomonidan tasdiqlangan" },
+  // "status.certified" удалён вместе с бейджем «Подтверждено шейхом»
+  // (решение автора, 2026-07-25) — см. STATUS_BADGE в markdown-loader.js.
   "status.author":     { ru: "Черновик автора", en: "Author's draft", uz: "Muallif qoralamasi" },
   "status.stub":       { ru: "Заглушка", en: "Stub", uz: "Qoralama" },
 

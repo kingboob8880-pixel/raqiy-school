@@ -5,7 +5,7 @@
 
 import { withBase } from "./base-path.js?v=6";
 import { MODULES } from "./modules-data.js?v=34";
-import { getLang, localizedDocPath, t } from "./i18n.js?v=7";
+import { getLang, localizedDocPath, t } from "./i18n.js?v=8";
 
 /** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter
  *  значений (title, source) через innerHTML (аудит, 2026-07-21). */
@@ -41,8 +41,12 @@ export async function loadMarkdownDoc(path) {
   return parseFrontMatter(await res.text());
 }
 
+// Бейдж «Подтверждено шейхом» убран со всего сайта по решению автора
+// (2026-07-25): статус certified больше не рисует значок вообще. Сам
+// статус в данных остаётся — на него завязаны блокировка модулей,
+// предупреждение у теста и триаж контента, — но наружу он не показывается.
 const STATUS_BADGE = {
-  certified: { cls: "badge-certified", key: "status.certified" },
+  certified: null,
   draft: { cls: "badge-draft", key: "status.author" },
   archive: { cls: "badge-archive", key: "status.stub" },
   author: null,
