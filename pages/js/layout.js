@@ -5,7 +5,7 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
 import { watchAuth, isAdmin } from "../../integration/auth.js?v=10";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=11";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=12";
 import { watchUnreadFromAdmin } from "../../integration/firestore.js?v=20";
 
 export function renderHeader(zone = "learn") {
@@ -164,6 +164,53 @@ export function renderHeader(zone = "learn") {
   });
 
   initSiteTheme();
+  initOffline();
+}
+
+/** Офлайн-режим и иконка на домашнем экране (совет по улучшениям,
+ *  2026-07-25). Манифест и ссылка на иконку подставляются здесь, а не в 15
+ *  html-файлах: их набор один на весь сайт, дублировать в каждом — значит
+ *  однажды разойтись.
+ *
+ *  Регистрируем SW только на https (или localhost) — по спецификации на
+ *  http он всё равно недоступен, а без проверки в консоли сыпались бы
+ *  ошибки при локальном просмотре через file://. */
+function initOffline() {
+  if (!document.querySelector('link[rel="manifest"]')) {
+    const m = document.createElement("link");
+    m.rel = "manifest";
+    m.href = withBase("/manifest.webmanifest");
+    document.head.appendChild(m);
+
+    const apple = document.createElement("link");
+    apple.rel = "apple-touch-icon";
+    apple.href = withBase("/assets/icons/apple-touch-icon.png");
+    document.head.appendChild(apple);
+
+    const theme = document.createElement("meta");
+    theme.name = "theme-color";
+    theme.content = "#8f6a22";
+    document.head.appendChild(theme);
+  }
+
+  if (!("serviceWorker" in navigator)) return;
+  const secure = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if (!secure) return;
+
+  navigator.serviceWorker.register(withBase("/sw.js"), { scope: withBase("/") })
+    .then((reg) => {
+      // Если пришла новая версия, применяем её сразу: сайт обновляется часто,
+      // и «залипший» старый код — худшее, что может сделать SW.
+      reg.addEventListener("updatefound", () => {
+        const sw = reg.installing;
+        if (sw) sw.addEventListener("statechange", () => {
+          if (sw.state === "installed" && navigator.serviceWorker.controller) {
+            sw.postMessage("skip-waiting");
+          }
+        });
+      });
+    })
+    .catch((err) => console.warn("service worker", err));
 }
 
 // Явная обратная связь после действий в кабинетах (kabinet-ux-improvements.md

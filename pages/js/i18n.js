@@ -593,8 +593,15 @@ const S = {
   "assign.duration":     { ru: "Длительность", en: "Duration", uz: "Davomiyligi" },
 
   // ── Modules search ──
-  "modules.search":      { ru: "Поиск по модулям и книгам…", en: "Search modules and books…", uz: "Modullar va kitoblar bo'yicha qidirish…" },
+  "modules.search":      { ru: "Поиск по названиям и содержанию книг…", en: "Search titles and book contents…", uz: "Sarlavhalar va kitob mazmuni bo'yicha qidirish…" },
   "modules.noResults":   { ru: "Ничего не найдено.", en: "Nothing found.", uz: "Hech narsa topilmadi." },
+  // Поиск по заголовкам внутри книг (индекс — scripts/build-search-index.mjs)
+  // Возврат к месту чтения (pages/js/reading-position.js)
+  "read.resumeText":     { ru: "Вы остановились примерно на", en: "You stopped at about", uz: "Siz taxminan shu joyda to'xtadingiz:" },
+  "read.resumeGo":       { ru: "Продолжить чтение", en: "Continue reading", uz: "O'qishni davom ettirish" },
+  "modules.inside":      { ru: "Найдено внутри книг", en: "Found inside books", uz: "Kitoblar ichida topildi" },
+  "modules.insideFound": { ru: "книг", en: "books", uz: "kitob" },
+  "modules.insideMore":  { ru: "Ещё книг с совпадениями:", en: "More books with matches:", uz: "Mos keluvchi yana kitoblar:" },
 
   // ── Path section headers ──
   "path.beginner":       { ru: "Начальный уровень", en: "Beginner Level", uz: "Boshlang'ich daraja" },
