@@ -107,7 +107,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "./js/layout.js?v=19";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=26";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=27";
     import { t, getLang, moduleTitle } from "./js/i18n.js?v=12";
     import { printBarHtml, wirePrintBar } from "./js/print-doc.js?v=1";
     import { setupReadingPosition } from "./js/reading-position.js?v=1";
@@ -228,7 +228,7 @@
               return;
             }
             const unlocked = admin || !!profile?.paid;
-            if (bodyEl && !unlocked) applyPaywall(bodyEl);
+            if (bodyEl && !unlocked) applyPaywall(bodyEl, doc.meta);
             // Самопроверка — любому вошедшему, вне зависимости от оплаты
             // (setupSelfCheck — общая с modules/module.html, js/markdown-loader.js).
             setupSelfCheck(noteRoot, bodyEl, profile?.progress?.books?.[bookKey(docPath)]?.understanding,

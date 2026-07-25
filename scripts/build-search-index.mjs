@@ -64,6 +64,7 @@ async function main() {
   const mods = await readModules();
   const entries = [];
   let missing = 0;
+  let previews = 0;
 
   for (const mod of mods) {
     // Сам модуль (у части модулей его текст — это и есть весь материал)
@@ -80,6 +81,14 @@ async function main() {
         missing++;
         continue;
       }
+      // После миграции (seed-paid-content.mjs) файлы в репозитории обрезаны
+      // до бесплатного отрывка и помечены `preview: true`. Собирать индекс
+      // из них нельзя: 1019 заголовков схлопнулись бы до сотни, и поиск по
+      // содержанию перестал бы находить почти всё. Полный текст к тому
+      // моменту живёт в Firestore, поэтому индекс собирается ДО миграции и
+      // дальше просто хранится в репозитории как есть.
+      if (/^preview:\s*true\s*$/m.test(md)) previews++;
+
       const headings = extractHeadings(md);
       entries.push({
         t: d.title,          // название урока
@@ -98,6 +107,18 @@ async function main() {
     built: new Date().toISOString().slice(0, 10),
     entries,
   };
+
+  // Отказываемся перезаписывать хороший индекс урезанным.
+  if (previews) {
+    console.error(`ОСТАНОВЛЕНО: ${previews} файл(ов) уже обрезаны до отрывка (preview: true).`);
+    console.error("Индекс, собранный из отрывков, потеряет большую часть заголовков и сломает");
+    console.error("поиск по содержанию. Полный текст теперь в Firestore, а готовый");
+    console.error("content/search-index.json уже лежит в репозитории — пересобирать его не нужно.");
+    console.error("");
+    console.error("Если заголовки в книгах реально изменились: правьте текст в Firestore,");
+    console.error("а индекс соберите из полной версии файлов (напр. из коммита до миграции).");
+    process.exit(1);
+  }
 
   const outPath = join(ROOT, "content/search-index.json");
   await writeFile(outPath, JSON.stringify(index), "utf8");

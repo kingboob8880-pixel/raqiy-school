@@ -543,12 +543,31 @@ export function openContentLinkModal({ href, kind }, label) {
  * программная защита "для честных" — сам файл в content/ всё равно читается
  * напрямую через публичный GitHub-репозиторий, без сервера скрыть статический
  * .md технически нельзя (см. project.md). */
-export function applyPaywall(bodyEl) {
+export function applyPaywall(bodyEl, meta) {
+  // После миграции (scripts/seed-paid-content.mjs) сам .md-файл в репозитории
+  // УЖЕ обрезан до бесплатного отрывка, а полный текст лежит в Firestore.
+  // Без этой проверки отрывок резался бы повторно — 12% от 12%, то есть
+  // неоплативший видел бы полторы строки вместо вводного абзаца.
+  // Метку ставит скрипт миграции в front matter (preview: true).
+  if (meta?.preview === "true" || meta?.preview === true) {
+    addPaywallNotice(bodyEl);
+    return;
+  }
   const children = Array.from(bodyEl.children);
   if (children.length <= 1) return; // нечего резать без потери смысла
   const cutIndex = Math.max(1, Math.ceil(children.length * 0.12));
   if (cutIndex >= children.length) return;
   for (let i = cutIndex; i < children.length; i++) children[i].remove();
+  addPaywallNotice(bodyEl);
+}
+
+/** Затемнение и карточка «купить курс» под обрезанным текстом. Вынесено
+ *  отдельно, потому что показывать её нужно в двух случаях: когда текст
+ *  режется здесь и когда файл уже пришёл обрезанным после миграции.
+ *  Идемпотентна — watchAuth может сработать не один раз за сессию. */
+function addPaywallNotice(bodyEl) {
+  if (bodyEl.dataset.paywallShown) return;
+  bodyEl.dataset.paywallShown = "1";
 
   const fade = document.createElement("div");
   fade.className = "paywall-fade";
