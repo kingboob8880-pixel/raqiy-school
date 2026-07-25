@@ -1769,3 +1769,130 @@ main.container { padding-block: var(--rp-space-6); }
   color: var(--rp-zone-muted, var(--rp-learn-muted));
   margin: 0; line-height: 1.55;
 }
+
+/* ==========================================================================
+   ПЕЧАТЬ И PDF (запрос автора «чтобы можно было распечатывать и скачивать в
+   красивом PDF во всех модулях», 2026-07-25)
+   --------------------------------------------------------------------------
+   До этого печатных стилей как таковых не было — только россыпь заплаток
+   «спрятать кнопку» по всему файлу, и печаталась страница сайта как есть:
+   тёмный фон темы, поля браузера по умолчанию, дуа и таблицы резались
+   пополам между листами, у страницы модуля кнопки печати не было вовсе.
+
+   Основной способ получить PDF — печать браузера («Сохранить как PDF»): в
+   отличие от скриншота через canvas это настоящий текст (выделяется,
+   ищется, арабская вязь рендерится настоящим шрифтом), файл в сотню раз
+   легче и не мылится при увеличении.
+
+   Печатаем всегда светлым по белому, независимо от выбранной темы: тёмный
+   фон темы на бумаге съел бы картридж и читался бы хуже.
+   ========================================================================== */
+@page {
+  size: A4;
+  margin: 18mm 16mm 20mm;
+}
+
+@media print {
+  /* --- Сброс темы: печать всегда чёрным по белому --- */
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+  }
+  body::before, body::after, #bg-ambient { display: none !important; }
+
+  /* Служебные элементы интерфейса на бумаге не нужны */
+  .no-print,
+  .site-header, .footer, #site-header, #site-footer,
+  .skip-link, .theme-switcher, .lang-switcher,
+  #reading-progress, #back-to-top,
+  .dua-block__play, .video-embed,
+  .bookmark-fab, .bookmark-panel, .bookmark-overlay, .bookmark-add-dialog,
+  .rp-modal-overlay, .toast-container,
+  .doc-toc, .self-check, .book-exam-cta { display: none !important; }
+
+  /* Контейнер не должен добавлять свои поля — поля задаёт @page */
+  .container, .container--narrow, main { max-width: none !important; width: auto !important; margin: 0 !important; padding: 0 !important; }
+  .card { border: none !important; box-shadow: none !important; background: none !important; padding: 0 !important; }
+
+  /* --- Титульный лист (вставляется print-doc.js) --- */
+  .print-cover { display: block !important; text-align: center; page-break-after: always; break-after: page; padding-top: 25mm; }
+  .print-cover__school { font-size: 10pt; letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 22mm; }
+  .print-cover__mark { font-family: var(--rp-font-arabic), serif; font-size: 38pt; line-height: 1; margin: 0 0 8mm; }
+  .print-cover__eyebrow { font-size: 10pt; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 4mm; }
+  .print-cover__title { font-family: var(--rp-font-heading), serif; font-size: 24pt; line-height: 1.25; margin: 0 auto 8mm; max-width: 120mm; }
+  .print-cover__rule { width: 30mm; height: 2px; background: #000; margin: 0 auto 8mm; border: none; }
+  .print-cover__author { font-size: 12pt; margin: 0 0 2mm; }
+  .print-cover__meta { font-size: 10pt; margin: 0; }
+  .print-cover__foot { margin-top: 45mm; font-size: 9pt; }
+
+  /* Колонтитул с названием школы на каждом листе, кроме титульного.
+     position: fixed внутри @media print браузеры повторяют на каждой
+     странице — единственный способ без серверной генерации PDF. */
+  .print-runhead {
+    display: block !important;
+    position: fixed; top: -12mm; left: 0; right: 0;
+    font-size: 8.5pt; letter-spacing: 0.08em; text-transform: uppercase;
+    border-bottom: 1px solid #999; padding-bottom: 1.5mm;
+  }
+  .print-runhead__right { float: right; text-transform: none; letter-spacing: 0; }
+
+  /* --- Заголовки и текст --- */
+  h1, h2, h3, h4 { color: #000 !important; page-break-after: avoid; break-after: avoid; }
+  h1 { font-size: 18pt; }
+  h2 { font-size: 14pt; margin-top: 8mm; }
+  h3 { font-size: 12pt; }
+  p, li { orphans: 3; widows: 3; }
+  .doc-body { font-size: 11pt; line-height: 1.55; }
+  .doc-body > p:first-of-type { font-size: 11pt; }
+  .form-note, .doc-meta { color: #333 !important; }
+  .badge { border: 1px solid #000 !important; background: none !important; color: #000 !important; }
+
+  /* --- Защита от разрывов: дуа, арабские блоки, таблицы, цитаты ---
+     Разорванная пополам дуа — это разорванный посреди строки арабский
+     текст на одном листе и его перевод на другом; читать по такому
+     распечатанному листу нельзя. */
+  .dua-block, .ayah-card, blockquote, .doc-warning, table, tr, .assignment-card, .table-scroll {
+    page-break-inside: avoid; break-inside: avoid;
+  }
+  .dua-block {
+    background: none !important; border: 1px solid #000 !important;
+    padding: 4mm !important; margin: 5mm 0 !important;
+  }
+  .dua-block .dua-label { color: #000 !important; opacity: 1; }
+  .doc-body p.doc-body__arabic { font-size: 15pt; line-height: 2; }
+  .doc-body p.doc-body__translit { font-style: italic; }
+  blockquote { border-left: 3px solid #000 !important; background: none !important; }
+  .doc-body th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc-body th, .doc-body td { border: 1px solid #666 !important; }
+  /* Большие таблицы всё же приходится разрешать переносить — иначе
+     таблица выше листа не напечатается вообще; шапка повторится сама. */
+  table.print-allow-break { page-break-inside: auto; break-inside: auto; }
+  thead { display: table-header-group; }
+
+  /* --- Ссылки: на бумаге по ним не кликнуть, поэтому печатаем адрес ---
+     Внутренние ссылки курса (кнопки-пилюли на другие модули) печатаем без
+     адреса: он всё равно относительный и без сайта бесполезен. */
+  .doc-body a { color: #000 !important; text-decoration: underline; }
+  .doc-body a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 8.5pt; word-break: break-all; text-decoration: none;
+  }
+  .content-ref-link { border: 1px solid #000 !important; color: #000 !important; background: none !important; }
+  .content-ref-link::after { content: none !important; }
+
+  /* Картинки не должны вылезать за поля и рваться между листами */
+  img { max-width: 100% !important; height: auto !important; page-break-inside: avoid; break-inside: avoid; }
+  .book-hero { display: block !important; border: none !important; background: none !important; padding: 0 !important; }
+  .book-hero__cover { max-width: 60mm; float: right; margin: 0 0 4mm 4mm; }
+  .book-hero__spine, .book-hero__video { display: none !important; }
+
+  /* Список уроков модуля печатаем компактно, без «кнопочного» вида */
+  .lesson-list { padding-left: 0 !important; }
+  .lesson-link { border: none !important; background: none !important; padding: 1mm 0 !important; box-shadow: none !important; }
+  .lesson-link__go { display: none !important; }
+}
+
+/* Экранный аналог: пока идёт подготовка к печати, скрываем титульный лист и
+   колонтитул — на экране они не нужны, но в DOM уже есть. */
+.print-cover, .print-runhead { display: none; }

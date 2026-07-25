@@ -56,8 +56,6 @@ const S = {
 
   // Book page
   "book.back":         { ru: "← Назад", en: "← Back", uz: "← Orqaga" },
-  "book.pdf":          { ru: "📥 Скачать PDF", en: "📥 Download PDF", uz: "📥 PDF yuklab olish" },
-  "book.print":        { ru: "🖨️ Распечатать", en: "🖨️ Print", uz: "🖨️ Chop etish" },
   "book.loading":      { ru: "Загрузка…", en: "Loading…", uz: "Yuklanmoqda…" },
   "book.nodoc":        { ru: "Не указан документ (параметр ?doc=).", en: "No document specified (?doc= parameter).", uz: "Hujjat ko'rsatilmagan (?doc= parametri)." },
   "book.loaderror":    { ru: "Не удалось загрузить материал", en: "Failed to load content", uz: "Materialni yuklash imkoni bo'lmadi" },
@@ -164,6 +162,25 @@ const S = {
   "reading.progress":  { ru: "Прогресс чтения", en: "Reading progress", uz: "O'qish jarayoni" },
 
   // PDF download
+  // Печать и PDF (запрос автора «распечатывать и скачивать в красивом PDF
+  // во всех модулях», 2026-07-25). Подписи без эмодзи — иконку кнопки
+  // подставляет printBarHtml() отдельно, иначе она попадала бы и в
+  // title/aria и читалась бы вслух экранной читалкой.
+  "print.print":       { ru: "Распечатать", en: "Print", uz: "Chop etish" },
+  "print.pdf":         { ru: "Скачать PDF", en: "Download PDF", uz: "PDF yuklab olish" },
+  "print.quick":       { ru: "Быстро", en: "Quick", uz: "Tez" },
+  "print.quickHint":   { ru: "Скачать одним кликом. Внутри картинка — текст нельзя выделить и найти поиском, файл тяжелее.", en: "One-click download. The file contains an image — text is not selectable or searchable, and the file is heavier.", uz: "Bir marta bosish bilan yuklab olish. Ichida rasm — matnni tanlash va qidirish mumkin emas, fayl ancha og'ir." },
+  "print.hintTitle":   { ru: "Как сохранить в PDF", en: "How to save as PDF", uz: "PDF sifatida qanday saqlash" },
+  "print.hintText":    { ru: "Сейчас откроется окно печати. В списке принтеров выберите «Сохранить как PDF» — так текст в файле останется настоящим: его можно выделять и искать, а арабская вязь напечатается ровно.", en: "The print dialog will open next. In the printer list choose \"Save as PDF\" — this keeps the text real: you can select and search it, and the Arabic script prints cleanly.", uz: "Hozir chop etish oynasi ochiladi. Printerlar ro'yxatidan \"PDF sifatida saqlash\"ni tanlang — shunda fayldagi matn haqiqiy bo'lib qoladi: uni tanlash va qidirish mumkin, arab yozuvi ham tekis chiqadi." },
+  // Номера страниц браузер умеет ставить только сам, своей галочкой
+  // «Колонтитулы» — CSS-правило @page { @bottom-center } поддерживают лишь
+  // серверные генераторы PDF, в браузерах оно не работает. Поэтому не
+  // обещаем номера молча, а подсказываем, где их включить.
+  "print.hintPages":   { ru: "Нужны номера страниц — включите в том же окне галочку «Колонтитулы».", en: "If you want page numbers, tick \"Headers and footers\" in the same dialog.", uz: "Sahifa raqamlari kerak bo'lsa, xuddi shu oynada \"Kolontitullar\" bandini belgilang." },
+  "print.hintGo":      { ru: "Открыть окно печати", en: "Open print dialog", uz: "Chop etish oynasini ochish" },
+  "print.author":      { ru: "Лекарь Абу Мухаммад", en: "Healer Abu Muhammad", uz: "Tabib Abu Muhammad" },
+  "print.foot":        { ru: "Онлайн-школа рукии · t.me/ruqoq", en: "Online Ruqyah School · t.me/ruqoq", uz: "Onlayn ruqya maktabi · t.me/ruqoq" },
+  "module.allModules": { ru: "← Все модули", en: "← All modules", uz: "← Barcha modullar" },
   "pdf.preparing":     { ru: "Подготовка…", en: "Preparing…", uz: "Tayyorlanmoqda…" },
   "pdf.error":         { ru: "Не удалось создать PDF — попробуйте ещё раз.", en: "Failed to create PDF — please try again.", uz: "PDF yaratib bo'lmadi — qayta urinib ko'ring." },
 
