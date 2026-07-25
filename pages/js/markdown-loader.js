@@ -294,10 +294,10 @@ export function enhanceDuaBlocks(bodyEl) {
 }
 
 /** Кнопка озвучки арабского текста внутри .dua-block.
- *  Приоритет: реальный аудиофайл (MP3/WAV, сгенерированный MyVoiceTTS) →
+ *  Приоритет: реальный аудиофайл (OGG, сгенерированный MyVoiceTTS) →
  *  fallback на Web Speech API если файла нет.
  *  audioId — идентификатор вида "module-1_molba-zaklinatelya_01", по нему
- *  строится URL /content/audio/dua/{id}.mp3. Если null — только Speech API. */
+ *  строится URL /content/audio/dua/{id}.ogg. Если null — только Speech API. */
 function addDuaPlayButton(block, audioId) {
   const arabicEl = block.querySelector('[lang="ar"]');
   if (!arabicEl) return;
@@ -313,7 +313,7 @@ function addDuaPlayButton(block, audioId) {
 
   // Пробуем реальный аудиофайл
   if (audioId) {
-    const audioUrl = withBase(`/content/audio/dua/${audioId}.mp3`);
+    const audioUrl = withBase(`/content/audio/dua/${audioId}.ogg`);
     audio = new Audio();
     audio.preload = "none";
     audio.src = audioUrl;
