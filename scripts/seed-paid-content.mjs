@@ -42,7 +42,7 @@
 // Пока не сделано ни то, ни другое, миграция даёт ложное чувство защиты:
 // текст перестаёт отдаваться сайтом, но по-прежнему лежит в открытой истории.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { initializeApp, cert, applicationDefault } from "firebase-admin/app";
@@ -101,9 +101,58 @@ async function collectProtectedDocs() {
   return [...docs];
 }
 
+/** Все .md под content/ — включая те, которых нет в modules-data.js. */
+function allContentFiles(dir, out = []) {
+  for (const name of readdirSync(dir)) {
+    const full = path.join(dir, name);
+    if (statSync(full).isDirectory()) allContentFiles(full, out);
+    else if (name.endsWith(".md")) out.push(full);
+  }
+  return out;
+}
+
+/** Миграция обрезает только те файлы, что перечислены в modules-data.js.
+ *  Всё остальное под content/ она бы не тронула — и полный текст остался бы
+ *  открытым, несмотря на «успешную» миграцию.
+ *
+ *  Это не теория: в репозитории лежали дубли вида
+ *  content/module-8/module-8/prodvinutye-formuly.md (178 файлов) — копии,
+ *  попавшие туда при давнем неудачном копировании. Сайт их не использует,
+ *  но GitHub Pages отдавал их публично с ПОЛНЫМ текстом. Проверено
+ *  2026-07-25: файл открывался по прямой ссылке целиком.
+ *
+ *  Поэтому — жёсткая остановка: пока лишние файлы не убраны, миграция
+ *  создаёт лишь видимость защиты. */
+function assertNoStrayFiles(protectedDocs) {
+  const contentDir = path.join(REPO_ROOT, "content");
+  const known = new Set(protectedDocs.map((d) => path.join(REPO_ROOT, d.replace(/^\//, ""))));
+  const stray = allContentFiles(contentDir)
+    .map((f) => path.relative(REPO_ROOT, f).split(path.sep).join("/"))
+    // Экзамены — отдельная категория: их грузит pages/js/exam-loader.js, в
+    // modules-data.js они не перечислены и текстом книг не являются.
+    .filter((rel) => !rel.startsWith("content/exams/"))
+    .filter((rel) => !known.has(path.join(REPO_ROOT, rel)));
+  if (!stray.length) return;
+
+  console.error("");
+  console.error(`ОСТАНОВЛЕНО: под content/ найдено ${stray.length} файлов, которых нет в modules-data.js.`);
+  console.error("Миграция их не обрежет, и полный текст останется открытым — сайт");
+  console.error("отдаёт любые файлы из репозитория по прямой ссылке.");
+  console.error("");
+  for (const f of stray.slice(0, 10)) console.error("  " + f);
+  if (stray.length > 10) console.error(`  … и ещё ${stray.length - 10}`);
+  console.error("");
+  console.error("Если это мусорные дубли — удалите их и повторите:");
+  console.error("  git rm -r content/module-*/module-* && git commit -m 'убраны дубли'");
+  console.error("");
+  console.error("Если это нужные документы — добавьте их в modules-data.js.");
+  process.exit(1);
+}
+
 async function main() {
   const protectedDocs = await collectProtectedDocs();
   console.log(`Найдено ${protectedDocs.length} защищённых документов.`);
+  assertNoStrayFiles(protectedDocs);
 
   let app;
   if (!DRY_RUN) {
