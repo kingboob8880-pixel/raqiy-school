@@ -455,6 +455,8 @@ const S = {
   // modules-data.js. Названия и уровни берутся оттуда же, здесь только текст.
   "about.books.title":   { ru: "Мои книги", en: "My books", uz: "Mening kitoblarim" },
   "about.books.intro":   { ru: "Я, лекарь Абу Мухаммад, — автор всех книг этого курса. Они писались не как теория, а как записи живой практики: то, что я проверял на приёме, разбирал с учениками и сверял с Кораном и Сунной. Материал собран в 11 модулей; ниже — коротко о каждом. Нажмите на книгу, чтобы открыть её.", en: "I, healer Abu Muhammad, am the author of every book in this course. They were written not as theory but as records of living practice: what I tested with patients, worked through with students and checked against the Quran and Sunnah. The material is gathered into 11 modules; below is a short note on each. Tap a book to open it.", uz: "Men, tabib Abu Muhammad, ushbu kursdagi barcha kitoblarning muallifiman. Ular nazariya sifatida emas, balki jonli amaliyot yozuvlari sifatida yozilgan: qabulda sinab ko'rganim, shogirdlar bilan tahlil qilganim va Qur'on hamda Sunnaga solishtirganim. Material 11 ta modulga jamlangan; quyida har biri haqida qisqacha. Kitobni ochish uchun bosing." },
+  "about.books.inside":  { ru: "Что внутри", en: "What's inside", uz: "Ichida nima bor" },
+  "about.books.open":    { ru: "Открыть книгу", en: "Open the book", uz: "Kitobni ochish" },
   "about.books.lesson1": { ru: "урок", en: "lesson", uz: "dars" },
   "about.books.lesson2": { ru: "урока", en: "lessons", uz: "dars" },
   "about.books.lesson5": { ru: "уроков", en: "lessons", uz: "dars" },

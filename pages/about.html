@@ -152,6 +152,40 @@
     .book-card { gap: var(--rp-space-3); padding: var(--rp-space-3); }
     .book-card__go { display: none; }
   }
+
+  /* Модалка книги. Базовые .rp-modal-* стили — общие для сайта
+     (design/base.css), здесь только то, что нужно именно карточке книги:
+     обложка, состав уроков и запас по ширине под этот список. */
+  /* Обложка + описание + до 12 уроков + кнопки не влезают в невысокий
+     экран (особенно телефон в ландшафте), поэтому вся модалка скроллится,
+     а кнопка «×» держится в углу видимой области. */
+  .rp-modal--book { max-width: 34rem; max-height: calc(100vh - 2 * var(--rp-space-4)); overflow-y: auto; }
+  .rp-modal--book .rp-modal__close { position: sticky; top: 0; float: right; margin: -0.25rem -0.25rem 0 0; }
+  .book-modal__cover {
+    width: 100%; max-height: 11rem; object-fit: cover;
+    border-radius: var(--rp-radius-md); margin-bottom: var(--rp-space-3);
+  }
+  .book-modal__desc { line-height: 1.7; margin: 0 0 var(--rp-space-4); }
+  .book-modal__lessons-title {
+    font-size: var(--rp-fs-sm); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--rp-learn-text-muted);
+    margin: 0 0 var(--rp-space-2);
+  }
+  /* Список уроков ограничен по высоте и скроллится: у Модуля 5 их 12, без
+     ограничения модалка вылезала бы за экран на телефоне. */
+  .book-modal__lessons {
+    list-style: none; padding: 0; margin: 0;
+    max-height: 13rem; overflow-y: auto;
+    border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
+  }
+  .book-modal__lessons li {
+    display: flex; gap: var(--rp-space-2); align-items: baseline;
+    padding: var(--rp-space-2) var(--rp-space-3);
+    font-size: var(--rp-fs-sm); line-height: 1.5;
+    border-bottom: 1px solid var(--rp-learn-border);
+  }
+  .book-modal__lessons li:last-child { border-bottom: none; }
+  .book-modal__lesson-num { flex: none; color: var(--rp-color-gold-600); font-weight: 700; }
 </style>
 </head>
 <body data-zone="learn">
@@ -299,8 +333,9 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=18";
-    import { t, getLang, moduleTitle, localLevel } from "./js/i18n.js?v=9";
+    import { t, getLang, moduleTitle, localLevel, lessonTitle } from "./js/i18n.js?v=10";
     import { MODULES } from "./js/modules-data.js?v=34";
+    import { withBase } from "./js/base-path.js?v=6";
     renderHeader("learn");
     renderFooter();
     document.documentElement.lang = getLang();
@@ -330,7 +365,7 @@
         ? `<span aria-hidden="true">·</span><span>${n} ${lessonWord(n)}</span>`
         : "";
       return `
-        <a class="book-card" href="modules/module.html?id=${m.id}">
+        <a class="book-card" href="modules/module.html?id=${m.id}" data-module-id="${m.id}">
           <span class="book-card__num" aria-hidden="true">${m.id}</span>
           <span class="book-card__body">
             <span class="book-card__title">${moduleTitle(m)}</span>
@@ -344,6 +379,85 @@
         </a>`;
     }
     document.getElementById("books-list").innerHTML = MODULES.map(bookCardHtml).join("");
+
+    // ── Модалка книги ──────────────────────────────────────────────────
+    // Карточка осталась настоящей ссылкой <a href>, а модалка открывается
+    // перехватом обычного клика. Так Ctrl/Cmd-клик, средняя кнопка и
+    // «открыть в новой вкладке» продолжают вести прямо на модуль, а без JS
+    // ссылка просто работает как раньше. Разметка и поведение (Escape,
+    // клик по фону, возврат фокуса) — тот же .rp-modal, что у ссылок внутри
+    // текста книг, чтобы модалки на сайте выглядели одинаково.
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    let closeActiveModal = null;
+
+    function openBookModal(m) {
+      if (closeActiveModal) closeActiveModal();
+      const trigger = document.activeElement;
+      const n = m.lessons.length;
+      const href = `modules/module.html?id=${m.id}`;
+
+      // Состав книги — то, чего нет на карточке: какие именно уроки внутри.
+      const lessonsHtml = n ? `
+        <p class="book-modal__lessons-title">${escapeHtml(t("about.books.inside"))}</p>
+        <ul class="book-modal__lessons">
+          ${m.lessons.map((l, i) => `
+            <li>
+              <span class="book-modal__lesson-num" aria-hidden="true">${i + 1}</span>
+              <span>${escapeHtml(lessonTitle(l))}</span>
+            </li>`).join("")}
+        </ul>` : "";
+
+      const overlay = document.createElement("div");
+      overlay.className = "rp-modal-overlay";
+      overlay.innerHTML = `
+        <div class="rp-modal rp-modal--book" role="dialog" aria-modal="true" aria-labelledby="book-modal-title">
+          <button class="rp-modal__close" type="button" aria-label="${escapeHtml(t("common.close"))}">×</button>
+          ${m.cover ? `<img class="book-modal__cover" src="${withBase(m.cover)}" alt="" loading="lazy">` : ""}
+          <p class="rp-modal__eyebrow">${escapeHtml(t("module.n"))} ${m.id} · ${escapeHtml(localLevel(m.level))}${n ? ` · ${n} ${escapeHtml(lessonWord(n))}` : ""}</p>
+          <h3 id="book-modal-title" class="rp-modal__title">${escapeHtml(moduleTitle(m))}</h3>
+          <p class="book-modal__desc">${escapeHtml(t("about.books." + m.id))}</p>
+          ${lessonsHtml}
+          <div class="rp-modal__actions">
+            <a class="btn btn-primary" href="${href}">${escapeHtml(t("about.books.open"))}</a>
+            <button class="btn btn-outline" type="button" data-close>${escapeHtml(t("common.close"))}</button>
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      document.body.classList.add("rp-modal-open");
+
+      const close = () => {
+        overlay.remove();
+        document.body.classList.remove("rp-modal-open");
+        document.removeEventListener("keydown", onKeydown);
+        // Возвращаем фокус на карточку, с которой открыли — иначе после
+        // закрытия фокус улетает в начало страницы.
+        if (trigger && typeof trigger.focus === "function") trigger.focus();
+        closeActiveModal = null;
+      };
+      const onKeydown = (e) => { if (e.key === "Escape") close(); };
+      document.addEventListener("keydown", onKeydown);
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) close(); });
+      overlay.querySelector(".rp-modal__close").addEventListener("click", close);
+      overlay.querySelector("[data-close]").addEventListener("click", close);
+      closeActiveModal = close;
+
+      overlay.querySelector(".rp-modal__close").focus();
+    }
+
+    document.getElementById("books-list").addEventListener("click", (e) => {
+      // Модификаторы и средняя кнопка не перехватываем — пусть браузер
+      // откроет модуль в новой вкладке, как от любой ссылки.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      const card = e.target.closest(".book-card");
+      if (!card) return;
+      const m = MODULES.find((x) => String(x.id) === card.dataset.moduleId);
+      if (!m) return;
+      e.preventDefault();
+      openBookModal(m);
+    });
 
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
       const io = new IntersectionObserver((entries) => {
