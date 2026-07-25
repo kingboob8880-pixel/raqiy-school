@@ -1336,15 +1336,38 @@ main.container { padding-block: var(--rp-space-6); }
 .messenger-page {
   max-width: 100rem;
   display: flex; flex-direction: column;
-  /* 100dvh, а не vh: на мобильных vh не учитывает адресную строку, и низ
-     с полем ввода уезжал под неё. */
-  min-height: calc(100dvh - 10rem);
+  /* height, а НЕ min-height — принципиально. С min-height страница росла
+     вместе с числом сообщений: переписка удлинялась вниз бесконечно вместо
+     того, чтобы старые сообщения уходили в прокрутку внутри списка
+     (жалоба автора со скриншотом, 2026-07-25).
+     Внутренняя прокрутка работает только если высота ОПРЕДЕЛЕНА на всей
+     цепочке предков — иначе каждый следующий контейнер просто растягивается
+     под содержимое.
+     --rp-header-h измеряет layout.js по реальной шапке: захардкоженное
+     значение врало бы при переносе шапки на две строки, при другом
+     масштабе браузера или крупном системном шрифте. 4.5rem — запасной
+     вариант, если скрипт не успел отработать.
+     Подвал на этой странице скрыт (ниже), так что мессенджер занимает
+     ровно остаток экрана.
+     100dvh, а не vh: на мобильных vh не учитывает адресную строку. */
+  height: calc(100dvh - var(--rp-header-h, 4.5rem));
+  overflow: hidden;
 }
+/* Подвал на странице переписки не нужен — он только отнимал бы высоту у
+   сообщений, а мессенджер и так занимает экран целиком. */
+/* Два селектора: соседний работает везде, :has() — подстраховка на случай
+   иной разметки страницы. */
+.messenger-page ~ #site-footer,
+body:has(.messenger-page) .footer { display: none; }
 
 .messenger {
   display: grid; grid-template-columns: minmax(17rem, 24rem) 1fr;
   gap: var(--rp-space-4); align-items: stretch;
-  flex: 1; min-height: 26rem; margin: var(--rp-space-4) 0;
+  /* min-height: 0 обязательно: по умолчанию grid- и flex-элементы не
+     сжимаются меньше своего содержимого, и переписка распирала бы
+     контейнер, вместо того чтобы прокручиваться внутри. */
+  flex: 1 1 auto; min-height: 0;
+  margin: var(--rp-space-4) 0;
 }
 .messenger__list, .messenger__thread {
   display: flex; flex-direction: column; min-height: 0;
@@ -1434,12 +1457,13 @@ main.container { padding-block: var(--rp-space-6); }
     margin-left: calc(-1 * var(--rp-space-4));
     margin-right: calc(-1 * var(--rp-space-4));
     padding: 0;
-    min-height: calc(100dvh - 4.5rem); /* минус шапка сайта */
+    /* height, а не min-height — иначе страница растёт вместе с числом
+       сообщений вместо прокрутки внутри списка (та же причина, что и на ПК) */
+    height: calc(100dvh - var(--rp-header-h, 4.5rem));
   }
   .messenger {
     grid-template-columns: 1fr;
     gap: 0; margin: 0; min-height: 0;
-    height: calc(100dvh - 4.5rem);
   }
   /* Без скруглений и рамок по краям — панель и есть экран */
   .messenger__list, .messenger__thread { border-radius: 0; border-left: none; border-right: none; }
@@ -1453,9 +1477,6 @@ main.container { padding-block: var(--rp-space-6); }
 
   /* Пузыри шире: на узком экране 80% оставляли бесполезные поля по бокам */
   .messenger__msgs .msg { max-width: 88%; }
-
-  /* Подвал сайта на странице переписки только отнимает высоту */
-  .messenger-page ~ #site-footer, body:has(.messenger-page) .footer { display: none; }
 }
 
 /* Меню «изменить/удалить» на своём сообщении (запрос автора, 2026-07-25).

@@ -191,6 +191,27 @@ export function renderHeader(zone = "learn") {
 
   initSiteTheme();
   initOffline();
+  trackHeaderHeight(root);
+}
+
+/** Держит --rp-header-h равной реальной высоте шапки.
+ *
+ *  Нужно странице-мессенджеру: она занимает calc(100dvh - высота шапки), и
+ *  захардкоженное значение врало бы при переносе шапки на две строки, при
+ *  другом масштабе браузера или крупном системном шрифте — переписка либо
+ *  вылезала бы за экран, либо не добирала высоту.
+ *
+ *  ResizeObserver, а не разовое измерение: шапка меняет высоту при повороте
+ *  телефона и при открытии мобильного меню. */
+function trackHeaderHeight(root) {
+  const header = root.querySelector(".site-header");
+  if (!header) return;
+  const apply = () => {
+    document.documentElement.style.setProperty("--rp-header-h", `${header.offsetHeight}px`);
+  };
+  apply();
+  if ("ResizeObserver" in window) new ResizeObserver(apply).observe(header);
+  else window.addEventListener("resize", apply);
 }
 
 /** Офлайн-режим и иконка на домашнем экране (совет по улучшениям,
