@@ -1289,18 +1289,166 @@ main.container { padding-block: var(--rp-space-6); }
 .row-actions button.is-active { border-color: var(--rp-zone-accent); color: var(--rp-zone-accent); }
 .row-actions button.is-danger { border-color: color-mix(in srgb, var(--rp-status-danger) 50%, var(--rp-zone-border)); }
 .row-actions button.is-danger:hover { background: color-mix(in srgb, var(--rp-status-danger) 12%, transparent); }
-.thread-row td { background: color-mix(in srgb, var(--rp-zone-accent) 5%, transparent); }
-.thread-panel { padding: var(--rp-space-4); }
-
 /* Значок непрочитанных на кнопке 💬 — раньше единственный способ узнать,
    что ученик написал, был открыть переписку каждого по очереди (улучшение
    чата, 2026-07-20). */
-.thread-toggle { position: relative; }
+.thread-toggle {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2.5rem; min-height: 2.5rem; text-decoration: none;
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
+  color: var(--rp-zone-text); font-size: var(--rp-fs-sm);
+}
+.thread-toggle:hover { background: color-mix(in srgb, var(--rp-zone-accent) 10%, transparent); }
 .unread-badge {
   position: absolute; top: -0.4rem; right: -0.4rem; min-width: 1.1rem; height: 1.1rem;
   padding: 0 0.25rem; border-radius: var(--rp-radius-pill);
   background: var(--rp-status-danger); color: #fff; font-size: 0.65rem; font-weight: 700;
   line-height: 1.1rem; text-align: center;
+}
+
+/* ---------- Мессенджер наставника (pages/dashboard/chat.html) ----------
+   Переписка раньше открывалась строкой ВНУТРИ таблицы учеников: любая
+   перерисовка таблицы пересоздавала DOM чата, значки обновлялись только по
+   перезагрузке, а на телефоне чат ездил вместе с горизонтальной прокруткой
+   таблицы. Отдельная страница на две панели — список диалогов и сама
+   переписка (запрос автора «сделай нормальный чат», 2026-07-25). */
+.messenger {
+  display: grid; grid-template-columns: minmax(16rem, 22rem) 1fr;
+  gap: var(--rp-space-4); align-items: stretch;
+  height: min(72vh, 46rem); margin-top: var(--rp-space-4);
+}
+.messenger__list, .messenger__thread {
+  display: flex; flex-direction: column; min-height: 0;
+  background: var(--rp-zone-surface); border: 1px solid var(--rp-zone-border);
+  border-radius: var(--rp-radius-md); overflow: hidden;
+}
+.messenger__list-head { padding: var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border); }
+.messenger__title { margin: 0 0 var(--rp-space-2); font-size: var(--rp-fs-lg); }
+.messenger__search { margin: 0 0 var(--rp-space-2); }
+.messenger__search input { width: 100%; }
+.messenger__filters { display: flex; gap: var(--rp-space-2); }
+.messenger__filter {
+  font: inherit; font-size: var(--rp-fs-sm); cursor: pointer; padding: 0.3rem 0.7rem;
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-pill);
+  background: transparent; color: var(--rp-zone-text);
+}
+.messenger__filter.is-active { background: var(--rp-zone-accent); border-color: var(--rp-zone-accent); color: #fff; }
+
+.thread-list { flex: 1; min-height: 0; overflow-y: auto; }
+.thread-item {
+  display: flex; gap: var(--rp-space-3); align-items: center; width: 100%;
+  padding: var(--rp-space-3); border: none; border-bottom: 1px solid var(--rp-zone-border);
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.thread-item:hover { background: color-mix(in srgb, var(--rp-zone-accent) 7%, transparent); }
+.thread-item.is-active { background: color-mix(in srgb, var(--rp-zone-accent) 14%, transparent); }
+.thread-item.has-unread .thread-item__name,
+.thread-item.has-unread .thread-item__preview { font-weight: 700; }
+.thread-item__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.thread-item__top, .thread-item__bottom { display: flex; align-items: center; gap: var(--rp-space-2); }
+.thread-item__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thread-item__time { font-size: 0.7rem; opacity: 0.7; flex: none; }
+/* Превью в одну строку: без обрезки длинное сообщение растягивало бы
+   карточку и ломало ровный ритм списка. */
+.thread-item__preview {
+  flex: 1; min-width: 0; font-size: var(--rp-fs-sm); opacity: 0.75;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.thread-item__you { opacity: 0.8; }
+.thread-item__bottom .unread-badge { position: static; flex: none; }
+
+/* Кружок с инициалами — фото у учеников нет, а сплошной список одинаковых
+   строк читается тяжело. Оттенок стабилен для uid (см. avatarHue). */
+.thread-avatar {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: 50%;
+  background: hsl(var(--avatar-hue, 40) 45% 45%); color: #fff;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em;
+}
+
+.messenger__placeholder {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--rp-space-2); text-align: center; padding: var(--rp-space-6);
+}
+.messenger__placeholder span { font-size: 2.5rem; opacity: 0.5; }
+.messenger__view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.messenger__thread-head {
+  display: flex; align-items: center; gap: var(--rp-space-3);
+  padding: var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border);
+}
+.messenger__peer { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.messenger__peer-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.messenger__peer-meta { margin: 0; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.messenger__back { display: none; }
+.messenger__back, .messenger__icon-btn {
+  flex: none; font: inherit; font-size: 1.1rem; cursor: pointer;
+  min-width: 2.5rem; min-height: 2.5rem; border-radius: var(--rp-radius-sm);
+  border: 1px solid var(--rp-zone-border); background: transparent; color: var(--rp-zone-text);
+}
+.messenger__icon-btn:hover, .messenger__back:hover { background: color-mix(in srgb, var(--rp-zone-accent) 10%, transparent); }
+.messenger__msg-search { display: flex; gap: var(--rp-space-2); padding: var(--rp-space-2) var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border); }
+.messenger__msg-search input { flex: 1; font: inherit; padding: 0.4rem 0.6rem; border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm); background: var(--rp-zone-surface); color: inherit; }
+/* Внутри мессенджера высоту списка задаёт грид-контейнер, а не max-height
+   из общего правила .msg-list (там 28rem — для карточки в кабинете). */
+.messenger__msgs { flex: 1; min-height: 0; max-height: none; padding: var(--rp-space-3); margin: 0; }
+.messenger__form { padding: var(--rp-space-3); border-top: 1px solid var(--rp-zone-border); }
+
+/* Одна колонка на узком экране: видна либо список, либо переписка —
+   две панели рядом на телефоне превратились бы в две нечитаемые полоски. */
+@media (max-width: 52rem) {
+  .messenger { grid-template-columns: 1fr; height: min(78vh, 44rem); }
+  .messenger[data-pane="list"] .messenger__thread { display: none; }
+  .messenger[data-pane="thread"] .messenger__list { display: none; }
+  .messenger__back { display: inline-flex; align-items: center; justify-content: center; }
+}
+
+/* Меню «изменить/удалить» на своём сообщении (запрос автора, 2026-07-25).
+   Кнопка ⋯ проявляется по наведению на десктопе, но на тач-устройствах
+   hover не существует — там она видна всегда. */
+.msg__actions { position: absolute; top: 0.15rem; right: 0.25rem; }
+.msg__menu-btn {
+  opacity: 0; font: inherit; line-height: 1; cursor: pointer; padding: 0.1rem 0.3rem;
+  border: none; background: transparent; color: inherit; border-radius: var(--rp-radius-sm);
+  transition: opacity 0.15s ease;
+}
+.msg:hover .msg__menu-btn, .msg__menu-btn:focus-visible, .msg__menu-btn[aria-expanded="true"] { opacity: 0.75; }
+.msg__menu-btn:hover { opacity: 1; }
+@media (hover: none) { .msg__menu-btn { opacity: 0.6; } }
+.msg-menu {
+  position: absolute; top: 1.5rem; right: 0; z-index: 30; min-width: 9rem;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--rp-zone-surface); color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
+  box-shadow: var(--rp-shadow-card);
+}
+.msg-menu__item { font: inherit; font-size: var(--rp-fs-sm); text-align: left; cursor: pointer; padding: 0.5rem 0.75rem; border: none; background: transparent; color: inherit; }
+.msg-menu__item:hover { background: color-mix(in srgb, var(--rp-zone-accent) 12%, transparent); }
+.msg-menu__item.is-danger { color: var(--rp-status-danger); }
+.msg__edited { opacity: 0.8; margin-right: 0.3rem; font-style: italic; }
+.msg__hit { background: var(--rp-accent-light, #fef3c7); color: #1a1a1a; border-radius: 2px; padding: 0 1px; }
+
+/* Заголовок чата в кабинете ученика: заголовок + поиск по переписке */
+.chat-head { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-top: var(--rp-space-6); margin-bottom: var(--rp-space-3); }
+.chat-head__search { margin: 0; margin-left: auto; }
+
+/* Значок непрочитанных в пункте «Кабинет» — ответ наставника раньше
+   обнаруживался только при следующем заходе в кабинет (запрос автора,
+   2026-07-25). Инлайновый, а не абсолютный: пункт меню и так flex-строка. */
+.nav-unread {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.1rem; height: 1.1rem; margin-left: 0.35rem; padding: 0 0.25rem;
+  border-radius: var(--rp-radius-pill); background: var(--rp-status-danger);
+  color: #fff; font-size: 0.65rem; font-weight: 700; line-height: 1;
+}
+
+/* Кнопка «Переписка» в шапке кабинета администратора. .dash-hero — flex без
+   переноса, поэтому на узком экране кнопка выдавливала бы заголовок; ниже
+   52rem уводим её на свою строку. */
+.dash-hero { flex-wrap: wrap; }
+.dash-hero__cta { position: relative; margin-left: auto; flex: none; }
+.dash-hero__cta .unread-badge { top: -0.5rem; right: -0.5rem; }
+@media (max-width: 52rem) {
+  .dash-hero__cta { margin-left: 0; width: 100%; justify-content: center; }
 }
 
 /* ---------- Квиз ---------- */

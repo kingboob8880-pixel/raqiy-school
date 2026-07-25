@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет админа — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=50">
+<link rel="stylesheet" href="../../design/base.css?v=51">
 <style>
   .toggle { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   .silent-flag { color: var(--rp-status-danger); font-weight: 700; }
@@ -24,6 +24,9 @@
           <p class="dash-hero__eyebrow" data-t="admin.schoolTitle">Онлайн-школа рукии</p>
           <h1 data-t="admin.dashboard">Кабинет администратора</h1>
         </div>
+        <a class="btn btn-primary dash-hero__cta" href="chat.html">
+          💬 <span data-t="chat.messenger">Переписка</span><span id="admin-unread-total" class="unread-badge" hidden></span>
+        </a>
       </div>
 
       <div class="stat-grid" style="margin-bottom: var(--rp-space-6);">
@@ -69,15 +72,16 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=17";
-    import { t, getLang } from "../js/i18n.js?v=6";
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=18";
+    import { t, getLang } from "../js/i18n.js?v=7";
     import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=10";
+    // Сам чат живёт на отдельной странице chat.html — здесь остались только
+    // счётчики непрочитанных для значка 💬 в строке ученика.
     import {
-      listStudents, setStudentPaid, deleteStudent, sendMessage, sendMediaMessage, watchMessages, markThreadRead,
+      listStudents, setStudentPaid, deleteStudent, sendMessage,
       countUnreadFromStudent, daysSince, computeOverallProgress, computeAverageScore,
       setCertificateGranted, setRukyaProAccess,
-    } from "../../integration/firestore.js?v=19";
-    import { renderMessages, wireChatForm, scrollToBottom, wireVoicePlayers } from "../js/chat-ui.js?v=3";
+    } from "../../integration/firestore.js?v=20";
 
     renderHeader("admin");
     renderFooter();
@@ -87,10 +91,7 @@
     const dashboard = document.getElementById("dashboard");
     const body = document.getElementById("students-body");
     let allStudents = [];
-    let openThreadUid = null;
     let unreadMap = {}; // uid -> кол-во непрочитанных сообщений ОТ ученика (значок 💬)
-    let activeThreadUid = null;
-    let unwatchThread = null;
 
     function escapeHtml(s) {
       return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -100,7 +101,6 @@
       const silent = daysSince(s.lastSeenAt);
       const isSilent = silent !== null && silent > 14;
       const avg = computeAverageScore(s.progress);
-      const isOpen = openThreadUid === s.uid;
       const name = escapeHtml(s.name || "—");
       const email = escapeHtml(s.email || "—");
       const nameAttr = escapeHtml(s.name || s.email || "ученика");
@@ -112,7 +112,7 @@
       const hasCert = !!s.certificateGranted;
       const hasRukyaPro = !!s.rukyaProAccess;
       const row = `
-        <tr>
+        <tr data-uid="${s.uid}">
           <td>${name}</td>
           <td>${email}</td>
           <td>${computeOverallProgress(s.progress)}%</td>
@@ -132,81 +132,19 @@
           </td>
           <td>
             <div class="row-actions">
-              <button type="button" class="thread-toggle ${isOpen ? "is-active" : ""}" data-uid="${s.uid}" title="Переписка" aria-label="Переписка с учеником">💬${badgeHtml}</button>
-              <button type="button" class="student-delete is-danger" data-uid="${s.uid}" data-name="${nameAttr}" title="Удалить" aria-label="Удалить ученика">🗑</button>
+              <a class="thread-toggle" href="chat.html?uid=${encodeURIComponent(s.uid)}" title="${t("chat.openThread")}" aria-label="${t("chat.openThread")}">💬${badgeHtml}</a>
+              <button type="button" class="student-delete is-danger" data-uid="${s.uid}" data-name="${nameAttr}" title="${t("admin.deleteStudent")}" aria-label="${t("admin.deleteStudent")}">🗑</button>
             </div>
           </td>
         </tr>`;
-      const thread = isOpen ? `
-        <tr class="thread-row" data-thread-for="${s.uid}">
-          <td colspan="9">
-            <div class="thread-panel">
-              <div class="msg-list" id="thread-msgs-${s.uid}" role="log" aria-live="polite"><p class="form-note">Загрузка…</p></div>
-              <form class="thread-reply chat-form" data-uid="${s.uid}">
-                <textarea class="chat-input" rows="1" aria-label="Ответ ученику ${escapeHtml(s.name || "")} (Enter — отправить, Shift+Enter — новая строка)" placeholder="Ответить ${escapeHtml(s.name || "ученику")}…"></textarea>
-                <button class="btn btn-primary btn-sm" type="submit" disabled>Отправить</button>
-                <div class="chat-media-bar">
-                  <button type="button" class="chat-media-btn chat-btn-voice" title="Голосовое">🎤</button>
-                  <button type="button" class="chat-media-btn chat-btn-video" title="Видео">📹</button>
-                  <button type="button" class="chat-media-btn chat-btn-file" title="Файл">📎</button>
-                  <input type="file" class="chat-file-input" hidden>
-                </div>
-                <div class="chat-rec-indicator" hidden>
-                  <span class="chat-rec-dot"></span>
-                  <span class="chat-rec-time">0:00</span>
-                  <button type="button" class="btn btn-sm chat-rec-stop" style="margin-left:auto;">Остановить</button>
-                </div>
-              </form>
-            </div>
-          </td>
-        </tr>` : "";
-      return row + thread;
-    }
-
-    function updateUnreadBadge(uid, count) {
-      unreadMap[uid] = count;
-      const btn = body.querySelector(`.thread-toggle[data-uid="${uid}"]`);
-      if (!btn) return;
-      const existing = btn.querySelector(".unread-badge");
-      if (count > 0) {
-        const label = count > 9 ? "9+" : String(count);
-        if (existing) existing.textContent = label;
-        else btn.insertAdjacentHTML("beforeend", `<span class="unread-badge">${label}</span>`);
-      } else if (existing) {
-        existing.remove();
-      }
-    }
-
-    // Живая переписка с открытым учеником (улучшение чата, 2026-07-20).
-    // renderTable() каждый раз пересобирает всю таблицу через innerHTML —
-    // это значит, что DOM-узел переписки от предыдущей подписки становится
-    // "оторванным" при любом обновлении таблицы (смена фильтра, отметка
-    // оплаты, удаление другого ученика), и старый слушатель Firestore тихо
-    // обновлял бы невидимый узел, а видимый навсегда оставался бы на
-    // "Загрузка…". Раньше переписка вообще не переоткрывалась в таких
-    // случаях (сообщение читалось один раз через listMessages() при клике на
-    // 💬). Поэтому синхронизация подписки вынесена в конец renderTable() и
-    // всегда отписывается/переподписывается заново на актуальный узел.
-    function stopThreadWatch() {
-      if (unwatchThread) { unwatchThread(); unwatchThread = null; }
-      activeThreadUid = null;
-    }
-
-    function startThreadWatch(uid) {
-      stopThreadWatch();
-      activeThreadUid = uid;
-      const root = document.getElementById(`thread-msgs-${uid}`);
-      if (!root) return;
-      wireVoicePlayers(root);
-      unwatchThread = watchMessages(uid, (msgs) => {
-        renderMessages(root, msgs, "admin");
-        scrollToBottom(root);
-        markThreadRead(uid, "admin")
-          .then(() => updateUnreadBadge(uid, 0))
-          .catch((err) => console.warn(err));
-      }, () => {
-        root.innerHTML = `<p class="field-error">Не удалось загрузить переписку.</p>`;
-      });
+      // Переписка раньше открывалась строкой ВНУТРИ этой таблицы: любая
+      // перерисовка (смена фильтра, отметка оплаты, удаление другого
+      // ученика) пересоздавала DOM чата, значки непрочитанных обновлялись
+      // только при перезагрузке страницы, а на телефоне чат ездил вместе с
+      // горизонтальной прокруткой таблицы. Теперь 💬 ведёт на отдельную
+      // страницу-мессенджер (chat.html), где список диалогов живой и
+      // отсортирован по свежести (запрос автора, 2026-07-25).
+      return row;
     }
 
     function matchesFilter(s, query, filter) {
@@ -234,18 +172,10 @@
         });
       });
 
-      body.querySelectorAll(".thread-toggle").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          openThreadUid = openThreadUid === btn.dataset.uid ? null : btn.dataset.uid;
-          renderTable();
-        });
-      });
-
       body.querySelectorAll(".student-delete").forEach((btn) => {
         btn.addEventListener("click", async () => {
           if (!confirm(`Удалить запись ${btn.dataset.name} из школы? Прогресс и переписка будут потеряны безвозвратно. Учётная запись входа (email/пароль) при этом не удаляется — если человек снова войдёт, для него откроется чистый неоплаченный кабинет.`)) return;
           await deleteStudent(btn.dataset.uid);
-          if (openThreadUid === btn.dataset.uid) openThreadUid = null;
           await refreshStudents();
           showToast(`Запись ${btn.dataset.name} удалена`);
         });
@@ -275,18 +205,6 @@
         });
       });
 
-      body.querySelectorAll(".thread-reply").forEach((form) => {
-        wireChatForm(form, form.querySelector("textarea"), async (text) => {
-          await sendMessage(form.dataset.uid, "admin", text);
-          showToast("Ответ отправлен");
-        }, async (file, type, duration) => {
-          await sendMediaMessage(form.dataset.uid, "admin", file, type, duration);
-          showToast(type === "voice" ? "Голосовое отправлено" : type === "video" ? "Видео отправлено" : "Файл отправлен");
-        });
-      });
-
-      if (openThreadUid) startThreadWatch(openThreadUid);
-      else stopThreadWatch();
     }
 
     async function refreshStudents() {
@@ -308,11 +226,14 @@
       // Значки непрочитанных на 💬 — считаем отдельным агрегирующим запросом
       // на ученика (getCountFromServer, без загрузки тел сообщений), чтобы
       // не открывать каждую переписку вручную, чтобы понять, кто написал
-      // (улучшение чата, 2026-07-20). Открытый сейчас тред всегда учтён
-      // (startThreadWatch сам обнулит его значок после markThreadRead).
+      // (улучшение чата, 2026-07-20). Живой пересчёт — на chat.html.
       try {
         const counts = await Promise.all(allStudents.map((s) => countUnreadFromStudent(s.uid)));
         unreadMap = Object.fromEntries(allStudents.map((s, i) => [s.uid, counts[i]]));
+        const total = counts.reduce((a, b) => a + b, 0);
+        const totalEl = document.getElementById("admin-unread-total");
+        totalEl.textContent = total > 9 ? "9+" : String(total);
+        totalEl.hidden = total === 0;
       } catch (err) {
         console.warn(err);
       }
@@ -359,7 +280,6 @@
       });
 
       document.getElementById("logout-btn").addEventListener("click", async () => {
-        stopThreadWatch();
         await logout();
         location.href = "../index.html";
       });

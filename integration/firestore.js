@@ -1,12 +1,13 @@
 // Хелперы для данных портала (прогресс ученика, список учеников для админа,
 // сообщения). Схема Firestore:
 //   students/{uid}            — { name, email, paid, createdAt, progress, lastSeenAt }
-//   students/{uid}/messages/{id} — { from: 'admin'|'student', text, createdAt, read }
+//   students/{uid}/messages/{id} — { from: 'admin'|'student', text, createdAt,
+//                                    read, editedAt?, type?, mediaUrl?, … }
 //   admins/{uid}               — { name } — присутствие документа = права админа
 import {
   doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, addDoc,
   serverTimestamp, query, orderBy, where, arrayUnion, onSnapshot,
-  writeBatch, getCountFromServer,
+  writeBatch, getCountFromServer, limit,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { db, storage } from "./firebase-init.js?v=2";
 import {
@@ -164,6 +165,87 @@ export async function markThreadRead(uid, viewerRole) {
   const batch = writeBatch(db);
   snap.docs.forEach((d) => batch.update(d.ref, { read: true }));
   await batch.commit();
+}
+
+/** Правка своего сообщения (запрос автора, 2026-07-25). Меняем только текст
+ * и ставим editedAt — интерфейс покажет пометку «изменено». Автора и дату
+ * создания не трогаем, правила Firestore это и не пропустят. Медиа править
+ * нельзя: у голосового/видео/файла нет текста, который имело бы смысл
+ * переписать — там доступно только удаление. */
+export async function editMessage(uid, messageId, newText) {
+  await updateDoc(doc(db, "students", uid, "messages", messageId), {
+    text: newText,
+    editedAt: serverTimestamp(),
+  });
+}
+
+/** Удаление своего сообщения. Файл в Storage намеренно остаётся: правила
+ * Storage не дают клиенту удалять чужие объекты, а чистка осиротевших
+ * файлов — задача обслуживания, а не интерфейса чата. */
+export async function deleteMessage(uid, messageId) {
+  await deleteDoc(doc(db, "students", uid, "messages", messageId));
+}
+
+/** Живая сводка по переписке одного ученика для списка диалогов
+ * мессенджера: последнее сообщение (превью + время + кто написал) и число
+ * непрочитанных ОТ ученика. Раньше список учеников у админа показывал
+ * только счётчик, да и тот обновлялся исключительно при перезагрузке
+ * страницы — понять, кто написал последним и о чём, без открытия каждого
+ * треда было невозможно (запрос автора «сделай нормальный чат», 2026-07-25).
+ *
+ * Подписка на ВСЮ коллекцию сообщений ученика была бы расточительна, если
+ * переписка длинная, поэтому слушаем только последние MAX_PREVIEW штук по
+ * убыванию даты: этого хватает и на превью, и на подсчёт непрочитанных в
+ * подавляющем большинстве тредов. Если непрочитанных больше окна, отдаём
+ * «N+» — точная цифра тут не важна, важен факт «есть новое».
+ *
+ * Возвращает функцию отписки. */
+const THREAD_PREVIEW_WINDOW = 30;
+
+export function watchThreadSummary(uid, onChange, onError) {
+  const q = query(
+    collection(db, "students", uid, "messages"),
+    orderBy("createdAt", "desc"),
+    limit(THREAD_PREVIEW_WINDOW),
+  );
+  return onSnapshot(q, (snap) => {
+    const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    const last = docs[0] || null;
+    let unread = 0;
+    for (const m of docs) if (m.from === "student" && !m.read) unread++;
+    onChange({
+      uid,
+      last,
+      unread,
+      unreadCapped: unread >= THREAD_PREVIEW_WINDOW,
+      // Для сортировки списка по свежести. Сообщение, только что созданное
+      // локально, ещё не имеет серверного времени (latency compensation) —
+      // подставляем «сейчас», иначе свой же ответ уронил бы диалог вниз.
+      lastAt: last?.createdAt?.toDate ? last.createdAt.toDate() : (last ? new Date() : null),
+    });
+  }, (err) => {
+    console.warn("watchThreadSummary", uid, err);
+    if (onError) onError(err);
+  });
+}
+
+/** Живой счётчик непрочитанных сообщений ОТ наставника для ученика —
+ * питает значок в шапке сайта на любой странице (запрос автора,
+ * 2026-07-25), чтобы ответ наставника не терялся до следующего захода в
+ * кабинет. Дёшево: слушаем только непрочитанные, тела сообщений не нужны,
+ * но onSnapshot всё равно их привозит — окна в THREAD_PREVIEW_WINDOW
+ * достаточно, значок всё равно показывает максимум «9+». */
+export function watchUnreadFromAdmin(uid, onChange, onError) {
+  const q = query(
+    collection(db, "students", uid, "messages"),
+    where("from", "==", "admin"),
+    where("read", "==", false),
+    limit(THREAD_PREVIEW_WINDOW),
+  );
+  return onSnapshot(q, (snap) => onChange(snap.size), (err) => {
+    console.warn("watchUnreadFromAdmin", uid, err);
+    if (onError) onError(err);
+  });
 }
 
 /** Кол-во непрочитанных сообщений ОТ ученика — значок 💬 в списке учеников

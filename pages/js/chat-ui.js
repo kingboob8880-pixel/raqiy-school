@@ -1,8 +1,11 @@
 // Рендер списка сообщений переписки ученик↔наставник — общий для
-// pages/dashboard/student.html и pages/dashboard/admin.html.
+// pages/dashboard/student.html, pages/dashboard/admin.html и страницы-
+// мессенджера pages/dashboard/chat.html.
 // v3: кастомный голосовой плеер (волна+play/pause), галочки прочтения,
 //     обработка ошибок медиа, i18n дат.
-import { t, getLang } from "./i18n.js?v=6";
+// v4: правка/удаление своего сообщения, подсветка поиска, пометка
+//     «изменено» (запрос автора «сделай нормальный чат», 2026-07-25).
+import { t, getLang } from "./i18n.js?v=7";
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -78,8 +81,8 @@ function generateWaveform(duration, count) {
   return bars;
 }
 
-/** Рендер одного медиа-сообщения. */
-function renderMediaContent(m) {
+/** Рендер одного медиа-сообщения. q — строка поиска для подсветки текста. */
+function renderMediaContent(m, q) {
   const type = m.type || "text";
   if (type === "voice") {
     const bars = generateWaveform(m.duration);
@@ -117,19 +120,67 @@ function renderMediaContent(m) {
     </div>`;
   }
   // text (default)
-  return `<span class="msg__text">${escapeHtml(m.text)}</span>`;
+  return `<span class="msg__text">${highlight(m.text, q)}</span>`;
 }
 
-/** msgs — массив { from, text, type?, mediaUrl?, …, createdAt, read }.
- *  viewerRole — "student"|"admin" — нужен для галочек прочтения. */
-export function renderMessages(container, msgs, viewerRole) {
-  if (!msgs.length) {
-    container.innerHTML = `
-      <div class="msg-empty">
-        <span class="msg-empty__icon" aria-hidden="true">💬</span>
-        <p>${escapeHtml(t("chat.empty"))}</p>
-        <p class="form-note">${escapeHtml(t("chat.emptyHint"))}</p>
-      </div>`;
+/** Экранирует текст и подсвечивает вхождения поисковой строки. Порядок
+ *  важен: сначала escapeHtml, потом вставка <mark> — иначе разметка из
+ *  сообщения попала бы в DOM как HTML. */
+function highlight(text, q) {
+  const safe = escapeHtml(text);
+  if (!q) return safe;
+  const needle = q.trim();
+  if (!needle) return safe;
+  const rx = new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+  return safe.replace(rx, (hit) => `<mark class="msg__hit">${hit}</mark>`);
+}
+
+/** Меню действий над своим сообщением (⋯ → изменить/удалить). Показываем
+ *  только автору: правила Firestore всё равно не дадут тронуть чужое, но
+ *  предлагать заведомо запрещённое действие в интерфейсе нельзя. */
+function msgActionsHtml(m, isOwn, canEdit) {
+  if (!isOwn) return "";
+  const editBtn = canEdit
+    ? `<button type="button" class="msg-menu__item" data-act="edit">${escapeHtml(t("chat.edit"))}</button>`
+    : "";
+  return `<div class="msg__actions">
+    <button type="button" class="msg__menu-btn" aria-label="${escapeHtml(t("chat.actions"))}" aria-haspopup="true" aria-expanded="false">⋯</button>
+    <div class="msg-menu" hidden>
+      ${editBtn}
+      <button type="button" class="msg-menu__item is-danger" data-act="delete">${escapeHtml(t("chat.delete"))}</button>
+    </div>
+  </div>`;
+}
+
+/** msgs — массив { id, from, text, type?, mediaUrl?, …, createdAt, read, editedAt }.
+ *  viewerRole — "student"|"admin" — нужен для галочек прочтения и меню действий.
+ *  opts.search — строка поиска: сообщения без совпадения скрываются,
+ *                совпадения подсвечиваются (запрос автора, 2026-07-25). */
+export function renderMessages(container, msgs, viewerRole, opts = {}) {
+  const q = (opts.search || "").trim();
+
+  // Поиск фильтрует список, а не просто подсвечивает: в длинной переписке
+  // подсветка без фильтра означала бы ручную прокрутку в поисках жёлтого.
+  let list = msgs;
+  if (q) {
+    const needle = q.toLowerCase();
+    list = msgs.filter((m) => {
+      if (m.text && m.text.toLowerCase().includes(needle)) return true;
+      return !!(m.fileName && m.fileName.toLowerCase().includes(needle));
+    });
+  }
+
+  if (!list.length) {
+    container.innerHTML = q
+      ? `<div class="msg-empty">
+          <span class="msg-empty__icon" aria-hidden="true">🔍</span>
+          <p>${escapeHtml(t("chat.noMatches"))}</p>
+        </div>`
+      : `<div class="msg-empty">
+          <span class="msg-empty__icon" aria-hidden="true">💬</span>
+          <p>${escapeHtml(t("chat.empty"))}</p>
+          <p class="form-note">${escapeHtml(t("chat.emptyHint"))}</p>
+        </div>`;
     return;
   }
 
@@ -138,7 +189,7 @@ export function renderMessages(container, msgs, viewerRole) {
   let lastFrom = null;
   let lastDate = null;
 
-  for (const m of msgs) {
+  for (const m of list) {
     const d = toDate(m.createdAt);
     const dateLabel = d ? formatDateLabel(d) : null;
 
@@ -148,22 +199,82 @@ export function renderMessages(container, msgs, viewerRole) {
       lastFrom = null;
     }
 
-    const grouped = lastFrom === m.from && d && lastDate && (d - lastDate) < GROUP_GAP_MS;
+    // При активном поиске группировку не применяем: соседние по результату
+    // сообщения могут быть из разных дней/веток, слипшийся "хвост" читался
+    // бы как продолжение предыдущего.
+    const grouped = !q && lastFrom === m.from && d && lastDate && (d - lastDate) < GROUP_GAP_MS;
     const side = m.from === "admin" ? "admin" : "student";
     const cls = `msg msg-${side}${grouped ? " msg--grouped" : ""}`;
 
     // Галочки прочтения — только на «своих» сообщениях
-    const isOwn = viewerRole && m.from === (viewerRole === "admin" ? "admin" : "student");
+    const isOwn = !!viewerRole && m.from === (viewerRole === "admin" ? "admin" : "student");
     const tickHtml = isOwn ? (m.read ? DCHECK_SVG : CHECK_SVG) : "";
+    const editedHtml = m.editedAt ? `<span class="msg__edited">${escapeHtml(t("chat.edited"))}</span>` : "";
 
-    const time = d ? `<span class="msg__time">${formatTime(d)}${tickHtml}</span>` : "";
-    html += `<div class="${cls}">${renderMediaContent(m)}${time}</div>`;
+    const time = d ? `<span class="msg__time">${editedHtml}${formatTime(d)}${tickHtml}</span>` : "";
+    // Править можно только текст — у голосового/видео/файла менять нечего.
+    const canEdit = (m.type || "text") === "text";
+    html += `<div class="${cls}" data-msg-id="${escapeHtml(m.id || "")}">`
+      + `${renderMediaContent(m, q)}${time}${msgActionsHtml(m, isOwn, canEdit)}</div>`;
 
     lastFrom = m.from;
     lastDate = d;
   }
 
   container.innerHTML = html;
+}
+
+/** Подключает меню «изменить/удалить» к контейнеру списка сообщений.
+ *  Как и wireVoicePlayers — один раз на контейнер, через делегирование:
+ *  renderMessages() перетирает innerHTML при каждом обновлении подписки,
+ *  поэтому вешать обработчики на сами кнопки бессмысленно.
+ *  onEdit(id, oldText) и onDelete(id) — коллбэки вызывающей страницы. */
+export function wireMessageActions(container, { onEdit, onDelete } = {}) {
+  if (container._maWired) return;
+  container._maWired = true;
+
+  const closeMenus = () => {
+    container.querySelectorAll(".msg-menu").forEach((m) => { m.hidden = true; });
+    container.querySelectorAll(".msg__menu-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+  };
+  document.addEventListener("click", (e) => { if (!container.contains(e.target)) closeMenus(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenus(); });
+
+  container.addEventListener("click", async (e) => {
+    const toggle = e.target.closest(".msg__menu-btn");
+    if (toggle) {
+      const menu = toggle.parentElement.querySelector(".msg-menu");
+      const willOpen = menu.hidden;
+      closeMenus();
+      menu.hidden = !willOpen;
+      toggle.setAttribute("aria-expanded", String(willOpen));
+      return;
+    }
+
+    const item = e.target.closest(".msg-menu__item");
+    if (!item) return;
+    const msgEl = item.closest("[data-msg-id]");
+    const id = msgEl?.dataset.msgId;
+    if (!id) return;
+    closeMenus();
+
+    if (item.dataset.act === "delete") {
+      if (!confirm(t("chat.confirmDelete"))) return;
+      if (onDelete) await onDelete(id);
+      return;
+    }
+
+    if (item.dataset.act === "edit") {
+      const current = msgEl.querySelector(".msg__text")?.textContent || "";
+      const next = prompt(t("chat.editPrompt"), current);
+      if (next === null) return;
+      const trimmed = next.trim();
+      // Пустой текст — это удаление, а не правка; молча стирать сообщение
+      // по случайному Ctrl+A/Backspace нельзя.
+      if (!trimmed || trimmed === current) return;
+      if (onEdit) await onEdit(id, trimmed);
+    }
+  });
 }
 
 /** Подключение event delegation для кастомных голосовых плееров.

@@ -47,7 +47,32 @@ service cloud.firestore {
         // может подделать сообщение "от админа" в своей же переписке.
         allow create: if (isOwner(uid) && request.resource.data.from == 'student')
                       || (isAdmin() && request.resource.data.from == 'admin');
-        allow update, delete: if isAdmin();
+
+        // Ученик отмечает прочитанными сообщения наставника. Раньше здесь
+        // стояло только `isAdmin()`, поэтому markThreadRead(uid, 'student')
+        // молча падал на правилах: поле read у сообщений админа навсегда
+        // оставалось false, и наставник никогда не видел вторую галочку
+        // (аудит 2026-07-25). Разрешаем узко — ученик может изменить ровно
+        // одно поле `read` и только с false на true, у чужих (админских)
+        // сообщений. Ни текст, ни автора, ни дату он так не подменит.
+        function onlyMarksRead() {
+          return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+                 && request.resource.data.read == true
+                 && resource.data.from == 'admin';
+        }
+        // Правка/удаление своего сообщения (запрос автора, 2026-07-25).
+        // Ученик распоряжается только тем, что написал сам; текст можно
+        // менять, авторство/дату создания — нет.
+        function editsOwnText() {
+          return resource.data.from == 'student'
+                 && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'editedAt'])
+                 && request.resource.data.from == resource.data.from
+                 && request.resource.data.createdAt == resource.data.createdAt;
+        }
+        allow update: if isAdmin()
+                      || (isOwner(uid) && (onlyMarksRead() || editsOwnText()));
+        allow delete: if isAdmin()
+                      || (isOwner(uid) && resource.data.from == 'student');
       }
     }
 

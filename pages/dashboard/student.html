@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Кабинет ученика — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=50">
+<link rel="stylesheet" href="../../design/base.css?v=51">
 <style>
   .modal-overlay {
     position: fixed; inset: 0; z-index: 1000;
@@ -133,7 +133,12 @@
         </div>
       </div>
 
-      <h2 style="margin-top: var(--rp-space-6);" data-t="dash.mentorChat">Сообщения от наставника</h2>
+      <div class="chat-head">
+        <h2 style="margin: 0;" data-t="dash.mentorChat">Сообщения от наставника</h2>
+        <div class="search-field chat-head__search">
+          <input type="search" id="msg-search" data-placeholder-t="chat.searchMessages" placeholder="Поиск по сообщениям…" data-aria-t="chat.searchMessages" aria-label="Поиск по сообщениям">
+        </div>
+      </div>
       <div class="card">
         <div id="messages" class="msg-list" role="log" aria-live="polite"><p class="form-note">Загрузка…</p></div>
         <form id="message-form" class="chat-form">
@@ -159,13 +164,13 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=17";
-    import { t, getLang, moduleTitle, localLevel } from "../js/i18n.js?v=6";
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=18";
+    import { t, getLang, moduleTitle, localLevel } from "../js/i18n.js?v=7";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=10";
-    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage } from "../../integration/firestore.js?v=19";
+    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage, editMessage, deleteMessage } from "../../integration/firestore.js?v=20";
     import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress, computeAchievements } from "../js/modules-data.js?v=34";
     import { withBase } from "../js/base-path.js?v=6";
-    import { renderMessages, wireChatForm, scrollToBottom, wireVoicePlayers } from "../js/chat-ui.js?v=3";
+    import { renderMessages, wireChatForm, scrollToBottom, wireVoicePlayers, wireMessageActions } from "../js/chat-ui.js?v=4";
 
     const REVIEW_AFTER_DAYS = 30;
     function daysSincePassed(passedAt) {
@@ -480,14 +485,42 @@
       // прочитанными все сообщения наставника, которые ученик сейчас видит
       // на экране (сам факт открытого кабинета = прочтение).
       const msgRoot = document.getElementById("messages");
+      const msgSearchInput = document.getElementById("msg-search");
+      let msgSearch = "";
+      let lastMsgs = [];
       wireVoicePlayers(msgRoot);
+      // Правка/удаление своего сообщения (запрос автора, 2026-07-25).
+      // Правила Firestore пускают ученика только к сообщениям from=='student',
+      // поэтому меню ⋯ на ответах наставника не показывается вовсе.
+      wireMessageActions(msgRoot, {
+        onEdit: async (id, text) => {
+          try { await editMessage(user.uid, id, text); showToast(t("chat.editedOk")); }
+          catch (err) { console.warn(err); showToast(t("common.error")); }
+        },
+        onDelete: async (id) => {
+          try { await deleteMessage(user.uid, id); showToast(t("chat.deletedOk")); }
+          catch (err) { console.warn(err); showToast(t("common.error")); }
+        },
+      });
       const unwatchMessages = watchMessages(user.uid, (msgs) => {
-        renderMessages(msgRoot, msgs, "student");
-        scrollToBottom(msgRoot);
+        lastMsgs = msgs;
+        // Автопрокрутка только когда ученик и так внизу — иначе входящее
+        // сообщение выдёргивало бы его из середины перечитываемой переписки.
+        const atBottom = msgRoot.scrollHeight - msgRoot.scrollTop - msgRoot.clientHeight < 80;
+        renderMessages(msgRoot, msgs, "student", { search: msgSearch });
+        if (atBottom && !msgSearch) scrollToBottom(msgRoot);
         markThreadRead(user.uid, "student").catch((err) => console.warn(err));
       }, () => {
         msgRoot.innerHTML = `<p class="field-error">${t("dash.msgLoadError")}</p>`;
       });
+
+      if (msgSearchInput) {
+        msgSearchInput.addEventListener("input", () => {
+          msgSearch = msgSearchInput.value;
+          renderMessages(msgRoot, lastMsgs, "student", { search: msgSearch });
+          if (!msgSearch) scrollToBottom(msgRoot);
+        });
+      }
 
       wireChatForm(document.getElementById("message-form"), document.getElementById("message-text"), async (text) => {
         try {
