@@ -30,6 +30,7 @@ const S = {
   "nav.flashcards":    { ru: "Карточки", en: "Flashcards", uz: "Kartochkalar" },
   "nav.glossary":      { ru: "Словарь", en: "Glossary", uz: "Lug'at" },
   "nav.dashboard":     { ru: "Кабинет", en: "Dashboard", uz: "Kabinet" },
+  "nav.admin":         { ru: "Админ", en: "Admin", uz: "Admin" },
   "auth.login":        { ru: "Войти", en: "Sign in", uz: "Kirish" },
   "skip.link":         { ru: "Перейти к содержимому", en: "Skip to content", uz: "Kontentga o'tish" },
   "menu.open":         { ru: "Открыть меню", en: "Open menu", uz: "Menyuni ochish" },

@@ -4,8 +4,8 @@
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
-import { watchAuth, isAdmin } from "../../integration/auth.js?v=10";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=14";
+import { watchAuth, isAdmin, getAdminProfile, getStudentProfile } from "../../integration/auth.js?v=11";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=15";
 import { initNotifications, stopNotifications } from "./notifications.js?v=1";
 
 export function renderHeader(zone = "learn") {
@@ -142,23 +142,49 @@ export function renderHeader(zone = "learn") {
   // Наставнику колокольчик не нужен: у него переписка не одна, его
   // счётчики живут на chat.html и в кабинете администратора.
   watchAuth(async (user) => {
-    if (authBtn) {
-      if (user) {
-        authBtn.textContent = user.displayName || user.email?.split("@")[0] || t("nav.dashboard");
-        authBtn.href = withBase("/pages/dashboard/student.html");
-      } else {
+    stopNotifications();
+
+    if (!user) {
+      if (authBtn) {
         authBtn.textContent = t("auth.login");
         authBtn.href = withBase("/pages/auth/login.html");
       }
+      if (notifRoot) notifRoot.innerHTML = "";
+      return;
     }
 
-    stopNotifications();
-    if (!notifRoot) return;
-    if (!user) { notifRoot.innerHTML = ""; return; }
+    // Пока не знаем роль — показываем нейтральное «Кабинет», а не кусок
+    // email: до этой правки в шапке у автора висело «4851» (скриншот,
+    // 2026-07-25) — это email до «собаки», который сайт выдавал за имя.
+    if (authBtn) authBtn.textContent = t("nav.dashboard");
 
-    try {
-      if (await isAdmin(user.uid)) { notifRoot.innerHTML = ""; return; }
-    } catch { /* нет связи — колокольчик просто не появится */ return; }
+    let admin = false;
+    try { admin = await isAdmin(user.uid); }
+    catch { /* нет связи — оставляем нейтральную подпись и без колокольчика */ return; }
+
+    if (authBtn) {
+      if (admin) {
+        // Админа кнопка вела в кабинет УЧЕНИКА — он попадал не туда и видел
+        // чужой по смыслу экран. Ведём в админский и подписываем по роли.
+        let name = "";
+        try { name = (await getAdminProfile(user.uid))?.name || ""; }
+        catch { /* имя необязательно — хватит слова «Админ» */ }
+        authBtn.textContent = name || t("nav.admin");
+        authBtn.href = withBase("/pages/dashboard/admin.html");
+      } else {
+        // У ученика имя есть в профиле — оно человеческое, в отличие от
+        // email. displayName в этом проекте не заполняется при регистрации.
+        let name = "";
+        try { name = (await getStudentProfile(user.uid))?.name || ""; }
+        catch { /* профиль недоступен — останется «Кабинет» */ }
+        authBtn.textContent = name || user.displayName || t("nav.dashboard");
+        authBtn.href = withBase("/pages/dashboard/student.html");
+      }
+    }
+
+    if (!notifRoot) return;
+    // Наставнику колокольчик не нужен: у него переписка не одна.
+    if (admin) { notifRoot.innerHTML = ""; return; }
 
     initNotifications(notifRoot, user.uid);
   });

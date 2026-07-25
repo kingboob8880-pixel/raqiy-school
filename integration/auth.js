@@ -7,11 +7,36 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { auth, db } from "./firebase-init.js?v=2";
 
+/** «Запомнить меня» — вход сохраняется между запусками браузера, пока
+ *  человек сам не нажмёт «Выйти» (запрос автора, 2026-07-25: приходилось
+ *  каждый раз вводить логин и пароль заново).
+ *
+ *  browserLocalPersistence кладёт сессию в IndexedDB, а не в память
+ *  вкладки. Формально это и есть значение по умолчанию, но задаём его явно
+ *  по двум причинам: во-первых, при недоступной IndexedDB (жёсткие
+ *  настройки приватности, режим инкогнито) Firebase молча откатывается на
+ *  сессионное хранение и вход теряется при закрытии вкладки — теперь это
+ *  видно в консоли; во-вторых, поведение перестаёт зависеть от версии SDK.
+ *
+ *  Промис запоминаем и ждём перед входом: setPersistence, вызванный после
+ *  signIn, на уже созданную сессию не влияет. */
+const persistenceReady = setPersistence(auth, browserLocalPersistence)
+  .catch((err) => {
+    console.warn(
+      "Не удалось включить постоянное хранение сессии — вход не сохранится " +
+      "после закрытия браузера. Обычно причина в блокировке хранилища сайта.",
+      err,
+    );
+  });
+
 export async function registerStudent({ name, email, password }) {
+  await persistenceReady;
   const cred = await createUserWithEmailAndPassword(auth, email, password);
   await setDoc(doc(db, "students", cred.user.uid), {
     name,
@@ -24,8 +49,17 @@ export async function registerStudent({ name, email, password }) {
 }
 
 export async function loginWithEmail(email, password) {
+  await persistenceReady;
   const cred = await signInWithEmailAndPassword(auth, email, password);
   return cred.user;
+}
+
+/** Имя админа из admins/{uid} — документ по схеме содержит { name }.
+ *  Нужно для шапки: без него там показывался кусок email до «собаки», и у
+ *  автора вместо «Админ» выводилось «4851» (скриншот, 2026-07-25). */
+export async function getAdminProfile(uid) {
+  const snap = await getDoc(doc(db, "admins", uid));
+  return snap.exists() ? snap.data() : null;
 }
 
 export async function logout() {
