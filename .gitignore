@@ -39,3 +39,6 @@ google-application-credentials*.json
 
 # Токены в открытом виде — не коммитить.
 api.txt
+
+# Локальные переменные функций (токен Telegram и т.п.)
+functions/.env
