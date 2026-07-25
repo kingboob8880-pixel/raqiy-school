@@ -159,13 +159,37 @@
   /* Обложка + описание + до 12 уроков + кнопки не влезают в невысокий
      экран (особенно телефон в ландшафте), поэтому вся модалка скроллится,
      а кнопка «×» держится в углу видимой области. */
-  .rp-modal--book { max-width: 34rem; max-height: calc(100vh - 2 * var(--rp-space-4)); overflow-y: auto; }
-  .rp-modal--book .rp-modal__close { position: sticky; top: 0; float: right; margin: -0.25rem -0.25rem 0 0; }
-  .book-modal__cover {
-    width: 100%; max-height: 11rem; object-fit: cover;
-    border-radius: var(--rp-radius-md); margin-bottom: var(--rp-space-3);
+  /* Шире базовых 26rem: внутри две колонки (обложка + текст) и список
+     уроков, в 26rem описание сжималось бы в узкий столбик. */
+  /* 100dvh, а не 100vh: на мобильных 100vh не учитывает адресную строку,
+     из-за чего низ модалки (как раз кнопки) уезжал под неё. */
+  .rp-modal--book {
+    max-width: 40rem; overflow-y: auto;
+    max-height: calc(100vh - 2 * var(--rp-space-4));
+    max-height: calc(100dvh - 2 * var(--rp-space-4));
   }
-  .book-modal__desc { line-height: 1.7; margin: 0 0 var(--rp-space-4); }
+  .rp-modal--book .rp-modal__close { position: sticky; top: 0; float: right; margin: -0.25rem -0.25rem 0 0; }
+  /* Обложки книг — вертикальные (соотношение ~0.7, напр. 800×1141). Раньше
+     здесь стояло `max-height: 11rem; object-fit: cover`, то есть высокая
+     обложка вписывалась в низкую широкую полосу и обрезалась по центру —
+     у анатомических схем срезались верх и низ вместе с подписями (скриншот
+     автора, 2026-07-25). Теперь обложка показывается целиком, без обрезки,
+     и стоит рядом с текстом: так она заметно крупнее, чем если бы
+     вписывалась по высоте во всю ширину модалки. */
+  .book-modal__head {
+    display: flex; gap: var(--rp-space-4); align-items: flex-start;
+    margin-bottom: var(--rp-space-3);
+  }
+  .book-modal__cover {
+    flex: none; width: 10rem; height: auto; object-fit: contain;
+    border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border);
+  }
+  .book-modal__head-text { flex: 1; min-width: 0; }
+  /* Заголовку резерв под «×» не нужен — кнопка висит на строке выше, рядом
+     с мета-строкой; у неё запас из базовых стилей .rp-modal__eyebrow. */
+  .book-modal__head-text .rp-modal__title { padding-right: 0; }
+  .book-modal__desc { line-height: 1.7; margin: 0; }
+
   .book-modal__lessons-title {
     font-size: var(--rp-fs-sm); font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.05em; color: var(--rp-learn-text-muted);
@@ -186,6 +210,23 @@
   }
   .book-modal__lessons li:last-child { border-bottom: none; }
   .book-modal__lesson-num { flex: none; color: var(--rp-color-gold-600); font-weight: 700; }
+
+  /* Телефон: в две колонки обложка и текст сжались бы до нечитаемых полосок,
+     поэтому складываем в столбик, обложку центрируем и держим умеренной —
+     иначе она занимала бы весь экран и до описания пришлось бы скроллить.
+     Блок обязан стоять ПОСЛЕ базовых правил выше: специфичность у них
+     одинаковая, и при обратном порядке базовый max-height списка
+     переопределил бы мобильный (проверено, 2026-07-25). */
+  @media (max-width: 30rem) {
+    .book-modal__head { flex-direction: column; align-items: center; text-align: center; }
+    .book-modal__cover { width: min(60%, 11rem); }
+    .book-modal__head-text { width: 100%; }
+    /* Модалка на телефоне и так скроллится целиком — вторая прокрутка
+       внутри списка уроков означала бы, что свайп по списку не двигает
+       модалку и до кнопок не добраться пальцем. Снимаем ограничение,
+       список раскрывается полностью. */
+    .book-modal__lessons { max-height: none; overflow-y: visible; }
+  }
 </style>
 </head>
 <body data-zone="learn">
@@ -415,10 +456,14 @@
       overlay.innerHTML = `
         <div class="rp-modal rp-modal--book" role="dialog" aria-modal="true" aria-labelledby="book-modal-title">
           <button class="rp-modal__close" type="button" aria-label="${escapeHtml(t("common.close"))}">×</button>
-          ${m.cover ? `<img class="book-modal__cover" src="${withBase(m.cover)}" alt="" loading="lazy">` : ""}
-          <p class="rp-modal__eyebrow">${escapeHtml(t("module.n"))} ${m.id} · ${escapeHtml(localLevel(m.level))}${n ? ` · ${n} ${escapeHtml(lessonWord(n))}` : ""}</p>
-          <h3 id="book-modal-title" class="rp-modal__title">${escapeHtml(moduleTitle(m))}</h3>
-          <p class="book-modal__desc">${escapeHtml(t("about.books." + m.id))}</p>
+          <div class="book-modal__head">
+            ${m.cover ? `<img class="book-modal__cover" src="${withBase(m.cover)}" alt="" loading="lazy">` : ""}
+            <div class="book-modal__head-text">
+              <p class="rp-modal__eyebrow">${escapeHtml(t("module.n"))} ${m.id} · ${escapeHtml(localLevel(m.level))}${n ? ` · ${n} ${escapeHtml(lessonWord(n))}` : ""}</p>
+              <h3 id="book-modal-title" class="rp-modal__title">${escapeHtml(moduleTitle(m))}</h3>
+              <p class="book-modal__desc">${escapeHtml(t("about.books." + m.id))}</p>
+            </div>
+          </div>
           ${lessonsHtml}
           <div class="rp-modal__actions">
             <a class="btn btn-primary" href="${href}">${escapeHtml(t("about.books.open"))}</a>
