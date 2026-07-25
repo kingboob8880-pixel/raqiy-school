@@ -1,0 +1,22 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Медиафайлы чата: chat/{studentUid}/{filename}
+    // Ученик пишет только в свою папку, админ — в любую.
+    // Читать может владелец папки и админ.
+    match /chat/{studentUid}/{allPaths=**} {
+      allow read: if request.auth != null
+                  && (request.auth.uid == studentUid
+                      || firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
+      allow write: if request.auth != null
+                   && (request.auth.uid == studentUid
+                       || firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)))
+                   && request.resource.size < 25 * 1024 * 1024; // макс 25 МБ
+    }
+
+    // Всё остальное закрыто
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

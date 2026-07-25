@@ -79,6 +79,13 @@ p { margin: 0 0 var(--rp-space-4); }
 }
 
 /* ---------- Навигация ---------- */
+/* Была попытка сделать шапку полупрозрачной с backdrop-filter: blur (по
+   референсу design.html, 2026-07-21) — на практике на фоне с тонким
+   ромбовидным узором (--rp-learn-bg) блюр смазывает золотые линии узора
+   под шапкой в жёлтое пятно-гало, и на границе шапки виден жёсткий шов
+   между размытой/тонированной зоной и чётким узором ниже (скриншот
+   автора, "исправь... без этой желтизны", 2026-07-21). Плоская
+   непрозрачная заливка — исходное поведение, никакого шва. */
 .site-header {
   position: sticky; top: 0; z-index: 20;
   background: var(--rp-zone-surface, var(--rp-learn-surface));
@@ -144,14 +151,15 @@ p { margin: 0 0 var(--rp-space-4); }
 .theme-switcher__label { font-size: var(--rp-fs-sm); color: var(--rp-zone-text, var(--rp-learn-text)); opacity: 0.7; display: none; }
 @media (min-width: 64rem) { .theme-switcher__label { display: inline; } }
 .theme-switcher__btn {
-  font: inherit; font-size: var(--rp-fs-sm); font-weight: 700; cursor: pointer;
+  font: inherit; font-size: 0; font-weight: 700; cursor: pointer;
   width: 1.6rem; height: 1.6rem; padding: 0; border-radius: var(--rp-radius-pill);
   border: 2px solid transparent; box-shadow: 0 0 0 1px var(--rp-zone-border, var(--rp-learn-border));
+  overflow: hidden; color: transparent;
 }
 .theme-switcher__btn[aria-pressed="true"] { border-color: var(--rp-zone-accent, var(--rp-learn-accent)); }
 .theme-switcher__btn[data-theme="emerald"] { background: linear-gradient(135deg, #245038, #16281d); }
-.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #fbf6ec, #e8dcc0); }
-.theme-switcher__btn[data-theme="split"] { background: linear-gradient(135deg, #faf6ec, #b0842c); }
+.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #f8f9fc, #b8c5db); }
+.theme-switcher__btn[data-theme="split"] { background: linear-gradient(135deg, #1a1612, #d4a73c); }
 
 /* ---------- Кнопки ---------- */
 .btn {
@@ -163,11 +171,25 @@ p { margin: 0 0 var(--rp-space-4); }
   min-height: 2.75rem;
 }
 .btn:active { transform: translateY(1px); }
+/* Градиент + цветная тень — по референсу design.html ("премиальная"
+   кнопка вместо плоской заливки). --rp-zone-accent-alt задан только для
+   зоны "learn" (design/tokens.css) — у кабинетов ученика/админа
+   переменная не определена, поэтому там кнопка тихо остаётся плоской, как
+   раньше: `var(--rp-zone-accent-alt, var(--rp-zone-accent))` подставляет
+   САМ accent вторым концом градиента, что вырождается в сплошную заливку
+   без изменений (умышленно — точечная полировка этого прохода не трогает
+   кабинеты, см. project.md 2026-07-21). Оба конца градиента для зоны
+   "learn" во всех 3 темах проверены расчётом контраста с
+   --rp-zone-accent-contrast (см. комментарии у --rp-learn-accent-alt). */
 .btn-primary {
-  background: var(--rp-zone-accent, var(--rp-learn-accent));
+  background: linear-gradient(120deg, var(--rp-zone-accent-alt, var(--rp-zone-accent, var(--rp-learn-accent))), var(--rp-zone-accent, var(--rp-learn-accent)));
   color: var(--rp-zone-accent-contrast, var(--rp-learn-accent-contrast));
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 32%, transparent);
 }
-.btn-primary:hover { opacity: 0.92; }
+.btn-primary:hover { opacity: 0.92; transform: translateY(-2px); box-shadow: 0 14px 30px color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 40%, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary:hover { transform: none; }
+}
 .btn-outline {
   background: transparent;
   border-color: var(--rp-zone-border, var(--rp-learn-border));
@@ -179,12 +201,37 @@ p { margin: 0 0 var(--rp-space-4); }
 .btn-sm { padding: 0.45rem 0.85rem; min-height: 2.25rem; font-size: var(--rp-fs-sm); }
 
 /* ---------- Карточки ---------- */
+/* Лёгкий диагональный градиент (surface-raised → surface) вместо плоской
+   заливки — по референсу design.html: там карточки лендинга используют
+   linear-gradient(165deg, #1a3225, #16281d), эти два цвета — ровно
+   emerald-темы surface-raised/surface. Тот же приём общий для .card
+   (применяется сайт-широко — формы, карточки кабинетов, модалки), а не
+   только лендинга: там, где surface-raised совпадает с surface (тема
+   "pattern", кабинет ученика — оба #ffffff), градиент вырождается в
+   плоскую заливку без изменений — безопасно везде (2026-07-21). */
 .card {
-  background: var(--rp-zone-surface, var(--rp-learn-surface));
+  background: linear-gradient(165deg, var(--rp-zone-surface-raised, var(--rp-learn-surface-raised)), var(--rp-zone-surface, var(--rp-learn-surface)));
   border: 1px solid var(--rp-zone-border, var(--rp-learn-border));
   border-radius: var(--rp-radius-lg);
   padding: var(--rp-space-5);
   box-shadow: var(--rp-shadow-card);
+}
+
+/* Утилита "приподнять при наведении" — обобщённая версия паттерна, что уже
+   был у .advantage-card/.audience-card (design/landing-themes.css) и
+   .path-step__body/.attr-card/.term-card: подъём + тень + акцентная
+   рамка. Названа .lift, как в design.html, чтобы будущие карточки не
+   изобретали hover-подъём в четвёртый раз. Только на явно декоративных/
+   некликабельных карточках — для кликабельных .path-step/.lesson-link
+   свой вариант с дополнительной стрелкой-подсказкой. */
+.lift { transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; }
+.lift:hover {
+  transform: translateY(-4px); box-shadow: var(--rp-shadow-pop);
+  border-color: color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 45%, var(--rp-zone-border, var(--rp-learn-border)));
+}
+@media (prefers-reduced-motion: reduce) {
+  .lift { transition: none; }
+  .lift:hover { transform: none; }
 }
 
 /* Карточка формулы: арабский текст + транскрипция + перевод + источник.
@@ -213,10 +260,60 @@ p { margin: 0 0 var(--rp-space-4); }
   padding-top: var(--rp-space-2); margin-top: var(--rp-space-2);
 }
 
+/* ---------- Карточки атрибутов/терминов + нумерованные шаги — для контента
+   уроков с каталогами (напр. модуль 2, "продвинутое заклинание") ----------
+   Перенесено из отдельного авторского HTML-файла (ruqyah-advanced44.html,
+   запрос "слей с сайтом... переработай визуал", 2026-07-21) — тот файл был
+   в своей отдельной тёмно-золотой теме со своими шрифтами (Cinzel/Amiri),
+   решили НЕ тащить отдельную тему, а пересобрать те же по духу карточки в
+   уже существующей палитре сайта (--rp-learn-*, --rp-color-gold-*, тот же
+   --rp-font-arabic) — с ней это и так уже золото-пергаментная эстетика,
+   отдельная тема не нужна. */
+.attr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr)); gap: var(--rp-space-4); margin: var(--rp-space-4) 0; }
+.attr-card {
+  background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-top: 3px solid var(--rp-learn-accent);
+  border-radius: var(--rp-radius-md); padding: var(--rp-space-4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.attr-card:hover { transform: translateY(-2px); box-shadow: var(--rp-shadow-card); }
+.attr-card__eyebrow { font-size: var(--rp-fs-sm); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rp-learn-badge-text); margin-bottom: var(--rp-space-2); }
+.attr-card__arabic { font-family: var(--rp-font-arabic); font-size: 1.4rem; direction: rtl; text-align: right; color: var(--rp-learn-text); margin-bottom: var(--rp-space-2); line-height: 1.7; }
+.attr-card__translit { font-style: italic; opacity: 0.8; font-size: var(--rp-fs-sm); margin-bottom: 0.25rem; }
+.attr-card__meaning { font-weight: 700; margin-bottom: 0.3rem; }
+.attr-card__source { font-size: var(--rp-fs-sm); color: var(--rp-learn-badge-text); margin-bottom: var(--rp-space-3); }
+.attr-card__use { font-size: var(--rp-fs-sm); opacity: 0.9; border-top: 1px solid var(--rp-learn-border); padding-top: var(--rp-space-2); }
+
+/* Компактные карточки для каталога терминов/глаголов — то же по духу, что
+   attr-card, но мельче (короткие 2-3-словные единицы, не абзацы). */
+.term-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: var(--rp-space-3); margin: var(--rp-space-4) 0; }
+.term-card { background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-sm); padding: var(--rp-space-3); text-align: center; transition: border-color 0.2s ease; }
+.term-card:hover { border-color: var(--rp-learn-accent); }
+.term-card__arabic { font-family: var(--rp-font-arabic); font-size: 1.25rem; direction: rtl; color: var(--rp-learn-accent-strong); margin-bottom: 0.2rem; }
+.term-card__translit { font-style: italic; opacity: 0.8; font-size: var(--rp-fs-sm); }
+.term-card__meaning { font-size: var(--rp-fs-sm); margin-top: 0.25rem; }
+
+/* Нумерованные шаги — тот же визуальный язык кружка-маркера, что уже
+   используют .path-step__marker ("Путь ученика") и пункты оглавления
+   (.doc-toc a::before) — единообразие вместо изобретения нового стиля
+   нумерации в третий раз. */
+.step-list { list-style: none; counter-reset: rp-step; margin: var(--rp-space-4) 0; padding: 0; }
+.step-list > li { counter-increment: rp-step; display: flex; gap: var(--rp-space-4); margin-bottom: var(--rp-space-4); align-items: flex-start; }
+.step-list > li::before {
+  content: counter(rp-step); flex: none; width: 2.4rem; height: 2.4rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-learn-accent) 16%, var(--rp-learn-surface-raised));
+  border: 2px solid var(--rp-learn-accent); color: var(--rp-learn-text);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--rp-font-heading); font-weight: 700; margin-top: 0.1rem;
+}
+.step-list h4 { margin: 0 0 0.3rem; }
+@media (max-width: 26rem) {
+  .attr-grid, .term-grid { grid-template-columns: 1fr; }
+}
+
 /* ---------- Значки статуса контента ---------- */
 .badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: var(--rp-fs-sm); font-weight: 700; padding: 0.25rem 0.65rem; border-radius: var(--rp-radius-pill); }
 .badge-certified { background: var(--rp-color-green-100); color: var(--rp-color-green-800); }
-.badge-draft { background: var(--rp-color-gold-100); color: var(--rp-color-gold-600); }
+.badge-draft { background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface)); color: var(--rp-learn-text); }
 .badge-archive { background: var(--rp-color-graphite-100); color: var(--rp-color-graphite-800); }
 /* Авторская методика (напр. формула-конструктор "Аркы") — не Сунна, не путать с
    "подтверждено"/"черновик": помечает контент, включённый по решению автора
@@ -230,7 +327,12 @@ p { margin: 0 0 var(--rp-space-4); }
 /* Бейджи прохождения теста/экзамена (страница "Тесты", pages/tests/) — не путать
    со статусом контента выше (certified/draft/archive/author), это про ученика. */
 .badge-passed { background: var(--rp-color-green-100); color: var(--rp-color-green-800); }
-.badge-pending { background: var(--rp-color-gold-100); color: var(--rp-color-gold-600); }
+/* color: gold-600 на gold-100 давал 3.84:1 — ниже WCAG AA (4.5:1) для
+   обычного текста бейджа (независимая проверка, 2026-07-20, работа над
+   тестами/экзаменами). ink-900 — тот же фикс-паттерн, что уже применялся
+   к .doc-body th/.lesson-link:hover: фон фиксированно светлый, значит и
+   текст должен быть фиксированно тёмным. */
+.badge-pending { background: var(--rp-color-gold-100); color: var(--rp-color-ink-900); }
 
 /* ---------- Карточки-фичи (лендинг) — красятся полностью через --rp-learn-* ---------- */
 .feature-row { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-5); }
@@ -297,29 +399,263 @@ p { margin: 0 0 var(--rp-space-4); }
 .faq-item[open] summary::after { transform: rotate(45deg); }
 .faq-item p { margin: var(--rp-space-3) 0 0; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
 
+/* ---------- Плавное появление секций/карточек при прокрутке ---------- */
+/* Раньше только у лендинга (design/landing-themes.css); "Путь ученика"
+   получил ту же лёгкую полировку (запрос "переработай вид, чтобы было
+   красиво", 2026-07-20) — общая утилита, перенесена сюда, чтобы не
+   дублировать в двух файлах. */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.is-visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------- Поле поиска (пилюля с иконкой) ---------- */
+/* Раньше на "Пути ученика" это был инлайн-style на одном <input> — вынесено
+   в переиспользуемый класс (та же полировка, 2026-07-20), т.к. второе такое
+   поле уже просилось (поиск по ученикам в админке использует свою вёрстку
+   тулбара — не трогаю, другой контекст: там ещё select рядом). */
+.search-field { position: relative; max-width: 24rem; margin-bottom: var(--rp-space-5); }
+.search-field::before {
+  content: "🔍"; position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+  font-size: 0.9rem; opacity: 0.6; pointer-events: none;
+}
+.search-field input {
+  width: 100%; font: inherit; padding: 0.7rem 1rem 0.7rem 2.4rem; border-radius: var(--rp-radius-pill);
+  border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.search-field input:focus-visible { border-color: var(--rp-learn-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rp-learn-accent) 25%, transparent); }
+
 /* ---------- Оглавление модулей — "дорожка-путь" (1b, §16а) ---------- */
+/* Полировка внешнего вида (запрос автора "переработать вид, чтобы было
+   красиво", 2026-07-20): раньше карточки были плоскими без обратной связи
+   на hover, маркер-кружок — тонкая обводка без объёма, уровень — просто
+   приглушённый текст рядом с бейджем статуса (визуально сливались друг с
+   другом). Теперь: карточка приподнимается и обретает тень/акцентную рамку
+   при наведении (тот же паттерн hover-lift, что уже на .advantage-card/
+   .audience-card лендинга), маркер — заливка вместо тонкого кольца, статус
+   вынесен в отдельную строку справа, стрелка-указатель проявляется при
+   наведении как явный намёк "кликабельно, веди сюда". */
 .path { display: flex; flex-direction: column; gap: var(--rp-space-4); padding: var(--rp-space-4) 0; position: relative; }
 .path::before {
   content: ""; position: absolute; left: 1.4rem; top: 0.5rem; bottom: 0.5rem; width: 2px;
-  background: var(--rp-learn-border); opacity: 0.4;
+  background: linear-gradient(to bottom, var(--rp-learn-accent) 0%, var(--rp-learn-border) 100%); opacity: 0.35;
 }
 .path-step { display: flex; gap: var(--rp-space-4); align-items: flex-start; position: relative; text-decoration: none; color: inherit; }
 .path-step__marker {
-  flex: none; width: 2.8rem; height: 2.8rem; border-radius: var(--rp-radius-pill);
-  background: var(--rp-learn-surface-raised); border: 2px solid var(--rp-learn-accent);
-  display: flex; align-items: center; justify-content: center; font-family: var(--rp-font-heading); font-weight: 700;
-  z-index: 1;
+  /* color: var(--rp-learn-text), не --rp-learn-accent-strong — расчётом
+     контраста (2026-07-20) на теме "изумруд" accent-strong поверх этой
+     заливки давал 1.67:1 (провал WCAG AA), на baseline — 3.91:1, тоже мимо
+     порога для обычного текста. var(--rp-learn-text) — тот же цвет, что уже
+     проверен по всему сайту — 7.6–13.4:1 на всех трёх темах. */
+  flex: none; width: 2.9rem; height: 2.9rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-learn-accent) 16%, var(--rp-learn-surface-raised));
+  border: 2px solid var(--rp-learn-accent); color: var(--rp-learn-text);
+  display: flex; align-items: center; justify-content: center; font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); font-weight: 700;
+  z-index: 1; transition: background 0.2s ease, transform 0.2s ease;
 }
 .path-step--done .path-step__marker { background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff; }
-.path-step__body { flex: 1; background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md); padding: var(--rp-space-4); display: flex; gap: var(--rp-space-3); align-items: center; }
-.path-step__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); margin-bottom: 0.2rem; }
-.path-step__meta { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+.path-step:hover .path-step__marker { transform: scale(1.08); }
+/* Галочка в углу маркера у подтверждённых модулей — не полагаемся только
+   на цвет заливки (зелёный маркер и так есть, но цвет ненадёжен как
+   единственный сигнал, в т.ч. для дальтоников); статичная, без анимации —
+   постоянно мигающие бейджи достижений были бы утомительны на странице,
+   которую открывают часто (запрос "оживить, но не сделать скучным" не
+   значит "непрерывно шевелящимся", 2026-07-21). */
+.path-step--done .path-step__marker { position: relative; }
+.path-step--done .path-step__marker::after {
+  content: "✓"; position: absolute; bottom: -0.2rem; right: -0.2rem;
+  width: 1.15rem; height: 1.15rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-status-success); color: #fff; font-size: 0.65rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--rp-learn-surface);
+}
+.path-step__body {
+  flex: 1; position: relative; overflow: hidden;
+  background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
+  padding: var(--rp-space-4) var(--rp-space-5); display: flex; gap: var(--rp-space-3); align-items: center; justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+/* Лёгкий блик, скользящий по карточке при наведении — только по наведению
+   (не непрерывно), премиальный, но не навязчивый штрих (та же просьба
+   "оживить", 2026-07-21). */
+.path-step__body::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 42%,
+    color-mix(in srgb, var(--rp-learn-accent) 20%, transparent) 50%, transparent 58%);
+  transform: translateX(-130%); transition: transform 0.65s ease;
+}
+.path-step:hover .path-step__body::after { transform: translateX(130%); }
+.path-step:hover .path-step__body {
+  transform: translateY(-3px); box-shadow: var(--rp-shadow-pop);
+  border-color: color-mix(in srgb, var(--rp-learn-accent) 55%, var(--rp-learn-border));
+}
+@media (prefers-reduced-motion: reduce) {
+  .path-step__body::after { display: none; }
+}
+.path-step__main { min-width: 0; }
+.path-step__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); margin-bottom: 0.3rem; }
+/* color: var(--rp-zone-text)+opacity, не --rp-learn-text-muted напрямую —
+   расчётом контраста (2026-07-20) нашёл, что --rp-learn-text-muted на
+   var(--rp-learn-surface) даёт всего 3.78:1 на baseline-теме (ниже порога
+   WCAG AA 4.5:1 для обычного текста; на "изумруде"/"pattern" — 7+:1, так что
+   баг был не на привычной тёмной теме, а на светлой). var(--rp-zone-text)
+   + opacity: 0.7 — уже проверенный паттерн (.form-note, 2026-07-19),
+   проходит 6+:1 на всех трёх темах. */
+.path-step__meta { font-size: var(--rp-fs-sm); color: var(--rp-zone-text, var(--rp-learn-text)); opacity: 0.7; display: flex; align-items: center; flex-wrap: wrap; gap: 0.3rem var(--rp-space-2); }
+.path-step__meta .level-tag { color: inherit; font-weight: 700; opacity: 1; }
+.path-step__status { flex: none; }
+.path-step__go {
+  /* color: var(--rp-learn-text), не accent-strong — на "изумруде" accent-strong
+     поверх --rp-learn-surface даёт 2.32:1 (ниже порога 3:1 для нетекстовых UI-
+     элементов, WCAG 1.4.11); --rp-learn-text — тот же уже проверенный на
+     сайте цвет "текст на карточке". */
+  flex: none; display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
+  border-radius: var(--rp-radius-pill); color: var(--rp-learn-text); font-size: 1.1rem;
+  transform: translateX(-4px); opacity: 0; transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.path-step:hover .path-step__go, .path-step:focus-visible .path-step__go { transform: translateX(0); opacity: 1; }
+@media (max-width: 34rem) {
+  .path-step__body { flex-wrap: wrap; }
+  .path-step__go { display: none; }
+}
 /* Обложка урока рядом с описанием на лендинге (запрос "больше деталей по
    модулям на лендинге", 2026-07-20) — только у модулей, где есть cover в
    modules-data.js, остальные показывают текст без картинки. */
 .path-step__thumb { flex: none; width: 3.25rem; height: 3.25rem; border-radius: var(--rp-radius-sm); object-fit: cover; }
 .path-step__text { flex: 1; min-width: 0; }
 .path-step__desc { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-top: 0.3rem; }
+
+/* ---------- Секции по уровню (Путь ученика → modules/index.html) ---------- */
+/* Три блока: Начальный (зелёный) → Средний (золотой) → Продвинутый (тёплый).
+   Каждая секция — свой акцент (маркеры, линия, заголовок), карточки внутри
+   наследуют акцент через CSS custom properties. */
+.path-section { margin-bottom: var(--rp-space-6); }
+.path-section:last-child { margin-bottom: 0; }
+.path-section--beginner { --ps-accent: hsl(152, 45%, 42%); }
+.path-section--intermediate { --ps-accent: hsl(38, 60%, 48%); }
+.path-section--advanced { --ps-accent: hsl(12, 50%, 50%); }
+
+.path-section__header {
+  display: flex; align-items: center; gap: var(--rp-space-3);
+  padding: var(--rp-space-3) var(--rp-space-4);
+  border-radius: var(--rp-radius-md);
+  background: color-mix(in srgb, var(--ps-accent) 10%, var(--rp-zone-bg));
+  border-left: 3px solid var(--ps-accent);
+  margin-bottom: var(--rp-space-2);
+}
+.path-section__badge {
+  flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%;
+  background: color-mix(in srgb, var(--ps-accent) 18%, var(--rp-zone-bg));
+  border: 2px solid var(--ps-accent); color: var(--ps-accent);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1rem; line-height: 1;
+}
+.path-section__info { display: flex; flex-direction: column; gap: 0.1rem; }
+.path-section__title {
+  font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); font-weight: 700;
+  color: var(--rp-zone-text, var(--rp-learn-text));
+}
+.path-section__range {
+  font-size: var(--rp-fs-sm); opacity: 0.55;
+  color: var(--rp-zone-text, var(--rp-learn-text));
+}
+
+/* Маркеры и линия наследуют акцент секции */
+.path-section .path::before {
+  background: linear-gradient(to bottom, var(--ps-accent) 0%, color-mix(in srgb, var(--ps-accent) 12%, transparent) 100%);
+  opacity: 0.4;
+}
+.path-section .path-step__marker {
+  border-color: var(--ps-accent);
+  background: color-mix(in srgb, var(--ps-accent) 14%, var(--rp-learn-surface-raised));
+}
+.path-section .path-step:hover .path-step__body {
+  border-color: color-mix(in srgb, var(--ps-accent) 50%, var(--rp-learn-border));
+}
+/* Подтверждённые модули сохраняют зелёный маркер */
+.path-section .path-step--done .path-step__marker {
+  background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff;
+}
+
+/* ---------- Список уроков модуля (.lesson-list) ---------- */
+/* Раньше — плоские тёмные прямоугольники без нумерации/иконок и с бледной
+   стрелкой "→" (запрос автора "сделай отображение красивым и интересным",
+   скриншот списка "Уроки" на странице модуля, 2026-07-21). Переехало сюда
+   из локального <style> в pages/modules/module.html — тот же принцип, что
+   у остальных общих компонентов страниц книг/модулей (design/base.css).
+   Переиспользует уже устоявшуюся визуальную грамматику .path-step ("Путь
+   ученика") — круглый маркер-номер, карточка с блик-эффектом при наведении,
+   зелёная заливка + бейдж-галочка для пройденного, скользящая стрелка —
+   вместо изобретения нового отдельного стиля список уроков теперь читается
+   как часть уже знакомого языка сайта, а не отдельный, недоделанный узел. */
+.lesson-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--rp-space-3); }
+.lesson-list li { margin: 0; }
+.lesson-link { display: flex; gap: var(--rp-space-4); align-items: center; position: relative; text-decoration: none; color: inherit; }
+.lesson-link__marker {
+  /* Тот же цвет/расчёт контраста, что у .path-step__marker (комментарий
+     выше) — уже проверено 7.6–13.4:1 на всех трёх темах, повторно не
+     проверяем. */
+  flex: none; width: 2.6rem; height: 2.6rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-learn-accent) 16%, var(--rp-learn-surface-raised));
+  border: 2px solid var(--rp-learn-accent); color: var(--rp-learn-text);
+  display: flex; align-items: center; justify-content: center; font-family: var(--rp-font-heading); font-size: var(--rp-fs-sm); font-weight: 700;
+  z-index: 1; position: relative; transition: background 0.2s ease, transform 0.2s ease;
+}
+.lesson-link:hover .lesson-link__marker { transform: scale(1.08); }
+.lesson-link--done .lesson-link__marker { background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff; }
+.lesson-link--done .lesson-link__marker::after {
+  content: "✓"; position: absolute; bottom: -0.2rem; right: -0.2rem;
+  width: 1.05rem; height: 1.05rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-status-success); color: #fff; font-size: 0.6rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--rp-learn-surface);
+}
+.lesson-link__body {
+  flex: 1; min-width: 0; position: relative; overflow: hidden;
+  background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
+  padding: var(--rp-space-4) var(--rp-space-5); display: flex; gap: var(--rp-space-3); align-items: center; justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+/* Тот же блик-по-наведению, что у .path-step__body — только при наведении,
+   не непрерывно (см. комментарий там же про "оживить, но не утомлять"). */
+.lesson-link__body::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 42%,
+    color-mix(in srgb, var(--rp-learn-accent) 20%, transparent) 50%, transparent 58%);
+  transform: translateX(-130%); transition: transform 0.65s ease;
+}
+.lesson-link:hover .lesson-link__body::after { transform: translateX(130%); }
+.lesson-link:hover .lesson-link__body {
+  transform: translateY(-3px); box-shadow: var(--rp-shadow-pop);
+  border-color: color-mix(in srgb, var(--rp-learn-accent) 55%, var(--rp-learn-border));
+}
+@media (prefers-reduced-motion: reduce) {
+  .lesson-link__body::after { display: none; }
+}
+.lesson-link__text { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; min-width: 0; }
+.lesson-link__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-md); line-height: 1.35; }
+/* Бейдж мета-текста ("экзамен после чтения" и т.п.) — те же --rp-learn-badge-*
+   переменные, что у .content-ref-link/.doc-toc-маркера/.badge-tinted, уже
+   проверены на контраст во всех 3 темах — раньше это была просто приглушённая
+   строка текста, терялась рядом с заголовком. */
+.lesson-link__meta {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.1rem 0.65rem; border-radius: var(--rp-radius-pill); font-size: var(--rp-fs-sm); font-weight: 700;
+  background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text); border: 1px solid var(--rp-learn-badge-border);
+}
+.lesson-link__go {
+  /* Тот же цвет/принцип, что у .path-step__go. */
+  flex: none; display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem;
+  border-radius: var(--rp-radius-pill); color: var(--rp-learn-text); font-size: 1.1rem;
+  transform: translateX(-4px); opacity: 0; transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.lesson-link:hover .lesson-link__go, .lesson-link:focus-visible .lesson-link__go { transform: translateX(0); opacity: 1; }
+@media (max-width: 34rem) {
+  .lesson-link__body { flex-wrap: wrap; }
+  .lesson-link__go { display: none; }
+}
 
 /* ---------- "Для кого этот курс" (лендинг) ---------- */
 .audience-grid { display: grid; grid-template-columns: 1fr; gap: var(--rp-space-4); }
@@ -435,6 +771,28 @@ main.container { padding-block: var(--rp-space-6); }
 .level-badge--complete { background: var(--rp-zone-accent); color: var(--rp-zone-accent-contrast, #fff); border-color: transparent; font-weight: 700; }
 .review-flag { display: inline-block; margin-left: 0.4rem; font-size: var(--rp-fs-sm); font-weight: 700; color: var(--rp-zone-text); }
 
+/* ---------- Система достижений (2026-07-22) ---------- */
+.achievements-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: var(--rp-space-3);
+  margin-bottom: var(--rp-space-6);
+}
+.achievement {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: var(--rp-space-4) var(--rp-space-3); border-radius: var(--rp-radius-md);
+  border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.achievement:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.achievement__icon { font-size: 2rem; line-height: 1; margin-bottom: var(--rp-space-2); }
+.achievement__title { font-weight: 700; font-size: var(--rp-fs-sm); margin-bottom: 0.2rem; }
+.achievement__desc { font-size: 0.7rem; color: var(--rp-zone-muted); line-height: 1.3; margin-bottom: var(--rp-space-2); }
+.achievement__bar { width: 100%; height: 4px; border-radius: 2px; background: var(--rp-zone-border); overflow: hidden; }
+.achievement__bar-fill { height: 100%; border-radius: 2px; background: var(--rp-zone-accent); transition: width 0.4s ease; }
+.achievement--earned { border-color: var(--rp-color-gold-400); background: linear-gradient(135deg, var(--rp-zone-surface), rgba(192,147,48,0.08)); }
+.achievement--earned .achievement__icon { filter: none; }
+.achievement--locked .achievement__icon { filter: grayscale(1) opacity(0.4); }
+.achievement__check { font-size: 0.65rem; color: var(--rp-color-gold-600); font-weight: 700; margin-top: 0.15rem; }
+
 /* Приветственная карточка для новичка без прогресса (план улучшения курса, 2026-07-18) */
 .onboarding-card { border-color: var(--rp-zone-accent); margin-bottom: var(--rp-space-6); }
 .onboarding-card__steps { display: grid; gap: var(--rp-space-3); margin: var(--rp-space-4) 0; }
@@ -452,6 +810,246 @@ main.container { padding-block: var(--rp-space-6); }
 }
 .paywall-card { margin-top: var(--rp-space-2); text-align: center; border-color: var(--rp-color-gold-500); }
 .paywall-card__price { font-family: var(--rp-font-heading); font-size: var(--rp-fs-xl); color: var(--rp-learn-accent); margin: var(--rp-space-2) 0 var(--rp-space-4); }
+
+/* ---------- Текст урока/модуля (общее для book.html и modules/module.html) ---------- */
+/* Раньше жило дублем в page-local <style> обоих файлов (только table/th/
+   blockquote) — перенесено сюда, чтобы не расходилось между страницами, и
+   расширено (запрос автора "сделай красивее и интереснее", 2026-07-20,
+   скриншот с нечитаемо-центрированным текстом урока). Явный text-align:left
+   — защита от центрирования независимо от источника (не нашли активное
+   правило-виновника статическим чтением CSS трёх файлов, но эффект на
+   скриншоте автора реален; левое выравнивание для длинного текста верно
+   в любом случае — стандартная типографика). */
+.doc-body,
+.doc-body h1, .doc-body h2, .doc-body h3, .doc-body h4,
+.doc-body p, .doc-body li { text-align: left; }
+.doc-body h2 {
+  margin-top: var(--rp-space-7); padding-bottom: var(--rp-space-2);
+  border-bottom: 2px solid color-mix(in srgb, var(--rp-learn-accent) 35%, transparent);
+}
+.doc-body h2:first-child { margin-top: 0; }
+.doc-body > p:first-of-type { font-size: var(--rp-fs-md); }
+/* Ссылки внутри текста (перекрёстные ссылки на другие модули) — не
+   красим отдельным акцентным цветом: --rp-learn-accent(-strong) не
+   проходит WCAG AA (4.5:1) одновременно на всех 3 темах сайта (проверено
+   расчётом: 2.32:1 на тёмной теме "изумруд" для accent-strong, 3.12:1 на
+   светлой для accent) — тот же класс бага, что уже несколько раз чинили
+   в course-improvement-plan.md. Жирность + увеличенный отступ подчёркивания
+   отличают ссылку от прозы без риска контраста, используя тот же цвет
+   текста, что уже проходит AA по всему документу. */
+.doc-body a { font-weight: 700; text-underline-offset: 0.15em; }
+/* Нумерованный список ("Уроки модуля" и т.п.) — раньше голые браузерные
+   цифры "1." без визуальной связи с остальной системой значков-кружков
+   сайта (path-step__marker, book-card__marker уже используют этот
+   паттерн). */
+.doc-body ol { list-style: none; padding-left: 0; counter-reset: doc-ol; }
+.doc-body ol > li {
+  position: relative; padding-left: 2.6rem; margin-bottom: var(--rp-space-3);
+  counter-increment: doc-ol; min-height: 1.75rem;
+}
+.doc-body ol > li::before {
+  content: counter(doc-ol); position: absolute; left: 0; top: 0;
+  width: 1.75rem; height: 1.75rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-learn-accent); color: var(--rp-learn-accent-contrast);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--rp-font-heading); font-weight: 700; font-size: var(--rp-fs-sm);
+}
+.doc-body ul { padding-left: 1.3rem; }
+.doc-body ul li { margin-bottom: var(--rp-space-2); }
+.doc-body table { width: 100%; border-collapse: collapse; margin: var(--rp-space-4) 0; }
+.doc-body th, .doc-body td { border: 1px solid var(--rp-learn-border); padding: var(--rp-space-2) var(--rp-space-3); text-align: left; font-size: var(--rp-fs-sm); }
+.doc-body th { background: var(--rp-learn-surface-raised); color: var(--rp-learn-text); }
+/* Богословские/предупредительные примечания в тексте книги (⚠️) — раньше
+   рендерились как обычный blockquote без стиля, визуально не отличались
+   от прозы (независимая проверка, 2026-07-19). */
+.doc-body blockquote { margin: var(--rp-space-5) 0; padding: var(--rp-space-4);
+  border-left: 4px solid var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 10%, var(--rp-learn-surface));
+  border-radius: 0 var(--rp-radius-sm) var(--rp-radius-sm) 0; }
+.doc-body blockquote p:last-child { margin-bottom: 0; }
+/* Абзацы-предупреждения, написанные обычным текстом с "⚠️" в начале (не
+   markdown-цитатой ">") — та же визуальная подача, что у blockquote выше,
+   через класс .doc-warning, который проставляет JS в renderDocInto()
+   (pages/js/markdown-loader.js) по первому символу абзаца — сам текст
+   markdown-исходников не трогаем. */
+.doc-body p.doc-warning {
+  margin: var(--rp-space-5) 0; padding: var(--rp-space-4);
+  border-left: 4px solid var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 10%, var(--rp-learn-surface));
+  border-radius: 0 var(--rp-radius-sm) var(--rp-radius-sm) 0;
+}
+/* Блоки "Арабский текст/Транскрипция/Перевод" в длинных дуа ("Мольба
+   заклинателя" и т.п.) — раньше три подряд идущих абзаца были неотличимы
+   от обычной прозы: арабская вязь шла тем же шрифтом/размером/left-align,
+   что русский текст (запрос "проработай над удобством и видом", 2026-07-20,
+   loop-проход №1). Группировка в JS — pages/js/markdown-loader.js
+   (enhanceDuaBlocks). Карточка визуально выделяет каждую часть дуа из
+   потока текста, арабский абзац — RTL, крупнее, арабским шрифтом. */
+.dua-block {
+  background: var(--rp-learn-surface-raised); border: 1px solid var(--rp-learn-border);
+  border-radius: var(--rp-radius-md); padding: var(--rp-space-4) var(--rp-space-5);
+  margin: var(--rp-space-5) 0;
+}
+/* На узком экране (телефон) var(--rp-space-5)=1.5rem с двух сторон плюс
+   увеличенный арабский шрифт внутри — многовато отступа для ~320-360px
+   ширины; на телефоне карточка и так на всю ширину контейнера (loop-
+   проход №5, "мобильная адаптация", 2026-07-20). */
+@media (max-width: 30rem) {
+  .dua-block { padding: var(--rp-space-3) var(--rp-space-4); }
+}
+.dua-block .dua-label {
+  /* opacity: 0.7, не 0.6 — расчётом контраста (2026-07-20) 0.6 давало
+     4.36:1 на baseline и 4.47:1 на "pattern", ниже порога WCAG AA 4.5:1
+     (мелкий текст, bold не дотягивает до порога крупного текста). 0.7
+     проходит 5.3–6.3:1 на всех трёх темах. */
+  font-size: var(--rp-fs-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--rp-learn-text); opacity: 0.7; margin: var(--rp-space-4) 0 0.35rem;
+}
+.dua-block .dua-label:first-child { margin-top: 0; }
+.dua-block p:not(.dua-label) { margin-bottom: 0; }
+.doc-body p.doc-body__arabic {
+  font-family: var(--rp-font-arabic); font-size: var(--rp-fs-arabic); line-height: 2.1;
+  text-align: start; direction: rtl;
+}
+.doc-body p.doc-body__translit { font-style: italic; opacity: 0.85; }
+.doc-body p.doc-body__translation { font-weight: 600; }
+/* Печать (кнопка "Распечатать / сохранить PDF", book.html): цветная
+   заливка карточки на бумаге — лишний тонер и часто печатается серым
+   пятном на ч/б принтере; печатаем как обычный текст с тонкой рамкой,
+   RTL/шрифт арабского абзаца сохраняются — их печать не портит (loop-
+   проход №4, "доступность", 2026-07-20). */
+@media print {
+  .dua-block { background: none; border-color: #000; }
+  .dua-block .dua-label { color: #000; opacity: 1; }
+}
+
+/* ---------- Оглавление документа + полоса прогресса чтения ---------- */
+/* Раньше жили только в локальном <style> book.html — теперь общие с
+   modules/module.html (loop-проход №3, "удобство", 2026-07-20): у длинных
+   модулей без отдельных уроков-книг не было вообще никакой навигации по
+   тексту. Вызывается из pages/js/markdown-loader.js (addReadingAids). */
+.doc-toc { background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
+  padding: var(--rp-space-4); margin-bottom: var(--rp-space-5); }
+.doc-toc__title { font-size: var(--rp-fs-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  opacity: 0.7; margin: 0 0 var(--rp-space-2); }
+/* Пункты оглавления — раньше обычный подчёркнутый текст в нумерованном
+   списке, визуально терялся среди остального текста и не читался как
+   кликабельный элемент (запрос автора "сделай эти ссылки в виде кнопок",
+   2026-07-21, скриншот). Список остаётся семантическим <ol> (нумерация для
+   ассистивных технологий никуда не делась), но номер теперь рисуется через
+   CSS-счётчик в виде отдельного кружка-бейджа перед текстом кнопки — те же
+   --rp-learn-badge-* переменные, что у .content-ref-link и .badge-tinted,
+   уже проверены на контраст во всех 3 темах. */
+.doc-toc ol { list-style: none; counter-reset: doc-toc-counter; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: var(--rp-space-2); }
+.doc-toc li { counter-increment: doc-toc-counter; margin: 0; }
+.doc-toc a {
+  display: flex; align-items: center; gap: var(--rp-space-3);
+  padding: 0.6rem var(--rp-space-3); border-radius: var(--rp-radius-md);
+  background: var(--rp-learn-surface-raised); border: 1px solid var(--rp-learn-border);
+  color: var(--rp-learn-text); text-decoration: none; font-weight: 600; line-height: 1.35;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.doc-toc a::before {
+  content: counter(doc-toc-counter); flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.6rem; height: 1.6rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text);
+  font-size: var(--rp-fs-sm); font-weight: 700;
+}
+.doc-toc a:hover, .doc-toc a:focus-visible {
+  transform: translateY(-1px); box-shadow: var(--rp-shadow-card); border-color: var(--rp-learn-accent);
+}
+@media print { .doc-toc a { box-shadow: none; transform: none; } }
+/* Раньше здесь было position: sticky на широких экранах — задумывалось
+   как "остаётся видимым при прокрутке", но при однoколоночной раскладке
+   (оглавление — обычный блок внутри того же текстового потока, что и сам
+   текст, не отдельная боковая колонка) sticky-элемент "прилипал" прямо
+   посреди абзацев при скролле — выглядело так, будто оглавление хаотично
+   прыгает по странице (жалоба автора со скриншотами, 2026-07-21). Теперь
+   оглавление — обычный статичный блок в начале текста: остаётся на своём
+   месте наверху, не гоняется за скроллом. */
+#reading-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: var(--rp-learn-accent); z-index: 25; transition: width 0.1s linear;
+}
+@media (prefers-reduced-motion: reduce) { #reading-progress { transition: none; } }
+@media print { #reading-progress { display: none; } }
+/* Кнопка "наверх" — появляется после прокрутки достаточно длинного текста
+   (loop-проход №3, "удобство", 2026-07-20): раньше единственный способ
+   вернуться к началу многоэкранного урока/модуля — тянуть колесо мыши или
+   искать липкое оглавление глазами. Тот же порог длины текста, что у
+   оглавления/прогресса (addReadingAids, markdown-loader.js). */
+#back-to-top {
+  position: fixed; right: var(--rp-space-4); bottom: var(--rp-space-4); z-index: 20;
+  width: 2.75rem; height: 2.75rem; border-radius: var(--rp-radius-pill); border: 1px solid var(--rp-learn-border);
+  background: var(--rp-learn-surface-raised); color: var(--rp-learn-text); font-size: 1.2rem; cursor: pointer;
+  box-shadow: var(--rp-shadow-card); opacity: 0; visibility: hidden; transform: translateY(0.5rem);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+#back-to-top.is-visible { opacity: 1; visibility: visible; transform: none; }
+#back-to-top:hover { background: var(--rp-learn-accent); color: var(--rp-learn-accent-contrast); }
+@media (prefers-reduced-motion: reduce) { #back-to-top { transition: opacity 0.2s ease; } }
+@media print { #back-to-top { display: none; } }
+
+/* ---------- Ссылки на другие модули/книги внутри текста — кнопки-«пилюли» ----------
+   Раньше markdown-ссылки вида "[Модуль 4](/content/module-4/index.md)" рендерились
+   как обычный подчёркнутый текст (и вдобавок вели на сырой .md-файл, а не на
+   страницу модуля) — запрос автора "тексты которые служат ссылкой для других
+   модулей пусть будут в виде кнопок красиво и современно", 2026-07-21.
+   pages/js/markdown-loader.js (enhanceContentLinks) резолвит настоящий URL и
+   вешает этот класс; те же --rp-learn-badge-* переменные, что у .badge-tinted —
+   уже проверенные на контраст во всех 3 темах, отдельной проверки не требуется. */
+.content-ref-link {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.15rem 0.7rem 0.15rem 0.5rem; margin: 0 0.1rem;
+  border-radius: var(--rp-radius-pill); font-size: 0.92em; font-weight: 700; line-height: 1.6;
+  background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text);
+  border: 1px solid var(--rp-learn-badge-border); text-decoration: none;
+  vertical-align: baseline; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.content-ref-link:hover, .content-ref-link:focus-visible {
+  transform: translateY(-1px) scale(1.03); box-shadow: var(--rp-shadow-card); text-decoration: none;
+  border-color: var(--rp-learn-accent);
+}
+/* Иконка чуть "подпрыгивает" вбок при наведении — маленький, но живой намёк
+   "нажми меня" (запрос автора "нужно сделать интересным, добавить анимацию,
+   чтобы не было скукоты", 2026-07-21). */
+.content-ref-link__icon { font-size: 0.85em; opacity: 0.85; display: inline-block; transition: transform 0.2s ease; }
+.content-ref-link:hover .content-ref-link__icon, .content-ref-link:focus-visible .content-ref-link__icon {
+  transform: translateX(2px) scale(1.15);
+}
+@media (prefers-reduced-motion: reduce) {
+  .content-ref-link, .content-ref-link:hover, .content-ref-link__icon, .content-ref-link:hover .content-ref-link__icon {
+    transition: none; transform: none;
+  }
+}
+@media print { .content-ref-link { border: 1px solid #000; color: #000; background: none; } }
+
+/* ---------- Модалка-предпросмотр перед переходом (markdown-loader.js, openContentLinkModal) ---------- */
+.rp-modal-open { overflow: hidden; } /* блокируем скролл фона, пока открыта модалка */
+.rp-modal-overlay {
+  position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;
+  padding: var(--rp-space-4); background: rgba(20, 16, 10, 0.55); backdrop-filter: blur(2px);
+  animation: rp-modal-fade 0.15s ease;
+}
+.rp-modal {
+  position: relative; width: 100%; max-width: 26rem; padding: var(--rp-space-5);
+  border-radius: var(--rp-radius-lg); background: var(--rp-learn-surface-raised);
+  border: 1px solid var(--rp-learn-border); box-shadow: var(--rp-shadow-pop);
+  animation: rp-modal-pop 0.18s ease;
+}
+.rp-modal__close {
+  position: absolute; top: var(--rp-space-3); right: var(--rp-space-3);
+  width: 2rem; height: 2rem; border-radius: var(--rp-radius-pill); border: 1px solid var(--rp-learn-border);
+  background: transparent; color: var(--rp-learn-text); font-size: 1.1rem; line-height: 1; cursor: pointer;
+}
+.rp-modal__close:hover { background: var(--rp-learn-surface); }
+.rp-modal__eyebrow { font-size: var(--rp-fs-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--rp-learn-badge-text); margin: 0 0 var(--rp-space-1); padding-right: var(--rp-space-6); }
+.rp-modal__title { margin: 0 0 var(--rp-space-2); padding-right: var(--rp-space-6); }
+.rp-modal__actions { display: flex; gap: var(--rp-space-2); flex-wrap: wrap; margin-top: var(--rp-space-4); }
+@keyframes rp-modal-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rp-modal-pop { from { opacity: 0; transform: translateY(0.5rem) scale(0.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .rp-modal-overlay, .rp-modal { animation: none; } }
 
 /* ---------- Разворот книги (обложка модуля + заголовок) — module.html ---------- */
 .book-hero {
@@ -553,7 +1151,7 @@ main.container { padding-block: var(--rp-space-6); }
    мобильном), имя отправителя над пузырём не нужно в 1:1 (только
    выравнивание + цвет), группировка — по отправителю + разрыв < 5 мин
    (план улучшения курса, 2026-07-19). Рендер — pages/js/chat-ui.js. */
-.msg-list { display: flex; flex-direction: column; max-height: 20rem; overflow-y: auto; margin-bottom: var(--rp-space-3); padding-right: 2px; }
+.msg-list { display: flex; flex-direction: column; max-height: 28rem; overflow-y: auto; margin-bottom: var(--rp-space-3); padding-right: 2px; }
 .msg {
   position: relative; margin-top: var(--rp-space-3);
   padding: 0.5rem 2.9rem 0.5rem 0.75rem; border-radius: var(--rp-radius-md);
@@ -583,8 +1181,97 @@ main.container { padding-block: var(--rp-space-6); }
   border-radius: var(--rp-radius-sm); border: 1px solid color-mix(in srgb, var(--rp-zone-border, var(--rp-learn-border)) 55%, var(--rp-zone-text, var(--rp-learn-text)) 45%);
   background: var(--rp-zone-surface, #fff); color: var(--rp-zone-text, inherit);
 }
-.chat-form { display: flex; gap: var(--rp-space-2); align-items: flex-end; }
+.chat-form { display: flex; gap: var(--rp-space-2); align-items: flex-end; flex-wrap: wrap; }
 .chat-form button:disabled { opacity: 0.5; cursor: default; }
+
+/* Медиа-кнопки (голос/видео/файл) */
+.chat-media-bar { display: flex; gap: 0.25rem; align-items: center; }
+.chat-media-btn {
+  background: none; border: none; cursor: pointer; font-size: 1.25rem;
+  padding: 0.35rem; border-radius: var(--rp-radius-sm); line-height: 1;
+  transition: background 0.15s;
+}
+.chat-media-btn:hover { background: color-mix(in srgb, var(--rp-zone-text) 10%, transparent); }
+.chat-media-btn.is-recording { background: var(--rp-status-danger-bg); animation: rec-pulse 1s ease-in-out infinite; }
+@keyframes rec-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* Индикатор записи — display:flex только когда нет [hidden],
+   иначе display:flex перебивал hidden→display:none и индикатор
+   показывался сразу при загрузке страницы (баг «авто-запись»). */
+.chat-rec-indicator[hidden] { display: none !important; }
+.chat-rec-indicator:not([hidden]) {
+  display: flex; align-items: center; gap: var(--rp-space-2);
+  width: 100%; padding: 0.5rem 0.75rem;
+  background: var(--rp-status-danger-bg); border-radius: var(--rp-radius-sm);
+  font-size: var(--rp-fs-sm); color: var(--rp-status-danger);
+}
+.chat-rec-dot {
+  width: 0.6rem; height: 0.6rem; border-radius: 50%;
+  background: var(--rp-status-danger); animation: rec-pulse 1s ease-in-out infinite;
+}
+.chat-rec-time { font-variant-numeric: tabular-nums; font-weight: 600; }
+.chat-rec-stop { color: var(--rp-status-danger); border-color: var(--rp-status-danger); }
+
+/* Медиа-сообщения */
+.msg__media { margin-bottom: 0.15rem; }
+
+/* Кастомный голосовой плеер — play/pause + волна + таймер */
+.msg__voice-player {
+  display: flex; align-items: center; gap: 0.5rem;
+  min-width: 11rem; max-width: 16rem;
+}
+.msg__voice-player audio { display: none; }
+.vp-btn {
+  flex-shrink: 0; width: 2.2rem; height: 2.2rem; border-radius: 50%; border: none;
+  background: rgba(255,255,255,0.2); color: inherit; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+}
+.msg-admin .vp-btn { background: color-mix(in srgb, var(--rp-zone-accent) 15%, transparent); }
+.vp-btn:hover { background: rgba(255,255,255,0.35); }
+.msg-admin .vp-btn:hover { background: color-mix(in srgb, var(--rp-zone-accent) 28%, transparent); }
+.vp-btn:disabled { opacity: 0.35; cursor: default; }
+.vp-wave {
+  flex: 1; display: flex; align-items: center; gap: 1.5px; height: 1.75rem; cursor: pointer;
+}
+.vp-bar {
+  flex: 1; min-width: 2px; border-radius: 1px;
+  background: rgba(255,255,255,0.35); transition: background 0.08s;
+}
+.msg-admin .vp-bar { background: color-mix(in srgb, var(--rp-zone-text) 20%, transparent); }
+.vp-bar--active { background: rgba(255,255,255,0.88); }
+.msg-admin .vp-bar--active { background: var(--rp-zone-accent); }
+.vp-time {
+  font-size: 0.7rem; opacity: 0.75; white-space: nowrap;
+  font-variant-numeric: tabular-nums; min-width: 2.2rem; text-align: right;
+}
+
+/* Галочки прочтения ✓ / ✓✓ */
+.msg__tick { margin-left: 0.15rem; vertical-align: middle; opacity: 0.5; }
+.msg__tick--read { opacity: 1; }
+.msg-student .msg__tick--read { color: rgba(255,255,255,0.9); }
+.msg-admin .msg__tick--read { color: var(--rp-zone-accent); }
+
+/* Видео */
+.msg__video video { max-width: 18rem; max-height: 14rem; border-radius: var(--rp-radius-sm); display: block; }
+.msg__media-err { font-size: var(--rp-fs-sm); opacity: 0.7; margin: 0; padding: 0.25rem 0; }
+.msg__media-err[hidden] { display: none; }
+
+/* Файлы */
+.msg__file-preview { max-width: 14rem; max-height: 10rem; border-radius: var(--rp-radius-sm); display: block; margin-bottom: 0.35rem; }
+.msg__file-card {
+  display: flex; align-items: center; gap: 0.5rem;
+  text-decoration: none; color: inherit;
+  padding: 0.4rem 0.6rem; border-radius: var(--rp-radius-sm);
+  background: color-mix(in srgb, var(--rp-zone-text) 8%, transparent);
+  transition: background 0.15s;
+}
+.msg__file-card:hover { background: color-mix(in srgb, var(--rp-zone-text) 14%, transparent); }
+.msg-student .msg__file-card { background: rgba(255,255,255,0.15); }
+.msg-student .msg__file-card:hover { background: rgba(255,255,255,0.25); }
+.msg__file-icon { font-size: 1.5rem; line-height: 1; }
+.msg__file-info { display: flex; flex-direction: column; min-width: 0; }
+.msg__file-name { font-size: var(--rp-fs-sm); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 12rem; }
+.msg__file-size { font-size: 0.7rem; opacity: 0.65; }
 
 /* ---------- Инструменты админа: поиск/фильтр учеников, действия в строке таблицы ---------- */
 .admin-toolbar { display: flex; gap: var(--rp-space-2); margin-bottom: var(--rp-space-3); flex-wrap: wrap; }
@@ -602,49 +1289,281 @@ main.container { padding-block: var(--rp-space-6); }
 .row-actions button.is-active { border-color: var(--rp-zone-accent); color: var(--rp-zone-accent); }
 .row-actions button.is-danger { border-color: color-mix(in srgb, var(--rp-status-danger) 50%, var(--rp-zone-border)); }
 .row-actions button.is-danger:hover { background: color-mix(in srgb, var(--rp-status-danger) 12%, transparent); }
-.thread-row td { background: color-mix(in srgb, var(--rp-zone-accent) 5%, transparent); }
-.thread-panel { padding: var(--rp-space-4); }
+/* Значок непрочитанных на кнопке 💬 — раньше единственный способ узнать,
+   что ученик написал, был открыть переписку каждого по очереди (улучшение
+   чата, 2026-07-20). */
+.thread-toggle {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2.5rem; min-height: 2.5rem; text-decoration: none;
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
+  color: var(--rp-zone-text); font-size: var(--rp-fs-sm);
+}
+.thread-toggle:hover { background: color-mix(in srgb, var(--rp-zone-accent) 10%, transparent); }
+.unread-badge {
+  position: absolute; top: -0.4rem; right: -0.4rem; min-width: 1.1rem; height: 1.1rem;
+  padding: 0 0.25rem; border-radius: var(--rp-radius-pill);
+  background: var(--rp-status-danger); color: #fff; font-size: 0.65rem; font-weight: 700;
+  line-height: 1.1rem; text-align: center;
+}
+
+/* ---------- Мессенджер наставника (pages/dashboard/chat.html) ----------
+   Переписка раньше открывалась строкой ВНУТРИ таблицы учеников: любая
+   перерисовка таблицы пересоздавала DOM чата, значки обновлялись только по
+   перезагрузке, а на телефоне чат ездил вместе с горизонтальной прокруткой
+   таблицы. Отдельная страница на две панели — список диалогов и сама
+   переписка (запрос автора «сделай нормальный чат», 2026-07-25). */
+.messenger {
+  display: grid; grid-template-columns: minmax(16rem, 22rem) 1fr;
+  gap: var(--rp-space-4); align-items: stretch;
+  height: min(72vh, 46rem); margin-top: var(--rp-space-4);
+}
+.messenger__list, .messenger__thread {
+  display: flex; flex-direction: column; min-height: 0;
+  background: var(--rp-zone-surface); border: 1px solid var(--rp-zone-border);
+  border-radius: var(--rp-radius-md); overflow: hidden;
+}
+.messenger__list-head { padding: var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border); }
+.messenger__title { margin: 0 0 var(--rp-space-2); font-size: var(--rp-fs-lg); }
+.messenger__search { margin: 0 0 var(--rp-space-2); }
+.messenger__search input { width: 100%; }
+.messenger__filters { display: flex; gap: var(--rp-space-2); }
+.messenger__filter {
+  font: inherit; font-size: var(--rp-fs-sm); cursor: pointer; padding: 0.3rem 0.7rem;
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-pill);
+  background: transparent; color: var(--rp-zone-text);
+}
+.messenger__filter.is-active { background: var(--rp-zone-accent); border-color: var(--rp-zone-accent); color: #fff; }
+
+.thread-list { flex: 1; min-height: 0; overflow-y: auto; }
+.thread-item {
+  display: flex; gap: var(--rp-space-3); align-items: center; width: 100%;
+  padding: var(--rp-space-3); border: none; border-bottom: 1px solid var(--rp-zone-border);
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.thread-item:hover { background: color-mix(in srgb, var(--rp-zone-accent) 7%, transparent); }
+.thread-item.is-active { background: color-mix(in srgb, var(--rp-zone-accent) 14%, transparent); }
+.thread-item.has-unread .thread-item__name,
+.thread-item.has-unread .thread-item__preview { font-weight: 700; }
+.thread-item__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.thread-item__top, .thread-item__bottom { display: flex; align-items: center; gap: var(--rp-space-2); }
+.thread-item__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thread-item__time { font-size: 0.7rem; opacity: 0.7; flex: none; }
+/* Превью в одну строку: без обрезки длинное сообщение растягивало бы
+   карточку и ломало ровный ритм списка. */
+.thread-item__preview {
+  flex: 1; min-width: 0; font-size: var(--rp-fs-sm); opacity: 0.75;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.thread-item__you { opacity: 0.8; }
+.thread-item__bottom .unread-badge { position: static; flex: none; }
+
+/* Кружок с инициалами — фото у учеников нет, а сплошной список одинаковых
+   строк читается тяжело. Оттенок стабилен для uid (см. avatarHue). */
+.thread-avatar {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: 50%;
+  background: hsl(var(--avatar-hue, 40) 45% 45%); color: #fff;
+  font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em;
+}
+
+.messenger__placeholder {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--rp-space-2); text-align: center; padding: var(--rp-space-6);
+}
+.messenger__placeholder span { font-size: 2.5rem; opacity: 0.5; }
+.messenger__view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.messenger__thread-head {
+  display: flex; align-items: center; gap: var(--rp-space-3);
+  padding: var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border);
+}
+.messenger__peer { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.messenger__peer-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.messenger__peer-meta { margin: 0; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.messenger__back { display: none; }
+.messenger__back, .messenger__icon-btn {
+  flex: none; font: inherit; font-size: 1.1rem; cursor: pointer;
+  min-width: 2.5rem; min-height: 2.5rem; border-radius: var(--rp-radius-sm);
+  border: 1px solid var(--rp-zone-border); background: transparent; color: var(--rp-zone-text);
+}
+.messenger__icon-btn:hover, .messenger__back:hover { background: color-mix(in srgb, var(--rp-zone-accent) 10%, transparent); }
+.messenger__msg-search { display: flex; gap: var(--rp-space-2); padding: var(--rp-space-2) var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border); }
+.messenger__msg-search input { flex: 1; font: inherit; padding: 0.4rem 0.6rem; border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm); background: var(--rp-zone-surface); color: inherit; }
+/* Внутри мессенджера высоту списка задаёт грид-контейнер, а не max-height
+   из общего правила .msg-list (там 28rem — для карточки в кабинете). */
+.messenger__msgs { flex: 1; min-height: 0; max-height: none; padding: var(--rp-space-3); margin: 0; }
+.messenger__form { padding: var(--rp-space-3); border-top: 1px solid var(--rp-zone-border); }
+
+/* Одна колонка на узком экране: видна либо список, либо переписка —
+   две панели рядом на телефоне превратились бы в две нечитаемые полоски. */
+@media (max-width: 52rem) {
+  .messenger { grid-template-columns: 1fr; height: min(78vh, 44rem); }
+  .messenger[data-pane="list"] .messenger__thread { display: none; }
+  .messenger[data-pane="thread"] .messenger__list { display: none; }
+  .messenger__back { display: inline-flex; align-items: center; justify-content: center; }
+}
+
+/* Меню «изменить/удалить» на своём сообщении (запрос автора, 2026-07-25).
+   Кнопка ⋯ проявляется по наведению на десктопе, но на тач-устройствах
+   hover не существует — там она видна всегда. */
+.msg__actions { position: absolute; top: 0.15rem; right: 0.25rem; }
+.msg__menu-btn {
+  opacity: 0; font: inherit; line-height: 1; cursor: pointer; padding: 0.1rem 0.3rem;
+  border: none; background: transparent; color: inherit; border-radius: var(--rp-radius-sm);
+  transition: opacity 0.15s ease;
+}
+.msg:hover .msg__menu-btn, .msg__menu-btn:focus-visible, .msg__menu-btn[aria-expanded="true"] { opacity: 0.75; }
+.msg__menu-btn:hover { opacity: 1; }
+@media (hover: none) { .msg__menu-btn { opacity: 0.6; } }
+.msg-menu {
+  position: absolute; top: 1.5rem; right: 0; z-index: 30; min-width: 9rem;
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--rp-zone-surface); color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
+  box-shadow: var(--rp-shadow-card);
+}
+.msg-menu__item { font: inherit; font-size: var(--rp-fs-sm); text-align: left; cursor: pointer; padding: 0.5rem 0.75rem; border: none; background: transparent; color: inherit; }
+.msg-menu__item:hover { background: color-mix(in srgb, var(--rp-zone-accent) 12%, transparent); }
+.msg-menu__item.is-danger { color: var(--rp-status-danger); }
+.msg__edited { opacity: 0.8; margin-right: 0.3rem; font-style: italic; }
+.msg__hit { background: var(--rp-accent-light, #fef3c7); color: #1a1a1a; border-radius: 2px; padding: 0 1px; }
+
+/* Заголовок чата в кабинете ученика: заголовок + поиск по переписке */
+.chat-head { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-top: var(--rp-space-6); margin-bottom: var(--rp-space-3); }
+.chat-head__search { margin: 0; margin-left: auto; }
+
+/* Значок непрочитанных в пункте «Кабинет» — ответ наставника раньше
+   обнаруживался только при следующем заходе в кабинет (запрос автора,
+   2026-07-25). Инлайновый, а не абсолютный: пункт меню и так flex-строка. */
+.nav-unread {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.1rem; height: 1.1rem; margin-left: 0.35rem; padding: 0 0.25rem;
+  border-radius: var(--rp-radius-pill); background: var(--rp-status-danger);
+  color: #fff; font-size: 0.65rem; font-weight: 700; line-height: 1;
+}
+
+/* Кнопка «Переписка» в шапке кабинета администратора. .dash-hero — flex без
+   переноса, поэтому на узком экране кнопка выдавливала бы заголовок; ниже
+   52rem уводим её на свою строку. */
+.dash-hero { flex-wrap: wrap; }
+.dash-hero__cta { position: relative; margin-left: auto; flex: none; }
+.dash-hero__cta .unread-badge { top: -0.5rem; right: -0.5rem; }
+@media (max-width: 52rem) {
+  .dash-hero__cta { margin-left: 0; width: 100%; justify-content: center; }
+}
 
 /* ---------- Квиз ---------- */
-.quiz-progress { height: 0.5rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); overflow: hidden; margin-bottom: var(--rp-space-5); }
-.quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.3s ease; }
-.quiz-option { display: block; width: 100%; min-height: 2.75rem; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; }
-.quiz-option[aria-pressed="true"] { border-color: var(--rp-learn-accent); background: var(--rp-color-gold-100); }
-/* Мгновенная обратная связь по вопросу (план улучшения курса, 2026-07-18,
-   второй проход — retrieval practice). Фон смешан с текущим --rp-learn-surface
-   через color-mix, а не жёстко-светлый цвет — иначе на тёмной теме "изумруд"
-   светлый текст становился нечитаемым (было 1.1:1, ниже WCAG AA 4.5:1),
-   смешивание сохраняет контраст ~9-10:1 на всех темах. */
+
+/* Шапка экзамена: заголовок + таймер */
+.quiz-header { display: flex; align-items: baseline; justify-content: space-between; gap: var(--rp-space-3); flex-wrap: wrap; margin-bottom: var(--rp-space-2); }
+.quiz-header__title { margin: 0; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+.quiz-timer { display: inline-flex; align-items: center; gap: 0.35rem; font-variant-numeric: tabular-nums; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); padding: 0.2rem 0.6rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); }
+.quiz-timer__icon { font-size: 0.85em; }
+
+/* Прогресс-бар */
+.quiz-progress { height: 0.5rem; border-radius: var(--rp-radius-pill); background: var(--rp-learn-surface-raised); overflow: hidden; margin-bottom: var(--rp-space-3); }
+.quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+
+/* Навигационные точки */
+.quiz-dots { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-bottom: var(--rp-space-5); }
+.quiz-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; border: none; padding: 0; background: var(--rp-learn-surface-raised); cursor: pointer; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; }
+.quiz-dot:hover { transform: scale(1.3); }
+.quiz-dot.is-current { background: var(--rp-learn-accent); transform: scale(1.35); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rp-learn-accent) 30%, transparent); }
+.quiz-dot.is-answered { background: var(--rp-learn-text-muted); }
+.quiz-dot.is-correct-dot { background: var(--rp-status-success); }
+.quiz-dot.is-wrong-dot { background: var(--rp-status-danger); }
+
+/* Карточка вопроса — анимированный контейнер */
+.quiz-card { animation: quizFadeIn 0.3s ease; }
+@keyframes quizFadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.quiz-card__number { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--rp-learn-accent); color: var(--rp-learn-bg, #fff); font-weight: 700; font-size: var(--rp-fs-sm); margin-bottom: var(--rp-space-2); }
+.quiz-card__question { font-size: var(--rp-fs-lg); font-family: var(--rp-font-heading); line-height: 1.4; margin-bottom: var(--rp-space-4); }
+
+/* Варианты ответа */
+.quiz-option { display: flex; align-items: flex-start; gap: var(--rp-space-3); width: 100%; min-height: 2.75rem; text-align: left; padding: var(--rp-space-3) var(--rp-space-4); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 2px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; font: inherit; transition: border-color 0.2s, background 0.2s, transform 0.15s; }
+.quiz-option:hover:not(:disabled) { border-color: var(--rp-learn-accent); transform: translateX(4px); }
+.quiz-option[aria-pressed="true"] { border-color: var(--rp-learn-accent); background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface)); }
+.quiz-option__letter { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 2px solid var(--rp-learn-border); font-weight: 700; font-size: var(--rp-fs-sm); transition: background 0.2s, border-color 0.2s, color 0.2s; }
+.quiz-option:hover:not(:disabled) .quiz-option__letter { border-color: var(--rp-learn-accent); }
+.quiz-option[aria-pressed="true"] .quiz-option__letter { background: var(--rp-learn-accent); border-color: var(--rp-learn-accent); color: var(--rp-learn-bg, #fff); }
+/* Обратная связь: color-mix для контраста на всех темах */
 .quiz-option.is-correct { border-color: var(--rp-status-success); background: color-mix(in srgb, var(--rp-status-success) 18%, var(--rp-learn-surface)); font-weight: 700; }
+.quiz-option.is-correct .quiz-option__letter { background: var(--rp-status-success); border-color: var(--rp-status-success); color: #fff; }
 .quiz-option.is-wrong { border-color: var(--rp-status-danger); background: color-mix(in srgb, var(--rp-status-danger) 18%, var(--rp-learn-surface)); }
+.quiz-option.is-wrong .quiz-option__letter { background: var(--rp-status-danger); border-color: var(--rp-status-danger); color: #fff; }
 .quiz-option:disabled { cursor: default; }
-/* Цвет текста — var(--rp-learn-text), не --rp-status-success/danger: та пара
-   калибрована под светлую зону по умолчанию и на тёмной теме "изумруд" как
-   текст даёт ~2.4:1 (ниже WCAG AA). Правильно/неправильно различаем иконкой
-   (✅/❌ в тексте), не только цветом — так же надёжнее для дальтоников. */
 .quiz-feedback { font-size: var(--rp-fs-sm); font-weight: 700; margin: var(--rp-space-2) 0 var(--rp-space-4); min-height: 1.2em; color: var(--rp-learn-text); }
 
-/* Разбор ответов на экране результата непройденного теста (project.md §22,
-   backlog "постраничный разбор ответов после несданного теста", 2026-07-20). */
+/* Навигация внизу вопроса */
+.quiz-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-3); }
+.quiz-nav__counter { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+
+/* Экран результата */
+.quiz-result { border-width: 2px; animation: quizFadeIn 0.4s ease; }
+.quiz-result--passed { border-color: var(--rp-status-success); }
+.quiz-result--failed { border-color: var(--rp-status-danger); }
+.quiz-result__icon { font-size: 3rem; line-height: 1; margin-bottom: var(--rp-space-3); }
+
+/* SVG-кольцо результата */
+.quiz-result__ring { display: block; margin: 0 auto var(--rp-space-3); }
+.quiz-result__ring-bg { fill: none; stroke: var(--rp-learn-surface-raised); stroke-width: 8; }
+.quiz-result__ring-fg { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1); }
+.quiz-result__ring-text { font-family: var(--rp-font-heading); font-size: 1.6rem; font-weight: 700; fill: var(--rp-learn-text); text-anchor: middle; dominant-baseline: central; }
+.quiz-result__score-label { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-bottom: var(--rp-space-3); }
+
+/* Статистика результата */
+.quiz-result__stats { display: flex; justify-content: center; gap: var(--rp-space-5); margin: var(--rp-space-4) 0; flex-wrap: wrap; }
+.quiz-result__stat { text-align: center; }
+.quiz-result__stat-value { font-family: var(--rp-font-heading); font-size: var(--rp-fs-xl); font-weight: 700; }
+.quiz-result__stat-label { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+.quiz-result__actions { display: flex; gap: var(--rp-space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--rp-space-4); }
+
+/* Разбор ответов */
 .quiz-review { list-style: none; margin: var(--rp-space-3) 0 0; padding: 0; }
-.quiz-review__item { padding: var(--rp-space-3) 0; border-top: 1px solid var(--rp-learn-border); }
-.quiz-review__item:first-child { border-top: none; padding-top: 0; }
-.quiz-review__q { font-weight: 700; margin-bottom: var(--rp-space-1); }
-.quiz-review__item.is-wrong .quiz-review__q { color: var(--rp-status-danger); }
+.quiz-review__item { padding: var(--rp-space-3); margin-bottom: var(--rp-space-2); border-radius: var(--rp-radius-md); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); }
+.quiz-review__q { font-weight: 700; margin-bottom: var(--rp-space-1); display: flex; align-items: flex-start; gap: var(--rp-space-2); }
+.quiz-review__num { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 1.4rem; height: 1.4rem; border-radius: 50%; font-size: 0.7rem; font-weight: 700; color: #fff; }
+.quiz-review__num.is-correct { background: var(--rp-status-success); }
+.quiz-review__num.is-wrong { background: var(--rp-status-danger); }
 
 .skeleton-loading { padding: var(--rp-space-6) 0; text-align: center; color: var(--rp-learn-text-muted); font-size: var(--rp-fs-sm); }
 
 /* ---------- Список тестов/экзаменов (pages/tests/index.html) ---------- */
-.test-list { list-style: none; margin: 0 0 var(--rp-space-4); padding: 0; }
+
+/* Сводка вверху страницы */
+.tests-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: var(--rp-space-3); margin-bottom: var(--rp-space-5); }
+.tests-stat-card { text-align: center; padding: var(--rp-space-4); border-radius: var(--rp-radius-md); background: var(--rp-learn-surface); border: 1px solid var(--rp-learn-border); }
+.tests-stat-card__value { font-family: var(--rp-font-heading); font-size: var(--rp-fs-2xl); font-weight: 700; }
+.tests-stat-card__label { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
+
+/* Фильтр-табы */
+.tests-filter { display: flex; gap: var(--rp-space-2); margin-bottom: var(--rp-space-5); flex-wrap: wrap; }
+.tests-filter__btn { font: inherit; font-size: var(--rp-fs-sm); font-weight: 600; padding: 0.35rem 0.9rem; border-radius: var(--rp-radius-pill); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+.tests-filter__btn:hover { border-color: var(--rp-learn-accent); }
+.tests-filter__btn.is-active { background: var(--rp-learn-accent); border-color: var(--rp-learn-accent); color: var(--rp-learn-bg, #fff); }
+
+/* Карточка модуля */
+.test-module-card { border-radius: var(--rp-radius-lg); border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); padding: var(--rp-space-4) var(--rp-space-5); margin-bottom: var(--rp-space-4); transition: border-color 0.2s; }
+.test-module-card:hover { border-color: var(--rp-learn-accent); }
+.test-module-card__header { display: flex; align-items: center; gap: var(--rp-space-3); margin-bottom: var(--rp-space-3); }
+.test-module-card__num { display: inline-flex; align-items: center; justify-content: center; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface)); color: var(--rp-learn-accent); font-weight: 700; font-size: var(--rp-fs-sm); flex-shrink: 0; }
+.test-module-card__meta { flex: 1; }
+.test-module-card__level { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; }
+.test-module-card__title { font-family: var(--rp-font-heading); font-size: var(--rp-fs-lg); margin: 0; }
+.test-module-card__progress-badge { font-size: var(--rp-fs-sm); font-weight: 700; padding: 0.2rem 0.6rem; border-radius: var(--rp-radius-pill); }
+.test-module-card__progress-badge.all-done { background: var(--rp-color-green-100); color: var(--rp-color-green-800); }
+.test-module-card__progress-badge.partial { background: var(--rp-color-gold-100); color: var(--rp-color-ink-900); }
+
+.test-list { list-style: none; margin: 0 0 var(--rp-space-3); padding: 0; }
 .test-list li { margin-bottom: var(--rp-space-2); }
 .test-item {
   display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-3);
   padding: var(--rp-space-3) var(--rp-space-4); border-radius: var(--rp-radius-md);
   border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface);
-  text-decoration: none; color: inherit;
+  text-decoration: none; color: inherit; transition: background 0.2s, border-color 0.2s, transform 0.15s;
 }
-.test-item:hover { background: var(--rp-color-parchment-200); }
-.test-item--module { border-style: dashed; font-weight: 700; }
+.test-item:hover { background: var(--rp-learn-surface-raised); color: var(--rp-learn-text); border-color: var(--rp-learn-accent); transform: translateX(4px); }
+.test-item--module { border-width: 2px; border-style: dashed; font-weight: 700; }
+.test-item--module:hover { border-style: solid; }
 
 .footer { padding: var(--rp-space-6) 0; text-align: center; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); }
 
@@ -672,3 +1591,328 @@ main.container { padding-block: var(--rp-space-6); }
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .toast.is-visible { opacity: 0.96; transform: translateY(0); }
+
+/* ---------- Чеклист самопроверки «Понял / Не понял» ----------
+   Заменяет прежние "Мои заметки" (решение автора, 2026-07-22).
+   Ученик отмечает ключевые разделы урока как усвоенные или нет. */
+.self-check h3 { margin-top: 0; }
+.self-check__progress {
+  display: flex; align-items: center; gap: var(--rp-space-3);
+  margin-bottom: var(--rp-space-4);
+}
+.self-check__bar {
+  flex: 1; height: 0.45rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-zone-text) 12%, transparent);
+  overflow: hidden;
+}
+.self-check__fill {
+  height: 100%; width: 0; border-radius: var(--rp-radius-pill);
+  background: var(--rp-status-success); transition: width 0.35s ease;
+}
+.self-check__counter { font-size: var(--rp-fs-sm); font-weight: 600; white-space: nowrap; }
+.self-check__list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: var(--rp-space-2);
+}
+.self-check__item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--rp-space-3); padding: var(--rp-space-2) var(--rp-space-3);
+  border-radius: var(--rp-radius-sm);
+  background: color-mix(in srgb, var(--rp-zone-text) 4%, transparent);
+  transition: background 0.2s ease;
+}
+.self-check__label {
+  flex: 1; font-size: var(--rp-fs-sm); line-height: 1.35;
+}
+.self-check__btns {
+  display: flex; gap: var(--rp-space-1); flex-shrink: 0;
+}
+.self-check__btn {
+  border: 1.5px solid color-mix(in srgb, var(--rp-zone-text) 20%, transparent);
+  background: transparent; color: var(--rp-zone-text);
+  padding: 0.25rem 0.65rem; border-radius: var(--rp-radius-sm);
+  font-size: var(--rp-fs-xs); font-weight: 600; cursor: pointer;
+  transition: all 0.15s ease; white-space: nowrap;
+}
+.self-check__btn:hover { border-color: color-mix(in srgb, var(--rp-zone-text) 40%, transparent); }
+.self-check__btn--yes.active {
+  background: var(--rp-status-success); color: #fff;
+  border-color: var(--rp-status-success);
+}
+.self-check__btn--no.active {
+  background: var(--rp-status-danger); color: #fff;
+  border-color: var(--rp-status-danger);
+}
+.self-check__status { display: block; margin-top: var(--rp-space-2); min-height: 1.2em; }
+
+/* ---------- Переключатель языка ---------- */
+.lang-switcher {
+  display: flex; gap: 2px; border-radius: var(--rp-radius-sm);
+  overflow: hidden; border: 1.5px solid color-mix(in srgb, var(--rp-zone-text) 20%, transparent);
+}
+.lang-switcher__btn {
+  background: transparent; color: var(--rp-zone-text);
+  border: none; padding: 0.2rem 0.45rem; font-size: var(--rp-fs-xs);
+  font-weight: 600; cursor: pointer; transition: all 0.15s ease;
+  line-height: 1.2;
+}
+.lang-switcher__btn:hover { background: color-mix(in srgb, var(--rp-zone-text) 10%, transparent); }
+.lang-switcher__btn.is-active {
+  background: var(--rp-zone-accent, var(--rp-learn-accent));
+  color: var(--rp-zone-accent-contrast, #fff);
+}
+
+/* ---------- Слабые места — бар-чарт на дашборде ученика ---------- */
+.weak-areas { padding: var(--rp-space-4) var(--rp-space-5); }
+.weak-areas__chart { display: flex; flex-direction: column; gap: var(--rp-space-2); }
+.weak-areas__row {
+  display: flex; align-items: center; gap: var(--rp-space-2);
+  flex-wrap: wrap;
+}
+.weak-areas__label {
+  min-width: 5.5rem; font-size: var(--rp-fs-sm); font-weight: 600;
+  white-space: nowrap; flex-shrink: 0;
+}
+.weak-areas__label--book {
+  min-width: 0; max-width: 12rem; overflow: hidden;
+  text-overflow: ellipsis; font-weight: 400;
+}
+.weak-areas__bar-wrap {
+  flex: 1; min-width: 4rem; height: 0.65rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-zone-text) 10%, transparent);
+  overflow: hidden;
+}
+.weak-areas__bar {
+  display: block; height: 100%; border-radius: var(--rp-radius-pill);
+  background: var(--rp-status-success); transition: width 0.5s ease;
+}
+.weak-areas__bar--danger { background: var(--rp-status-danger); }
+.weak-areas__value {
+  font-size: var(--rp-fs-sm); font-weight: 700; min-width: 2.6rem;
+  text-align: right; flex-shrink: 0;
+}
+.weak-areas__badge {
+  font-size: var(--rp-fs-xs); font-weight: 600;
+  padding: 0.1rem 0.5rem; border-radius: var(--rp-radius-pill);
+  background: color-mix(in srgb, var(--rp-status-danger) 15%, transparent);
+  color: var(--rp-status-danger); white-space: nowrap;
+}
+.weak-areas__recommend {
+  margin-top: var(--rp-space-4); font-size: var(--rp-fs-sm); font-weight: 600;
+}
+.weak-areas__recommend a {
+  color: var(--rp-zone-accent, var(--rp-learn-accent));
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
+/* ---------- Кнопка озвучки дуа-блока (Web Speech API TTS) ---------- */
+.dua-block { position: relative; }
+.dua-block__play {
+  position: absolute; top: var(--rp-space-3); right: var(--rp-space-3);
+  width: 2rem; height: 2rem; border-radius: 50%; border: none;
+  background: color-mix(in srgb, var(--rp-learn-accent) 15%, var(--rp-learn-surface));
+  color: var(--rp-learn-accent); font-size: 0.85rem; line-height: 1;
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+  flex-shrink: 0; z-index: 1;
+}
+.dua-block__play:hover { background: color-mix(in srgb, var(--rp-learn-accent) 25%, var(--rp-learn-surface)); transform: scale(1.1); }
+.dua-block__play:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.dua-block__play--active { background: var(--rp-learn-accent); color: #fff; }
+@media print { .dua-block__play { display: none; } }
+
+/* ---------- Встраивание видео (YouTube / .mp4) ---------- */
+.video-embed {
+  position: relative; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: var(--rp-radius-md); overflow: hidden;
+  background: #000; margin: var(--rp-space-5) 0;
+}
+.video-embed iframe,
+.video-embed video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: none; border-radius: var(--rp-radius-md);
+}
+@media print { .video-embed { display: none; } }
+
+/* ── Assignments grid ── */
+.assignments-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rp-space-4);
+  margin-top: var(--rp-space-4);
+}
+@media (min-width: 640px) {
+  .assignments-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.assignment-card { padding: var(--rp-space-4); }
+.assignment-card__header {
+  display: flex; align-items: center; gap: var(--rp-space-2);
+  flex-wrap: wrap; margin-bottom: var(--rp-space-2);
+  font-size: var(--rp-text-sm);
+}
+.assignment-card__icon { font-size: 1.3em; }
+.assignment-card__type {
+  font-weight: 600;
+  color: var(--rp-zone-accent, var(--rp-learn-accent));
+}
+.assignment-card__duration {
+  margin-left: auto;
+  color: var(--rp-zone-muted, var(--rp-learn-muted));
+  white-space: nowrap;
+}
+.assignment-card__title {
+  font-size: var(--rp-text-base);
+  margin: 0 0 var(--rp-space-2);
+}
+.assignment-card__desc {
+  font-size: var(--rp-text-sm);
+  color: var(--rp-zone-muted, var(--rp-learn-muted));
+  margin: 0; line-height: 1.55;
+}
+
+/* ==========================================================================
+   ПЕЧАТЬ И PDF (запрос автора «чтобы можно было распечатывать и скачивать в
+   красивом PDF во всех модулях», 2026-07-25)
+   --------------------------------------------------------------------------
+   До этого печатных стилей как таковых не было — только россыпь заплаток
+   «спрятать кнопку» по всему файлу, и печаталась страница сайта как есть:
+   тёмный фон темы, поля браузера по умолчанию, дуа и таблицы резались
+   пополам между листами, у страницы модуля кнопки печати не было вовсе.
+
+   Основной способ получить PDF — печать браузера («Сохранить как PDF»): в
+   отличие от скриншота через canvas это настоящий текст (выделяется,
+   ищется, арабская вязь рендерится настоящим шрифтом), файл в сотню раз
+   легче и не мылится при увеличении.
+
+   Печатаем всегда светлым по белому, независимо от выбранной темы: тёмный
+   фон темы на бумаге съел бы картридж и читался бы хуже.
+   ========================================================================== */
+@page {
+  size: A4;
+  margin: 18mm 16mm 20mm;
+}
+
+@media print {
+  /* --- Сброс темы: печать всегда чёрным по белому --- */
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+  }
+  body::before, body::after, #bg-ambient { display: none !important; }
+
+  /* Служебные элементы интерфейса на бумаге не нужны */
+  .no-print,
+  .site-header, .footer, #site-header, #site-footer,
+  .skip-link, .theme-switcher, .lang-switcher,
+  #reading-progress, #back-to-top,
+  .dua-block__play, .video-embed,
+  .bookmark-fab, .bookmark-panel, .bookmark-overlay, .bookmark-add-dialog,
+  .rp-modal-overlay, .toast-container,
+  .doc-toc, .self-check, .book-exam-cta { display: none !important; }
+
+  /* Контейнер не должен добавлять свои поля — поля задаёт @page */
+  .container, .container--narrow, main { max-width: none !important; width: auto !important; margin: 0 !important; padding: 0 !important; }
+  .card { border: none !important; box-shadow: none !important; background: none !important; padding: 0 !important; }
+
+  /* --- Титульный лист (вставляется print-doc.js) --- */
+  .print-cover { display: block !important; text-align: center; page-break-after: always; break-after: page; padding-top: 25mm; }
+  .print-cover__school { font-size: 10pt; letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 22mm; }
+  .print-cover__mark { font-family: var(--rp-font-arabic), serif; font-size: 38pt; line-height: 1; margin: 0 0 8mm; }
+  .print-cover__eyebrow { font-size: 10pt; letter-spacing: 0.1em; text-transform: uppercase; margin: 0 0 4mm; }
+  .print-cover__title { font-family: var(--rp-font-heading), serif; font-size: 24pt; line-height: 1.25; margin: 0 auto 8mm; max-width: 120mm; }
+  .print-cover__rule { width: 30mm; height: 2px; background: #000; margin: 0 auto 8mm; border: none; }
+  .print-cover__author { font-size: 12pt; margin: 0 0 2mm; }
+  .print-cover__meta { font-size: 10pt; margin: 0; }
+  .print-cover__foot { margin-top: 45mm; font-size: 9pt; }
+
+  /* Колонтитул с названием школы на каждом листе, кроме титульного.
+     position: fixed внутри @media print браузеры повторяют на каждой
+     странице — единственный способ без серверной генерации PDF. */
+  .print-runhead {
+    display: block !important;
+    position: fixed; top: -12mm; left: 0; right: 0;
+    font-size: 8.5pt; letter-spacing: 0.08em; text-transform: uppercase;
+    border-bottom: 1px solid #999; padding-bottom: 1.5mm;
+  }
+  .print-runhead__right { float: right; text-transform: none; letter-spacing: 0; }
+
+  /* --- Заголовки и текст --- */
+  h1, h2, h3, h4 { color: #000 !important; page-break-after: avoid; break-after: avoid; }
+  h1 { font-size: 18pt; }
+  h2 { font-size: 14pt; margin-top: 8mm; }
+  h3 { font-size: 12pt; }
+  p, li { orphans: 3; widows: 3; }
+  .doc-body { font-size: 11pt; line-height: 1.55; }
+  .doc-body > p:first-of-type { font-size: 11pt; }
+  .form-note, .doc-meta { color: #333 !important; }
+  .badge { border: 1px solid #000 !important; background: none !important; color: #000 !important; }
+
+  /* --- Защита от разрывов: дуа, арабские блоки, таблицы, цитаты ---
+     Разорванная пополам дуа — это разорванный посреди строки арабский
+     текст на одном листе и его перевод на другом; читать по такому
+     распечатанному листу нельзя. */
+  .dua-block, .ayah-card, blockquote, .doc-warning, table, tr, .assignment-card, .table-scroll {
+    page-break-inside: avoid; break-inside: avoid;
+  }
+  .dua-block {
+    background: none !important; border: 1px solid #000 !important;
+    padding: 4mm !important; margin: 5mm 0 !important;
+  }
+  .dua-block .dua-label { color: #000 !important; opacity: 1; }
+  .doc-body p.doc-body__arabic { font-size: 15pt; line-height: 2; }
+  .doc-body p.doc-body__translit { font-style: italic; }
+  blockquote { border-left: 3px solid #000 !important; background: none !important; }
+  .doc-body th { background: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc-body th, .doc-body td { border: 1px solid #666 !important; }
+  /* Большие таблицы всё же приходится разрешать переносить — иначе
+     таблица выше листа не напечатается вообще; шапка повторится сама. */
+  table.print-allow-break { page-break-inside: auto; break-inside: auto; }
+  thead { display: table-header-group; }
+
+  /* --- Ссылки: на бумаге по ним не кликнуть, поэтому печатаем адрес ---
+     Внутренние ссылки курса (кнопки-пилюли на другие модули) печатаем без
+     адреса: он всё равно относительный и без сайта бесполезен. */
+  .doc-body a { color: #000 !important; text-decoration: underline; }
+  .doc-body a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 8.5pt; word-break: break-all; text-decoration: none;
+  }
+  .content-ref-link { border: 1px solid #000 !important; color: #000 !important; background: none !important; }
+  .content-ref-link::after { content: none !important; }
+
+  /* Картинки не должны вылезать за поля и рваться между листами */
+  img { max-width: 100% !important; height: auto !important; page-break-inside: avoid; break-inside: avoid; }
+  .book-hero { display: block !important; border: none !important; background: none !important; padding: 0 !important; }
+  .book-hero__cover { max-width: 60mm; float: right; margin: 0 0 4mm 4mm; }
+  .book-hero__spine, .book-hero__video { display: none !important; }
+
+  /* Список уроков модуля печатаем компактно, без «кнопочного» вида */
+  .lesson-list { padding-left: 0 !important; }
+  .lesson-link { border: none !important; background: none !important; padding: 1mm 0 !important; box-shadow: none !important; }
+  .lesson-link__go { display: none !important; }
+}
+
+/* Экранный аналог: пока идёт подготовка к печати, скрываем титульный лист и
+   колонтитул — на экране они не нужны, но в DOM уже есть. */
+.print-cover, .print-runhead { display: none; }
+
+/* ---------- Предложение продолжить чтение с прежнего места ----------
+   Прогресс отмечался только по книгам целиком, поэтому закрытая на
+   середине книга на 3000 слов требовала искать место глазами заново
+   (совет по улучшениям, 2026-07-25). Не прыгаем сами: беззвучный прыжок
+   на середину дезориентирует — предлагаем кнопкой. */
+.resume-bar {
+  display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap;
+  margin-bottom: var(--rp-space-4); padding: var(--rp-space-3) var(--rp-space-4);
+  border: 1px solid var(--rp-learn-accent); border-radius: var(--rp-radius-md);
+  background: color-mix(in srgb, var(--rp-learn-accent) 8%, var(--rp-learn-surface-raised));
+}
+.resume-bar__text { flex: 1; min-width: 0; font-size: var(--rp-fs-sm); }
+.resume-bar__close {
+  flex: none; width: 1.75rem; height: 1.75rem; border-radius: var(--rp-radius-pill);
+  border: 1px solid var(--rp-learn-border); background: transparent;
+  color: var(--rp-learn-text); font-size: 1rem; line-height: 1; cursor: pointer;
+}
+.resume-bar__close:hover { background: var(--rp-learn-surface); }
+@media print { .resume-bar { display: none !important; } }

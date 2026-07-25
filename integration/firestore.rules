@@ -11,6 +11,18 @@ service cloud.firestore {
     function isOwner(uid) {
       return isSignedIn() && request.auth.uid == uid;
     }
+    // Раздел "Архив" (content/_content_archive_index_md — bookKey() от
+    // "/content/archive/index.md") разбирает материалы, исключённые из
+    // сертифицируемой программы, с прямой критикой конкретных книг/методик.
+    // Автор попросил "убери от всех кроме меня админа" (2026-07-21) — на
+    // клиенте (pages/book.html) уже сделано, но реальная защита живёт
+    // здесь: без этой правки любой ОПЛАТИВШИЙ курс ученик всё равно мог бы
+    // прочитать полный текст прямым запросом к Firestore (SDK/консоль),
+    // в обход JS-стены — то же рассуждение, что и у общего правила ниже
+    // ("реальная защита пейвола вместо визуальной").
+    function isArchiveDoc(docId) {
+      return docId == '_content_archive_index_md';
+    }
 
     match /admins/{uid} {
       // Список админов не создаётся через клиент — только вручную в консоли Firebase
@@ -35,7 +47,32 @@ service cloud.firestore {
         // может подделать сообщение "от админа" в своей же переписке.
         allow create: if (isOwner(uid) && request.resource.data.from == 'student')
                       || (isAdmin() && request.resource.data.from == 'admin');
-        allow update, delete: if isAdmin();
+
+        // Ученик отмечает прочитанными сообщения наставника. Раньше здесь
+        // стояло только `isAdmin()`, поэтому markThreadRead(uid, 'student')
+        // молча падал на правилах: поле read у сообщений админа навсегда
+        // оставалось false, и наставник никогда не видел вторую галочку
+        // (аудит 2026-07-25). Разрешаем узко — ученик может изменить ровно
+        // одно поле `read` и только с false на true, у чужих (админских)
+        // сообщений. Ни текст, ни автора, ни дату он так не подменит.
+        function onlyMarksRead() {
+          return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+                 && request.resource.data.read == true
+                 && resource.data.from == 'admin';
+        }
+        // Правка/удаление своего сообщения (запрос автора, 2026-07-25).
+        // Ученик распоряжается только тем, что написал сам; текст можно
+        // менять, авторство/дату создания — нет.
+        function editsOwnText() {
+          return resource.data.from == 'student'
+                 && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'editedAt'])
+                 && request.resource.data.from == resource.data.from
+                 && request.resource.data.createdAt == resource.data.createdAt;
+        }
+        allow update: if isAdmin()
+                      || (isOwner(uid) && (onlyMarksRead() || editsOwnText()));
+        allow delete: if isAdmin()
+                      || (isOwner(uid) && resource.data.from == 'student');
       }
     }
 
@@ -47,8 +84,11 @@ service cloud.firestore {
     // scripts/seed-paid-content.mjs через Admin SDK от имени автора курса —
     // клиентской записи с этой коллекцией не предполагается вовсе.
     match /content/{docId} {
+      // Архив — исключение из общего правила "оплатил → читает всё": даже
+      // paid == true не даёт доступа к этому docId, только isAdmin().
       allow read: if isAdmin()
-                  || (isSignedIn() && get(/databases/$(database)/documents/students/$(request.auth.uid)).data.paid == true);
+                  || (!isArchiveDoc(docId) && isSignedIn()
+                      && get(/databases/$(database)/documents/students/$(request.auth.uid)).data.paid == true);
       allow write: if false;
     }
   }

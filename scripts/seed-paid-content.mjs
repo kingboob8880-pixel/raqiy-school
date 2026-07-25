@@ -20,8 +20,29 @@
 //   4. GOOGLE_APPLICATION_CREDENTIALS=/путь/к/ключу.json node seed-paid-content.mjs
 //      — реальная запись в Firestore + обрезка локальных .md файлов
 //   5. git add -A && git commit -m "Полный текст книг перенесён в Firestore" && git push
+//
+// ⚠ ОДНОЙ ЭТОЙ МИГРАЦИИ НЕДОСТАТОЧНО — ИСТОРИЯ GIT
+// -------------------------------------------------
+// Обрезка файлов убирает полный текст только из ТЕКУЩЕЙ версии. Вся история
+// репозитория остаётся на месте, и полный текст достаётся одной командой:
+//     git log --all -- content/module-8/prodvinutye-formuly.md
+//     git show <старый-коммит>:content/module-8/prodvinutye-formuly.md
+// Проверено 2026-07-25 на публичном репозитории: 152 коммита, текст Модуля 8
+// вычитывается из первого же коммита с этим файлом.
+//
+// Поэтому после миграции нужно закрыть и историю — одним из двух способов:
+//   А) Сделать репозиторий приватным (Settings → General → Danger Zone →
+//      Change visibility). GitHub Pages продолжит отдавать сайт публично, но
+//      ни файлов, ни истории снаружи не видно. Требует платного плана для
+//      Pages из приватного репозитория. Самый простой и надёжный путь.
+//   Б) Переписать историю (git filter-repo) и сделать force-push. Бесплатно,
+//      но у всех, кто уже клонировал репозиторий, полный текст остаётся, и
+//      операция необратима — обязательно сделать резервную копию.
+//
+// Пока не сделано ни то, ни другое, миграция даёт ложное чувство защиты:
+// текст перестаёт отдаваться сайтом, но по-прежнему лежит в открытой истории.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { initializeApp, cert, applicationDefault } from "firebase-admin/app";
@@ -74,14 +95,64 @@ async function collectProtectedDocs() {
   // Не импортируем файл напрямую (он написан для браузера, но не использует
   // браузерных API — импорт сработал бы, но регэксп-парсинг надёжнее не
   // зависеть от синтаксиса модуля при будущих правках файла).
+  // Раздел «Архив» удалён с сайта целиком (решение автора, 2026-07-21) —
+  // раньше он тоже добавлялся сюда, но файла больше нет.
   const docs = new Set([...src.matchAll(/doc:\s*"([^"]+)"/g)].map((m) => m[1]));
-  docs.add("/content/archive/index.md");
   return [...docs];
+}
+
+/** Все .md под content/ — включая те, которых нет в modules-data.js. */
+function allContentFiles(dir, out = []) {
+  for (const name of readdirSync(dir)) {
+    const full = path.join(dir, name);
+    if (statSync(full).isDirectory()) allContentFiles(full, out);
+    else if (name.endsWith(".md")) out.push(full);
+  }
+  return out;
+}
+
+/** Миграция обрезает только те файлы, что перечислены в modules-data.js.
+ *  Всё остальное под content/ она бы не тронула — и полный текст остался бы
+ *  открытым, несмотря на «успешную» миграцию.
+ *
+ *  Это не теория: в репозитории лежали дубли вида
+ *  content/module-8/module-8/prodvinutye-formuly.md (178 файлов) — копии,
+ *  попавшие туда при давнем неудачном копировании. Сайт их не использует,
+ *  но GitHub Pages отдавал их публично с ПОЛНЫМ текстом. Проверено
+ *  2026-07-25: файл открывался по прямой ссылке целиком.
+ *
+ *  Поэтому — жёсткая остановка: пока лишние файлы не убраны, миграция
+ *  создаёт лишь видимость защиты. */
+function assertNoStrayFiles(protectedDocs) {
+  const contentDir = path.join(REPO_ROOT, "content");
+  const known = new Set(protectedDocs.map((d) => path.join(REPO_ROOT, d.replace(/^\//, ""))));
+  const stray = allContentFiles(contentDir)
+    .map((f) => path.relative(REPO_ROOT, f).split(path.sep).join("/"))
+    // Экзамены — отдельная категория: их грузит pages/js/exam-loader.js, в
+    // modules-data.js они не перечислены и текстом книг не являются.
+    .filter((rel) => !rel.startsWith("content/exams/"))
+    .filter((rel) => !known.has(path.join(REPO_ROOT, rel)));
+  if (!stray.length) return;
+
+  console.error("");
+  console.error(`ОСТАНОВЛЕНО: под content/ найдено ${stray.length} файлов, которых нет в modules-data.js.`);
+  console.error("Миграция их не обрежет, и полный текст останется открытым — сайт");
+  console.error("отдаёт любые файлы из репозитория по прямой ссылке.");
+  console.error("");
+  for (const f of stray.slice(0, 10)) console.error("  " + f);
+  if (stray.length > 10) console.error(`  … и ещё ${stray.length - 10}`);
+  console.error("");
+  console.error("Если это мусорные дубли — удалите их и повторите:");
+  console.error("  git rm -r content/module-*/module-* && git commit -m 'убраны дубли'");
+  console.error("");
+  console.error("Если это нужные документы — добавьте их в modules-data.js.");
+  process.exit(1);
 }
 
 async function main() {
   const protectedDocs = await collectProtectedDocs();
   console.log(`Найдено ${protectedDocs.length} защищённых документов.`);
+  assertNoStrayFiles(protectedDocs);
 
   let app;
   if (!DRY_RUN) {
@@ -137,7 +208,13 @@ async function main() {
         sourceDoc: docPath,
         updatedAt: FieldValue.serverTimestamp(),
       });
-      const newRaw = `---\n${frontMatterRaw}\n---\n${preview}\n`;
+      // Метка preview: true обязательна. По ней applyPaywall() в браузере
+      // понимает, что файл УЖЕ обрезан, и не режет его повторно — иначе
+      // неоплативший видел бы 12% от 12%, полторы строки вместо вводного
+      // абзаца. По ней же build-search-index.mjs отказывается пересобирать
+      // индекс из отрывков.
+      const fm = frontMatterRaw.replace(/\r?\n?preview:\s*\w+\s*$/m, "");
+      const newRaw = `---\n${fm}\npreview: true\n---\n${preview}\n`;
       writeFileSync(filePath, newRaw, "utf8");
     }
     migrated++;

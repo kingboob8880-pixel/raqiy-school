@@ -5,29 +5,60 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Модули курса — Онлайн-школа рукии</title>
-<link rel="stylesheet" href="../../design/tokens.css?v=10">
-<link rel="stylesheet" href="../../design/base.css?v=26">
+<link rel="stylesheet" href="../../design/tokens.css?v=20">
+<link rel="stylesheet" href="../../design/base.css?v=53">
+<style>
+  .path-step--locked { opacity: 0.5; pointer-events: none; cursor: default; }
+
+  /* Совпадения по заголовкам внутри книг (поиск по содержанию курса) */
+  .inside-hits { display: grid; gap: var(--rp-space-2); }
+  .inside-hit {
+    display: block; padding: var(--rp-space-3) var(--rp-space-4);
+    border: 1px solid var(--rp-learn-border); border-radius: var(--rp-radius-md);
+    background: var(--rp-learn-surface-raised); text-decoration: none; color: inherit;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .inside-hit:hover { box-shadow: var(--rp-shadow-pop); transform: translateY(-1px); }
+  .inside-hit__doc { display: block; font-weight: 700; line-height: 1.4; }
+  .inside-hit__mod { display: block; font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin-top: 0.1rem; }
+  .inside-hit__lines { display: flex; flex-direction: column; gap: 0.15rem; margin-top: var(--rp-space-2); }
+  .inside-hit__line {
+    font-size: var(--rp-fs-sm); line-height: 1.5;
+    padding-left: var(--rp-space-3); border-left: 2px solid var(--rp-learn-accent);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .inside-hit__more { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); padding-left: var(--rp-space-3); }
+  .inside-hit mark { background: var(--rp-accent-light, #fef3c7); color: #1a1a1a; border-radius: 2px; padding: 0 1px; }
+</style>
 </head>
 <body data-zone="learn">
+  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header"></div>
   <main class="container">
-    <h1>Путь ученика</h1>
-    <p class="form-note">11 этапов — от основ убеждённости до самостоятельного приёма пациентов в RUKYA Pro.</p>
-    <input type="search" id="module-search" placeholder="Поиск по модулям и книгам…" aria-label="Поиск по модулям и книгам"
-      style="width:100%; max-width:24rem; padding: 0.65rem 1rem; margin-bottom: var(--rp-space-5); border-radius: var(--rp-radius-pill);
-        border: 1px solid var(--rp-learn-border); background: var(--rp-learn-surface); color: var(--rp-learn-text); font: inherit;">
-    <p id="search-empty" class="form-note" hidden>Ничего не найдено.</p>
-    <div id="path-root" class="path"></div>
+    <h1 id="page-title">Путь ученика</h1>
+    <p class="form-note" id="page-subtitle">11 этапов — от основ убеждённости до самостоятельного приёма пациентов в RUKYA Pro.</p>
+    <div class="search-field">
+      <input type="search" id="module-search" placeholder="Поиск по модулям и книгам…" data-placeholder-t="modules.search" aria-label="Поиск по модулям и книгам">
+    </div>
+    <p id="search-empty" class="form-note" data-t="modules.noResults" hidden>Ничего не найдено.</p>
+    <div id="path-root"></div>
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=12";
-    import { MODULES } from "../js/modules-data.js?v=14";
-    import { statusBadgeHtml } from "../js/markdown-loader.js?v=9";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=19";
+    import { MODULES, isModuleUnlocked } from "../js/modules-data.js?v=34";
+    import { statusBadgeHtml } from "../js/markdown-loader.js?v=27";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=12";
+    import { withBase } from "../js/base-path.js?v=6";
+    import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=10";
 
     renderHeader("learn");
     renderFooter();
+
+    // Перевод статичных элементов страницы
+    document.getElementById("page-title").textContent = t("modules.title");
+    document.getElementById("page-subtitle").textContent = t("modules.subtitle");
 
     const root = document.getElementById("path-root");
     const emptyNote = document.getElementById("search-empty");
@@ -38,38 +69,243 @@
     // Уровень раньше был обычным текстом в приглушённом meta-цвете — на
     // глаз неотличим от статус-бейджа рядом (независимая проверка,
     // 2026-07-19). Иконка + текст, не просто цвет — доступно и дальтоникам.
-    const LEVEL_ICON = { "Начальный": "○", "Средний": "◐", "Продвинутый": "●" };
+    const LEVEL_ICON = { "Начальный": "○", "Средний": "◐", "Продвинутый": "●", "Beginner": "○", "Intermediate": "◐", "Advanced": "●", "Boshlang'ich": "○", "O'rta": "◐", "Yuqori": "●" };
+
+    // Группировка по уровню — три секции с визуальным разделением
+    const LEVEL_GROUPS = [
+      { level: "Начальный", key: "beginner", range: "1–3" },
+      { level: "Средний", key: "intermediate", range: "4–6" },
+      { level: "Продвинутый", key: "advanced", range: "7–11" },
+    ];
+
+    let currentUser = null;
+    let currentProgress = null;
+    let currentIsAdmin = false;
 
     function moduleCardHtml(m, matchedLesson) {
+      const locked = !!currentUser && !currentIsAdmin && !isModuleUnlocked(m.id, currentProgress);
+      const lvl = localLevel(m.level);
       return `
-        <a class="path-step" href="module.html?id=${m.id}">
+        <a class="path-step reveal ${m.status === "certified" ? "path-step--done" : ""}${locked ? " path-step--locked" : ""}" ${locked ? "" : `href="module.html?id=${m.id}"`}>
           <span class="path-step__marker">${m.id}</span>
           <span class="path-step__body">
-            <span class="path-step__title">${m.title}</span>
-            <span class="path-step__meta"><span class="level-tag" aria-hidden="true">${LEVEL_ICON[m.level] || ""}</span> ${m.level}${matchedLesson ? ` · содержит книгу «${matchedLesson}»` : ""}</span>
-            <div style="margin-top: 0.4rem;">${statusBadgeHtml(m.status)}</div>
+            <span class="path-step__main">
+              <span class="path-step__title">${locked ? "🔒 " : ""}${moduleTitle(m)}</span>
+              <span class="path-step__meta">
+                <span><span class="level-tag" aria-hidden="true">${LEVEL_ICON[lvl] || ""}</span> ${lvl}</span>
+                ${matchedLesson ? `<span>· ${matchedLesson}</span>` : ""}
+              </span>
+            </span>
+            <span class="path-step__status">${statusBadgeHtml(m.status)}</span>
           </span>
+          <span class="path-step__go" aria-hidden="true">${locked ? "🔒" : "→"}</span>
         </a>`;
+    }
+
+    function sectionHeaderHtml(g) {
+      const lvl = localLevel(g.level);
+      const icon = LEVEL_ICON[lvl] || LEVEL_ICON[g.level] || "";
+      return `
+        <div class="path-section__header reveal">
+          <span class="path-section__badge" aria-hidden="true">${icon}</span>
+          <span class="path-section__info">
+            <span class="path-section__title">${lvl}</span>
+            <span class="path-section__range">${t("nav.modules")} ${g.range}</span>
+          </span>
+        </div>`;
+    }
+
+    let revealObserver = null;
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+      revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+    }
+
+    // ── Поиск по содержанию книг ──────────────────────────────────────
+    // Индекс — только названия и заголовки, без текста абзацев: файл лежит
+    // в открытом репозитории, и абзацы в нём стали бы той же дырой, что и
+    // открытые content/*.md (см. шапку scripts/build-search-index.mjs).
+    // Грузим лениво, при первом же вводе — на первый показ страницы 76 КБ
+    // тратить незачем.
+    let searchIndex = null;
+    let indexLoading = null;
+    let lastInsideCount = 0;
+
+    function loadSearchIndex() {
+      if (searchIndex) return Promise.resolve(searchIndex);
+      if (indexLoading) return indexLoading;
+      indexLoading = fetch(withBase("/content/search-index.json"))
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => { searchIndex = data; return data; })
+        .catch((err) => { console.warn("search index", err); return null; });
+      return indexLoading;
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    /** terms — что подсвечивать. Их может быть несколько: при поиске по
+     *  основам слов исходной строки запроса в заголовке нет, и подсветка по
+     *  ней ничего бы не выделила — было бы непонятно, почему книга нашлась. */
+    function highlight(text, terms) {
+      const safe = escapeHtml(text);
+      const parts = (Array.isArray(terms) ? terms : [terms]).filter(Boolean);
+      if (!parts.length) return safe;
+      const rx = new RegExp(`(${parts.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+      return safe.replace(rx, (hit) => `<mark>${hit}</mark>`);
+    }
+
+    /** Основа слова — грубое отсечение русского окончания. Нужно потому, что
+     *  подстрочный поиск не знает склонений: «узлы» не находило «на узлах»,
+     *  «зажимы» не находило «от зажимов». Применяется ТОЛЬКО как откат,
+     *  когда точный поиск не дал ничего — иначе короткие основы («сгл» от
+     *  «сглаз») давали бы ложные совпадения. */
+    function stem(word) {
+      return word.length >= 4 ? word.slice(0, Math.max(3, word.length - 2)) : word;
+    }
+
+    /** Совпадения по заголовкам внутри книг. Названия книг здесь НЕ ищем —
+     *  они уже нашлись выше через MODULES, иначе одна и та же книга попала
+     *  бы в результаты дважды. */
+    function insideHitsHtml(q) {
+      lastInsideCount = 0;
+      if (!searchIndex?.entries) return "";
+
+      const collect = (test) => {
+        const out = [];
+        for (const e of searchIndex.entries) {
+          const matched = e.h.filter(test);
+          if (matched.length) out.push({ e, matched });
+        }
+        return out;
+      };
+
+      let hits = collect((h) => h.toLowerCase().includes(q));
+      let terms = [q];
+      // Откат по основам слов — все слова запроса должны найтись в заголовке.
+      if (!hits.length) {
+        const stems = q.split(/\s+/).filter(Boolean).map(stem);
+        if (stems.length) {
+          hits = collect((h) => {
+            const low = h.toLowerCase();
+            return stems.every((s) => low.includes(s));
+          });
+          if (hits.length) terms = stems;
+        }
+      }
+      if (!hits.length) return "";
+      lastInsideCount = hits.length;
+
+      // Ограничиваем выдачу: при коротком запросе («а») совпадут почти все
+      // заголовки курса, и страница превратится в бесконечную простыню.
+      const MAX_DOCS = 12, MAX_PER_DOC = 3;
+      const shown = hits.slice(0, MAX_DOCS);
+      const rest = hits.length - shown.length;
+
+      return `
+        <section class="path-section" style="margin-top: var(--rp-space-6);">
+          <div class="path-section__header reveal">
+            <span class="path-section__badge" aria-hidden="true">🔍</span>
+            <span class="path-section__info">
+              <span class="path-section__title">${escapeHtml(t("modules.inside"))}</span>
+              <span class="path-section__range">${hits.length} ${escapeHtml(t("modules.insideFound"))}</span>
+            </span>
+          </div>
+          <div class="inside-hits">
+            ${shown.map(({ e, matched }) => `
+              <a class="inside-hit reveal" href="${e.k ? withBase(`/pages/modules/module.html?id=${e.m}`) : `../book.html?doc=${encodeURIComponent(e.d)}`}">
+                <span class="inside-hit__doc">${escapeHtml(e.t)}</span>
+                <span class="inside-hit__mod">${escapeHtml(t("module.n"))} ${e.m} · ${escapeHtml(e.mt)}</span>
+                <span class="inside-hit__lines">
+                  ${matched.slice(0, MAX_PER_DOC).map((h) => `<span class="inside-hit__line">${highlight(h, terms)}</span>`).join("")}
+                  ${matched.length > MAX_PER_DOC ? `<span class="inside-hit__more">+${matched.length - MAX_PER_DOC}</span>` : ""}
+                </span>
+              </a>`).join("")}
+          </div>
+          ${rest > 0 ? `<p class="form-note" style="margin-top: var(--rp-space-3);">${escapeHtml(t("modules.insideMore"))} ${rest}</p>` : ""}
+        </section>`;
     }
 
     function renderList(query) {
       const q = query.trim().toLowerCase();
+      let html;
       if (!q) {
-        root.innerHTML = MODULES.map((m) => moduleCardHtml(m, null)).join("");
+        // Группировка по уровню с секционными заголовками
+        html = LEVEL_GROUPS.map((g) => {
+          const mods = MODULES.filter((m) => m.level === g.level);
+          if (!mods.length) return "";
+          return `<section class="path-section path-section--${g.key}">
+            ${sectionHeaderHtml(g)}
+            <div class="path">${mods.map((m) => moduleCardHtml(m, null)).join("")}</div>
+          </section>`;
+        }).join("");
         emptyNote.hidden = true;
-        return;
+      } else {
+        const matches = MODULES.map((m) => {
+          const mTitle = moduleTitle(m).toLowerCase();
+          const mLevel = localLevel(m.level).toLowerCase();
+          if (mTitle.includes(q) || m.title.toLowerCase().includes(q) || mLevel.includes(q)) return { m, matchedLesson: null };
+          const lesson = m.lessons.find((l) => lessonTitle(l).toLowerCase().includes(q) || l.title.toLowerCase().includes(q));
+          return lesson ? { m, matchedLesson: lessonTitle(lesson) } : null;
+        }).filter(Boolean);
+        html = `<div class="path">${matches.map(({ m, matchedLesson }) => moduleCardHtml(m, matchedLesson)).join("")}</div>`;
+        // Раньше поиск умел только названия модулей и уроков. Ученик,
+        // который помнит формулу или тему («сжигание», «узлы», «частица
+        // ли»), но не помнит книгу, найти её не мог — а книг 63. Теперь
+        // добавляем совпадения по заголовкам ВНУТРИ книг (индекс собирает
+        // scripts/build-search-index.mjs).
+        html += insideHitsHtml(q);
+        emptyNote.hidden = matches.length > 0 || lastInsideCount > 0;
       }
-      const matches = MODULES.map((m) => {
-        if (m.title.toLowerCase().includes(q) || m.level.toLowerCase().includes(q)) return { m, matchedLesson: null };
-        const lesson = m.lessons.find((l) => l.title.toLowerCase().includes(q));
-        return lesson ? { m, matchedLesson: lesson.title } : null;
-      }).filter(Boolean);
-      root.innerHTML = matches.map(({ m, matchedLesson }) => moduleCardHtml(m, matchedLesson)).join("");
-      emptyNote.hidden = matches.length > 0;
+      root.innerHTML = html;
+      root.querySelectorAll(".reveal").forEach((el, i) => {
+        if (revealObserver) {
+          el.style.transitionDelay = `${Math.min(i * 40, 400)}ms`;
+          revealObserver.observe(el);
+        } else {
+          el.classList.add("is-visible");
+        }
+      });
     }
 
     renderList("");
-    document.getElementById("module-search").addEventListener("input", (e) => renderList(e.target.value));
+    // Индекс подгружаем при первом вводе и перерисовываем, когда пришёл —
+    // до этого поиск работает по названиям, как раньше, без ожидания.
+    document.getElementById("module-search").addEventListener("input", (e) => {
+      const v = e.target.value;
+      renderList(v);
+      if (v.trim() && !searchIndex) {
+        loadSearchIndex().then(() => {
+          const now = document.getElementById("module-search").value;
+          if (now.trim()) renderList(now);
+        });
+      }
+    });
+
+    // Re-render with lock status after auth resolves
+    watchAuth(async (user) => {
+      currentUser = user;
+      if (!user) {
+        currentProgress = null;
+        currentIsAdmin = false;
+      } else {
+        const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
+        currentProgress = profile?.progress || {};
+        currentIsAdmin = admin;
+      }
+      renderList(document.getElementById("module-search").value);
+    });
+
+    document.documentElement.lang = getLang();
+    document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+    document.querySelectorAll("[data-placeholder-t]").forEach(el => { el.placeholder = t(el.dataset.placeholderT); });
   </script>
 </body>
 </html>

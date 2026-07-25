@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
+<title>Переписка с учениками — Онлайн-школа рукии</title>
+<link rel="stylesheet" href="../../design/tokens.css?v=20">
+<link rel="stylesheet" href="../../design/base.css?v=53">
+</head>
+<body data-zone="admin">
+  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
+  <div id="site-header"></div>
+
+  <main class="container">
+    <p id="gate" class="form-note" data-t="admin.checking">Проверка входа…</p>
+
+    <!-- data-pane: какая панель видна на узком экране ("list" | "thread").
+         На широком экране обе видны всегда, атрибут ни на что не влияет. -->
+    <div id="messenger" class="messenger" data-pane="list" hidden>
+
+      <aside class="messenger__list" aria-label="Диалоги">
+        <div class="messenger__list-head">
+          <h1 class="messenger__title" id="mg-title">Переписка</h1>
+          <div class="search-field messenger__search">
+            <input type="search" id="thread-search" data-placeholder-t="chat.searchThreads" placeholder="Поиск по ученикам…" aria-label="Поиск по ученикам">
+          </div>
+          <div class="messenger__filters" role="group" aria-label="Фильтр диалогов">
+            <button type="button" class="messenger__filter is-active" data-filter="all" data-t="chat.filterAll">Все</button>
+            <button type="button" class="messenger__filter" data-filter="unread" data-t="chat.filterUnread">Непрочитанные</button>
+          </div>
+        </div>
+        <div id="thread-list" class="thread-list" role="list">
+          <p class="form-note" style="padding: var(--rp-space-4);" data-t="common.loading">Загрузка…</p>
+        </div>
+      </aside>
+
+      <section class="messenger__thread" aria-label="Переписка">
+        <!-- Заглушка, пока диалог не выбран (на десктопе) -->
+        <div id="thread-placeholder" class="messenger__placeholder">
+          <span aria-hidden="true">💬</span>
+          <p class="form-note" data-t="chat.pickThread">Выберите ученика слева, чтобы открыть переписку.</p>
+        </div>
+
+        <div id="thread-view" class="messenger__view" hidden>
+          <header class="messenger__thread-head">
+            <button type="button" id="thread-back" class="messenger__back" data-aria-t="chat.backToList" aria-label="К списку диалогов">←</button>
+            <span class="thread-avatar" id="thread-avatar" aria-hidden="true"></span>
+            <span class="messenger__peer">
+              <span class="messenger__peer-name" id="thread-name"></span>
+              <span class="messenger__peer-meta form-note" id="thread-meta"></span>
+            </span>
+            <button type="button" id="msg-search-toggle" class="messenger__icon-btn" data-aria-t="chat.searchMessages" aria-label="Поиск по сообщениям" aria-expanded="false">🔍</button>
+          </header>
+
+          <div class="messenger__msg-search" id="msg-search-bar" hidden>
+            <input type="search" id="msg-search" data-placeholder-t="chat.searchMessages" placeholder="Поиск по сообщениям…" aria-label="Поиск по сообщениям">
+            <button type="button" id="msg-search-clear" class="btn btn-ghost btn-sm" data-t="common.cancel">Отмена</button>
+          </div>
+
+          <div class="msg-list messenger__msgs" id="thread-msgs" role="log" aria-live="polite"></div>
+
+          <form class="chat-form messenger__form" id="thread-form">
+            <textarea id="thread-input" class="chat-input" rows="1" data-aria-t="chat.replyAria" aria-label="Ответ ученику (Enter — отправить, Shift+Enter — новая строка)" data-placeholder-t="chat.replyPlaceholder" placeholder="Написать сообщение…"></textarea>
+            <button class="btn btn-primary btn-sm" type="submit" disabled data-t="common.send">Отправить</button>
+            <div id="thread-media-bar"></div>
+          </form>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=19";
+    import { t, getLang } from "../js/i18n.js?v=12";
+    import { watchAuth, isAdmin } from "../../integration/auth.js?v=10";
+    import {
+      listStudents, sendMessage, sendMediaMessage, watchMessages, markThreadRead,
+      watchThreadSummary, editMessage, deleteMessage, computeOverallProgress,
+    } from "../../integration/firestore.js?v=20";
+    import {
+      renderMessages, wireChatForm, scrollToBottom, wireVoicePlayers,
+      wireMessageActions, mediaBarHtml,
+    } from "../js/chat-ui.js?v=4";
+
+    renderHeader("admin");
+    renderFooter();
+    document.documentElement.lang = getLang();
+
+    const gate = document.getElementById("gate");
+    const messenger = document.getElementById("messenger");
+    const listRoot = document.getElementById("thread-list");
+    const msgsRoot = document.getElementById("thread-msgs");
+    const viewRoot = document.getElementById("thread-view");
+    const placeholder = document.getElementById("thread-placeholder");
+
+    // Перевод статических подписей
+    function sweepI18n() {
+      document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t); });
+      document.querySelectorAll("[data-placeholder-t]").forEach((el) => { el.placeholder = t(el.dataset.placeholderT); });
+      document.querySelectorAll("[data-aria-t]").forEach((el) => { el.setAttribute("aria-label", t(el.dataset.ariaT)); });
+    }
+
+    let students = [];              // [{ uid, name, email, … }]
+    const summaries = new Map();    // uid -> { last, unread, lastAt }
+    const unwatchSummaries = [];    // отписки от подписок на сводки
+    let unwatchThread = null;       // отписка от открытого треда
+    let openUid = null;
+    let threadFilter = "all";
+    let msgSearch = "";
+    let lastMsgs = [];               // последний срез открытого треда (для поиска)
+
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    /** Инициалы для кружка-аватара — фото у учеников нет, а сплошной список
+     *  одинаковых строк читается тяжело. */
+    function initials(s) {
+      const src = (s.name || s.email || "?").trim();
+      const parts = src.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return src.slice(0, 2).toUpperCase();
+    }
+
+    /** Стабильный цвет аватара из uid — чтобы ученик каждый раз выглядел
+     *  одинаково и узнавался в списке. */
+    function avatarHue(uid) {
+      let h = 0;
+      for (let i = 0; i < uid.length; i++) h = (h * 31 + uid.charCodeAt(i)) % 360;
+      return h;
+    }
+
+    function previewText(m) {
+      if (!m) return t("chat.noMessages");
+      if (m.type === "voice") return "🎤 " + t("chat.voiceMsg");
+      if (m.type === "video") return "📹 " + t("chat.videoMsg");
+      if (m.type === "file") return "📎 " + (m.fileName || t("chat.fileMsg"));
+      return m.text || "";
+    }
+
+    /** Короткая метка времени для списка диалогов: сегодня — часы, на этой
+     *  неделе — день недели, раньше — дата. Как в привычных мессенджерах. */
+    function shortTime(d) {
+      if (!d) return "";
+      const locale = getLang() === "uz" ? "uz-UZ" : getLang() === "en" ? "en-US" : "ru-RU";
+      const now = new Date();
+      const sameDay = d.toDateString() === now.toDateString();
+      if (sameDay) return d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
+      const diffDays = Math.floor((now - d) / 86400000);
+      if (diffDays < 7) return d.toLocaleDateString(locale, { weekday: "short" });
+      return d.toLocaleDateString(locale, { day: "numeric", month: "short" });
+    }
+
+    function threadItemHtml(s) {
+      const sum = summaries.get(s.uid);
+      const last = sum?.last || null;
+      const unread = sum?.unread || 0;
+      const isOpen = openUid === s.uid;
+      // Кто написал последним — чтобы наставник сразу видел, ждут ли ответа
+      const mine = last && last.from === "admin";
+      const badge = unread
+        ? `<span class="unread-badge">${unread > 9 || sum?.unreadCapped ? "9+" : unread}</span>`
+        : "";
+      return `
+        <button type="button" role="listitem" class="thread-item${isOpen ? " is-active" : ""}${unread ? " has-unread" : ""}" data-uid="${escapeHtml(s.uid)}">
+          <span class="thread-avatar" style="--avatar-hue:${avatarHue(s.uid)}" aria-hidden="true">${escapeHtml(initials(s))}</span>
+          <span class="thread-item__body">
+            <span class="thread-item__top">
+              <span class="thread-item__name">${escapeHtml(s.name || s.email || "—")}</span>
+              <span class="thread-item__time">${escapeHtml(shortTime(sum?.lastAt))}</span>
+            </span>
+            <span class="thread-item__bottom">
+              <span class="thread-item__preview">${mine ? `<span class="thread-item__you">${escapeHtml(t("chat.you"))}: </span>` : ""}${escapeHtml(previewText(last))}</span>
+              ${badge}
+            </span>
+          </span>
+        </button>`;
+    }
+
+    function renderThreadList() {
+      const q = document.getElementById("thread-search").value.trim().toLowerCase();
+      let list = students.filter((s) => {
+        if (q && !((s.name || "").toLowerCase().includes(q) || (s.email || "").toLowerCase().includes(q))) return false;
+        if (threadFilter === "unread" && !(summaries.get(s.uid)?.unread)) return false;
+        return true;
+      });
+
+      // Сортировка по свежести переписки — главное, чего не хватало в
+      // таблице учеников: там порядок был произвольный, и понять, кто
+      // написал только что, можно было лишь просмотрев все строки.
+      // Ученики без единого сообщения уходят вниз, по алфавиту.
+      list = list.slice().sort((a, b) => {
+        const ta = summaries.get(a.uid)?.lastAt;
+        const tb = summaries.get(b.uid)?.lastAt;
+        if (ta && tb) return tb - ta;
+        if (ta) return -1;
+        if (tb) return 1;
+        return (a.name || a.email || "").localeCompare(b.name || b.email || "");
+      });
+
+      if (!list.length) {
+        listRoot.innerHTML = `<p class="form-note" style="padding: var(--rp-space-4);">${escapeHtml(t("chat.noThreads"))}</p>`;
+        return;
+      }
+      listRoot.innerHTML = list.map(threadItemHtml).join("");
+    }
+
+    // ── Открытие треда ──
+    function stopThread() {
+      if (unwatchThread) { unwatchThread(); unwatchThread = null; }
+    }
+
+    function openThread(uid) {
+      stopThread();
+      openUid = uid;
+      msgSearch = "";
+      document.getElementById("msg-search").value = "";
+      document.getElementById("msg-search-bar").hidden = true;
+      document.getElementById("msg-search-toggle").setAttribute("aria-expanded", "false");
+
+      const s = students.find((x) => x.uid === uid);
+      if (!s) return;
+
+      placeholder.hidden = true;
+      viewRoot.hidden = false;
+      messenger.dataset.pane = "thread";
+
+      document.getElementById("thread-name").textContent = s.name || s.email || "—";
+      const pct = computeOverallProgress(s.progress);
+      document.getElementById("thread-meta").textContent =
+        `${s.email || ""} · ${t("chat.progress")} ${pct}%${s.paid ? "" : " · " + t("admin.unpaidStatus")}`;
+      const av = document.getElementById("thread-avatar");
+      av.textContent = initials(s);
+      av.style.setProperty("--avatar-hue", avatarHue(uid));
+
+      msgsRoot.innerHTML = `<p class="form-note">${escapeHtml(t("common.loading"))}</p>`;
+      renderThreadList();
+
+      unwatchThread = watchMessages(uid, (msgs) => {
+        // Держим последний срез локально: ввод в поиск перерисовывает
+        // список мгновенно, не дожидаясь следующего снапшота Firestore.
+        lastMsgs = msgs;
+        const atBottom = msgsRoot.scrollHeight - msgsRoot.scrollTop - msgsRoot.clientHeight < 80;
+        renderMessages(msgsRoot, msgs, "admin", { search: msgSearch });
+        // Автопрокрутка только если наставник и так внизу — иначе новое
+        // сообщение выдёргивало бы его из середины читаемой переписки.
+        if (atBottom && !msgSearch) scrollToBottom(msgsRoot);
+        markThreadRead(uid, "admin").catch((err) => console.warn(err));
+      }, () => {
+        msgsRoot.innerHTML = `<p class="field-error">${escapeHtml(t("chat.loadError"))}</p>`;
+      });
+    }
+
+    function closeThread() {
+      stopThread();
+      openUid = null;
+      viewRoot.hidden = true;
+      placeholder.hidden = false;
+      messenger.dataset.pane = "list";
+      renderThreadList();
+    }
+
+    // ── События ──
+    listRoot.addEventListener("click", (e) => {
+      const item = e.target.closest(".thread-item");
+      if (item) openThread(item.dataset.uid);
+    });
+
+    document.getElementById("thread-search").addEventListener("input", renderThreadList);
+    document.getElementById("thread-back").addEventListener("click", closeThread);
+
+    document.querySelectorAll(".messenger__filter").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        threadFilter = btn.dataset.filter;
+        document.querySelectorAll(".messenger__filter").forEach((b) => b.classList.toggle("is-active", b === btn));
+        renderThreadList();
+      });
+    });
+
+    // Поиск по сообщениям внутри открытого треда
+    const searchBar = document.getElementById("msg-search-bar");
+    const searchInput = document.getElementById("msg-search");
+    document.getElementById("msg-search-toggle").addEventListener("click", (e) => {
+      const open = searchBar.hidden;
+      searchBar.hidden = !open;
+      e.currentTarget.setAttribute("aria-expanded", String(open));
+      if (open) searchInput.focus();
+      else { searchInput.value = ""; msgSearch = ""; rerenderCurrent(); }
+    });
+    searchInput.addEventListener("input", () => { msgSearch = searchInput.value; rerenderCurrent(); });
+    document.getElementById("msg-search-clear").addEventListener("click", () => {
+      searchInput.value = ""; msgSearch = "";
+      searchBar.hidden = true;
+      document.getElementById("msg-search-toggle").setAttribute("aria-expanded", "false");
+      rerenderCurrent();
+    });
+
+    function rerenderCurrent() {
+      if (!openUid) return;
+      renderMessages(msgsRoot, lastMsgs, "admin", { search: msgSearch });
+      if (!msgSearch) scrollToBottom(msgsRoot);
+    }
+
+    wireVoicePlayers(msgsRoot);
+    wireMessageActions(msgsRoot, {
+      onEdit: async (id, text) => {
+        try { await editMessage(openUid, id, text); showToast(t("chat.editedOk")); }
+        catch (err) { console.error(err); showToast(t("common.error")); }
+      },
+      onDelete: async (id) => {
+        try { await deleteMessage(openUid, id); showToast(t("chat.deletedOk")); }
+        catch (err) { console.error(err); showToast(t("common.error")); }
+      },
+    });
+
+    // Форма ответа
+    document.getElementById("thread-media-bar").innerHTML = mediaBarHtml();
+    wireChatForm(
+      document.getElementById("thread-form"),
+      document.getElementById("thread-input"),
+      async (text) => {
+        if (!openUid) return;
+        await sendMessage(openUid, "admin", text);
+        scrollToBottom(msgsRoot);
+      },
+      async (file, type, duration) => {
+        if (!openUid) return;
+        await sendMediaMessage(openUid, "admin", file, type, duration);
+        showToast(type === "voice" ? t("chat.voiceSent") : type === "video" ? t("chat.videoSent") : t("chat.fileSent"));
+      },
+    );
+
+    // ── Вход ──
+    watchAuth(async (user) => {
+      if (!user) { location.href = "../auth/login.html"; return; }
+      let admin;
+      try { admin = await isAdmin(user.uid); }
+      catch (err) {
+        console.warn(err);
+        gate.innerHTML = `<span class="field-error">${escapeHtml(t("admin.accessCheckError"))}</span>`;
+        return;
+      }
+      if (!admin) { location.href = "student.html"; return; }
+
+      gate.hidden = true;
+      messenger.hidden = false;
+      sweepI18n();
+      document.getElementById("mg-title").textContent = t("chat.messenger");
+
+      try {
+        students = await listStudents();
+      } catch (err) {
+        console.warn(err);
+        listRoot.innerHTML = `<p class="field-error" style="padding: var(--rp-space-4);">${escapeHtml(t("admin.loadError"))}</p>`;
+        return;
+      }
+
+      renderThreadList();
+
+      // Живая сводка по каждому ученику: превью последнего сообщения,
+      // счётчик непрочитанных и порядок в списке обновляются сами, без
+      // перезагрузки страницы.
+      students.forEach((s) => {
+        unwatchSummaries.push(watchThreadSummary(s.uid, (sum) => {
+          summaries.set(s.uid, sum);
+          renderThreadList();
+        }));
+      });
+
+      // Если пришли по ссылке ?uid=… из таблицы учеников — сразу открываем
+      const wanted = new URLSearchParams(location.search).get("uid");
+      if (wanted && students.some((s) => s.uid === wanted)) openThread(wanted);
+    });
+
+    window.addEventListener("beforeunload", () => {
+      stopThread();
+      unwatchSummaries.forEach((fn) => fn());
+    });
+  </script>
+</body>
+</html>

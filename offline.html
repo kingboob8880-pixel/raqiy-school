@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
+<title>Нет соединения — Онлайн-школа рукии</title>
+<style>
+  /* Страница показывается, когда сети нет и в кэше ничего не нашлось,
+     поэтому она обязана быть самодостаточной: никаких внешних CSS и шрифтов,
+     иначе офлайн она выглядела бы голым текстом. */
+  :root { color-scheme: dark; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 1.5rem; text-align: center;
+    background: #12140f; color: #e8e4d9;
+    font-family: Georgia, "Times New Roman", serif; line-height: 1.65;
+  }
+  .wrap { max-width: 26rem; }
+  .mark {
+    width: 4.5rem; height: 4.5rem; margin: 0 auto 1.25rem;
+    border-radius: 50%; background: linear-gradient(#c09330, #8f6a22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.25rem; color: #fff;
+  }
+  h1 { font-size: 1.35rem; margin: 0 0 0.75rem; }
+  p { margin: 0 0 1rem; color: #b9b2a1; font-size: 0.95rem; }
+  .btn {
+    display: inline-block; margin-top: 0.5rem; padding: 0.6rem 1.2rem;
+    border-radius: 999px; border: 1px solid #8f6a22;
+    background: #8f6a22; color: #fff; font: inherit; font-size: 0.95rem;
+    cursor: pointer; text-decoration: none;
+  }
+  .btn--ghost { background: transparent; color: #e8e4d9; margin-left: 0.4rem; }
+  .hint { font-size: 0.85rem; color: #8d8778; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="mark" aria-hidden="true">ش</div>
+    <h1>Нет соединения</h1>
+    <p>Эта страница ещё не сохранена для чтения без интернета. Книги, которые
+       вы уже открывали, доступны офлайн — попробуйте вернуться к ним.</p>
+    <button class="btn" type="button" onclick="location.reload()">Повторить</button>
+    <a class="btn btn--ghost" href="./pages/modules/index.html">К модулям</a>
+    <p class="hint">Чтобы книга была доступна без сети, откройте её один раз при интернете.</p>
+  </div>
+  <script>
+    // Как только связь появилась — сами перезагружаем, без лишних нажатий.
+    window.addEventListener("online", () => location.reload());
+  </script>
+</body>
+</html>

@@ -3,7 +3,10 @@
 // Внедряется в страницы на разной глубине вложенности, поэтому все ссылки —
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
-import { initSiteTheme } from "./theme.js?v=7";
+import { initSiteTheme } from "./theme.js?v=8";
+import { watchAuth, isAdmin } from "../../integration/auth.js?v=10";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=12";
+import { watchUnreadFromAdmin } from "../../integration/firestore.js?v=20";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
@@ -23,7 +26,7 @@ export function renderHeader(zone = "learn") {
     skipLink.id = "skip-link";
     skipLink.className = "skip-link";
     skipLink.href = `#${mainEl.id}`;
-    skipLink.textContent = "Перейти к содержимому";
+    skipLink.textContent = t("skip.link");
     document.body.prepend(skipLink);
   }
 
@@ -44,23 +47,33 @@ export function renderHeader(zone = "learn") {
   // и на кабинеты, а не только на лендинг/модули/книги.
   const themeSwitcherHtml = `<div class="theme-switcher" id="theme-switcher"></div>`;
 
+  // Переключатель языка — три кнопки РУ/EN/UZ в углу шапки.
+  const currentLang = getLang();
+  const langBtnsHtml = LANGS.map((l) =>
+    `<button type="button" class="lang-switcher__btn${l.code === currentLang ? " is-active" : ""}" data-lang="${l.code}" title="${l.full}">${l.label}</button>`
+  ).join("");
+  const langSwitcherHtml = `<div class="lang-switcher">${langBtnsHtml}</div>`;
+
   root.innerHTML = `
     <header class="site-header">
       <div class="container site-header__row">
         <a class="site-header__brand" href="${withBase("/pages/index.html")}">
           <span class="site-header__brand-mark">ش</span>
-          Онлайн-школа рукии
+          ${t("site.title")}
         </a>
         <nav class="site-header__nav" id="site-nav">
-          <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>Модули</a>
-          <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>Тесты</a>
-          <a data-nav="archive" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/archive/index.md")}"><span aria-hidden="true">🗃</span>Архив</a>
-          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>Кабинет</a>
+          <a data-nav="about" href="${withBase("/pages/about.html")}"><span aria-hidden="true">🧑‍⚕️</span>${t("nav.about")}</a>
+          <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>${t("nav.modules")}</a>
+          <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>${t("nav.tests")}</a>
+          <a data-nav="flashcards" href="${withBase("/pages/flashcards/index.html")}"><span aria-hidden="true">🃏</span>${t("nav.flashcards")}</a>
+          <a data-nav="glossary" href="${withBase("/pages/glossary/index.html")}"><span aria-hidden="true">📘</span>${t("nav.glossary")}</a>
+          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}<span class="nav-unread" id="nav-unread" hidden></span></a>
         </nav>
         <div class="site-header__actions">
+          ${langSwitcherHtml}
           ${themeSwitcherHtml}
-          <a class="btn btn-outline btn-sm" href="${withBase("/pages/auth/login.html")}">Войти</a>
-          <button type="button" class="site-header__menu-btn" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Открыть меню">
+          <a class="btn btn-outline btn-sm" id="auth-btn" href="${withBase("/pages/auth/login.html")}">${t("auth.login")}</a>
+          <button type="button" class="site-header__menu-btn" id="site-nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="${t("menu.open")}">
             <span aria-hidden="true">☰</span>
           </button>
         </div>
@@ -68,17 +81,21 @@ export function renderHeader(zone = "learn") {
     </header>
   `;
 
+  // Обработчики переключателя языка
+  root.querySelectorAll(".lang-switcher__btn").forEach((btn) => {
+    btn.addEventListener("click", () => setLang(btn.dataset.lang));
+  });
+
   // Подсветка активного пункта меню — по сегменту пути, не по точному URL
   // (страница книги/модуля живёт под /pages/modules/ или /pages/book.html,
   // поэтому сравниваем сегмент, а не href целиком).
   const path = location.pathname;
-  // Урок (book.html) без "archive" в query — часть раздела "Модули", просто
-  // не подсвечивалось раньше (независимая проверка, 2026-07-19).
-  const isArchiveDoc = path.includes("/pages/book.html") && location.search.includes("archive");
   const navMatch = {
-    modules: path.includes("/pages/modules/") || (path.includes("/pages/book.html") && !isArchiveDoc),
+    about: path.includes("/pages/about.html"),
+    modules: path.includes("/pages/modules/") || path.includes("/pages/book.html"),
     tests: path.includes("/pages/tests/"),
-    archive: isArchiveDoc,
+    flashcards: path.includes("/pages/flashcards/"),
+    glossary: path.includes("/pages/glossary/"),
     dashboard: path.includes("/pages/dashboard/"),
   };
   root.querySelectorAll(".site-header__nav a[data-nav]").forEach((a) => {
@@ -93,10 +110,16 @@ export function renderHeader(zone = "learn") {
   const navToggle = root.querySelector("#site-nav-toggle");
   const navEl = root.querySelector("#site-nav");
   if (navToggle && navEl) {
-    const closeNav = () => { navEl.classList.remove("is-open"); navToggle.setAttribute("aria-expanded", "false"); };
-    navToggle.addEventListener("click", () => {
-      const open = navEl.classList.toggle("is-open");
+    // aria-label меняется вместе с состоянием: раньше кнопка всегда
+    // говорила "Открыть меню", даже когда меню уже открыто и клик его
+    // закрывает — скринридер объявлял неверное действие (аудит 2026-07-25).
+    const setNavLabel = (open) => {
       navToggle.setAttribute("aria-expanded", String(open));
+      navToggle.setAttribute("aria-label", t(open ? "menu.close" : "menu.open"));
+    };
+    const closeNav = () => { navEl.classList.remove("is-open"); setNavLabel(false); };
+    navToggle.addEventListener("click", () => {
+      setNavLabel(navEl.classList.toggle("is-open"));
     });
     navEl.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeNav));
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeNav(); });
@@ -105,7 +128,89 @@ export function renderHeader(zone = "learn") {
     });
   }
 
+  const authBtn = root.querySelector("#auth-btn");
+  const unreadEl = root.querySelector("#nav-unread");
+  // Значок непрочитанных рядом с «Кабинет» на любой странице сайта (запрос
+  // автора, 2026-07-25). Раньше ответ наставника обнаруживался только при
+  // следующем заходе в кабинет — на странице урока/теста ничто о нём не
+  // сообщало. Слушатель живой, поэтому значок загорается прямо во время
+  // чтения книги. Админу он не нужен: у наставника переписка не одна, его
+  // счётчик живёт на chat.html и в кабинете администратора.
+  let unwatchUnread = null;
+  watchAuth(async (user) => {
+    if (authBtn) {
+      if (user) {
+        authBtn.textContent = user.displayName || user.email?.split("@")[0] || t("nav.dashboard");
+        authBtn.href = withBase("/pages/dashboard/student.html");
+      } else {
+        authBtn.textContent = t("auth.login");
+        authBtn.href = withBase("/pages/auth/login.html");
+      }
+    }
+
+    if (unwatchUnread) { unwatchUnread(); unwatchUnread = null; }
+    if (!unreadEl) return;
+    if (!user) { unreadEl.hidden = true; return; }
+
+    try {
+      if (await isAdmin(user.uid)) { unreadEl.hidden = true; return; }
+    } catch { /* нет связи — просто не показываем значок */ return; }
+
+    unwatchUnread = watchUnreadFromAdmin(user.uid, (n) => {
+      unreadEl.textContent = n > 9 ? "9+" : String(n);
+      unreadEl.hidden = n === 0;
+      unreadEl.setAttribute("aria-label", `${n} ${t("chat.unreadAria")}`);
+    });
+  });
+
   initSiteTheme();
+  initOffline();
+}
+
+/** Офлайн-режим и иконка на домашнем экране (совет по улучшениям,
+ *  2026-07-25). Манифест и ссылка на иконку подставляются здесь, а не в 15
+ *  html-файлах: их набор один на весь сайт, дублировать в каждом — значит
+ *  однажды разойтись.
+ *
+ *  Регистрируем SW только на https (или localhost) — по спецификации на
+ *  http он всё равно недоступен, а без проверки в консоли сыпались бы
+ *  ошибки при локальном просмотре через file://. */
+function initOffline() {
+  if (!document.querySelector('link[rel="manifest"]')) {
+    const m = document.createElement("link");
+    m.rel = "manifest";
+    m.href = withBase("/manifest.webmanifest");
+    document.head.appendChild(m);
+
+    const apple = document.createElement("link");
+    apple.rel = "apple-touch-icon";
+    apple.href = withBase("/assets/icons/apple-touch-icon.png");
+    document.head.appendChild(apple);
+
+    const theme = document.createElement("meta");
+    theme.name = "theme-color";
+    theme.content = "#8f6a22";
+    document.head.appendChild(theme);
+  }
+
+  if (!("serviceWorker" in navigator)) return;
+  const secure = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if (!secure) return;
+
+  navigator.serviceWorker.register(withBase("/sw.js"), { scope: withBase("/") })
+    .then((reg) => {
+      // Если пришла новая версия, применяем её сразу: сайт обновляется часто,
+      // и «залипший» старый код — худшее, что может сделать SW.
+      reg.addEventListener("updatefound", () => {
+        const sw = reg.installing;
+        if (sw) sw.addEventListener("statechange", () => {
+          if (sw.state === "installed" && navigator.serviceWorker.controller) {
+            sw.postMessage("skip-waiting");
+          }
+        });
+      });
+    })
+    .catch((err) => console.warn("service worker", err));
 }
 
 // Явная обратная связь после действий в кабинетах (kabinet-ux-improvements.md
@@ -138,7 +243,7 @@ export function renderFooter() {
   root.innerHTML = `
     <footer class="footer">
       <div class="container">
-        <p>Онлайн-школа рукии · Лекарь Абу Мухаммад · Основатель школы</p>
+        <p>${t("footer.text")}</p>
         <p><a href="https://t.me/ruqoq">t.me/ruqoq</a></p>
       </div>
     </footer>
