@@ -244,6 +244,14 @@ export function addReadingAids(container) {
 }
 
 export function enhanceDuaBlocks(bodyEl) {
+  // Определяем docPath из URL для привязки аудиофайлов
+  // /content/module-1/molba-zaklinatelya.md → module-1_molba-zaklinatelya
+  const docPath = new URLSearchParams(location.search).get("doc") || "";
+  let audioBase = null;
+  const docMatch = docPath.match(/\/content\/(module-\d+)\/(.+)\.md$/);
+  if (docMatch) audioBase = `${docMatch[1]}_${docMatch[2]}`;
+
+  let duaIndex = 0;
   const children = Array.from(bodyEl.children);
   let i = 0;
   while (i < children.length) {
@@ -258,9 +266,6 @@ export function enhanceDuaBlocks(bodyEl) {
     el.classList.add("dua-label");
     content.classList.add(`doc-body__${kind}`);
     if (kind === "arabic") { content.setAttribute("dir", "rtl"); content.setAttribute("lang", "ar"); }
-    // Собираем блок из всех подряд идущих пар начиная с текущей позиции —
-    // не привязываемся к фиксированному порядку (в некоторых уроках
-    // Транскрипция+Перевод есть, а отдельного Арабского текста нет).
     let j = i;
     while (j < children.length) {
       const lp = children[j];
@@ -277,20 +282,23 @@ export function enhanceDuaBlocks(bodyEl) {
     const group = children.slice(i, j);
     const wrap = document.createElement("div");
     wrap.className = "dua-block";
-    wrap.setAttribute("role", "group"); // группа связанных абзацев для ассистивных технологий
+    wrap.setAttribute("role", "group");
     group[0].before(wrap);
     group.forEach((node) => wrap.appendChild(node));
-    // Добавляем кнопку озвучки арабского текста (Web Speech API TTS)
-    addDuaPlayButton(wrap);
+    // Аудио: реальный файл (MyVoiceTTS) → fallback Web Speech API
+    duaIndex++;
+    const audioId = audioBase ? `${audioBase}_${String(duaIndex).padStart(2, "0")}` : null;
+    addDuaPlayButton(wrap, audioId);
     i = j;
   }
 }
 
-/** Кнопка озвучки арабского текста внутри .dua-block через Web Speech API.
- *  Ищет первый абзац с lang="ar" в блоке и читает его вслух арабским
- *  голосом браузера. Если арабский голос недоступен — кнопка disabled
- *  с тултипом. Состояния: play / pause / ready. */
-function addDuaPlayButton(block) {
+/** Кнопка озвучки арабского текста внутри .dua-block.
+ *  Приоритет: реальный аудиофайл (MP3/WAV, сгенерированный MyVoiceTTS) →
+ *  fallback на Web Speech API если файла нет.
+ *  audioId — идентификатор вида "module-1_molba-zaklinatelya_01", по нему
+ *  строится URL /content/audio/dua/{id}.mp3. Если null — только Speech API. */
+function addDuaPlayButton(block, audioId) {
   const arabicEl = block.querySelector('[lang="ar"]');
   if (!arabicEl) return;
 
@@ -300,47 +308,77 @@ function addDuaPlayButton(block) {
   btn.setAttribute("aria-label", "Play");
   btn.textContent = "▶";
 
-  // Проверяем наличие арабского голоса
+  let audio = null;
+  let usingSpeech = false;
+
+  // Пробуем реальный аудиофайл
+  if (audioId) {
+    const audioUrl = withBase(`/content/audio/dua/${audioId}.mp3`);
+    audio = new Audio();
+    audio.preload = "none";
+    audio.src = audioUrl;
+    // Если файл не найден (404) — переключаемся на Speech API
+    audio.addEventListener("error", () => { audio = null; usingSpeech = true; }, { once: true });
+  } else {
+    usingSpeech = true;
+  }
+
+  // Speech API fallback
   const synth = window.speechSynthesis;
-  if (!synth) { btn.disabled = true; btn.title = t("dua.novoice"); block.prepend(btn); return; }
-
   let arVoice = null;
-  function findArVoice() {
-    const voices = synth.getVoices();
-    arVoice = voices.find((v) => v.lang.startsWith("ar")) || null;
-  }
-  findArVoice();
-  if (synth.onvoiceschanged !== undefined) {
-    synth.addEventListener("voiceschanged", findArVoice, { once: true });
-  }
-
   let utterance = null;
+  if (synth) {
+    const findArVoice = () => { arVoice = synth.getVoices().find((v) => v.lang.startsWith("ar")) || null; };
+    findArVoice();
+    if (synth.onvoiceschanged !== undefined) synth.addEventListener("voiceschanged", findArVoice, { once: true });
+  }
 
   btn.addEventListener("click", () => {
-    if (synth.speaking && utterance) {
-      synth.cancel();
-      btn.textContent = "▶";
-      btn.classList.remove("dua-block__play--active");
-      utterance = null;
+    // Остановка — если что-то играет
+    if (audio && !audio.paused) {
+      audio.pause(); audio.currentTime = 0;
+      btn.textContent = "▶"; btn.classList.remove("dua-block__play--active");
       return;
     }
+    if (synth?.speaking && utterance) {
+      synth.cancel(); btn.textContent = "▶"; btn.classList.remove("dua-block__play--active"); utterance = null;
+      return;
+    }
+
     const text = arabicEl.textContent.trim();
     if (!text) return;
 
-    // Повторная проверка голоса (мог подгрузиться позже)
-    if (!arVoice) findArVoice();
-    if (!arVoice) { btn.disabled = true; btn.title = t("dua.novoice"); return; }
+    // Реальный аудиофайл
+    if (audio && !usingSpeech) {
+      btn.textContent = "⏸"; btn.classList.add("dua-block__play--active");
+      audio.onended = () => { btn.textContent = "▶"; btn.classList.remove("dua-block__play--active"); };
+      audio.onerror = () => {
+        // Файл не загрузился — fallback на Speech API
+        audio = null; usingSpeech = true;
+        btn.textContent = "▶"; btn.classList.remove("dua-block__play--active");
+        playSpeechFallback(text);
+      };
+      audio.play().catch(() => {
+        audio = null; usingSpeech = true;
+        playSpeechFallback(text);
+      });
+      return;
+    }
 
+    // Speech API fallback
+    playSpeechFallback(text);
+  });
+
+  function playSpeechFallback(text) {
+    if (!synth) { btn.disabled = true; btn.title = t("dua.novoice"); return; }
+    if (!arVoice) { btn.disabled = true; btn.title = t("dua.novoice"); return; }
     utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ar";
-    utterance.voice = arVoice;
-    utterance.rate = 0.85;
+    utterance.lang = "ar"; utterance.voice = arVoice; utterance.rate = 0.85;
     utterance.onend = () => { btn.textContent = "▶"; btn.classList.remove("dua-block__play--active"); utterance = null; };
     utterance.onerror = () => { btn.textContent = "▶"; btn.classList.remove("dua-block__play--active"); utterance = null; };
-    btn.textContent = "⏸";
-    btn.classList.add("dua-block__play--active");
+    btn.textContent = "⏸"; btn.classList.add("dua-block__play--active");
     synth.speak(utterance);
-  });
+  }
 
   block.prepend(btn);
 }
