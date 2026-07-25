@@ -1169,7 +1169,10 @@ main.container { padding-block: var(--rp-space-6); }
 .msg {
   position: relative; margin-top: var(--rp-space-3);
   padding: 0.5rem 2.9rem 0.5rem 0.75rem; border-radius: var(--rp-radius-md);
-  max-width: 80%; overflow-wrap: break-word;
+  /* Ограничение и в долях, и в абсолюте: на телефоне пузырь должен занимать
+     почти всю ширину, а на широком мониторе 80% — это строка в полтора
+     метра, которую невозможно читать. 42rem — привычная длина строки. */
+  max-width: min(80%, 42rem); overflow-wrap: break-word;
 }
 .msg:first-child { margin-top: 0; }
 .msg--grouped { margin-top: 0.15rem; }
@@ -1326,10 +1329,22 @@ main.container { padding-block: var(--rp-space-6); }
    перезагрузке, а на телефоне чат ездил вместе с горизонтальной прокруткой
    таблицы. Отдельная страница на две панели — список диалогов и сама
    переписка (запрос автора «сделай нормальный чат», 2026-07-25). */
+/* Страница-мессенджер: шире обычной и во весь экран по высоте.
+   Раньше чат жил внутри общего .container (72rem) и на мониторе 2560px
+   сжимался в узкую колонку по центру, а по высоте занимал 72vh — под ним
+   оставалось пустое поле в пол-экрана (скриншот автора, 2026-07-25). */
+.messenger-page {
+  max-width: 100rem;
+  display: flex; flex-direction: column;
+  /* 100dvh, а не vh: на мобильных vh не учитывает адресную строку, и низ
+     с полем ввода уезжал под неё. */
+  min-height: calc(100dvh - 10rem);
+}
+
 .messenger {
-  display: grid; grid-template-columns: minmax(16rem, 22rem) 1fr;
+  display: grid; grid-template-columns: minmax(17rem, 24rem) 1fr;
   gap: var(--rp-space-4); align-items: stretch;
-  height: min(72vh, 46rem); margin-top: var(--rp-space-4);
+  flex: 1; min-height: 26rem; margin: var(--rp-space-4) 0;
 }
 .messenger__list, .messenger__thread {
   display: flex; flex-direction: column; min-height: 0;
@@ -1410,10 +1425,37 @@ main.container { padding-block: var(--rp-space-6); }
 /* Одна колонка на узком экране: видна либо список, либо переписка —
    две панели рядом на телефоне превратились бы в две нечитаемые полоски. */
 @media (max-width: 52rem) {
-  .messenger { grid-template-columns: 1fr; height: min(78vh, 44rem); }
+  /* Телефон: мессенджер во весь экран, как в привычных приложениях.
+     Раньше он был карточкой посреди страницы с полями по бокам и подвалом
+     снизу — на маленьком экране под сами сообщения оставалась полоска. */
+  .messenger-page {
+    max-width: none;
+    /* Выходим за поля общего контейнера — переписка занимает экран целиком */
+    margin-left: calc(-1 * var(--rp-space-4));
+    margin-right: calc(-1 * var(--rp-space-4));
+    padding: 0;
+    min-height: calc(100dvh - 4.5rem); /* минус шапка сайта */
+  }
+  .messenger {
+    grid-template-columns: 1fr;
+    gap: 0; margin: 0; min-height: 0;
+    height: calc(100dvh - 4.5rem);
+  }
+  /* Без скруглений и рамок по краям — панель и есть экран */
+  .messenger__list, .messenger__thread { border-radius: 0; border-left: none; border-right: none; }
+
   .messenger[data-pane="list"] .messenger__thread { display: none; }
   .messenger[data-pane="thread"] .messenger__list { display: none; }
   .messenger__back { display: inline-flex; align-items: center; justify-content: center; }
+
+  /* Поле ввода — у нижнего края, с учётом «чёлки» и жестовой полосы */
+  .messenger__form { padding-bottom: calc(var(--rp-space-3) + env(safe-area-inset-bottom, 0px)); }
+
+  /* Пузыри шире: на узком экране 80% оставляли бесполезные поля по бокам */
+  .messenger__msgs .msg { max-width: 88%; }
+
+  /* Подвал сайта на странице переписки только отнимает высоту */
+  .messenger-page ~ #site-footer, body:has(.messenger-page) .footer { display: none; }
 }
 
 /* Меню «изменить/удалить» на своём сообщении (запрос автора, 2026-07-25).
