@@ -495,6 +495,11 @@ const S = {
   "about.contacts.title": { ru: "Контакты", en: "Contacts", uz: "Aloqa" },
   "about.cta.modules":   { ru: "Смотреть модули курса", en: "View course modules", uz: "Kurs modullarini ko'rish" },
   "about.cta.home":      { ru: "На главную", en: "Home", uz: "Bosh sahifa" },
+  // Шапка и оглавление страницы «Об авторе» — раскладка по макету автора
+  // (2026-07-26): портрет, титул, цитата и две кнопки действия.
+  "about.cta.appointment": { ru: "Записаться на приём", en: "Book an appointment", uz: "Qabulga yozilish" },
+  "about.cta.books":     { ru: "Читать книги", en: "Read the books", uz: "Kitoblarni o'qish" },
+  "about.toc":           { ru: "На странице", en: "On this page", uz: "Sahifada" },
   "about.contact.treatment": { ru: "Записаться на лечение", en: "Book treatment", uz: "Davolashga yozilish" },
   "about.contact.dm":    { ru: "Связь с лекарем", en: "Contact healer", uz: "Tabib bilan bog'lanish" },
   "about.contact.channel": { ru: "Telegram-канал", en: "Telegram channel", uz: "Telegram kanali" },

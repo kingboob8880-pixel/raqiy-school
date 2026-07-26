@@ -68,14 +68,14 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=24";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=25";
     import { MODULES, isModuleUnlocked } from "../js/modules-data.js?v=34";
-    import { statusBadgeHtml } from "../js/markdown-loader.js?v=29";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=18";
+    import { statusBadgeHtml } from "../js/markdown-loader.js?v=30";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=19";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
-    import { initCommunityFeed, stopCommunityFeed } from "../js/community-feed.js?v=2";
-    import { openModuleIntro } from "../js/module-intro.js?v=2";
+    import { initCommunityFeed, stopCommunityFeed } from "../js/community-feed.js?v=3";
+    import { openModuleIntro } from "../js/module-intro.js?v=3";
 
     renderHeader("learn");
     renderFooter();

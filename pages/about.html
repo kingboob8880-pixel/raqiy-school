@@ -9,91 +9,156 @@
 <link rel="stylesheet" href="../design/tokens.css?v=21">
 <link rel="stylesheet" href="../design/base.css?v=63">
 <style>
+  /* ==================================================================
+     СТРАНИЦА «ОБ АВТОРЕ» — ПЕРЕЛОЖЕНА ПО МАКЕТУ АВТОРА
+     (2026-07-26, «Дизайн новейщий.html», страница 1: «портрет + факты в
+     шапке, липкое оглавление, статистика ровным рядом»).
+
+     Что было. Страница шла узкой колонкой по центру: круглый значок ش,
+     под ним имя, под ним цитата, под ней пять карточек статистики,
+     потом просто текст секциями подряд. На ПК это половина пустого
+     экрана по бокам и никакой навигации: чтобы дойти до «Моих книг»,
+     нужно было прокрутить всё.
+
+     Что стало. Шапка-панель: портрет слева, титул/имя/цитата/кнопки
+     справа, пять фактов одним ровным рядом внизу шапки. Дальше — две
+     колонки: липкое оглавление 210px и содержимое. На телефоне
+     оглавление превращается в горизонтальную ленту чипов (.rp-chips),
+     шапка центрируется, портрет становится круглым.
+     ================================================================== */
+
+  /* Шапка-панель. Градиент и золотая линия снизу — как в макете. */
   .about-hero {
-    text-align: center;
-    padding: var(--rp-space-6) 0 var(--rp-space-4);
+    background: var(--rp-hero-panel-gradient);
+    border: 1px solid var(--rp-learn-border);
+    border-radius: var(--rp-radius-xl);
+    padding: var(--rp-space-6);
+    margin-bottom: var(--rp-space-6);
   }
+  .about-hero__top {
+    display: grid; grid-template-columns: 10.5rem 1fr;
+    gap: var(--rp-space-6); align-items: center;
+  }
+  /* Портрет 168×200 из макета. Фотографии у нас нет, поэтому в рамке —
+     каллиграфический знак школы, как и раньше; изменилась только форма:
+     вертикальный прямоугольник вместо кружка, чтобы шапка совпала с
+     макетом и знак стал крупнее. */
   .about-hero__portrait {
-    width: 7rem; height: 7rem;
-    border-radius: var(--rp-radius-pill);
-    background: var(--rp-color-gold-100);
-    color: var(--rp-color-gold-600);
-    font-family: var(--rp-font-arabic);
-    font-size: 3rem;
-    display: inline-flex; align-items: center; justify-content: center;
-    border: 3px solid var(--rp-color-gold-400);
-    margin-bottom: var(--rp-space-3);
+    width: 10.5rem; height: 12.5rem;
+    border-radius: var(--rp-radius-lg);
+    background: linear-gradient(165deg, var(--rp-learn-surface-raised), var(--rp-learn-surface));
+    border: 1px solid var(--rp-learn-border-strong);
+    color: var(--rp-learn-badge-text);
+    font-family: var(--rp-font-arabic); font-size: 5rem; line-height: 1;
+    display: grid; place-items: center;
+    overflow: hidden;
   }
   .about-hero__name {
     font-family: var(--rp-font-heading);
-    font-size: var(--rp-fs-2xl);
-    font-weight: 800;
-    margin: 0 0 var(--rp-space-1);
+    font-size: clamp(1.9rem, 1.2rem + 2.6vw, 2.75rem);
+    font-weight: 800; line-height: 1.05;
+    margin: var(--rp-space-3) 0 0;
+    color: var(--rp-hero-panel-text);
   }
-  .about-hero__role {
-    font-size: var(--rp-fs-sm);
-    color: var(--rp-learn-text-muted);
-    margin: 0;
+  .about-hero__quote {
+    font-style: italic; line-height: 1.6; max-width: 34rem;
+    margin: var(--rp-space-3) 0 0;
+    color: color-mix(in srgb, var(--rp-hero-panel-text) 78%, transparent);
   }
-  .about-quote {
-    text-align: center;
-    font-style: italic;
-    color: var(--rp-learn-text-muted);
-    max-width: 36rem;
-    margin: var(--rp-space-4) auto var(--rp-space-5);
-    line-height: 1.7;
+  .about-hero__actions { display: flex; gap: var(--rp-space-3); flex-wrap: wrap; margin-top: var(--rp-space-4); }
+
+  /* Пять фактов ОДНИМ ровным рядом — прямое требование макета
+     («statistics: single even row»). Раньше стояло auto-fit, и при пяти
+     карточках последняя уезжала на вторую строку одна. */
+  .about-stats {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--rp-space-3); margin-top: var(--rp-space-5);
   }
-  .about-section { margin-bottom: var(--rp-space-6); }
+  .about-stat {
+    text-align: center; padding: var(--rp-space-4) var(--rp-space-2);
+    border-radius: var(--rp-radius-md);
+    background: color-mix(in srgb, var(--rp-hero-panel-text) 5%, transparent);
+    border: 1px solid var(--rp-learn-badge-border);
+  }
+  .about-stat__value {
+    font-family: var(--rp-font-heading); font-weight: 800;
+    font-size: var(--rp-fs-lg); line-height: 1;
+    color: var(--rp-hero-panel-accent);
+  }
+  .about-stat__label {
+    font-size: var(--rp-fs-xs); margin-top: 0.4rem;
+    color: color-mix(in srgb, var(--rp-hero-panel-text) 70%, transparent);
+  }
+
+  /* Две колонки: липкое оглавление + содержимое. */
+  .about-body { display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: var(--rp-space-6); align-items: start; }
+  .about-content { min-width: 0; display: flex; flex-direction: column; gap: var(--rp-space-7); }
+  .about-section { margin: 0; scroll-margin-top: calc(var(--rp-header-h, 4.5rem) + var(--rp-space-4)); }
   .about-section h2 {
     display: flex; align-items: center; gap: var(--rp-space-2);
     font-size: var(--rp-fs-lg); margin-bottom: var(--rp-space-3);
   }
-  .about-section h2 span { font-size: 1.4em; }
-  .about-section p { line-height: 1.75; margin-bottom: var(--rp-space-3); }
+  .about-section h2 span:first-child { font-size: 1.3em; }
+  .about-section p { line-height: 1.75; margin-bottom: var(--rp-space-3); max-width: 42rem; }
 
-  .about-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-    gap: var(--rp-space-3);
-    margin: var(--rp-space-5) 0;
+  /* Специализация — ровно три в ряд, как в макете; иконка в квадратной
+     плашке над заголовком, а не голым эмодзи. */
+  .specialization-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--rp-space-3); margin-top: var(--rp-space-4); }
+  .spec-card { padding: var(--rp-space-4); border-radius: var(--rp-radius-md); }
+  .spec-card__icon {
+    width: 2.125rem; height: 2.125rem; border-radius: var(--rp-radius-sm);
+    display: grid; place-items: center; font-size: 1.1rem;
+    background: var(--rp-learn-icon-bg); color: var(--rp-learn-icon-text);
+    margin-bottom: var(--rp-space-3);
   }
-  .about-stat {
-    text-align: center;
-    padding: var(--rp-space-4) var(--rp-space-2);
-  }
-  .about-stat__value {
-    font-family: var(--rp-font-heading);
-    font-size: var(--rp-fs-xl);
-    font-weight: 800;
-    color: var(--rp-color-gold-600);
-  }
-  .about-stat__label {
-    font-size: var(--rp-fs-sm);
-    color: var(--rp-learn-text-muted);
-    margin-top: var(--rp-space-1);
-  }
-
-  .specialization-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    gap: var(--rp-space-3);
-    margin-top: var(--rp-space-3);
-  }
-  .spec-card {
-    padding: var(--rp-space-4);
-  }
-  .spec-card__icon { font-size: 1.5rem; margin-bottom: var(--rp-space-2); }
   .spec-card h3 { font-size: var(--rp-fs-base); margin: 0 0 var(--rp-space-1); }
-  .spec-card p { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; line-height: 1.6; }
+  .spec-card p { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); margin: 0; line-height: 1.55; }
 
-  .principles-list { list-style: none; padding: 0; margin: 0; }
+  /* Принципы — нумерованные строки-карточки вместо списка с разделителями.
+     В макете у каждого принципа кружок с номером: так их видно, что их
+     пять, ещё до чтения. */
+  .principles-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--rp-space-3); }
   .principles-list li {
-    padding: var(--rp-space-3) 0;
-    border-bottom: 1px solid var(--rp-learn-border);
-    line-height: 1.7;
+    display: flex; gap: var(--rp-space-4); align-items: flex-start;
+    padding: var(--rp-space-4);
+    border-radius: var(--rp-radius-md);
+    background: color-mix(in srgb, var(--rp-learn-text) 3%, transparent);
+    border: 1px solid var(--rp-learn-border);
+    line-height: 1.65;
   }
-  .principles-list li:last-child { border-bottom: none; }
-  .principles-list strong { color: var(--rp-color-gold-700); }
+  .principles-list li::before {
+    counter-increment: principle; content: counter(principle);
+    flex: none; width: 1.75rem; height: 1.75rem; border-radius: var(--rp-radius-pill);
+    display: grid; place-items: center;
+    font-family: var(--rp-font-heading); font-weight: 800; font-size: var(--rp-fs-sm);
+    background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text);
+  }
+  .principles-list { counter-reset: principle; }
+  .principles-list strong { display: block; margin-bottom: 0.2rem; }
+
+  /* Оглавление существует в двух видах, но показан всегда один: колонка
+     на ПК, лента чипов на телефоне. Порог тот же, на котором раскладка
+     схлопывается в одну колонку. */
+  #about-chips { display: none; }
+  @media (max-width: 60rem) {
+    .about-body { grid-template-columns: minmax(0, 1fr); }
+    .specialization-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #about-toc { display: none; }
+    #about-chips:not([hidden]) { display: flex; }
+  }
+  @media (max-width: 40rem) {
+    /* Телефон: шапка центрируется, портрет — круг, факты в две колонки,
+       кнопка действия во всю ширину. Правило макета: «одна колонка с
+       крупными касаниями и приоритетом действия сверху». */
+    .about-hero { padding: var(--rp-space-5) var(--rp-space-4); }
+    .about-hero__top { grid-template-columns: minmax(0, 1fr); gap: var(--rp-space-4); text-align: center; justify-items: center; }
+    .about-hero__portrait { width: 7rem; height: 7rem; border-radius: var(--rp-radius-pill); font-size: 3.25rem; }
+    .about-hero__quote { margin-left: auto; margin-right: auto; }
+    .about-hero__actions { justify-content: center; width: 100%; }
+    .about-hero__actions .btn { flex: 1 1 100%; }
+    .about-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .specialization-grid { grid-template-columns: minmax(0, 1fr); }
+  }
 
   .contact-grid {
     display: grid;
@@ -232,28 +297,43 @@
 <body data-zone="learn">
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header"></div>
-  <main class="container container--narrow">
+  <main class="container">
 
     <div class="about-hero reveal">
-      <div class="about-hero__portrait" aria-hidden="true">ش</div>
-      <h1 class="about-hero__name" data-t="about.name">Лекарь Абу Мухаммад</h1>
-      <p class="about-hero__role" data-t="about.role">Основатель онлайн-школы рукии · Практикующий лекарь</p>
+      <div class="about-hero__top">
+        <div class="about-hero__portrait" aria-hidden="true">ش</div>
+        <div style="min-width:0;">
+          <span class="eyebrow" data-t="about.role">Основатель школы · практикующий лекарь</span>
+          <h1 class="about-hero__name" data-t="about.name">Лекарь Абу Мухаммад</h1>
+          <p class="about-hero__quote" data-t="about.quote">«Аллах Великодушный и Милостивый исцеляет Своих рабов — а лекарь является лишь причиной»</p>
+          <div class="about-hero__actions">
+            <a class="btn btn-primary" href="https://t.me/ruqoq" target="_blank" rel="noopener" data-t="about.cta.appointment">Записаться на приём</a>
+            <a class="btn btn-soft" href="#books" data-t="about.cta.books">Читать книги</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-stats">
+        <div class="about-stat"><div class="about-stat__value">1600+</div><div class="about-stat__label" data-t="about.stat.pubs">Публикаций</div></div>
+        <div class="about-stat"><div class="about-stat__value">2+</div><div class="about-stat__label" data-t="about.stat.years">Года практики</div></div>
+        <div class="about-stat"><div class="about-stat__value">284</div><div class="about-stat__label" data-t="about.stat.audio">Голосовых уроков</div></div>
+        <div class="about-stat"><div class="about-stat__value">7</div><div class="about-stat__label" data-t="about.stat.methods">Методов лечения</div></div>
+        <div class="about-stat"><div class="about-stat__value">90+</div><div class="about-stat__label" data-t="about.stat.reviews">Отзывов</div></div>
+      </div>
     </div>
 
-    <p class="about-quote reveal" data-t="about.quote">
-      «Аллах Великодушный и Милостивый исцеляет Своих рабов —<br>
-      а лекарь является лишь причиной»
-    </p>
+    <!-- Оглавление страницы. На ПК — липкая колонка слева (.rp-toc), на
+         телефоне — горизонтальная лента чипов (.rp-chips): вертикальный
+         список там занял бы весь первый экран. Оба варианта строит
+         скрипт внизу страницы из самих секций, чтобы при добавлении
+         новой секции оглавление не пришлось править руками. -->
+    <nav class="rp-chips" id="about-chips" aria-label="Разделы страницы" hidden></nav>
 
-    <div class="about-stats reveal">
-      <div class="about-stat card"><div class="about-stat__value">1600+</div><div class="about-stat__label" data-t="about.stat.pubs">Публикаций</div></div>
-      <div class="about-stat card"><div class="about-stat__value">2+</div><div class="about-stat__label" data-t="about.stat.years">Года практики</div></div>
-      <div class="about-stat card"><div class="about-stat__value">284</div><div class="about-stat__label" data-t="about.stat.audio">Голосовых уроков</div></div>
-      <div class="about-stat card"><div class="about-stat__value">7</div><div class="about-stat__label" data-t="about.stat.methods">Методов лечения</div></div>
-      <div class="about-stat card"><div class="about-stat__value">90+</div><div class="about-stat__label" data-t="about.stat.reviews">Отзывов</div></div>
-    </div>
+    <div class="about-body">
+      <nav class="rp-toc" id="about-toc" aria-label="Разделы страницы" hidden></nav>
+      <div class="about-content">
 
-    <section class="about-section reveal">
+    <section class="about-section reveal" id="sec-edu">
       <h2><span>🎓</span> <span data-t="about.edu.title">Образование и путь</span></h2>
       <p data-t="about.edu.p1">Меня зовут <strong>абу Мухаммад</strong>, я раб Аллаха. Рукья для меня — не «одна из услуг», а ответственность
          перед Аллахом и людьми: поэтому я прошёл обучение у нескольких шейхов, а своим главным учителем и ориентиром
@@ -264,7 +344,7 @@
          Постоянно углубляю знание и оттачиваю практику.</p>
     </section>
 
-    <section class="about-section reveal">
+    <section class="about-section reveal" id="sec-spec">
       <h2><span>⚔️</span> <span data-t="about.spec.title">Специализация</span></h2>
       <p data-t="about.spec.intro">Сопровождаю мужчин и женщин с различными видами духовных поражений — опираясь <strong>только на Коран и Сунну</strong>,
          без ширка и запретных приёмов. В арсенале — <strong>семь направлений лечения</strong>, которые комбинирую по ситуации:</p>
@@ -302,8 +382,7 @@
       </div>
     </section>
 
-    <div class="section-tint" style="margin: 0 calc(-1 * var(--rp-space-4)); padding: var(--rp-space-5) var(--rp-space-4); border-radius: var(--rp-radius-lg);">
-    <section class="about-section reveal" style="margin-bottom: 0;">
+    <section class="about-section reveal" id="sec-principles">
       <h2><span>💎</span> <span data-t="about.principles.title">Принципы и подход</span></h2>
       <ul class="principles-list">
         <li><strong>Только Коран, Сунна и дозволённые средства</strong> — никаких амулетов, сделок с джиннами и сомнительных ритуалов.</li>
@@ -313,9 +392,8 @@
         <li><strong>Упование только на Аллаха</strong> — моя роль: быть причиной (сабабом), через которую по воле Аллаха приходит облегчение.</li>
       </ul>
     </section>
-    </div>
 
-    <section class="about-section reveal" style="margin-top: var(--rp-space-6);">
+    <section class="about-section reveal" id="books">
       <h2><span>✍️</span> <span data-t="about.books.title">Мои книги</span></h2>
       <p data-t="about.books.intro">Я, лекарь <strong>Абу Мухаммад</strong>, — автор всех книг этого курса. Они писались не как теория,
          а как записи живой практики: то, что я проверял на приёме, разбирал с учениками и сверял с Кораном и Сунной.
@@ -323,7 +401,7 @@
       <div class="books-list" id="books-list"></div>
     </section>
 
-    <section class="about-section reveal" style="margin-top: var(--rp-space-6);">
+    <section class="about-section reveal" id="sec-school">
       <h2><span>📚</span> <span data-t="about.school.title">Онлайн-школа рукии</span></h2>
       <p>Весь накопленный опыт я оформил в <strong>полноценный курс подготовки заклинателя (раки)</strong> — 11 модулей,
          25 книг, от основ убеждённости до самостоятельного приёма пациентов. Каждый источник прошёл триаж по критерию подлинности
@@ -335,7 +413,7 @@
       </div>
     </section>
 
-    <section class="about-section reveal">
+    <section class="about-section reveal" id="sec-contacts">
       <h2><span>📬</span> <span data-t="about.contacts.title">Контакты</span></h2>
       <div class="contact-grid">
         <a class="contact-card" href="https://t.me/Lechenya_bot" target="_blank" rel="noopener">
@@ -369,12 +447,15 @@
       </div>
     </section>
 
+      </div><!-- /.about-content -->
+    </div><!-- /.about-body -->
+
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "./js/layout.js?v=24";
-    import { t, getLang, moduleTitle, localLevel, lessonTitle } from "./js/i18n.js?v=18";
+    import { renderHeader, renderFooter } from "./js/layout.js?v=25";
+    import { t, getLang, moduleTitle, localLevel, lessonTitle } from "./js/i18n.js?v=19";
     import { MODULES } from "./js/modules-data.js?v=34";
     import { withBase } from "./js/base-path.js?v=6";
     renderHeader("learn");
@@ -521,6 +602,54 @@
     document.querySelectorAll("[data-t]").forEach(el => {
       el.textContent = t(el.dataset.t);
     });
+
+    // ── Оглавление страницы (макет автора, 2026-07-26) ────────────────
+    //
+    // Собирается ИЗ САМИХ СЕКЦИЙ, а не задано списком в разметке: секции
+    // на этой странице добавлялись уже трижды, и вручную поддерживаемое
+    // оглавление разошлось бы с содержимым на первой же правке.
+    //
+    // Заголовок секции — второй <span> в её h2 (первый занят иконкой).
+    // Перевод к этому моменту уже проставлен циклом выше, поэтому в
+    // оглавление попадает текст на текущем языке, а не русский исходник.
+    (function buildToc() {
+      const toc = document.getElementById("about-toc");
+      const chips = document.getElementById("about-chips");
+      const sections = Array.from(document.querySelectorAll(".about-section[id]"));
+      if (!toc || !chips || !sections.length) return;
+
+      const items = sections.map((sec) => {
+        const spans = sec.querySelectorAll("h2 span");
+        const label = (spans[1] || spans[0])?.textContent?.trim() || sec.id;
+        return { id: sec.id, label, sec };
+      });
+
+      toc.innerHTML = `<span class="rp-toc__label">${t("about.toc")}</span>` +
+        items.map((i) => `<a class="rp-toc__item" href="#${i.id}" data-sec="${i.id}">${i.label}</a>`).join("");
+      chips.innerHTML = items.map((i) => `<a class="rp-chips__item" href="#${i.id}" data-sec="${i.id}">${i.label}</a>`).join("");
+      toc.hidden = false;
+      chips.hidden = false;
+
+      // Подсветка текущего раздела. Наблюдаем полосу в верхней трети
+      // экрана: если считать «видима ли секция целиком», то длинная
+      // секция никогда не подсветится, а короткие будут загораться по
+      // две сразу.
+      const marks = new Map(items.map((i) => [i.id, false]));
+      const setActive = (id) => {
+        document.querySelectorAll("[data-sec]").forEach((el) => {
+          el.classList.toggle("is-active", el.dataset.sec === id);
+        });
+      };
+      if ("IntersectionObserver" in window) {
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((e) => marks.set(e.target.id, e.isIntersecting));
+          const first = items.find((i) => marks.get(i.id));
+          if (first) setActive(first.id);
+        }, { rootMargin: "-20% 0px -70% 0px", threshold: 0 });
+        items.forEach((i) => spy.observe(i.sec));
+      }
+      setActive(items[0].id);
+    })();
   </script>
 </body>
 </html>
