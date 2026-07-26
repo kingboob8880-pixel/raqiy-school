@@ -1323,9 +1323,59 @@ main.container { padding-block: var(--rp-space-6); }
 .book-card__marker[style*="background-image"] { background-size: cover; background-position: center; border: none; }
 
 /* ---------- Баннер обложки над секцией (кабинет ученика) ---------- */
-.section-banner { position: relative; border-radius: var(--rp-radius-lg); overflow: hidden; margin-bottom: var(--rp-space-4); min-height: 6rem; display: flex; align-items: flex-end; }
-.section-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-.section-banner h2 { position: relative; z-index: 1; margin: 0; padding: var(--rp-space-4); color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.6); background: linear-gradient(0deg, rgba(0,0,0,0.55), transparent); width: 100%; }
+/* ---------- Полоса-заголовок раздела ----------
+   Картинка здесь — КВАДРАТНАЯ обложка книги (assets/images/covers/…),
+   а не широкая баннерная иллюстрация. Раньше она растягивалась на всю
+   ширину через object-fit: cover в полосу высотой 6rem — от квадрата
+   оставалась узкая средняя лента, и от рисунка не было видно почти
+   ничего (скриншот автора, 2026-07-26). Вдобавок у самой обложки есть
+   свой заголовок внутри, который тоже срезался пополам.
+
+   Решение то же, что в модалке модуля: обложка стоит СЛЕВА в свой рост,
+   целиком, а пустое место позади заполняет она же — размытая и
+   увеличенная. Полоса окрашивается собственными цветами картинки,
+   ничего не обрезано и полей нет. */
+.section-banner {
+  position: relative; overflow: hidden;
+  border-radius: var(--rp-radius-lg);
+  margin-bottom: var(--rp-space-4);
+  height: 7.5rem;
+  display: flex; align-items: center; gap: var(--rp-space-4);
+  padding: var(--rp-space-4);
+}
+/* Фон. Здесь обрезка не беда: это не картинка, а цвет — узнаваемых
+   деталей от него не требуется. */
+.section-banner__bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; filter: blur(26px) saturate(1.35);
+  transform: scale(1.3); opacity: 0.85;
+}
+/* Затемнение поверх фона: белый заголовок на светлой обложке иначе исчезает.
+   Слева, под заголовком, плотнее — там текст; правее отпускаем, иначе от
+   «полоса окрашивается цветами обложки» ничего не оставалось: при прежней
+   заливке (0.72/0.48/0.66 поверх opacity 0.5) полоса выходила почти
+   чёрной, и пустое место справа читалось как дыра в вёрстке. */
+.section-banner__veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, rgba(0,0,0,0.66) 0%, rgba(0,0,0,0.5) 42%, rgba(0,0,0,0.3) 100%);
+}
+.section-banner__pic {
+  position: relative; z-index: 1; flex: none;
+  height: 100%; width: auto; max-width: 40%;
+  /* Страховка: если max-width всё-таки сработает на узком экране, без
+     contain браузер оставил бы высоту и сжал ширину — обложка вышла бы
+     приплюснутой. */
+  object-fit: contain;
+  border-radius: var(--rp-radius-sm);
+  border: 1px solid rgba(215, 181, 106, 0.3);
+}
+.section-banner h2 {
+  position: relative; z-index: 1; margin: 0; min-width: 0;
+  color: #fff; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+@media (max-width: 34rem) {
+  .section-banner { height: 6rem; padding: var(--rp-space-3); gap: var(--rp-space-3); }
+}
 
 /* ---------- Карточка "Продолжить обучение" ----------
    Главное действие кабинета, поэтому единственная карточка на странице с
