@@ -2042,6 +2042,17 @@ body:has(.messenger-page) .footer { display: none; }
   border-top: 1px solid rgba(251, 246, 236, 0.15);
 }
 .module-value__body { font-size: var(--rp-fs-base); line-height: 1.75; text-align: left; margin: 0; opacity: 0.92; }
+
+/* Краткий вариант — модули 2–11 (решение автора, 2026-07-26: хадис остаётся
+   только в первом модуле, чтобы не надоедать повторением). Здесь нет ни
+   пометки «Помни», ни хадиса, ни общего абзаца — только строка про этот
+   конкретный модуль. Поэтому и рамка тише: центрирование и крупный кегль
+   нужны были хадису, а одному абзацу они ни к чему. */
+.module-value--brief {
+  text-align: left;
+  padding: var(--rp-space-4) var(--rp-space-5);
+}
+.module-value--brief .module-value__body { opacity: 1; font-size: var(--rp-fs-md); }
 @media (max-width: 34rem) { .module-value { padding: var(--rp-space-4); } }
 /* На печати рамка ни к чему — на бумаге важен сам текст урока. */
 @media print { .module-value { display: none !important; } }
