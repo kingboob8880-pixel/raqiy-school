@@ -12,7 +12,7 @@
 // «Что внутри» — по желанию, а не поперёк дороги.
 //
 // Тексты — pages/js/module-intro-data.js, подписи — i18n.js.
-import { t, getLang, moduleTitle, localLevel } from "./i18n.js?v=21";
+import { t, getLang, moduleTitle, localLevel } from "./i18n.js?v=22";
 import { withBase } from "./base-path.js?v=6";
 import { moduleIntro } from "./module-intro-data.js?v=1";
 

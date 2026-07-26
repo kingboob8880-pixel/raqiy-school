@@ -152,6 +152,16 @@ export const MODULES = [
       { title: "Фундамент мастера — состояние заклинателя", doc: "/content/module-8/fundament-mastera.md", exam: "/content/exams/module-8-fundament-mastera.md" },
       { title: "Заклинание действием — продвинутые формулы", doc: "/content/module-8/prodvinutye-formuly.md", exam: "/content/exams/module-8-prodvinutye-formuly.md" },
       { title: "Комбинированные формулы и уровни мастерства", doc: "/content/module-8/kombo-i-urovni.md", exam: "/content/exams/module-8-kombo-i-urovni.md" },
+      // Авторский учебник «Исцеление за секунды» (2026-07-27). Поставлен в
+      // Модуль 8, а не в Модуль 1, где лежит якын: книга не учит
+      // убеждённости с нуля, а сводит воедино уже пройденное — восемь
+      // компонентов из Модуля 5, волевой акт и якын из Модуля 1, защиту из
+      // Модуля 6 — и требует, чтобы сорокадневная ковка была уже позади.
+      // Тема модуля («что отличает сильного от начинающего — не формулы, а
+      // состояние») ровно об этом.
+      //
+      // Стоит ПОСЛЕДНИМ уроком модуля: он опирается на три предыдущих.
+      { title: "Исцеление за секунды — доктрина мгновенного воздействия", doc: "/content/module-8/istselenie-za-sekundy.md", exam: "/content/exams/module-8-istselenie-za-sekundy.md" },
     ],
   },
   {
