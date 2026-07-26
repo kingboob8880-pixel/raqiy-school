@@ -36,3 +36,9 @@ google-application-credentials*.json
 /rukya-pro-desktop/node_modules/
 /rukya-pro-desktop/dist/
 /rukya-pro-desktop/release/
+
+# Токены в открытом виде — не коммитить.
+api.txt
+
+# Локальные переменные функций (токен Telegram и т.п.)
+functions/.env
