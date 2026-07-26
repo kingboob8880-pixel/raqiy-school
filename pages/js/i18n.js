@@ -500,6 +500,10 @@ const S = {
   "about.cta.appointment": { ru: "Записаться на приём", en: "Book an appointment", uz: "Qabulga yozilish" },
   "about.cta.books":     { ru: "Читать книги", en: "Read the books", uz: "Kitoblarni o'qish" },
   "about.toc":           { ru: "На странице", en: "On this page", uz: "Sahifada" },
+  // Кабинет админа — четвёртый показатель и подпись списка (макет автора,
+  // 2026-07-26): показателей в макете четыре, ряд из трёх ломался 2+1.
+  "admin.certsIssued":   { ru: "Сертификатов", en: "Certificates", uz: "Sertifikatlar" },
+  "admin.studentsTitle": { ru: "Ученики", en: "Students", uz: "Shogirdlar" },
   "about.contact.treatment": { ru: "Записаться на лечение", en: "Book treatment", uz: "Davolashga yozilish" },
   "about.contact.dm":    { ru: "Связь с лекарем", en: "Contact healer", uz: "Tabib bilan bog'lanish" },
   "about.contact.channel": { ru: "Telegram-канал", en: "Telegram channel", uz: "Telegram kanali" },

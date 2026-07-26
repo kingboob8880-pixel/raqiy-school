@@ -6,70 +6,136 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Глоссарий — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=21">
-<link rel="stylesheet" href="../../design/base.css?v=63">
+<link rel="stylesheet" href="../../design/base.css?v=64">
 <style>
-  /* ── Glossary-specific styles ── */
-  .glossary-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: var(--rp-space-4); }
+  /* ==================================================================
+     ГЛОССАРИЙ — РАСКЛАДКА ПО МАКЕТУ АВТОРА
+     (2026-07-26, «Дизайн новейщий.html», страница 4: «алфавитный рельс
+     слева, три колонки терминов»).
+
+     Что было. Поиск, потом строка фильтров, потом строка статистики,
+     потом просто группы карточек. Буква группы прилипала к верху и
+     перекрывала текст под собой, потому что была sticky без учёта
+     высоты шапки сайта. Прыгнуть на нужную букву было нельзя вовсе — при
+     46 терминах до «Ш» приходилось прокручивать всё.
+
+     Что стало. Поиск и фильтры — в одну строку. Слева липкий рельс букв:
+     нажал — прыгнул. Термины в три колонки. В карточке арабский стоит
+     СПРАВА от названия, как в макете, а не отдельной строкой сверху:
+     так название и оригинал читаются парой, а карточка ниже на строку.
+     ================================================================== */
+
+  .gloss-head { margin-bottom: var(--rp-space-5); }
+  .gloss-head__count { color: var(--rp-learn-text-muted); margin: var(--rp-space-2) 0 0; }
+
+  /* Поиск и фильтры одной строкой — в макете это единый ряд элементов
+     высотой 48px. Раньше фильтры стояли отдельной строкой ниже. */
+  .gloss-controls { display: flex; gap: var(--rp-space-3); flex-wrap: wrap; margin-top: var(--rp-space-4); }
+  .gloss-controls .search-field { flex: 1 1 21rem; max-width: none; margin: 0; }
+  .glossary-filters { display: flex; flex-wrap: wrap; gap: var(--rp-space-2); }
   .glossary-filters button {
-    padding: 0.4rem 0.9rem; border-radius: var(--rp-radius-md); border: 1px solid var(--rp-zone-border, var(--rp-learn-border));
-    background: var(--rp-zone-surface, var(--rp-learn-surface)); color: var(--rp-zone-text, var(--rp-learn-text));
-    font-size: var(--rp-fs-sm); cursor: pointer; transition: background 0.2s, border-color 0.2s;
+    height: 3rem; padding: 0 1rem; border-radius: var(--rp-radius-md);
+    border: 1px solid var(--rp-learn-border-strong);
+    background: var(--rp-learn-badge-bg); color: var(--rp-zone-text);
+    font: inherit; font-size: var(--rp-fs-sm); font-weight: 700; cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
   }
-  .glossary-filters button:hover { border-color: var(--rp-zone-accent, var(--rp-learn-accent)); }
+  .glossary-filters button:hover { border-color: var(--rp-zone-accent); }
   .glossary-filters button.is-active {
-    background: var(--rp-zone-accent, var(--rp-learn-accent)); color: #fff;
-    border-color: var(--rp-zone-accent, var(--rp-learn-accent));
+    background: var(--rp-zone-accent); color: var(--rp-zone-accent-contrast);
+    border-color: var(--rp-zone-accent);
   }
 
-  .glossary-group { margin-bottom: var(--rp-space-5); }
-  .glossary-group__letter {
-    font-size: 1.6rem; font-weight: 700; padding: 0.3rem 0;
-    border-bottom: 2px solid var(--rp-zone-accent, var(--rp-learn-accent));
-    margin-bottom: var(--rp-space-3); color: var(--rp-zone-accent, var(--rp-learn-accent));
-    position: sticky; top: 0; background: var(--rp-zone-bg, var(--rp-learn-bg)); z-index: 2;
+  /* Две колонки: рельс букв 64px + термины. */
+  .gloss-body { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); gap: var(--rp-space-5); align-items: start; }
+
+  /* Рельс. Прилипает НИЖЕ шапки сайта: --rp-header-h измеряет layout.js,
+     без него рельс уезжал бы под шапку. */
+  .gloss-rail {
+    position: sticky; top: calc(var(--rp-header-h, 4.5rem) + var(--rp-space-3));
+    display: flex; flex-direction: column; gap: 0.2rem;
   }
-  .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--rp-space-3); }
+  .gloss-rail__btn {
+    height: 1.875rem; display: grid; place-items: center;
+    border: 0; border-radius: var(--rp-radius-sm); cursor: pointer;
+    font-family: var(--rp-font-heading); font-weight: 700; font-size: var(--rp-fs-sm);
+    background: none; color: var(--rp-learn-text-muted);
+    transition: background 0.15s, color 0.15s;
+  }
+  .gloss-rail__btn:hover { background: var(--rp-learn-icon-bg); color: var(--rp-zone-text); }
+  .gloss-rail__btn.is-on { background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text); }
+  /* Буква, которой в текущей выборке нет, гасится, но остаётся на месте:
+     если убирать её из рельса, он прыгал бы по длине при каждом вводе
+     символа в поиск. */
+  .gloss-rail__btn:disabled { opacity: 0.28; cursor: default; }
+
+  .glossary-group { scroll-margin-top: calc(var(--rp-header-h, 4.5rem) + var(--rp-space-4)); }
+  .glossary-group + .glossary-group { margin-top: var(--rp-space-6); }
+  /* Заголовок буквы: буква, тонкая линия во всю ширину, счётчик справа.
+     Sticky снят намеренно — он перекрывал текст, а роль «где я сейчас»
+     теперь выполняет подсветка в рельсе. */
+  .glossary-group__head { display: flex; align-items: center; gap: var(--rp-space-3); margin-bottom: var(--rp-space-3); }
+  .glossary-group__letter {
+    font-family: var(--rp-font-heading); font-weight: 800;
+    font-size: var(--rp-fs-lg); line-height: 1; color: var(--rp-learn-badge-text);
+  }
+  .glossary-group__rule { flex: 1; height: 1px; background: var(--rp-learn-border-strong); }
+  .glossary-group__count { font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); }
+
+  .glossary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--rp-space-3); }
 
   .term-card {
-    background: linear-gradient(165deg, var(--rp-zone-surface-raised, var(--rp-learn-surface-raised)), var(--rp-zone-surface, var(--rp-learn-surface)));
-    border: 1px solid var(--rp-zone-border, var(--rp-learn-border));
-    border-radius: var(--rp-radius-lg); padding: var(--rp-space-4);
-    box-shadow: var(--rp-shadow-card); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    display: flex; flex-direction: column;
+    background: linear-gradient(165deg, var(--rp-zone-surface-raised), var(--rp-zone-surface));
+    border: 1px solid var(--rp-zone-border);
+    border-radius: var(--rp-radius-md); padding: var(--rp-space-4);
+    transition: transform 0.2s ease, border-color 0.2s ease;
   }
-  .term-card:hover {
-    transform: translateY(-3px); box-shadow: var(--rp-shadow-pop);
-    border-color: color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 45%, var(--rp-zone-border, var(--rp-learn-border)));
-  }
+  .term-card:hover { transform: translateY(-3px); border-color: var(--rp-learn-badge-border); }
   @media (prefers-reduced-motion: reduce) { .term-card { transition: none; } .term-card:hover { transform: none; } }
 
+  /* Название слева, арабский справа — как в макете. */
+  .term-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--rp-space-3); }
+  .term-card__translit { font-style: italic; font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); }
+  .term-card__name { font-family: var(--rp-font-heading); font-weight: 700; font-size: var(--rp-fs-md); margin-top: 0.1rem; }
   .term-card__arabic {
-    font-family: var(--rp-font-arabic, "Amiri", serif); font-size: 1.5rem;
-    direction: rtl; text-align: right; line-height: 1.8; margin-bottom: 0.3rem;
-    color: var(--rp-zone-accent, var(--rp-learn-accent));
+    flex: none; font-family: var(--rp-font-arabic); font-size: 1.5rem; line-height: 1.4;
+    direction: rtl; color: var(--rp-learn-badge-text);
   }
-  .term-card__translit { font-style: italic; font-size: var(--rp-fs-sm); opacity: 0.8; margin-bottom: 0.4rem; }
-  .term-card__name { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem; }
-  .term-card__def { font-size: var(--rp-fs-sm); line-height: 1.55; opacity: 0.9; margin-bottom: 0.5rem; }
-  .term-card__meta { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+  .term-card__def { font-size: var(--rp-fs-sm); line-height: 1.55; color: var(--rp-learn-text-muted); margin: var(--rp-space-3) 0; }
+  /* Метка и модули прижаты к низу карточки и отделены линией: в ряду из
+     трёх карточек определения разной длины, и без прижатия подвалы шли
+     вразнобой. */
+  .term-card__meta {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-2);
+    margin-top: auto; padding-top: var(--rp-space-3);
+    border-top: 1px solid var(--rp-zone-border);
+  }
   .term-card__tag {
-    display: inline-block; font-size: 0.72rem; padding: 0.15rem 0.5rem;
-    border-radius: var(--rp-radius-md); background: color-mix(in srgb, var(--rp-zone-accent, var(--rp-learn-accent)) 15%, transparent);
-    color: var(--rp-zone-accent, var(--rp-learn-accent));
+    font-size: var(--rp-fs-xs); font-weight: 800; padding: 0.2rem 0.55rem;
+    border-radius: var(--rp-radius-pill);
+    background: var(--rp-learn-badge-bg); color: var(--rp-learn-badge-text);
   }
-  .term-card__module {
-    font-size: 0.72rem; opacity: 0.65;
+  .term-card__module { font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); white-space: nowrap; }
+
+  /* Рельс букв на телефоне — горизонтальная лента над списком. */
+  .gloss-rail--h { display: none; }
+  @media (max-width: 60rem) {
+    .gloss-body { grid-template-columns: minmax(0, 1fr); gap: var(--rp-space-4); }
+    .glossary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gloss-rail { display: none; }
+    .gloss-rail--h {
+      display: flex; flex-direction: row; gap: var(--rp-space-2);
+      overflow-x: auto; padding-bottom: var(--rp-space-1);
+      position: sticky; top: calc(var(--rp-header-h, 4.5rem)); z-index: 5;
+      background: var(--rp-zone-bg);
+    }
+    .gloss-rail--h .gloss-rail__btn { flex: 0 0 auto; width: 2.25rem; height: 2.25rem; }
   }
-
-  .glossary-stats { display: flex; gap: var(--rp-space-4); flex-wrap: wrap; margin-bottom: var(--rp-space-4); }
-  .glossary-stats__item { font-size: var(--rp-fs-sm); opacity: 0.7; }
-  .glossary-stats__num { font-weight: 700; color: var(--rp-zone-accent, var(--rp-learn-accent)); }
-
-  .search-field { max-width: 28rem; }
-
-  @media (max-width: 640px) {
-    .glossary-grid { grid-template-columns: 1fr; }
-    .glossary-filters { gap: 0.35rem; }
-    .glossary-filters button { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+  @media (max-width: 40rem) {
+    .glossary-grid { grid-template-columns: minmax(0, 1fr); }
+    .gloss-controls .search-field { flex: 1 1 100%; }
+    .glossary-filters button { height: 2.625rem; font-size: var(--rp-fs-xs); padding: 0 0.75rem; }
   }
 </style>
 </head>
@@ -77,25 +143,30 @@
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header"></div>
   <main class="container">
-    <h1 id="page-title">Глоссарий рукии</h1>
-    <p class="form-note" id="page-subtitle">Словарь ключевых терминов — арабский оригинал, транслитерация и определение.</p>
-
-    <div class="search-field">
-      <input type="search" id="glossary-search" placeholder="Поиск по терминам…" aria-label="Поиск по терминам">
+    <div class="gloss-head">
+      <h1 id="page-title" style="margin:0;">Глоссарий рукии</h1>
+      <p class="gloss-head__count" id="page-subtitle">Словарь ключевых терминов — арабский оригинал, транслитерация и определение.</p>
+      <div class="gloss-controls">
+        <div class="search-field">
+          <input type="search" id="glossary-search" placeholder="Поиск по терминам…" aria-label="Поиск по терминам">
+        </div>
+        <div class="glossary-filters" id="category-filters"></div>
+      </div>
     </div>
 
-    <div class="glossary-filters" id="category-filters"></div>
-
-    <div class="glossary-stats" id="glossary-stats"></div>
-
     <p id="search-empty" class="form-note" hidden>Ничего не найдено.</p>
-    <div id="glossary-root"></div>
+
+    <div class="gloss-body">
+      <nav class="gloss-rail gloss-rail--h" id="gloss-rail-h" aria-label="Буквы алфавита"></nav>
+      <nav class="gloss-rail" id="gloss-rail" aria-label="Буквы алфавита"></nav>
+      <div id="glossary-root"></div>
+    </div>
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=25";
-    import { t, getLang } from "../js/i18n.js?v=19";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=26";
+    import { t, getLang } from "../js/i18n.js?v=20";
 
     renderHeader("learn");
     renderFooter();
@@ -104,7 +175,7 @@
     const lang = getLang();
     const L = {
       title:     { ru: "Глоссарий рукии", en: "Ruqyah Glossary", uz: "Ruqya lug'ati" },
-      subtitle:  { ru: "Словарь ключевых терминов — арабский оригинал, транслитерация и определение.", en: "Key terms dictionary — Arabic original, transliteration and definition.", uz: "Asosiy atamalar lug'ati — arab asl nusxasi, transliteratsiya va ta'rif." },
+      subtitle:  { ru: "арабский оригинал, транскрипция и определение", en: "Arabic original, transliteration and definition", uz: "arab asl nusxasi, transliteratsiya va ta'rif" },
       search:    { ru: "Поиск по терминам…", en: "Search terms…", uz: "Atamalarni qidirish…" },
       noResults: { ru: "Ничего не найдено.", en: "Nothing found.", uz: "Hech narsa topilmadi." },
       all:       { ru: "Все", en: "All", uz: "Barchasi" },
@@ -116,11 +187,12 @@
       total:     { ru: "Всего терминов:", en: "Total terms:", uz: "Jami atamalar:" },
       shown:     { ru: "Показано:", en: "Shown:", uz: "Ko'rsatilgan:" },
       module:    { ru: "Модуль", en: "Module", uz: "Modul" },
+      termsWord: { ru: "терминов", en: "terms", uz: "atama" },
     };
     const tl = (key) => L[key]?.[lang] || L[key]?.ru || key;
 
     document.getElementById("page-title").textContent = tl("title");
-    document.getElementById("page-subtitle").textContent = tl("subtitle");
+    document.getElementById("page-subtitle").textContent = `${TERMS.length} ${tl("termsWord")} · ${tl("subtitle")}`;
     const searchInput = document.getElementById("glossary-search");
     searchInput.placeholder = tl("search");
     document.getElementById("search-empty").textContent = tl("noResults");
@@ -190,7 +262,8 @@
     const root = document.getElementById("glossary-root");
     const emptyNote = document.getElementById("search-empty");
     const filtersEl = document.getElementById("category-filters");
-    const statsEl = document.getElementById("glossary-stats");
+    const railEl = document.getElementById("gloss-rail");
+    const railHEl = document.getElementById("gloss-rail-h");
     let activeCategory = null;
 
     // Build filter buttons
@@ -199,13 +272,11 @@
     allBtn.className = "is-active";
     allBtn.addEventListener("click", () => { activeCategory = null; renderList(); setActiveBtn(allBtn); });
     filtersEl.appendChild(allBtn);
-    const catBtns = {};
     for (const [key, label] of Object.entries(CATEGORIES)) {
       const btn = document.createElement("button");
       btn.textContent = label;
       btn.addEventListener("click", () => { activeCategory = key; renderList(); setActiveBtn(btn); });
       filtersEl.appendChild(btn);
-      catBtns[key] = btn;
     }
 
     function setActiveBtn(active) {
@@ -214,17 +285,13 @@
     }
 
     function getSortKey(term) {
-      // Sort by Russian name for ru, English for en, Uzbek for uz
       if (lang === "en") return (term.en || term.ru).toLowerCase();
       if (lang === "uz") return (term.uz || term.ru).toLowerCase();
       return term.ru.toLowerCase();
     }
 
     function getGroupLetter(term) {
-      const key = getSortKey(term);
-      const ch = key.charAt(0).toUpperCase();
-      // For Russian: group by Cyrillic letter; for Latin: by letter
-      return ch;
+      return getSortKey(term).charAt(0).toUpperCase();
     }
 
     function termMatchesQuery(term, q) {
@@ -239,6 +306,36 @@
       return fields.some(f => f.includes(q));
     }
 
+    const collator = lang === "uz" ? "uz" : lang;
+
+    /** Полный алфавит текущего набора терминов — считается ОДИН раз, по
+     *  всем терминам, а не по отфильтрованным. Иначе рельс менял бы длину
+     *  при каждом символе в поиске и прыгал под курсором. */
+    const ALL_LETTERS = [...new Set(TERMS.map(getGroupLetter))].sort((a, b) => a.localeCompare(b, collator));
+
+    /** Рельс букв (макет автора, 2026-07-26). Буква, которой в текущей
+     *  выборке нет, не исчезает, а гаснет и перестаёт нажиматься. */
+    function renderRail(present) {
+      const html = ALL_LETTERS.map((l) => {
+        const on = present.has(l);
+        return `<button type="button" class="gloss-rail__btn" data-letter="${l}"${on ? "" : " disabled"}>${l}</button>`;
+      }).join("");
+      railEl.innerHTML = html;
+      railHEl.innerHTML = html;
+    }
+
+    // Прокрутка к группе. scroll-margin-top у .glossary-group уже
+    // отодвигает цель ниже шапки, поэтому здесь достаточно обычного
+    // scrollIntoView без ручного вычитания высоты.
+    function onRailClick(e) {
+      const btn = e.target.closest(".gloss-rail__btn");
+      if (!btn || btn.disabled) return;
+      const target = document.getElementById("gl-" + btn.dataset.letter);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    railEl.addEventListener("click", onRailClick);
+    railHEl.addEventListener("click", onRailClick);
+
     function renderList() {
       const q = searchInput.value.trim().toLowerCase();
       let filtered = TERMS;
@@ -246,22 +343,14 @@
       if (activeCategory) filtered = filtered.filter(t => t.cat === activeCategory);
       if (q) filtered = filtered.filter(t => termMatchesQuery(t, q));
 
-      // Sort
-      filtered.sort((a, b) => getSortKey(a).localeCompare(getSortKey(b), lang === "uz" ? "uz" : lang));
+      filtered.sort((a, b) => getSortKey(a).localeCompare(getSortKey(b), collator));
 
-      // Group by first letter
       const groups = {};
       for (const term of filtered) {
         const letter = getGroupLetter(term);
-        if (!groups[letter]) groups[letter] = [];
-        groups[letter].push(term);
+        (groups[letter] ||= []).push(term);
       }
-
-      // Stats
-      statsEl.innerHTML = `
-        <span class="glossary-stats__item"><span class="glossary-stats__num">${TERMS.length}</span> ${tl("total")}</span>
-        <span class="glossary-stats__item"><span class="glossary-stats__num">${filtered.length}</span> ${tl("shown")}</span>
-      `;
+      renderRail(new Set(Object.keys(groups)));
 
       if (!filtered.length) {
         root.innerHTML = "";
@@ -270,28 +359,59 @@
       }
       emptyNote.hidden = true;
 
-      const sortedLetters = Object.keys(groups).sort((a, b) => a.localeCompare(b, lang === "uz" ? "uz" : lang));
+      const sortedLetters = Object.keys(groups).sort((a, b) => a.localeCompare(b, collator));
 
       root.innerHTML = sortedLetters.map(letter => `
-        <section class="glossary-group">
-          <div class="glossary-group__letter">${letter}</div>
+        <section class="glossary-group" id="gl-${letter}">
+          <div class="glossary-group__head">
+            <span class="glossary-group__letter">${letter}</span>
+            <span class="glossary-group__rule"></span>
+            <span class="glossary-group__count">${groups[letter].length}</span>
+          </div>
           <div class="glossary-grid">
             ${groups[letter].map(term => termCardHtml(term)).join("")}
           </div>
         </section>
       `).join("");
+
+      highlightRail();
+    }
+
+    /** Подсветка текущей буквы в рельсе при прокрутке. Наблюдаем полосу в
+     *  верхней трети экрана: по «видна ли группа целиком» длинная группа
+     *  не подсветилась бы никогда, а короткие загорались бы по две. */
+    let spy = null;
+    function highlightRail() {
+      if (!("IntersectionObserver" in window)) return;
+      if (spy) spy.disconnect();
+      const seen = new Map();
+      spy = new IntersectionObserver((entries) => {
+        entries.forEach((e) => seen.set(e.target.id.slice(3), e.isIntersecting));
+        const cur = ALL_LETTERS.find((l) => seen.get(l));
+        document.querySelectorAll(".gloss-rail__btn").forEach((b) => {
+          b.classList.toggle("is-on", b.dataset.letter === cur);
+        });
+      }, { rootMargin: "-15% 0px -75% 0px", threshold: 0 });
+      root.querySelectorAll(".glossary-group").forEach((g) => spy.observe(g));
     }
 
     function termCardHtml(term) {
       const def = term.def[lang] || term.def.ru;
       const name = lang === "en" ? (term.en || term.ru) : lang === "uz" ? (term.uz || term.ru) : term.ru;
       const catLabel = CATEGORIES[term.cat] || "";
-      const moduleList = term.modules.map(m => `${tl("module")} ${m}`).join(", ");
+      // «Модуль 1, Модуль 5, Модуль 6» не помещалось в подвал карточки в
+      // три колонки и ломало строку. В макете там короткая справка —
+      // пишем слово один раз, дальше только номера.
+      const moduleList = `${tl("module")} ${term.modules.join(", ")}`;
       return `
         <div class="term-card">
-          ${term.ar ? `<div class="term-card__arabic">${term.ar}</div>` : ""}
-          <div class="term-card__translit">${term.translit}</div>
-          <div class="term-card__name">${name}</div>
+          <div class="term-card__top">
+            <div style="min-width:0;">
+              <div class="term-card__translit">${term.translit}</div>
+              <div class="term-card__name">${name}</div>
+            </div>
+            ${term.ar ? `<span class="term-card__arabic" lang="ar">${term.ar}</span>` : ""}
+          </div>
           <div class="term-card__def">${def}</div>
           <div class="term-card__meta">
             <span class="term-card__tag">${catLabel}</span>
