@@ -1531,6 +1531,25 @@ main.container { padding-block: var(--rp-space-6); }
 .chat-form { display: flex; gap: var(--rp-space-2); align-items: flex-end; flex-wrap: wrap; }
 .chat-form button:disabled { opacity: 0.5; cursor: default; }
 
+/* Телефон: поле ввода занимает свою строку целиком, кнопки — под ним.
+   В один ряд не помещается: «Отправить» и три медиа-иконки забирают
+   фиксированную ширину, а textarea с flex:1 сжимается до ~80 пикселей, и
+   писать в неё нельзя — видно две буквы (скриншот автора, 2026-07-26).
+   flex-wrap тут не спасал: textarea сжималась вместо того, чтобы
+   вытолкнуть кнопки на следующую строку. */
+@media (max-width: 34rem) {
+  .chat-input { flex: 1 0 100%; order: 1; }
+  .chat-media-bar { order: 2; margin-right: auto; }
+  .chat-form > button[type="submit"] { order: 3; }
+  .chat-rec-indicator:not([hidden]) { order: 4; }
+
+  /* Отдельная страница-мессенджер (chat.html): медиа-кнопок там нет, поле и
+     «Отправить» помещаются в один ряд — вторая строка съела бы высоту там,
+     где её и так забирает клавиатура. */
+  .messenger__form .chat-input { flex: 1 1 auto; }
+  .messenger__form > button[type="submit"] { order: 1; }
+}
+
 /* Медиа-кнопки (голос/видео/файл) */
 .chat-media-bar { display: flex; gap: 0.25rem; align-items: center; }
 .chat-media-btn {
