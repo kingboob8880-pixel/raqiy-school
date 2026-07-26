@@ -1,6 +1,10 @@
 // Telegram-бот для управления школой рукии.
 // Firestore triggers (Gen 1) + HTTPS webhook (Gen 2).
-const functions = require("firebase-functions");
+// firebase-functions v6: API первого поколения (.firestore.document,
+// .pubsub.schedule) переехал под /v1 — с версии 6 корневой require её
+// больше не отдаёт (падало на деплое: "functions.firestore.document is
+// not a function", 2026-07-26).
+const functions = require("firebase-functions/v1");
 const { onRequest } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
