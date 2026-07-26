@@ -59,30 +59,62 @@
     border-color: var(--rp-learn-accent);
   }
 
-  /* ── Уровень: липкая карточка + модули в две колонки ── */
-  .path-level { display: grid; grid-template-columns: 14.5rem minmax(0, 1fr); gap: var(--rp-space-5); align-items: start; }
-  .path-level + .path-level { margin-top: var(--rp-space-6); }
+  /* ── Уровень: полоса, подложка группы, липкая карточка + модули ──
+     Решение автора (2026-07-26, по скриншоту): уровни нужно отделить.
+     Раньше цвет уровня жил только в маленькой карточке слева, а модули
+     рядом были одинаковыми — ничего не говорило глазу, что вот эти шесть
+     карточек относятся к «Среднему». Плюс промежуток между уровнями почти
+     совпадал с промежутком между карточками внутри уровня, и вся страница
+     читалась одной длинной сеткой.
+
+     Теперь группа стоит на подложке своего цвета с цветной полосой по
+     левому краю. Всё выводится из одного токена --rp-level-accent через
+     color-mix, поэтому цвет уровня меняется одной строкой.
+
+     Левый край НЕ закруглён намеренно: скругление вместе с бордюром
+     только с одной стороны даёт заметный «обрубок» на углах. Квадратный
+     край с полосой выглядит как решение, а не как недоделка. */
+  .path-level {
+    display: grid; grid-template-columns: 14.5rem minmax(0, 1fr);
+    gap: var(--rp-space-5); align-items: start;
+    padding: var(--rp-space-5);
+    border-radius: 0 var(--rp-radius-xl) var(--rp-radius-xl) 0;
+    border-left: 3px solid var(--rp-level-accent);
+    background: color-mix(in srgb, var(--rp-level-accent) 6%, transparent);
+  }
+  /* Воздуха между уровнями больше, чем между карточками внутри: расстояние
+     тоже отделяет, и без этого подложки читались бы как одна полоса. */
+  .path-level + .path-level { margin-top: var(--rp-space-7); }
   .path-level__card {
     position: sticky; top: calc(var(--rp-header-h, 4.5rem) + var(--rp-space-3));
     border-radius: var(--rp-radius-lg); padding: var(--rp-space-5);
     background: linear-gradient(165deg, var(--rp-learn-surface-raised), var(--rp-learn-surface));
-    border: 1px solid var(--rp-level-border, var(--rp-learn-border));
+    border: 1px solid color-mix(in srgb, var(--rp-level-accent) 32%, transparent);
   }
   .path-level__top { display: flex; align-items: center; gap: var(--rp-space-3); }
   .path-level__icon {
     flex: none; width: 2.375rem; height: 2.375rem; border-radius: var(--rp-radius-md);
     display: grid; place-items: center; font-size: 1.05rem;
-    background: var(--rp-level-icon-bg, var(--rp-learn-icon-bg)); color: var(--rp-level-accent, var(--rp-learn-accent));
+    background: color-mix(in srgb, var(--rp-level-accent) 16%, transparent);
+    color: var(--rp-level-accent);
   }
   .path-level__name { font-family: var(--rp-font-heading); font-weight: 700; font-size: var(--rp-fs-md); line-height: 1.1; }
   .path-level__range { font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); }
   .path-level__blurb { font-size: var(--rp-fs-sm); line-height: 1.55; color: var(--rp-learn-text-muted); margin: var(--rp-space-3) 0 0; }
   .path-level__meter { height: 0.4375rem; border-radius: var(--rp-radius-pill); overflow: hidden; margin-top: var(--rp-space-4); background: color-mix(in srgb, var(--rp-learn-text) 10%, transparent); }
-  .path-level__fill { height: 100%; border-radius: var(--rp-radius-pill); background: var(--rp-level-accent, var(--rp-learn-accent)); }
+  .path-level__fill { height: 100%; border-radius: var(--rp-radius-pill); background: var(--rp-level-accent); }
   .path-level__foot { display: flex; justify-content: space-between; font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); margin-top: var(--rp-space-2); }
-  .path-level__foot b { color: var(--rp-level-accent, var(--rp-learn-accent)); }
+  .path-level__foot b { color: var(--rp-level-accent); }
 
   .path-modules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--rp-space-4); }
+
+  /* Значение по умолчанию для цвета уровня. Нужно потому, что при ПОИСКЕ
+     карточки выводятся плоской сеткой, без секций уровней — и без этой
+     строки color-mix от неопределённой переменной становится невалидным,
+     а кружок номера теряет и фон, и цвет. Объявлено на #path-root, а не на
+     .pm-card: своё объявление на элементе перебило бы унаследованное от
+     секции, и уровни перестали бы различаться цветом. */
+  #path-root { --rp-level-accent: var(--rp-learn-accent); }
 
   /* ── Карточка модуля ── */
   .pm-card {
@@ -95,11 +127,33 @@
   .pm-card:hover { transform: translateY(-3px); }
   @media (prefers-reduced-motion: reduce) { .pm-card { transition: none; } .pm-card:hover { transform: none; } }
   .pm-card__head { display: flex; align-items: flex-start; gap: var(--rp-space-3); }
+  /* Номер модуля — в цвет уровня (решение автора, 2026-07-26): так группа
+     читается ещё до того, как глаз доберётся до подложки. Цвет берётся из
+     того же --rp-level-accent, что и полоса группы.
+
+     Раньше кружок кодировал СТАТУС (мятный — пройден, золотой — сейчас,
+     серый — закрыт). Теперь статус этим цветом не выразить, поэтому он
+     переехал на другие носители, каждый из которых работает и без цвета:
+     подпись словом («Пройден» / «Сейчас» / «Не начат»), галочка в углу
+     кружка у пройденного и рамка у текущего. */
   .pm-card__num {
+    position: relative;
     flex: none; width: 2.25rem; height: 2.25rem; border-radius: var(--rp-radius-pill);
     display: grid; place-items: center;
     font-family: var(--rp-font-heading); font-weight: 800; font-size: var(--rp-fs-sm);
-    background: var(--pm-num-bg); color: var(--pm-num-fg); border: 1px solid var(--pm-num-border);
+    background: color-mix(in srgb, var(--rp-level-accent) 18%, transparent);
+    color: var(--rp-level-accent);
+    border: 1px solid color-mix(in srgb, var(--rp-level-accent) 42%, transparent);
+  }
+  /* Галочка у пройденного модуля — тот же приём, что у маркеров на
+     лендинге: статус не должен зависеть только от цвета. */
+  .pm-card--done .pm-card__num::after {
+    content: "✓"; position: absolute; bottom: -0.2rem; right: -0.2rem;
+    width: 1.1rem; height: 1.1rem; border-radius: var(--rp-radius-pill);
+    display: grid; place-items: center;
+    font-family: var(--rp-font-body); font-size: 0.6rem; font-weight: 900;
+    background: var(--rp-status-success); color: var(--rp-learn-accent-contrast);
+    border: 2px solid var(--rp-learn-surface);
   }
   .pm-card__title { font-family: var(--rp-font-heading); font-weight: 700; font-size: var(--rp-fs-md); line-height: 1.25; }
   .pm-card__tag { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.4rem; font-size: var(--rp-fs-xs); font-weight: 800; color: var(--pm-tag-fg); }
@@ -131,19 +185,24 @@
   }
   .pm-card__go:focus-visible { outline: 2px solid var(--rp-learn-accent); outline-offset: 2px; }
 
-  /* Статусы. Цвета взяты из макета: мятный — пройден, золотой — текущий,
-     приглушённый — закрыт. Статус подписан СЛОВОМ, а не только цветом:
-     иначе он не читается ни на монохромном экране, ни при дальтонизме. */
-  .pm-card--done { --pm-border: rgba(109,191,143,.34); --pm-num-bg: rgba(109,191,143,.16); --pm-num-fg: var(--rp-color-mint-400); --pm-num-border: rgba(109,191,143,.4); --pm-tag-fg: var(--rp-color-mint-400); }
-  .pm-card--now  { --pm-border: var(--rp-learn-badge-border); --pm-num-bg: linear-gradient(140deg, var(--rp-learn-accent-alt), var(--rp-learn-accent)); --pm-num-fg: var(--rp-learn-accent-contrast); --pm-num-border: var(--rp-learn-badge-border); --pm-tag-fg: var(--rp-learn-badge-text); }
-  .pm-card--lock { --pm-border: var(--rp-learn-border); --pm-num-bg: color-mix(in srgb, var(--rp-learn-text) 6%, transparent); --pm-num-fg: var(--rp-learn-text-muted); --pm-num-border: var(--rp-learn-border); --pm-tag-fg: var(--rp-learn-text-muted); }
+  /* Статусы. Цвет кружка теперь занят уровнем, поэтому статус несут
+     подпись, рамка карточки и галочка. Подпись словом обязательна: цвет
+     один не читается ни на монохромном экране, ни при дальтонизме. */
+  .pm-card--done { --pm-border: color-mix(in srgb, var(--rp-status-success) 34%, transparent); --pm-tag-fg: var(--rp-status-success); }
+  .pm-card--now  { --pm-border: var(--rp-learn-badge-border); --pm-tag-fg: var(--rp-learn-badge-text); }
+  .pm-card--lock { --pm-border: var(--rp-learn-border); --pm-tag-fg: var(--rp-learn-text-muted); }
   /* Закрытый модуль приглушён, но кликабелен: клик открывает модалку
      «что внутри и как сюда попасть». Раньше у него стоял
      pointer-events: none и клик не делал ничего. */
   .pm-card--lock { opacity: 0.62; }
   .pm-card--lock:hover { opacity: 0.85; }
-  /* Текущий модуль выделен рамкой — единственный на всей странице. */
-  .pm-card--now { border-width: 1px; box-shadow: 0 0 0 1px var(--rp-learn-badge-border); }
+  /* Текущий модуль — единственный на всей странице с двойной рамкой.
+     Это и есть основной сигнал «продолжай отсюда»: он виден и без цвета. */
+  .pm-card--now {
+    border-width: 2px;
+    border-color: var(--rp-learn-accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--rp-learn-accent) 12%, transparent);
+  }
 
   @media (max-width: 62rem) {
     /* Липкая колонка уровня на узком экране бессмысленна: она либо
@@ -154,6 +213,14 @@
     .path-modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 44rem) {
+    /* На телефоне подложка группы уводится в край экрана: рамка с полями
+       внутри узкого экрана съедала бы и без того скудную ширину карточек. */
+    .path-level {
+      margin-left: calc(-1 * var(--rp-space-4));
+      margin-right: calc(-1 * var(--rp-space-4));
+      padding: var(--rp-space-4);
+      border-radius: 0;
+    }
     .path-modules { grid-template-columns: minmax(0, 1fr); }
     .path-head__progress { width: 100%; justify-content: space-between; }
     .path-head__meter { flex: 1 1 auto; width: auto; }
@@ -254,13 +321,25 @@
     // уровень читался и при дальтонизме.
     const LEVEL_ICON = { "Начальный": "○", "Средний": "◐", "Продвинутый": "●", "Beginner": "○", "Intermediate": "◐", "Advanced": "●", "Boshlang'ich": "○", "O'rta": "◐", "Yuqori": "●" };
 
-    // Уровни. Цвета и короткие описания — из макета автора («Все страницы
-    // - раскладка.html», страница 0): мятный у пройденного начального,
-    // золотой у среднего, тёплый у продвинутого.
+    // Уровни. Цвет у каждого свой — мятный, золотой, тёплый (макет автора).
+    //
+    // Здесь только ССЫЛКА на токен уровня, а не значения: подложку группы,
+    // полосу, рамку карточки, кружок иконки и кружок номера модуля CSS
+    // выводит из него сам через color-mix. Раньше на каждый уровень было
+    // прописано по три rgba прямо здесь — и на светлой теме они не
+    // работали, потому что рассчитаны на тёмный фон. Тёмные значения для
+    // «Пергамента» теперь лежат в design/tokens.css рядом с остальной
+    // палитрой темы.
+    // Литеральный цвет вторым аргументом var() — страховка от устаревшего
+    // tokens.css в кэше браузера: токены --rp-level-* появились вместе с
+    // этой страницей, и у вернувшегося посетителя css может ещё лежать
+    // прошлой версии. Без резерва var() отдал бы «невалидное значение», и
+    // color-mix от него обнулил бы и полосу, и подложку, и кружки номеров —
+    // то есть ровно то разделение, ради которого всё это делалось.
     const LEVEL_GROUPS = [
-      { level: "Начальный",   key: "beginner",     range: "1–3",  accent: "var(--rp-color-mint-400)",  border: "rgba(109,191,143,.3)",  iconBg: "rgba(109,191,143,.14)" },
-      { level: "Средний",     key: "intermediate", range: "4–6",  accent: "var(--rp-color-gold-200)",  border: "rgba(215,181,106,.36)", iconBg: "rgba(215,181,106,.14)" },
-      { level: "Продвинутый", key: "advanced",     range: "7–11", accent: "var(--rp-color-peach-400)", border: "rgba(217,141,106,.32)", iconBg: "rgba(217,141,106,.14)" },
+      { level: "Начальный",   key: "beginner",     range: "1–3",  tone: "var(--rp-level-1, #6dbf8f)" },
+      { level: "Средний",     key: "intermediate", range: "4–6",  tone: "var(--rp-level-2, #e6c983)" },
+      { level: "Продвинутый", key: "advanced",     range: "7–11", tone: "var(--rp-level-3, #d98d6a)" },
     ];
 
     let currentUser = null;
@@ -348,7 +427,7 @@
       const pct = mods.length ? Math.round((done / mods.length) * 100) : 0;
       const lvl = localLevel(g.level);
       return `
-        <div class="path-level__card" style="--rp-level-accent:${g.accent}; --rp-level-border:${g.border}; --rp-level-icon-bg:${g.iconBg};">
+        <div class="path-level__card">
           <div class="path-level__top">
             <span class="path-level__icon" aria-hidden="true">${LEVEL_ICON[lvl] || LEVEL_ICON[g.level] || ""}</span>
             <div style="min-width:0;">
@@ -518,7 +597,10 @@
           .map((g) => {
             const mods = MODULES.filter((m) => m.level === g.level);
             if (!mods.length) return "";
-            return `<section class="path-level">
+            // --rp-level-accent ставится на всю секцию, а не на карточку:
+            // из него красятся и подложка группы, и полоса слева, и номера
+            // модулей внутри — то есть он нужен всем детям, а не одному.
+            return `<section class="path-level" style="--rp-level-accent:${g.tone};">
               ${levelCardHtml(g, mods)}
               <div class="path-modules">${mods.map((m) => moduleCardHtml(m, null, curId)).join("")}</div>
             </section>`;

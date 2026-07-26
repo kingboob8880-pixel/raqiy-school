@@ -126,17 +126,20 @@
       introEl.textContent = t("cert.congrats");
       const completionDate = profile?.completedAt?.toDate?.() ?? new Date();
       root.innerHTML = certHtml({ name: profile.name || "Ученик", sample: false, dateStr: completionDate.toLocaleDateString("ru-RU") });
-      // Скачивание RUKYA PRO — программа для приёма пациентов, обещанная в
-      // Модуле 11 — открывается только тем, кто реально закончил курс
-      // (та же проверка allDone, что решает, показывать ли сам сертификат
-      // выше), запрос автора "выдаём ученикам как только они заканчивают
-      // своё обучение", 2026-07-21. Файл лежит в самом репозитории сайта
-      // (assets/downloads/) — простое и быстрое решение, но не абсолютная
-      // защита: прямая ссылка технически доступна и без входа тому, кто её
-      // узнает, тот же уровень защиты, что и у остального статичного
-      // контента сайта (видео, изображения). Для более строгой защиты
-      // (доступ только через проверку Firebase после входа) нужен Firebase
-      // Storage с правилами доступа — не настроено.
+      // RUKYA PRO — программа для приёма пациентов, обещанная в Модуле 11.
+      // Блок открывается только тем, кто реально закончил курс (та же
+      // проверка allDone, что решает, показывать ли сам сертификат выше).
+      //
+      // Программу БОЛЬШЕ НЕ СКАЧИВАЮТ С САЙТА (решение автора, 2026-07-26):
+      // установщик весил 87 МБ при жёстком пределе GitHub в 100 МБ на файл,
+      // каждый клон репозитория тянул эти 87 МБ, а скачивания расходовали
+      // трафик GitHub Pages. Теперь ученик пишет лекарю в Telegram, и тот
+      // присылает файл лично.
+      //
+      // Это ещё и починило защиту, которая раньше была только на вид: файл
+      // лежал по прямому адресу /assets/downloads/…exe и доставался любому,
+      // кто этот адрес узнает, — вне зависимости от того, закончил он курс
+      // или нет. Кнопка была закрыта, а файл нет.
       statusRoot.innerHTML = `
         <div style="display:flex; gap:var(--rp-space-3); justify-content:center; flex-wrap:wrap;">
           <button class="btn btn-primary" id="dl-pdf" data-t="cert.dlPdf">Скачать PDF</button>
@@ -145,14 +148,14 @@
         </div>
         <div class="card" style="max-width: 32rem; margin: var(--rp-space-5) auto; text-align:center;">
           <h3 data-t="cert.proTitle" style="margin-bottom: var(--rp-space-2);">RUKYA PRO — программа для приёма пациентов</h3>
-          <p class="form-note" data-t="cert.proDesc">Теперь, когда курс завершён, можно скачать RUKYA PRO — рабочую
+          <p class="form-note" data-t="cert.proDesc">Курс завершён — теперь можно получить RUKYA PRO, рабочую
              программу для ведения пациентов (из Модуля 11). Работает офлайн, без браузера,
              все данные хранятся только на вашем компьютере.</p>
           <a class="btn btn-primary" style="margin-top: var(--rp-space-3);"
-             href="${withBase("/assets/downloads/RUKYA-PRO-Setup-1.0.0.exe")}" download>Скачать RUKYA PRO (.exe, ~87 МБ) →</a>
-          <p class="form-note" data-t="cert.proSmartscreen" style="margin-top: var(--rp-space-2);">При первом запуске Windows
-             может показать предупреждение SmartScreen (программа новая, без платной цифровой
-             подписи) — это ожидаемо, нужно нажать «Подробнее» → «Выполнить в любом случае».</p>
+             href="https://t.me/ruqoq" target="_blank" rel="noopener" data-t="cert.proRequest">Запросить программу в Telegram →</a>
+          <p class="form-note" data-t="cert.proSmartscreen" style="margin-top: var(--rp-space-2);">Лекарь пришлёт установщик лично.
+             При первом запуске Windows может показать предупреждение SmartScreen (программа новая,
+             без платной цифровой подписи) — это ожидаемо, нужно нажать «Подробнее» → «Выполнить в любом случае».</p>
         </div>`;
 
       // Скачивание PDF и PNG через html2canvas + jsPDF (CDN)
