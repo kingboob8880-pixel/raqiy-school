@@ -9,10 +9,42 @@ const logger = require("firebase-functions/logger");
 initializeApp();
 const db = getFirestore();
 
-const BOT = "8996853653:AAH5wykwBERZfdcMA86gJ5SfERpHEXKmqSA";
-const CHAT = "5200039060";
+// Всего модулей в программе — нужно, чтобы отличить «сдал все» от «сдал все,
+// которые вообще открывал». Без этого ученик с одним пройденным модулем
+// формально проходил проверку «все со статусом done».
+const TOTAL_MODULES = 11;
+
+// Токен бота и chat_id берутся из настроек функций, а НЕ из кода.
+//
+// Раньше они были вписаны сюда прямо строкой и лежали в публичном
+// репозитории — токен свободно читался по raw-ссылке GitHub (обнаружено
+// 2026-07-25). С ним посторонний может читать всё, что приходит боту, и
+// писать от его имени.
+//
+// КАК ЗАДАТЬ (один раз, из папки functions/):
+//   firebase functions:secrets:set TG_BOT_TOKEN
+//   firebase functions:secrets:set TG_CHAT_ID
+// и затем задеплоить:  firebase deploy --only functions
+//
+// Для локального запуска эмулятора положите значения в functions/.env
+// (файл уже закрыт в .gitignore):
+//   TG_BOT_TOKEN=…
+//   TG_CHAT_ID=…
+const BOT = process.env.TG_BOT_TOKEN;
+const CHAT = process.env.TG_CHAT_ID;
+
+if (!BOT || !CHAT) {
+  // Не бросаем исключение: без этого весь набор функций не задеплоился бы,
+  // включая те, что к Telegram отношения не имеют. Вместо этого пишем в лог
+  // и тихо пропускаем отправку — школа продолжает работать без уведомлений.
+  logger.error(
+    "TG_BOT_TOKEN / TG_CHAT_ID не заданы — уведомления в Telegram отключены. " +
+    "Задайте: firebase functions:secrets:set TG_BOT_TOKEN",
+  );
+}
 
 async function tg(method, body) {
+  if (!BOT || !CHAT) return { ok: false, skipped: true };
   try {
     const r = await fetch(`https://api.telegram.org/bot${BOT}/${method}`, {
       method: "POST",
@@ -24,6 +56,94 @@ async function tg(method, body) {
     logger.error("TG API", e);
     return { ok: false };
   }
+}
+
+/** Уведомление УЧЕНИКУ на сайте (запрос автора, 2026-07-25).
+ *
+ * Пишем в students/{uid}/notifications — клиент подписан на эту коллекцию
+ * живьём (integration/firestore.js#watchNotifications) и показывает
+ * колокольчик в шапке.
+ *
+ * Почему сервер, а не клиент: правила Firestore запрещают создание
+ * уведомлений с клиента. Иначе ученик мог бы подделать себе «доступ
+ * открыт» — и потом искренне не понимать, почему курс не открывается.
+ *
+ * link — куда вести по клику, путь от корня сайта. База (/raqiy-school на
+ * GitHub Pages) добавляется уже на клиенте через withBase().
+ *
+ * Никогда не бросает исключение: уведомление не должно ронять триггер,
+ * внутри которого оно создаётся, — иначе из-за него не ушло бы и
+ * сообщение в Telegram.
+ */
+async function notifyStudent(uid, { type, title, body, link }) {
+  try {
+    await db.collection("students").doc(uid).collection("notifications").add({
+      type,
+      title,
+      body: body || null,
+      link: link || null,
+      read: false,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    logger.error("notifyStudent", uid, type, e);
+  }
+}
+
+/** Запись в общую ленту достижений (запрос автора «пусть будет автоматом»,
+ * 2026-07-26).
+ *
+ * Зачем лента: ученик учится один и не видит, что рядом кто-то доходит до
+ * конца. Автор хотел показывать это для мотивации — и решил, что записи
+ * должны появляться сами, без ручной публикации.
+ *
+ * Что здесь важно:
+ *
+ * 1. Пишет только сервер. Правила Firestore (integration/firestore.rules)
+ *    запрещают запись в feed с клиента наотрез. Иначе ученик мог бы
+ *    опубликовать в общей ленте что угодно от чужого имени — включая
+ *    утверждения о чужом здоровье.
+ *
+ * 2. Только имя, без фамилии и без email. Лента мотивирует, а не выдаёт
+ *    справочник учеников школы.
+ *
+ * 3. Текст не хранится — только вид события. Формулировку собирает клиент
+ *    через i18n, иначе записи навсегда остались бы русскими и на
+ *    английской, и на узбекской версии сайта.
+ *
+ * 4. id детерминированный (uid + вид + ключ). Триггеры Firestore могут
+ *    сработать повторно на одном и том же изменении — при обычном addDoc()
+ *    это дало бы дубли в ленте. set() на тот же id просто перезапишет
+ *    запись, и её в ленте останется ровно одна.
+ */
+async function pushFeed(uid, kind, key, extra) {
+  try {
+    const id = `${uid}__${kind}__${key}`;
+    await db.collection("feed").doc(id).set({
+      uid, kind,
+      createdAt: FieldValue.serverTimestamp(),
+      ...extra,
+    });
+  } catch (e) {
+    logger.error("pushFeed", uid, kind, key, e);
+  }
+}
+
+/** Одно имя без фамилии — то, что попадает в ленту. Пустое имя заменяем
+ * нейтральным «Ученик»: строка «получил сертификат» без подлежащего
+ * читалась бы как обрывок. */
+function feedName(data) {
+  const first = String(data?.name || "").trim().split(/\s+/)[0];
+  return first || "Ученик";
+}
+
+/** Модули ученика без служебных ключей (activityDates — массив дат,
+ * books — вложенная карта по книгам, а не модуль). Одно и то же условие
+ * раньше повторялось в пяти местах файла. */
+function moduleEntries(progress) {
+  return Object.entries(progress || {}).filter(
+    ([k, v]) => k !== "activityDates" && k !== "books" && v && typeof v === "object",
+  );
 }
 
 // ─────────────────────────────────────────────────
@@ -53,8 +173,25 @@ exports.onChatMessage = functions.firestore
   .document("students/{uid}/messages/{msgId}")
   .onCreate(async (snap, ctx) => {
     const msg = snap.data();
-    if (msg.from !== "student") return;
     const uid = ctx.params.uid;
+
+    // Сообщение ОТ НАСТАВНИКА — уведомляем ученика на сайте. Раньше этот
+    // триггер выходил сразу же на первой строке, и ответ наставника ученик
+    // обнаруживал, только зайдя в кабинет.
+    if (msg.from === "admin") {
+      const kind = { voice: "🎤 Голосовое сообщение", video: "📹 Видеосообщение", file: "📎 Файл" };
+      let preview = msg.text || kind[msg.type] || "Новое сообщение";
+      if (preview.length > 140) preview = preview.slice(0, 140) + "…";
+      await notifyStudent(uid, {
+        type: "message",
+        title: "Сообщение от наставника",
+        body: preview,
+        link: "/pages/dashboard/student.html",
+      });
+      return;
+    }
+
+    if (msg.from !== "student") return;
     const studentDoc = await db.doc(`students/${uid}`).get();
     const name = studentDoc.exists ? (studentDoc.data().name || uid) : uid;
     let preview = msg.text || `(${msg.type || "медиа"})`;
@@ -78,9 +215,45 @@ exports.onProgress = functions.firestore
     const after = change.after.data();
     const uid = ctx.params.uid;
 
+    // ── Уведомления ученику о том, что открыл наставник ────────────────
+    // Раньше про это ученик узнавал случайно: зашёл и заметил, что кнопка
+    // появилась. Реагируем только на переход false → true — иначе любое
+    // сохранение профиля (а оно бывает при каждой активности) слало бы
+    // повторное уведомление об уже открытом доступе.
+    if (!before.paid && after.paid) {
+      await notifyStudent(uid, {
+        type: "paid",
+        title: "Открыт полный доступ к курсу",
+        body: "Все 11 модулей и экзамены теперь доступны целиком. Продолжайте с того места, где остановились.",
+        link: "/pages/modules/index.html",
+      });
+    }
+    if (!before.certificateGranted && after.certificateGranted) {
+      await notifyStudent(uid, {
+        type: "certificate",
+        title: "Вам выдан сертификат",
+        body: "Наставник подтвердил завершение курса. Сертификат можно открыть и скачать.",
+        link: "/pages/certificate/index.html",
+      });
+    }
+    if (!before.rukyaProAccess && after.rukyaProAccess) {
+      await notifyStudent(uid, {
+        type: "rukyaPro",
+        title: "Открыт доступ к RUKYA Pro",
+        body: "Программа для приёма пациентов доступна для скачивания в кабинете.",
+        link: "/pages/dashboard/student.html",
+      });
+    }
+
     const lines = [];
     const pB = before.progress || {};
     const pA = after.progress || {};
+
+    // ── Лента достижений ──────────────────────────────────────────────
+    // Наполняется здесь же, из того же сравнения before/after: отдельный
+    // триггер на тот же документ означал бы второй холодный запуск функции
+    // и второе чтение того же изменения.
+    await buildFeedEntries(uid, before, after, pB, pA);
 
     for (const [k, v] of Object.entries(pA)) {
       if (k === "activityDates" || k === "books" || typeof v !== "object") continue;
@@ -112,6 +285,71 @@ exports.onProgress = functions.firestore
       reply_markup: { inline_keyboard: buttons },
     });
   });
+
+/** Что именно попадает в ленту.
+ *
+ * Правило одно: публикуем только то, что сервер видит в прогрессе своими
+ * глазами. Никаких «наверное, у него получилось» — каждая запись опирается
+ * на конкретное поле, которое изменилось.
+ *
+ * По одной записи на модуль, а не на задание: у модуля два-три задания, и
+ * при записи на каждое лента одного ученика забила бы её целиком, а
+ * остальные из неё вытеснились бы.
+ */
+async function buildFeedEntries(uid, before, after, pB, pA) {
+  const name = feedName(after);
+
+  // Сданный экзамен модуля — переход статуса в "done".
+  for (const [k, v] of moduleEntries(pA)) {
+    if (v.status === "done" && pB[k]?.status !== "done") {
+      await pushFeed(uid, "module", `m${k}`, { firstName: name, moduleId: Number(k) });
+    }
+
+    // Практика: первое доведённое до конца задание модуля.
+    const doneBefore = (pB[k]?.doneAssignments || []).length;
+    const doneAfter = (v.doneAssignments || []).length;
+    if (doneAfter > 0 && doneBefore === 0) {
+      await pushFeed(uid, "practice", `m${k}`, { firstName: name, moduleId: Number(k) });
+    }
+
+    // Свидетельство ученика о том, что Аллах ответил. Ставит его сам
+    // ученик у себя в кабинете — сервер лишь переносит уже поставленный
+    // флаг в ленту. Формулировка (её собирает клиент) приписывает
+    // исцеление Аллаху, а не ученику: ученик — причина, а не источник.
+    // Это то же положение, что и в Модуле 10, §3.
+    const ansBefore = (pB[k]?.answeredAssignments || []).length;
+    const ansAfter = (v.answeredAssignments || []).length;
+    if (ansAfter > 0 && ansBefore === 0) {
+      await pushFeed(uid, "answered", `m${k}`, { firstName: name, moduleId: Number(k) });
+      // Автору — в Telegram: такое он хочет видеть сразу, а не в общей
+      // сводке прогресса.
+      await tg("sendMessage", {
+        chat_id: CHAT,
+        text: `🤲 <b>${after.name || uid}</b> — практика Модуля ${k}: Аллах ответил`,
+        parse_mode: "HTML",
+        reply_markup: { inline_keyboard: [[{ text: "💬 Написать", callback_data: `reply:${uid}` }]] },
+      });
+    }
+  }
+
+  // Выпуск: все модули со статусом "done". Сравниваем с состоянием ДО, иначе
+  // каждое следующее сохранение профиля выпускника переписывало бы запись и
+  // поднимало её в ленте наверх заново.
+  const allDone = (p) => {
+    const mods = moduleEntries(p).filter(([, v]) => v.status);
+    return mods.length >= TOTAL_MODULES && mods.every(([, v]) => v.status === "done");
+  };
+  if (allDone(pA) && !allDone(pB)) {
+    await pushFeed(uid, "graduate", "all", { firstName: name });
+  }
+
+  if (!before.certificateGranted && after.certificateGranted) {
+    await pushFeed(uid, "certificate", "one", { firstName: name });
+  }
+  if (!before.rukyaProAccess && after.rukyaProAccess) {
+    await pushFeed(uid, "rukyaPro", "one", { firstName: name });
+  }
+}
 
 // ─────────────────────────────────────────────────
 // WEBHOOK (кнопки + ответы + команды)

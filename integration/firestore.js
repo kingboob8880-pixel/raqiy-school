@@ -6,7 +6,7 @@
 //   admins/{uid}               — { name } — присутствие документа = права админа
 import {
   doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, addDoc,
-  serverTimestamp, query, orderBy, where, arrayUnion, onSnapshot,
+  serverTimestamp, query, orderBy, where, arrayUnion, arrayRemove, onSnapshot,
   writeBatch, getCountFromServer, limit,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { db, storage } from "./firebase-init.js?v=2";
@@ -229,23 +229,57 @@ export function watchThreadSummary(uid, onChange, onError) {
   });
 }
 
-/** Живой счётчик непрочитанных сообщений ОТ наставника для ученика —
- * питает значок в шапке сайта на любой странице (запрос автора,
- * 2026-07-25), чтобы ответ наставника не терялся до следующего захода в
- * кабинет. Дёшево: слушаем только непрочитанные, тела сообщений не нужны,
- * но onSnapshot всё равно их привозит — окна в THREAD_PREVIEW_WINDOW
- * достаточно, значок всё равно показывает максимум «9+». */
-export function watchUnreadFromAdmin(uid, onChange, onError) {
+// watchUnreadFromAdmin удалён 2026-07-25: значок непрочитанных в шапке
+// заменён колокольчиком уведомлений (pages/js/notifications.js), который
+// подписан на students/{uid}/notifications и покрывает не только чат.
+
+/** Живая подписка на уведомления ученика (запрос автора, 2026-07-25).
+ *
+ * Схема: students/{uid}/notifications/{id}
+ *   { type, title, body, link, createdAt, read }
+ *   type: 'message' | 'paid' | 'certificate' | 'rukyaPro'
+ *
+ * Пишет их только сервер (functions/index.js через Admin SDK) — правила
+ * запрещают создание с клиента, чтобы ученик не мог подделать себе
+ * уведомление «доступ открыт».
+ *
+ * Берём последние LIMIT штук по убыванию даты: список уведомлений — это
+ * лента последнего, а не архив. Возвращает функцию отписки. */
+const NOTIF_LIMIT = 30;
+
+export function watchNotifications(uid, onChange, onError) {
   const q = query(
-    collection(db, "students", uid, "messages"),
-    where("from", "==", "admin"),
-    where("read", "==", false),
-    limit(THREAD_PREVIEW_WINDOW),
+    collection(db, "students", uid, "notifications"),
+    orderBy("createdAt", "desc"),
+    limit(NOTIF_LIMIT),
   );
-  return onSnapshot(q, (snap) => onChange(snap.size), (err) => {
-    console.warn("watchUnreadFromAdmin", uid, err);
+  return onSnapshot(q, (snap) => {
+    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }, (err) => {
+    console.warn("watchNotifications", uid, err);
     if (onError) onError(err);
   });
+}
+
+/** Отметить одно уведомление прочитанным. */
+export async function markNotificationRead(uid, notifId) {
+  await updateDoc(doc(db, "students", uid, "notifications", notifId), { read: true });
+}
+
+/** Отметить прочитанными все непрочитанные разом («Прочитать все»).
+ *  Пишем пакетом: по одному update на каждое — это N запросов подряд и
+ *  заметная задержка, если уведомлений накопилось два десятка. */
+export async function markAllNotificationsRead(uid) {
+  const q = query(
+    collection(db, "students", uid, "notifications"),
+    where("read", "==", false),
+    limit(NOTIF_LIMIT),
+  );
+  const snap = await getDocs(q);
+  if (snap.empty) return;
+  const batch = writeBatch(db);
+  snap.docs.forEach((d) => batch.update(d.ref, { read: true }));
+  await batch.commit();
 }
 
 /** Кол-во непрочитанных сообщений ОТ ученика — значок 💬 в списке учеников
@@ -334,6 +368,73 @@ export async function setCertificateGranted(uid, granted) {
  * открывается автоматически, если у ученика есть сертификат. */
 export async function setRukyaProAccess(uid, granted) {
   await updateDoc(doc(db, "students", uid), { rukyaProAccess: granted });
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Практические задания и лента достижений (запрос автора, 2026-07-26)
+// ──────────────────────────────────────────────────────────────────
+
+/** Отметка «задание выполнено».
+ *
+ * Хранится массивами, а не объектом `assignments.{id}`, намеренно: id
+ * заданий вида "m5-1" содержат дефис, а дефис в точечном пути к полю
+ * Firestore ломает путь и требует экранирования обратными кавычками.
+ * Массив снимает вопрос целиком, а порядок и уникальность нам тут не нужны
+ * (arrayUnion сам не добавит дубль при повторном нажатии).
+ *
+ * allahAnswered — свидетельство самого ученика о практике. Отдельным
+ * массивом, потому что «выполнил» и «Аллах ответил» — разные факты:
+ * задание можно довести до конца и продолжать просить. Именно этот флаг
+ * даёт запись в ленте о том, что Аллах ответил, — и ставит его сам ученик,
+ * никто за него.
+ *
+ * Заодно продлеваем стрик: практика — такая же активность, как сдача
+ * экзамена, а до сих пор в журнал попадали только тесты. */
+export async function markAssignmentDone(uid, moduleId, assignId, allahAnswered) {
+  const update = {
+    [`progress.${moduleId}.doneAssignments`]: arrayUnion(assignId),
+    lastSeenAt: serverTimestamp(),
+    "progress.activityDates": arrayUnion(todayKey()),
+  };
+  if (allahAnswered) {
+    update[`progress.${moduleId}.answeredAssignments`] = arrayUnion(assignId);
+  }
+  await updateDoc(doc(db, "students", uid), update);
+}
+
+/** Снять отметку — нажали по ошибке. Свидетельство «Аллах ответил» снимаем
+ * вместе с ней: держать его у невыполненного задания бессмысленно. */
+export async function unmarkAssignmentDone(uid, moduleId, assignId) {
+  await updateDoc(doc(db, "students", uid), {
+    [`progress.${moduleId}.doneAssignments`]: arrayRemove(assignId),
+    [`progress.${moduleId}.answeredAssignments`]: arrayRemove(assignId),
+  });
+}
+
+/** Живая подписка на общую ленту достижений (запрос автора «пусть будет
+ * автоматом», 2026-07-26).
+ *
+ * Схема: feed/{id} = { kind, moduleId, firstName, uid, createdAt }
+ *   kind: 'module' | 'practice' | 'answered' | 'graduate'
+ *       | 'certificate' | 'rukyaPro'
+ *
+ * Текст записи НЕ хранится — только вид события и имя. Формулировку
+ * собирает клиент (pages/js/community-feed.js) через i18n, иначе лента на
+ * английском и узбекском осталась бы русской навсегда, а перевод задним
+ * числом уже сохранённых строк невозможен.
+ *
+ * Пишет только сервер, правила запрещают запись с клиента.
+ * Возвращает функцию отписки. */
+const FEED_LIMIT = 40;
+
+export function watchFeed(onChange, onError) {
+  const q = query(collection(db, "feed"), orderBy("createdAt", "desc"), limit(FEED_LIMIT));
+  return onSnapshot(q, (snap) => {
+    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }, (err) => {
+    console.warn("watchFeed", err);
+    if (onError) onError(err);
+  });
 }
 
 /** Save a bookmark for a lesson */

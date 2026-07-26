@@ -3,6 +3,20 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
+
+/* ⚠ Атрибут hidden ДОЛЖЕН прятать элемент — всегда.
+   Браузер применяет к нему `display: none` правилом нулевой специфичности,
+   поэтому ЛЮБОЙ класс с явным display (flex/grid/block) его перебивает, и
+   элемент остаётся на экране, хотя код считает его скрытым.
+
+   На этом развалился весь мессенджер (скриншот автора, 2026-07-25):
+   одновременно показывались заглушка «выберите ученика», сама переписка,
+   строка поиска и ВСЕ меню «⋯» над сообщениями — у каждого из этих классов
+   был свой display. До этого ту же мину дважды латали точечно
+   (.chat-rec-indicator, .msg__media-err), не закрывая причину.
+
+   Одно правило закрывает и текущие случаи, и будущие. */
+[hidden] { display: none !important; }
 /* Видимый фокус клавиатуры на всех темах (WCAG 2.4.7) — единое кольцо через
    :focus-visible, не полагаемся на браузерный дефолт (плохо виден на цветных
    кнопках/пилюлях). План улучшения курса, 2026-07-18, доступность. */
@@ -1155,7 +1169,10 @@ main.container { padding-block: var(--rp-space-6); }
 .msg {
   position: relative; margin-top: var(--rp-space-3);
   padding: 0.5rem 2.9rem 0.5rem 0.75rem; border-radius: var(--rp-radius-md);
-  max-width: 80%; overflow-wrap: break-word;
+  /* Ограничение и в долях, и в абсолюте: на телефоне пузырь должен занимать
+     почти всю ширину, а на широком мониторе 80% — это строка в полтора
+     метра, которую невозможно читать. 42rem — привычная длина строки. */
+  max-width: min(80%, 42rem); overflow-wrap: break-word;
 }
 .msg:first-child { margin-top: 0; }
 .msg--grouped { margin-top: 0.15rem; }
@@ -1312,10 +1329,45 @@ main.container { padding-block: var(--rp-space-6); }
    перезагрузке, а на телефоне чат ездил вместе с горизонтальной прокруткой
    таблицы. Отдельная страница на две панели — список диалогов и сама
    переписка (запрос автора «сделай нормальный чат», 2026-07-25). */
+/* Страница-мессенджер: шире обычной и во весь экран по высоте.
+   Раньше чат жил внутри общего .container (72rem) и на мониторе 2560px
+   сжимался в узкую колонку по центру, а по высоте занимал 72vh — под ним
+   оставалось пустое поле в пол-экрана (скриншот автора, 2026-07-25). */
+.messenger-page {
+  max-width: 100rem;
+  display: flex; flex-direction: column;
+  /* height, а НЕ min-height — принципиально. С min-height страница росла
+     вместе с числом сообщений: переписка удлинялась вниз бесконечно вместо
+     того, чтобы старые сообщения уходили в прокрутку внутри списка
+     (жалоба автора со скриншотом, 2026-07-25).
+     Внутренняя прокрутка работает только если высота ОПРЕДЕЛЕНА на всей
+     цепочке предков — иначе каждый следующий контейнер просто растягивается
+     под содержимое.
+     --rp-header-h измеряет layout.js по реальной шапке: захардкоженное
+     значение врало бы при переносе шапки на две строки, при другом
+     масштабе браузера или крупном системном шрифте. 4.5rem — запасной
+     вариант, если скрипт не успел отработать.
+     Подвал на этой странице скрыт (ниже), так что мессенджер занимает
+     ровно остаток экрана.
+     100dvh, а не vh: на мобильных vh не учитывает адресную строку. */
+  height: calc(100dvh - var(--rp-header-h, 4.5rem));
+  overflow: hidden;
+}
+/* Подвал на странице переписки не нужен — он только отнимал бы высоту у
+   сообщений, а мессенджер и так занимает экран целиком. */
+/* Два селектора: соседний работает везде, :has() — подстраховка на случай
+   иной разметки страницы. */
+.messenger-page ~ #site-footer,
+body:has(.messenger-page) .footer { display: none; }
+
 .messenger {
-  display: grid; grid-template-columns: minmax(16rem, 22rem) 1fr;
+  display: grid; grid-template-columns: minmax(17rem, 24rem) 1fr;
   gap: var(--rp-space-4); align-items: stretch;
-  height: min(72vh, 46rem); margin-top: var(--rp-space-4);
+  /* min-height: 0 обязательно: по умолчанию grid- и flex-элементы не
+     сжимаются меньше своего содержимого, и переписка распирала бы
+     контейнер, вместо того чтобы прокручиваться внутри. */
+  flex: 1 1 auto; min-height: 0;
+  margin: var(--rp-space-4) 0;
 }
 .messenger__list, .messenger__thread {
   display: flex; flex-direction: column; min-height: 0;
@@ -1396,10 +1448,35 @@ main.container { padding-block: var(--rp-space-6); }
 /* Одна колонка на узком экране: видна либо список, либо переписка —
    две панели рядом на телефоне превратились бы в две нечитаемые полоски. */
 @media (max-width: 52rem) {
-  .messenger { grid-template-columns: 1fr; height: min(78vh, 44rem); }
+  /* Телефон: мессенджер во весь экран, как в привычных приложениях.
+     Раньше он был карточкой посреди страницы с полями по бокам и подвалом
+     снизу — на маленьком экране под сами сообщения оставалась полоска. */
+  .messenger-page {
+    max-width: none;
+    /* Выходим за поля общего контейнера — переписка занимает экран целиком */
+    margin-left: calc(-1 * var(--rp-space-4));
+    margin-right: calc(-1 * var(--rp-space-4));
+    padding: 0;
+    /* height, а не min-height — иначе страница растёт вместе с числом
+       сообщений вместо прокрутки внутри списка (та же причина, что и на ПК) */
+    height: calc(100dvh - var(--rp-header-h, 4.5rem));
+  }
+  .messenger {
+    grid-template-columns: 1fr;
+    gap: 0; margin: 0; min-height: 0;
+  }
+  /* Без скруглений и рамок по краям — панель и есть экран */
+  .messenger__list, .messenger__thread { border-radius: 0; border-left: none; border-right: none; }
+
   .messenger[data-pane="list"] .messenger__thread { display: none; }
   .messenger[data-pane="thread"] .messenger__list { display: none; }
   .messenger__back { display: inline-flex; align-items: center; justify-content: center; }
+
+  /* Поле ввода — у нижнего края, с учётом «чёлки» и жестовой полосы */
+  .messenger__form { padding-bottom: calc(var(--rp-space-3) + env(safe-area-inset-bottom, 0px)); }
+
+  /* Пузыри шире: на узком экране 80% оставляли бесполезные поля по бокам */
+  .messenger__msgs .msg { max-width: 88%; }
 }
 
 /* Меню «изменить/удалить» на своём сообщении (запрос автора, 2026-07-25).
@@ -1414,12 +1491,17 @@ main.container { padding-block: var(--rp-space-6); }
 .msg:hover .msg__menu-btn, .msg__menu-btn:focus-visible, .msg__menu-btn[aria-expanded="true"] { opacity: 0.75; }
 .msg__menu-btn:hover { opacity: 1; }
 @media (hover: none) { .msg__menu-btn { opacity: 0.6; } }
+/* position: fixed, а не absolute. Список сообщений прокручивается
+   (overflow-y: auto), и абсолютно спозиционированное меню обрезалось его
+   краем — у сообщений внизу переписки половина пунктов уходила под обрез
+   (скриншот автора, 2026-07-25). Координаты считает wireMessageActions()
+   в момент открытия. */
 .msg-menu {
-  position: absolute; top: 1.5rem; right: 0; z-index: 30; min-width: 9rem;
+  position: fixed; z-index: 300; min-width: 9rem;
   display: flex; flex-direction: column; overflow: hidden;
   background: var(--rp-zone-surface); color: var(--rp-zone-text);
   border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
-  box-shadow: var(--rp-shadow-card);
+  box-shadow: var(--rp-shadow-pop);
 }
 .msg-menu__item { font: inherit; font-size: var(--rp-fs-sm); text-align: left; cursor: pointer; padding: 0.5rem 0.75rem; border: none; background: transparent; color: inherit; }
 .msg-menu__item:hover { background: color-mix(in srgb, var(--rp-zone-accent) 12%, transparent); }
@@ -1431,15 +1513,10 @@ main.container { padding-block: var(--rp-space-6); }
 .chat-head { display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap; margin-top: var(--rp-space-6); margin-bottom: var(--rp-space-3); }
 .chat-head__search { margin: 0; margin-left: auto; }
 
-/* Значок непрочитанных в пункте «Кабинет» — ответ наставника раньше
-   обнаруживался только при следующем заходе в кабинет (запрос автора,
-   2026-07-25). Инлайновый, а не абсолютный: пункт меню и так flex-строка. */
-.nav-unread {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 1.1rem; height: 1.1rem; margin-left: 0.35rem; padding: 0 0.25rem;
-  border-radius: var(--rp-radius-pill); background: var(--rp-status-danger);
-  color: #fff; font-size: 0.65rem; font-weight: 700; line-height: 1;
-}
+/* .nav-unread (значок непрочитанных в пункте «Кабинет») удалён 2026-07-25:
+   заменён колокольчиком уведомлений в шапке — см. блок «Уведомления
+   ученику» ниже. Два счётчика рядом показывали бы разные числа про
+   пересекающиеся вещи. */
 
 /* Кнопка «Переписка» в шапке кабинета администратора. .dash-hero — flex без
    переноса, поэтому на узком экране кнопка выдавливала бы заголовок; ниже
@@ -1916,3 +1993,249 @@ main.container { padding-block: var(--rp-space-6); }
 }
 .resume-bar__close:hover { background: var(--rp-learn-surface); }
 @media print { .resume-bar { display: none !important; } }
+
+/* ---------- Ценность модуля (module.html, «Что даёт этот модуль») ----------
+   Запрос автора (2026-07-25): передать ученику, что каждый модуль — не
+   набор уроков, а вклад в убеждённость, по причине которой Аллах исцеляет.
+   Смысл сформулирован автором: «Он таков, каким ты о Нём думаешь».
+
+   Визуально опирается на .ayah-card (тот же язык, что у аятов в тексте
+   книг), но это не цитата внутри урока, а рамка вокруг всего модуля —
+   поэтому отдельный класс, а не переиспользование. Стоит перед списком
+   уроков: ученик сначала понимает зачем, потом видит перечень. */
+.module-value {
+  background: var(--rp-ayah-card-bg);
+  color: var(--rp-ayah-card-text);
+  border: 1px solid var(--rp-ayah-card-accent);
+  border-radius: var(--rp-radius-lg);
+  padding: var(--rp-space-5);
+  margin: var(--rp-space-5) 0 var(--rp-space-6);
+  text-align: center;
+}
+/* Не заголовок раздела, а тихая пометка (решение автора, 2026-07-26).
+   Прежний «ЧТО ДАЁТ ЭТОТ МОДУЛЬ» весом заголовка перетягивал внимание на
+   себя, и блок читался как продающее описание. Смысл другой: это
+   напоминание — мгновенное исцеление связано с верой в Аллаха. Поэтому
+   пометка мелкая и приглушённая, а главным в блоке остаётся сам хадис. */
+.module-value__label {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--rp-ayah-card-accent);
+  opacity: 0.7; margin: 0 0 var(--rp-space-3);
+}
+.module-value__hadith {
+  font-family: var(--rp-font-arabic); font-size: var(--rp-fs-arabic);
+  line-height: 1.9; margin-bottom: var(--rp-space-3);
+}
+.module-value__translit { font-style: italic; opacity: 0.85; font-size: var(--rp-fs-sm); margin: 0 0 var(--rp-space-2); }
+.module-value__translation { font-size: var(--rp-fs-md); margin: 0 0 var(--rp-space-2); }
+.module-value__source {
+  display: inline-block; font-size: var(--rp-fs-sm); color: var(--rp-ayah-card-accent);
+  border-top: 1px solid rgba(251, 246, 236, 0.2);
+  padding-top: var(--rp-space-2); margin: 0 0 var(--rp-space-4);
+}
+/* Общий смысл — крупнее, текст про конкретный модуль — обычным кеглем:
+   так глаз отделяет неизменную основу от того, что меняется от модуля к модулю. */
+.module-value__lead {
+  font-size: var(--rp-fs-md); line-height: 1.75; text-align: left;
+  margin: 0 0 var(--rp-space-3); padding-top: var(--rp-space-3);
+  border-top: 1px solid rgba(251, 246, 236, 0.15);
+}
+.module-value__body { font-size: var(--rp-fs-base); line-height: 1.75; text-align: left; margin: 0; opacity: 0.92; }
+@media (max-width: 34rem) { .module-value { padding: var(--rp-space-4); } }
+/* На печати рамка ни к чему — на бумаге важен сам текст урока. */
+@media print { .module-value { display: none !important; } }
+
+/* ---------- Лента достижений учеников (запрос автора, 2026-07-26) ----------
+   Показывается по одной записи, поэтому высота фиксирована: без неё блок
+   дёргал бы всю страницу вверх-вниз каждые семь секунд, когда короткая
+   запись сменяется длинной. */
+.feed {
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  background: var(--rp-surface);
+  padding: var(--rp-space-4);
+  margin: var(--rp-space-5) 0;
+}
+.feed__head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--rp-space-3); margin-bottom: var(--rp-space-3);
+}
+.feed__title {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--rp-text-muted);
+}
+.feed__dots { display: flex; gap: 0.3rem; }
+.feed__dot {
+  width: 0.35rem; height: 0.35rem; border-radius: 50%;
+  background: var(--rp-border); transition: background 0.2s ease;
+}
+.feed__dot.is-on { background: var(--rp-accent); }
+.feed__body { min-height: 3.5rem; display: flex; align-items: center; }
+.feed__item {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: start; gap: var(--rp-space-3); width: 100%;
+  /* Мягкое появление — иначе смена записи выглядит как сбой отрисовки. */
+  animation: feed-in 0.35s ease both;
+}
+@keyframes feed-in { from { opacity: 0; transform: translateY(0.4rem); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .feed__item { animation: none; } }
+.feed__icon { font-size: 1.15rem; line-height: 1.4; }
+.feed__text { font-size: var(--rp-fs-base); line-height: 1.55; }
+.feed__time { font-size: var(--rp-fs-sm); color: var(--rp-text-muted); white-space: nowrap; }
+/* Свидетельство об ответе Аллаха выделяем — это главное, что автор хотел
+   показывать ученикам, а не сдача очередного экзамена. */
+.feed__item--answered .feed__text { font-weight: 600; }
+.feed__note {
+  font-size: var(--rp-fs-sm); color: var(--rp-text-muted);
+  margin: var(--rp-space-3) 0 0; line-height: 1.5;
+}
+@media (max-width: 34rem) {
+  .feed__item { grid-template-columns: auto 1fr; }
+  /* На узком экране дата уводит текст в две лишние строки — переносим её
+     под текст, а не режем сам текст. */
+  .feed__time { grid-column: 2; }
+}
+@media print { .feed { display: none !important; } }
+
+/* ---------- Отметка выполнения заданий (запрос автора, 2026-07-26) ---------- */
+.assignment-card__foot {
+  display: flex; align-items: center; gap: var(--rp-space-3);
+  flex-wrap: wrap; margin-top: var(--rp-space-3);
+  padding-top: var(--rp-space-3); border-top: 1px solid var(--rp-border);
+}
+.assignment-card__badge {
+  font-size: var(--rp-fs-sm); font-weight: 600; color: var(--rp-success, #2e7d32);
+}
+.assignment-card__undo {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; font-size: var(--rp-fs-sm);
+  color: var(--rp-text-muted); text-decoration: underline;
+}
+.assignment-card__undo:hover { color: var(--rp-text); }
+.assignment-card__answered { font-size: var(--rp-fs-sm); color: var(--rp-accent); }
+/* Выполненное задание не гасим полностью: к описанию практики ученик
+   возвращается и после того, как отметил её сделанной. */
+.assignment-card--done { border-color: var(--rp-accent); }
+.assignment-card__ask {
+  margin-top: var(--rp-space-3); padding: var(--rp-space-3);
+  border-radius: var(--rp-radius-md); background: var(--rp-surface-alt, rgba(0,0,0,0.03));
+}
+.assignment-card__ask-q { margin: 0 0 var(--rp-space-2); font-size: var(--rp-fs-sm); }
+.assignment-card__ask-btns { display: flex; gap: var(--rp-space-2); flex-wrap: wrap; }
+@media print { .assignment-card__foot, .assignment-card__ask { display: none !important; } }
+
+/* Короткая строка ценности в списке модулей («Путь ученика») */
+.path-step__value {
+  display: block; font-size: var(--rp-fs-sm); line-height: 1.5;
+  color: var(--rp-learn-text-muted); margin-top: 0.25rem;
+  overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+
+/* ---------- Уведомления ученику (запрос автора, 2026-07-25) ----------
+   Колокольчик в шапке виден на любой странице, включая чтение книги.
+   Заменил прежний значок непрочитанных сообщений: два счётчика рядом
+   показывали бы разные числа про пересекающиеся вещи. Рендер —
+   pages/js/notifications.js */
+.notif-root { position: relative; display: flex; align-items: center; }
+.notif-bell {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 2.25rem; height: 2.25rem; border-radius: var(--rp-radius-pill);
+  border: 1px solid var(--rp-zone-border); background: transparent;
+  color: var(--rp-zone-text); font-size: 1rem; line-height: 1; cursor: pointer;
+}
+.notif-bell:hover { background: color-mix(in srgb, var(--rp-zone-accent) 12%, transparent); }
+.notif-bell.has-unread { border-color: var(--rp-zone-accent); }
+.notif-bell__badge {
+  position: absolute; top: -0.3rem; right: -0.3rem;
+  min-width: 1.05rem; height: 1.05rem; padding: 0 0.22rem;
+  border-radius: var(--rp-radius-pill); background: var(--rp-status-danger);
+  color: #fff; font-size: 0.62rem; font-weight: 700; line-height: 1.05rem; text-align: center;
+}
+
+.notif-panel {
+  position: absolute; top: calc(100% + 0.5rem); right: 0; z-index: 80;
+  width: min(22rem, calc(100vw - 2rem));
+  background: var(--rp-zone-surface); color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-md);
+  box-shadow: var(--rp-shadow-pop); overflow: hidden;
+}
+.notif-panel__head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-2);
+  padding: var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border);
+}
+.notif-panel__title { font-weight: 700; font-size: var(--rp-fs-sm); }
+.notif-panel__all {
+  font: inherit; font-size: var(--rp-fs-sm); cursor: pointer;
+  border: none; background: none; color: var(--rp-zone-accent); text-decoration: underline;
+}
+/* Ограничиваем высоту: тридцать уведомлений иначе уехали бы за экран */
+.notif-panel__list { max-height: min(24rem, 60vh); overflow-y: auto; }
+.notif-empty { padding: var(--rp-space-5) var(--rp-space-3); text-align: center; font-size: var(--rp-fs-sm); opacity: 0.7; margin: 0; }
+
+.notif-item {
+  display: flex; gap: var(--rp-space-3); align-items: flex-start; width: 100%;
+  padding: var(--rp-space-3); border: none; border-bottom: 1px solid var(--rp-zone-border);
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: color-mix(in srgb, var(--rp-zone-accent) 8%, transparent); }
+/* Непрочитанное — заметная точка слева и жирный заголовок: цвета одного
+   недостаточно, его не различают при дальтонизме */
+.notif-item.is-unread { background: color-mix(in srgb, var(--rp-zone-accent) 6%, transparent); }
+.notif-item.is-unread .notif-item__title { font-weight: 700; }
+.notif-item.is-unread .notif-item__icon::after {
+  content: ""; position: absolute; top: -0.15rem; right: -0.15rem;
+  width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--rp-status-danger);
+}
+.notif-item__icon { position: relative; flex: none; font-size: 1.1rem; line-height: 1.3; }
+.notif-item__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+.notif-item__title { font-size: var(--rp-fs-sm); line-height: 1.4; }
+.notif-item__text {
+  font-size: var(--rp-fs-sm); opacity: 0.75; line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.notif-item__time { font-size: 0.7rem; opacity: 0.6; margin-top: 0.1rem; }
+
+/* Плашка — только для событий доступа. Для каждого сообщения в чате её не
+   показываем: при живой переписке выскакивала бы поверх текста. */
+.notif-toast {
+  position: fixed; z-index: 1100;
+  right: var(--rp-space-4); bottom: var(--rp-space-4);
+  width: min(24rem, calc(100vw - 2rem));
+  display: flex; gap: var(--rp-space-3); align-items: flex-start;
+  padding: var(--rp-space-4);
+  background: var(--rp-zone-surface); color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-accent); border-radius: var(--rp-radius-md);
+  box-shadow: var(--rp-shadow-pop);
+  opacity: 0; transform: translateY(0.75rem);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.notif-toast.is-visible { opacity: 1; transform: none; }
+.notif-toast__icon { flex: none; font-size: 1.4rem; line-height: 1.2; }
+.notif-toast__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.notif-toast__title { font-weight: 700; line-height: 1.35; }
+.notif-toast__text { font-size: var(--rp-fs-sm); opacity: 0.8; line-height: 1.5; }
+.notif-toast__link { align-self: flex-start; margin-top: var(--rp-space-2); font-size: var(--rp-fs-sm); font-weight: 700; }
+.notif-toast__close {
+  flex: none; width: 1.6rem; height: 1.6rem; border-radius: var(--rp-radius-pill);
+  border: 1px solid var(--rp-zone-border); background: transparent; color: inherit;
+  font-size: 1rem; line-height: 1; cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) { .notif-toast { transition: opacity 0.2s ease; transform: none; } }
+@media print { .notif-root, .notif-toast { display: none !important; } }
+
+/* Кнопка «вниз» над списком сообщений — появляется, когда переписка
+   отмотана вверх (chat-ui.js#wireScrollDown). В длинном треде без неё
+   приходилось крутить до конца вручную. */
+.msg-scroll-down {
+  position: absolute; right: var(--rp-space-4); bottom: 5.5rem; z-index: 40;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--rp-zone-border); background: var(--rp-zone-surface);
+  color: var(--rp-zone-text); font-size: 1rem; line-height: 1;
+  box-shadow: var(--rp-shadow-card);
+}
+.msg-scroll-down:hover { background: color-mix(in srgb, var(--rp-zone-accent) 15%, var(--rp-zone-surface)); }
+/* Контейнер переписки — точка отсчёта для кнопки */
+.messenger__view { position: relative; }

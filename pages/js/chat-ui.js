@@ -5,7 +5,7 @@
 //     обработка ошибок медиа, i18n дат.
 // v4: правка/удаление своего сообщения, подсветка поиска, пометка
 //     «изменено» (запрос автора «сделай нормальный чат», 2026-07-25).
-import { t, getLang } from "./i18n.js?v=12";
+import { t, getLang } from "./i18n.js?v=17";
 
 function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -240,13 +240,35 @@ export function wireMessageActions(container, { onEdit, onDelete } = {}) {
   document.addEventListener("click", (e) => { if (!container.contains(e.target)) closeMenus(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeMenus(); });
 
+  // Меню позиционируется фиксированно, поэтому при прокрутке списка оно
+  // «отвязалось» бы от своего сообщения — проще закрыть.
+  container.addEventListener("scroll", closeMenus, { passive: true });
+  window.addEventListener("resize", closeMenus);
+
+  /** Ставим меню рядом с кнопкой в координатах окна и следим, чтобы оно не
+   *  вылезло за края экрана: у последних сообщений в переписке места снизу
+   *  нет — там раскрываем вверх. */
+  function placeMenu(menu, toggle) {
+    const r = toggle.getBoundingClientRect();
+    menu.style.visibility = "hidden";
+    menu.hidden = false;
+    const mh = menu.offsetHeight;
+    const mw = menu.offsetWidth;
+    const below = window.innerHeight - r.bottom;
+    const top = below < mh + 8 ? Math.max(8, r.top - mh - 4) : r.bottom + 4;
+    const left = Math.min(Math.max(8, r.right - mw), window.innerWidth - mw - 8);
+    menu.style.top = `${top}px`;
+    menu.style.left = `${left}px`;
+    menu.style.visibility = "";
+  }
+
   container.addEventListener("click", async (e) => {
     const toggle = e.target.closest(".msg__menu-btn");
     if (toggle) {
       const menu = toggle.parentElement.querySelector(".msg-menu");
       const willOpen = menu.hidden;
       closeMenus();
-      menu.hidden = !willOpen;
+      if (willOpen) placeMenu(menu, toggle);
       toggle.setAttribute("aria-expanded", String(willOpen));
       return;
     }
@@ -402,8 +424,14 @@ export function wireChatForm(form, textarea, onSend, onSendMedia) {
     if (btn) btn.disabled = true;
     try {
       await onSend(text);
+      // Поле чистим ТОЛЬКО после успешной отправки. При ошибке текст
+      // остаётся — иначе человек терял бы написанное вместе с сообщением.
       textarea.value = "";
       textarea.style.height = "auto";
+    } catch {
+      // Сообщать о неудаче — дело вызывающей стороны (там свой showToast).
+      // Здесь просто гасим отказ промиса, чтобы он не всплывал в консоль
+      // необработанным.
     } finally { syncDisabled(); }
   });
 
@@ -529,6 +557,38 @@ function wireMediaButtons(form, onSendMedia) {
 
 export function scrollToBottom(container) {
   container.scrollTop = container.scrollHeight;
+}
+
+/** Кнопка «вниз» поверх списка сообщений: появляется, когда человек
+ *  отмотал переписку вверх. Без неё в длинном треде приходилось крутить
+ *  колесо до конца вручную, а на телефоне — долго свайпать.
+ *
+ *  Ставится один раз на контейнер. Контейнер должен быть position:
+ *  relative — у .messenger__msgs это задано в design/base.css. */
+export function wireScrollDown(container) {
+  if (!container || container._sdWired) return;
+  container._sdWired = true;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "msg-scroll-down";
+  btn.setAttribute("aria-label", t("chat.toBottom"));
+  btn.title = t("chat.toBottom");
+  btn.textContent = "↓";
+  btn.hidden = true;
+  container.parentElement?.appendChild(btn);
+
+  btn.addEventListener("click", () => scrollToBottom(container));
+
+  const update = () => {
+    const gap = container.scrollHeight - container.scrollTop - container.clientHeight;
+    btn.hidden = gap < 120;
+  };
+  container.addEventListener("scroll", update, { passive: true });
+  // Список перерисовывается целиком при каждом обновлении подписки —
+  // следим и за этим, иначе кнопка застревала бы в прежнем состоянии.
+  new MutationObserver(update).observe(container, { childList: true });
+  update();
 }
 
 /** HTML-разметка медиа-кнопок для вставки в форму чата. */

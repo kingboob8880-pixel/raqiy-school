@@ -30,6 +30,7 @@ const S = {
   "nav.flashcards":    { ru: "Карточки", en: "Flashcards", uz: "Kartochkalar" },
   "nav.glossary":      { ru: "Словарь", en: "Glossary", uz: "Lug'at" },
   "nav.dashboard":     { ru: "Кабинет", en: "Dashboard", uz: "Kabinet" },
+  "nav.admin":         { ru: "Админ", en: "Admin", uz: "Admin" },
   "auth.login":        { ru: "Войти", en: "Sign in", uz: "Kirish" },
   "skip.link":         { ru: "Перейти к содержимому", en: "Skip to content", uz: "Kontentga o'tish" },
   "menu.open":         { ru: "Открыть меню", en: "Open menu", uz: "Menyuni ochish" },
@@ -349,6 +350,8 @@ const S = {
   "chat.videoSent":     { ru: "Видео отправлено", en: "Video sent", uz: "Video yuborildi" },
   "chat.fileSent":      { ru: "Файл отправлен", en: "File sent", uz: "Fayl yuborildi" },
   "chat.unreadAria":    { ru: "непрочитанных сообщений", en: "unread messages", uz: "o'qilmagan xabar" },
+  "chat.sendFailed":    { ru: "Сообщение не отправлено — проверьте связь. Текст сохранён в поле.", en: "Message not sent — check your connection. The text is kept in the box.", uz: "Xabar yuborilmadi — aloqani tekshiring. Matn maydonda saqlandi." },
+  "chat.toBottom":      { ru: "К последним сообщениям", en: "Jump to latest", uz: "So'nggi xabarlarga" },
 
   // ── Landing page ──
   "landing.title":      { ru: "Онлайн-школа рукии — лечение Кораном и Сунной", en: "Online Ruqyah School — Healing through Quran and Sunnah", uz: "Onlayn ruqya maktabi — Qur'on va Sunna bilan davolash" },
@@ -592,6 +595,19 @@ const S = {
   "assign.daily":        { ru: "Ежедневное", en: "Daily", uz: "Kundalik" },
   "assign.duration":     { ru: "Длительность", en: "Duration", uz: "Davomiyligi" },
 
+  // Отметка выполнения задания (запрос автора «пусть будет автоматом»,
+  // 2026-07-26): без неё лента достижений не имела бы источника — сервер
+  // видел только сданные тесты, а практику не видел вовсе.
+  "assign.markDone":     { ru: "Выполнил", en: "Done", uz: "Bajardim" },
+  "assign.isDone":       { ru: "Выполнено", en: "Completed", uz: "Bajarildi" },
+  "assign.undo":         { ru: "Снять отметку", en: "Undo", uz: "Belgini olish" },
+  // Вопрос задаётся только после отметки о выполнении и только по практике:
+  // у размышления «Аллах ответил?» смысла не имеет.
+  "assign.answeredQ":    { ru: "Аллах ответил на твою мольбу?", en: "Did Allah answer your supplication?", uz: "Alloh duoyingga javob berdimi?" },
+  "assign.answeredYes":  { ru: "الحمد لله — Аллах ответил", en: "الحمد لله — Allah answered", uz: "الحمد لله — Alloh javob berdi" },
+  "assign.answeredWait": { ru: "Пока продолжаю просить", en: "I keep asking", uz: "Hozircha so'rashda davom etaman" },
+  "assign.answeredDone": { ru: "الحمد لله — Аллах ответил", en: "الحمد لله — Allah answered", uz: "الحمد لله — Alloh javob berdi" },
+
   // ── Modules search ──
   "modules.search":      { ru: "Поиск по названиям и содержанию книг…", en: "Search titles and book contents…", uz: "Sarlavhalar va kitob mazmuni bo'yicha qidirish…" },
   "modules.noResults":   { ru: "Ничего не найдено.", en: "Nothing found.", uz: "Hech narsa topilmadi." },
@@ -599,6 +615,69 @@ const S = {
   // Возврат к месту чтения (pages/js/reading-position.js)
   "read.resumeText":     { ru: "Вы остановились примерно на", en: "You stopped at about", uz: "Siz taxminan shu joyda to'xtadingiz:" },
   "read.resumeGo":       { ru: "Продолжить чтение", en: "Continue reading", uz: "O'qishni davom ettirish" },
+  // ── Ценность модуля (запрос автора, 2026-07-25) ────────────────────────
+  // Смысл задан автором: «Если ты веришь, что Аллах мгновенно исцелит по
+  // причине тебя, и усиливаешь эту веру повторными намерениями — Аллах
+  // исцелит мгновенно. Он таков, каким ты о Нём думаешь».
+  //
+  // Формулировки намеренно ведут к УБЕЖДЁННОСТИ ОБ АЛЛАХЕ, а не к величию
+  // самого лекаря. Это не смягчение просьбы, а её точное исполнение: Модуль
+  // 10 курса прямо запрещает «гарантию результата» и «приписывание
+  // исцеления себе», а Мольба заклинателя (Модуль 1) называет раки «слабым
+  // рабом, причиной, а не источником». Текст вида «ты станешь могучим
+  // лекарем» ученик прочёл бы на сайте, а через десять модулей встретил бы
+  // прямой запрет на такие мысли — и перестал бы верить курсу.
+  // Уведомления ученику (запрос автора, 2026-07-25). Заголовки и тексты
+  // самих уведомлений приходят с сервера уже готовыми (functions/index.js) —
+  // здесь только подписи интерфейса.
+  "notif.title":     { ru: "Уведомления", en: "Notifications", uz: "Bildirishnomalar" },
+  "notif.empty":     { ru: "Пока ничего нового", en: "Nothing new yet", uz: "Hozircha yangilik yo'q" },
+  "notif.markAll":   { ru: "Прочитать все", en: "Mark all read", uz: "Hammasini o'qilgan deb belgilash" },
+  "notif.open":      { ru: "Открыть", en: "Open", uz: "Ochish" },
+  "notif.now":       { ru: "только что", en: "just now", uz: "hozirgina" },
+  "notif.min":       { ru: "мин", en: "min", uz: "daq" },
+  "notif.hour":      { ru: "ч", en: "h", uz: "soat" },
+  "notif.day":       { ru: "дн", en: "d", uz: "kun" },
+  "notif.yesterday": { ru: "вчера", en: "yesterday", uz: "kecha" },
+
+  // Лента достижений (запрос автора «пусть будет автоматом», 2026-07-26).
+  // Текст записи собирается здесь, а не хранится в базе: иначе на
+  // английской и узбекской версиях сайта лента навсегда осталась бы
+  // русской. {name} и {n} подставляет pages/js/community-feed.js.
+  "feed.title":       { ru: "Ученики школы", en: "Fellow students", uz: "Maktab shogirdlari" },
+  "feed.empty":       { ru: "Пока пусто. Первая запись может быть о тебе.", en: "Nothing yet. The first entry could be about you.", uz: "Hozircha bo'sh. Birinchi yozuv sen haqingda bo'lishi mumkin." },
+  "feed.module":      { ru: "{name} сдал экзамен Модуля {n}", en: "{name} passed the Module {n} exam", uz: "{name} {n}-modul imtihonidan o'tdi" },
+  "feed.practice":    { ru: "{name} довёл до конца практику Модуля {n}", en: "{name} completed the Module {n} practice", uz: "{name} {n}-modul amaliyotini oxiriga yetkazdi" },
+  // Формулировка автора (2026-07-26) и положение Модуля 10, §3: исцеление
+  // приписано Аллаху, ученик — причина, а не источник.
+  "feed.answered":    { ru: "{name} верно применил знание Модуля {n}: обратился к Аллаху с убеждённостью — и Аллах ответил и исцелил. الحمد لله", en: "{name} applied the knowledge of Module {n} rightly: he turned to Allah with certainty — and Allah answered and healed. الحمد لله", uz: "{name} {n}-modul ilmini to'g'ri qo'lladi: ishonch bilan Allohga yuzlandi — va Alloh javob berdi va shifo berdi. الحمد لله" },
+  "feed.graduate":    { ru: "{name} прошёл все 11 модулей курса", en: "{name} completed all 11 modules of the course", uz: "{name} kursning barcha 11 modulini tamomladi" },
+  "feed.certificate": { ru: "{name} получил сертификат раки", en: "{name} received the raqi certificate", uz: "{name} roqiy sertifikatini oldi" },
+  "feed.rukyaPro":    { ru: "{name} получил доступ к системе RUKYA Pro", en: "{name} received access to RUKYA Pro", uz: "{name} RUKYA Pro tizimiga ruxsat oldi" },
+  "feed.note":        { ru: "Записи появляются сами — по прогрессу учеников. Об ответе Аллаха свидетельствует сам ученик.", en: "Entries appear automatically from students' progress. Allah's answer is testified by the student himself.", uz: "Yozuvlar shogirdlarning natijasi bo'yicha o'zi paydo bo'ladi. Allohning javobiga shogirdning o'zi guvohlik beradi." },
+
+  // Заголовок «Что даёт этот модуль» убран по решению автора (2026-07-26):
+  // блок должен читаться не как продающее описание модуля, а как
+  // напоминание — мгновенное исцеление связано с твоей верой в Аллаха.
+  "value.reminder":  { ru: "Помни", en: "Remember", uz: "Eslab qol" },
+  "value.hadithAr":  { ru: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي", en: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي", uz: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي" },
+  "value.hadithTr":  { ru: "Ана 'инда занни 'абди би", en: "Ana 'inda zanni 'abdi bi", uz: "Ana 'inda zanni 'abdi bi" },
+  "value.hadithRu":  { ru: "«Я — таков, каким полагает Меня раб Мой»", en: "\"I am as My servant thinks of Me\"", uz: "«Men bandam Meni qanday o'ylasa, shundayman»" },
+  "value.hadithSrc": { ru: "Хадис кудси. аль-Бухари, 7405; Муслим, 2675", en: "Hadith qudsi. al-Bukhari 7405; Muslim 2675", uz: "Hadisi qudsiy. al-Buxoriy 7405; Muslim 2675" },
+  "value.lead":      { ru: "Если ты убеждён, что Аллах исцелит мгновенно — по причине тебя, — и укрепляешь эту убеждённость повторным намерением, Аллах исцеляет мгновенно. Сила не в тебе: ты причина, а не источник. Каждый модуль курса выковывает эту убеждённость с новой стороны.", en: "If you are certain that Allah will heal instantly — through you as a cause — and you strengthen that certainty by renewing your intention, Allah heals instantly. The power is not yours: you are the cause, not the source. Every module of the course forges this certainty from a new angle.", uz: "Agar Alloh sen sabab bo'lib darhol shifo berishiga ishonsang va bu ishonchni niyatni takrorlash bilan mustahkamlasang, Alloh darhol shifo beradi. Kuch senda emas: sen sababsan, manba emas. Kursning har bir moduli bu ishonchni yangi tomondan quyadi." },
+
+  "value.1":  { ru: "Здесь куётся сама убеждённость. Пока сердце сомневается, слова остаются сухим руслом — и никакая формула этого не заменит. Сорок дней ковки якына, мольба заклинателя, басира, эхсан. Модуль, после которого твоё «бисмиллях» перестаёт быть звуком.", en: "This is where certainty itself is forged. While the heart doubts, words stay a dry riverbed — no formula replaces that. Forty days of forging yaqin, the healer's supplication, basira, ihsan. After this module your \"bismillah\" stops being a sound.", uz: "Bu yerda ishonchning o'zi quyiladi. Qalb shubhalanar ekan, so'zlar quruq o'zan bo'lib qoladi — hech qanday formula buni almashtirmaydi. Yaqinni quyishning qirq kuni, roqiy duosi, basira, ehson. Shundan keyin «bismilloh»ing shunchaki tovush bo'lmay qoladi." },
+  "value.2":  { ru: "Твоя убеждённость обретает точный язык. Формула рукьи Джибриля, уточнение недуга, сердечное чтение — собирание воздействия Корана и направление его к больному. Ты перестаёшь читать «вообще» и начинаешь обращаться к тому, что видишь.", en: "Your certainty gains a precise language. Jibril's ruqyah formula, naming the ailment exactly, heart-recitation — gathering the Quran's effect and directing it to the patient. You stop reciting \"in general\" and start addressing what you actually see.", uz: "Ishonching aniq til topadi. Jibril ruqyasi formulasi, xastalikni aniqlashtirish, qalb bilan o'qish — Qur'on ta'sirini jamlab, bemorga yo'naltirish. Sen «umuman» o'qishni to'xtatib, ko'rgan narsangga murojaat qila boshlaysan." },
+  "value.3":  { ru: "Намерение получает адрес. Пока ты не знаешь, как орган зовётся по-арабски и как меняется слово, обращение остаётся общим. Тридцать эмоциональных загрязнений с картой тела — ты начинаешь видеть, куда именно направлять убеждённость.", en: "Your intention gets an address. Until you know what an organ is called in Arabic and how the word shifts, the address stays vague. Thirty emotional defilements with a body map — you begin to see exactly where to direct your certainty.", uz: "Niyat manzil topadi. A'zo arabchada qanday atalishini va so'z qanday o'zgarishini bilmaguningcha murojaat umumiy bo'lib qoladi. Tana xaritasi bilan o'ttizta hissiy iflosliklar — ishonchni aynan qayerga yo'naltirishni ko'ra boshlaysan." },
+  "value.4":  { ru: "Убеждённость без осторожности калечит. Диагноз никогда не ставится через боль от прикосновения — этот модуль ставит красную линию раньше, чем ты научишься бить прицельно. Сильный лекарь узнаётся по тому, кого он не тронул.", en: "Certainty without caution maims. A diagnosis is never made through pain from touching — this module draws the red line before you learn to strike precisely. A strong healer is known by whom he did not touch.", uz: "Ehtiyotsiz ishonch mayib qiladi. Tashxis hech qachon teginish og'rig'i orqali qo'yilmaydi — bu modul aniq zarba berishni o'rganishingdan oldin qizil chiziqni tortadi. Kuchli tabib kimga tegmaganidan bilinadi." },
+  "value.5":  { ru: "Пророк ﷺ, когда болел, клал руку на место боли. Отсюда весь модуль: точный удар вместо чтения в пространство. Хитаб аль-Исаба по органам, рукья против сихра и сглаза, чёрные линии, избавление от джиннов. Здесь убеждённость становится ремеслом.", en: "When the Prophet ﷺ was ill he placed his hand where the pain was. The whole module follows from that: a precise strike instead of reciting into the air. Khitab al-Isaba organ by organ, ruqyah against sihr and the evil eye, black lines, removing jinn. Here certainty becomes craft.", uz: "Payg'ambar ﷺ kasal bo'lganda qo'lini og'riq joyiga qo'ygan. Butun modul shundan: bo'shliqqa o'qish o'rniga aniq zarba. A'zolar bo'yicha Xitob al-Isoba, sehr va ko'z tegishiga qarshi ruqya, qora chiziqlar, jinlardan xalos bo'lish. Bu yerda ishonch hunarga aylanadi." },
+  "value.6":  { ru: "Лечение без защиты — как чинить стену крепости, оставив ворота открытыми. Пациент вернётся через неделю с тем же. Азкары, дуа Сокрытия, защита от джиннов, открытие духовных замков — модуль, который удерживает достигнутое.", en: "Treating without protecting is like repairing the fortress wall while leaving the gate open. The patient returns a week later with the same thing. Adhkar, supplications of Concealment, protection from jinn, opening spiritual locks — the module that holds what you gained.", uz: "Himoyasiz davolash — qal'a devorini tuzatib, darvozani ochiq qoldirishga o'xshaydi. Bemor bir haftadan keyin o'sha dard bilan qaytadi. Zikrlar, Pardalash duolari, jinlardan himoya, ruhiy qulflarni ochish — erishilganni ushlab turadigan modul." },
+  "value.7":  { ru: "Иногда чтение встречает сопротивление. Пророк ﷺ сам столкнулся с ифритом, набросившимся, чтобы прервать молитву. Четыре уровня формулы и полное пособие по уничтожению сущностей — самый тяжёлый раздел курса, и он требует убеждённости, а не смелости.", en: "Sometimes recitation meets resistance. The Prophet ﷺ himself faced an ifrit that lunged to break his prayer. Four levels of the formula and a full manual on destroying entities — the heaviest section of the course, and it demands certainty, not bravado.", uz: "Ba'zan o'qish qarshilikka uchraydi. Payg'ambar ﷺ ning o'zi namozini buzish uchun tashlangan ifrit bilan to'qnashgan. Formulaning to'rt darajasi va mavjudotlarni yo'q qilish bo'yicha to'liq qo'llanma — kursning eng og'ir bo'limi, u jasorat emas, ishonch talab qiladi." },
+  "value.8":  { ru: "Что отличает сильного от начинающего — не формулы, а состояние. Пять столпов: таухид, намаз, тахаджжуд, аль-Бакара, зикр и оставление грехов. Без этого фундамента десять глаголов-действий останутся словарём. Твоя сила берёт начало в связи с Аллахом.", en: "What separates the strong from the beginner is not formulas but state. Five pillars: tawhid, prayer, tahajjud, al-Baqarah, dhikr and abandoning sin. Without that foundation the ten action-verbs stay a glossary. Your strength originates in your bond with Allah.", uz: "Kuchlini yangi boshlovchidan formulalar emas, holat ajratadi. Besh ustun: tavhid, namoz, tahajjud, Baqara, zikr va gunohlarni tark etish. Bu poydevorsiz o'nta harakat-fe'l lug'at bo'lib qoladi. Kuching Alloh bilan bog'liqlikdan boshlanadi." },
+  "value.9":  { ru: "Рано или поздно тебе принесут чужой язык — «энергетика», «биополе», «Космос как источник». Граница не там, где заканчивается наблюдение, а там, где силу приписывают кому-то кроме Аллаха. Этот модуль хранит саму основу твоей убеждённости.", en: "Sooner or later someone brings you a foreign vocabulary — \"energy\", \"biofield\", \"the Cosmos as a source\". The line is not where observation ends but where power is ascribed to something other than Allah. This module guards the very ground of your certainty.", uz: "Ertami-kechmi senga begona til keltiriladi — «energetika», «biomaydon», «manba sifatida Koinot». Chegara kuzatuv tugagan joyda emas, kuch Allohdan o'zgaga nisbat berilgan joyda. Bu modul ishonchingning poydevorini qo'riqlaydi." },
+  "value.10": { ru: "Лекарь и мучитель — два образа. Те, кто берёт деньги с отчаявшихся и обещает исцеление, о котором не имеет представления, зовутся лекарями. Модуль о том, чем ты от них отличаешься: знанием, богобоязненностью, искренностью и присутствием сердца.", en: "The healer and the tormentor — two figures. Those who take money from the desperate and promise a cure they know nothing about also call themselves healers. This module is about what separates you from them: knowledge, God-consciousness, sincerity, and presence of heart.", uz: "Tabib va qiynoqchi — ikki qiyofa. Umidsizlardan pul olib, tushunchasi yo'q shifoni va'da qiluvchilar ham o'zini tabib deydi. Bu modul sening ulardan farqing haqida: bilim, taqvo, ixloslik va qalb hozirligi." },
+  "value.11": { ru: "Всё изученное встречается с живым пациентом. Карточка приёма, ответственность, проверка себя в RUKYA Pro. Здесь убеждённость перестаёт быть внутренним состоянием и становится работой, за которую ты отвечаешь перед Аллахом и человеком.", en: "Everything you learned meets a real patient. The intake record, accountability, self-checking inside RUKYA Pro. Here certainty stops being an inner state and becomes work you answer for — before Allah and before the person.", uz: "O'rganilgan hamma narsa tirik bemor bilan uchrashadi. Qabul kartasi, mas'uliyat, RUKYA Pro'da o'zini tekshirish. Bu yerda ishonch ichki holat bo'lishdan to'xtab, Alloh va inson oldida javob beradigan ishga aylanadi." },
+
   "modules.inside":      { ru: "Найдено внутри книг", en: "Found inside books", uz: "Kitoblar ichida topildi" },
   "modules.insideFound": { ru: "книг", en: "books", uz: "kitob" },
   "modules.insideMore":  { ru: "Ещё книг с совпадениями:", en: "More books with matches:", uz: "Mos keluvchi yana kitoblar:" },

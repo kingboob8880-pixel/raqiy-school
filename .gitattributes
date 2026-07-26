@@ -1,0 +1,13 @@
+# .bat читает cmd.exe — ему нужны окончания строк CRLF. Без этого правила
+# git на Linux/macOS отдал бы файл с LF, и Windows спотыкался бы на разборе.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Остальное — обычные LF, чтобы diff не шумел
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.md   text eol=lf
+*.sh   text eol=lf

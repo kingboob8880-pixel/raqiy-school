@@ -4,9 +4,9 @@
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
-import { watchAuth, isAdmin } from "../../integration/auth.js?v=10";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=12";
-import { watchUnreadFromAdmin } from "../../integration/firestore.js?v=20";
+import { watchAuth, isAdmin, getAdminProfile, getStudentProfile } from "../../integration/auth.js?v=11";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=17";
+import { initNotifications, stopNotifications } from "./notifications.js?v=2";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
@@ -67,9 +67,11 @@ export function renderHeader(zone = "learn") {
           <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>${t("nav.tests")}</a>
           <a data-nav="flashcards" href="${withBase("/pages/flashcards/index.html")}"><span aria-hidden="true">🃏</span>${t("nav.flashcards")}</a>
           <a data-nav="glossary" href="${withBase("/pages/glossary/index.html")}"><span aria-hidden="true">📘</span>${t("nav.glossary")}</a>
-          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}<span class="nav-unread" id="nav-unread" hidden></span></a>
+          <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}</a>
         </nav>
         <div class="site-header__actions">
+          <!-- Колокольчик монтируется только вошедшему ученику (initNotifications) -->
+          <div class="notif-root" id="notif-root"></div>
           ${langSwitcherHtml}
           ${themeSwitcherHtml}
           <a class="btn btn-outline btn-sm" id="auth-btn" href="${withBase("/pages/auth/login.html")}">${t("auth.login")}</a>
@@ -129,42 +131,87 @@ export function renderHeader(zone = "learn") {
   }
 
   const authBtn = root.querySelector("#auth-btn");
-  const unreadEl = root.querySelector("#nav-unread");
-  // Значок непрочитанных рядом с «Кабинет» на любой странице сайта (запрос
-  // автора, 2026-07-25). Раньше ответ наставника обнаруживался только при
-  // следующем заходе в кабинет — на странице урока/теста ничто о нём не
-  // сообщало. Слушатель живой, поэтому значок загорается прямо во время
-  // чтения книги. Админу он не нужен: у наставника переписка не одна, его
-  // счётчик живёт на chat.html и в кабинете администратора.
-  let unwatchUnread = null;
+  const notifRoot = root.querySelector("#notif-root");
+  // Колокольчик уведомлений на любой странице сайта (запрос автора,
+  // 2026-07-25). Раньше здесь висел отдельный значок непрочитанных
+  // сообщений — он заменён колокольчиком: два счётчика рядом (отдельно
+  // сообщения и отдельно всё остальное) показывали бы разные числа про
+  // пересекающиеся вещи и сбивали бы с толку. Теперь одно число на все
+  // события: ответ наставника, открытие доступа, сертификат, RUKYA Pro.
+  //
+  // Наставнику колокольчик не нужен: у него переписка не одна, его
+  // счётчики живут на chat.html и в кабинете администратора.
   watchAuth(async (user) => {
-    if (authBtn) {
-      if (user) {
-        authBtn.textContent = user.displayName || user.email?.split("@")[0] || t("nav.dashboard");
-        authBtn.href = withBase("/pages/dashboard/student.html");
-      } else {
+    stopNotifications();
+
+    if (!user) {
+      if (authBtn) {
         authBtn.textContent = t("auth.login");
         authBtn.href = withBase("/pages/auth/login.html");
       }
+      if (notifRoot) notifRoot.innerHTML = "";
+      return;
     }
 
-    if (unwatchUnread) { unwatchUnread(); unwatchUnread = null; }
-    if (!unreadEl) return;
-    if (!user) { unreadEl.hidden = true; return; }
+    // Пока не знаем роль — показываем нейтральное «Кабинет», а не кусок
+    // email: до этой правки в шапке у автора висело «4851» (скриншот,
+    // 2026-07-25) — это email до «собаки», который сайт выдавал за имя.
+    if (authBtn) authBtn.textContent = t("nav.dashboard");
 
-    try {
-      if (await isAdmin(user.uid)) { unreadEl.hidden = true; return; }
-    } catch { /* нет связи — просто не показываем значок */ return; }
+    let admin = false;
+    try { admin = await isAdmin(user.uid); }
+    catch { /* нет связи — оставляем нейтральную подпись и без колокольчика */ return; }
 
-    unwatchUnread = watchUnreadFromAdmin(user.uid, (n) => {
-      unreadEl.textContent = n > 9 ? "9+" : String(n);
-      unreadEl.hidden = n === 0;
-      unreadEl.setAttribute("aria-label", `${n} ${t("chat.unreadAria")}`);
-    });
+    if (authBtn) {
+      if (admin) {
+        // Админа кнопка вела в кабинет УЧЕНИКА — он попадал не туда и видел
+        // чужой по смыслу экран. Ведём в админский и подписываем по роли.
+        let name = "";
+        try { name = (await getAdminProfile(user.uid))?.name || ""; }
+        catch { /* имя необязательно — хватит слова «Админ» */ }
+        authBtn.textContent = name || t("nav.admin");
+        authBtn.href = withBase("/pages/dashboard/admin.html");
+      } else {
+        // У ученика имя есть в профиле — оно человеческое, в отличие от
+        // email. displayName в этом проекте не заполняется при регистрации.
+        let name = "";
+        try { name = (await getStudentProfile(user.uid))?.name || ""; }
+        catch { /* профиль недоступен — останется «Кабинет» */ }
+        authBtn.textContent = name || user.displayName || t("nav.dashboard");
+        authBtn.href = withBase("/pages/dashboard/student.html");
+      }
+    }
+
+    if (!notifRoot) return;
+    // Наставнику колокольчик не нужен: у него переписка не одна.
+    if (admin) { notifRoot.innerHTML = ""; return; }
+
+    initNotifications(notifRoot, user.uid);
   });
 
   initSiteTheme();
   initOffline();
+  trackHeaderHeight(root);
+}
+
+/** Держит --rp-header-h равной реальной высоте шапки.
+ *
+ *  Нужно странице-мессенджеру: она занимает calc(100dvh - высота шапки), и
+ *  захардкоженное значение врало бы при переносе шапки на две строки, при
+ *  другом масштабе браузера или крупном системном шрифте — переписка либо
+ *  вылезала бы за экран, либо не добирала высоту.
+ *
+ *  ResizeObserver, а не разовое измерение: шапка меняет высоту при повороте
+ *  телефона и при открытии мобильного меню. */
+function trackHeaderHeight(root) {
+  const header = root.querySelector(".site-header");
+  if (!header) return;
+  const apply = () => {
+    document.documentElement.style.setProperty("--rp-header-h", `${header.offsetHeight}px`);
+  };
+  apply();
+  if ("ResizeObserver" in window) new ResizeObserver(apply).observe(header);
+  else window.addEventListener("resize", apply);
 }
 
 /** Офлайн-режим и иконка на домашнем экране (совет по улучшениям,
