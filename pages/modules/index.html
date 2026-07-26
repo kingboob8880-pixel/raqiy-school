@@ -165,14 +165,32 @@
     margin-top: auto; padding-top: var(--rp-space-4);
     border-top: 1px solid var(--rp-learn-border);
   }
+  /* Настоящая кнопка, а не голый текст (запрос автора, 2026-07-26): раньше
+     «Что внутри →» отличался от подписи рядом только цветом, и на карточке
+     не читалось, что по нему вообще можно нажать.
+
+     Плашка, а не прозрачная рамка — по тому же соображению, что записано у
+     .btn-soft в base.css: на тёмной карточке пустая рамка выглядит
+     неактивной кнопкой. */
   .pm-card__what {
     position: relative; z-index: 2;
-    background: none; border: 0; padding: 0; cursor: pointer;
-    font: inherit; font-size: var(--rp-fs-sm); font-weight: 800;
-    color: var(--rp-learn-badge-text);
+    cursor: pointer; white-space: nowrap;
+    font: inherit; font-size: var(--rp-fs-xs); font-weight: 800;
     display: inline-flex; align-items: center; gap: 0.35rem;
+    min-height: 2.25rem; padding: 0 0.9rem;
+    border-radius: var(--rp-radius-pill);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--rp-learn-badge-border, var(--rp-learn-border));
+    color: var(--rp-learn-badge-text);
+    transition: background 0.15s ease, border-color 0.15s ease;
   }
-  .pm-card__meta { font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); white-space: nowrap; }
+  .pm-card__what:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--rp-learn-accent);
+  }
+  .pm-card__what:focus-visible { outline: 2px solid var(--rp-learn-accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .pm-card__what { transition: none; } }
+  .pm-card__meta { font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); min-width: 0; }
 
   /* Растянутая ссылка: кликается вся карточка, но «Что внутри» лежит
      выше по z-index и перехватывает свой клик. Так на карточке ровно
