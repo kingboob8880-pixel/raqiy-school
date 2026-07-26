@@ -7,10 +7,17 @@ import { withBase } from "./base-path.js?v=6";
 const STORAGE_KEY = "raqiy-site-theme";
 const DEFAULT_THEME = "emerald";
 
+// Названия переписаны под макет автора (2026-07-26): все три палитры взяты
+// из «Дизайн новейщий.html», см. шапку design/tokens.css.
+//
+// КЛЮЧИ НЕ ПЕРЕИМЕНОВАНЫ намеренно, хотя "split" теперь значит «Графит».
+// Ключ хранится в localStorage у каждого, кто уже заходил на сайт: смена
+// ключа сбросила бы выбранную тему всем сразу и без причины. Ключ — это
+// идентификатор, а не подпись; подпись видит человек, ключ — только код.
 export const SITE_THEMES = [
-  { key: "emerald", label: "Тёмный изумруд", layout: "centered" },
-  { key: "pattern", label: "Светлый паттерн", layout: "centered" },
-  { key: "split", label: "Сплит с каллиграфией", layout: "split" },
+  { key: "emerald", label: "Изумруд", layout: "centered" },
+  { key: "pattern", label: "Пергамент", layout: "centered" },
+  { key: "split", label: "Графит", layout: "split" },
 ];
 
 function getTheme(key) {

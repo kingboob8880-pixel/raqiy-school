@@ -1,55 +1,113 @@
-/* Скомпилировано из tokens.json вручную — при правке палитры менять оба файла.
-   Масштаб шрифта — только через --rp-fs (rem), паттерн из RUKYA Pro (§8.2 project.md). */
+/* Дизайн-токены школы.
+   Масштаб шрифта — только через --rp-fs (rem), паттерн из RUKYA Pro (§8.2 project.md).
+
+   ПАЛИТРА ПЕРЕПИСАНА ПО МАКЕТУ АВТОРА (2026-07-26, «Дизайн новейщий.html» —
+   раскладка всех страниц портала). Все три темы взяты из самого макета, а не
+   придуманы рядом с ним:
+
+     • «Изумруд»   — основная палитра макета: тёмно-зелёные панели
+                     (#0f1d15 / #16281d / #1a3225) и золото (#c09330 / #e6c069).
+     • «Пергамент» — светлый холст макета: тёплый песочный фон #e6e0d3,
+                     страницы #faf6ec, тёмный текст #1e1a11, зелёный акцент
+                     #2f6a4a — ровно те цвета, которыми в макете нарисована
+                     обвязка вокруг экранов.
+     • «Графит»    — палитра админской страницы макета: нейтральный
+                     графит #1c1f24 / #252a31 со тем же золотом.
+
+   Так три темы перестали быть тремя разными сайтами: они — три состояния
+   одной системы, и все три уже нарисованы автором.
+
+   Контраст каждой пары посчитан (WCAG 2.1, порог AA 4.5:1 для обычного
+   текста, 3:1 для крупного и нетекстовых элементов). Значения — в
+   комментариях у соответствующих токенов. */
 :root {
-  /* primitive */
-  --rp-color-parchment-50: #fbf6ec;
-  --rp-color-parchment-100: #faf5ea;
-  --rp-color-parchment-200: #f3ead3;
-  --rp-color-parchment-300: #e0d3b6;
-  --rp-color-parchment-400: #d3c6ab;
-  --rp-color-sand-500: #8a7c5a;
-  --rp-color-ink-900: #221c11;
-  --rp-color-ink-700: #3a3021;
-  --rp-color-gold-500: #b0842c;
-  --rp-color-gold-600: #8f6a22;
-  --rp-color-gold-100: #f1e2bc;
-  --rp-color-green-700: #2f6a4a;
+  /* ─── Примитивы: зелёно-золотая гамма макета ─────────────────────────── */
+  /* Зелёные слои — от самого глубокого (рамка телефона в макете) к светлому
+     (верх градиента карточки). Ровно те шесть значений, что встречаются в
+     макете; больше оттенков зелёного там нет. */
+  --rp-color-emerald-950: #0a0f0c;  /* корпус устройства, самый глубокий */
+  --rp-color-emerald-900: #0f1d15;  /* фон приложения */
+  --rp-color-emerald-850: #12241a;  /* шапка/хром */
+  --rp-color-emerald-800: #14261c;  /* низ градиента героя */
+  --rp-color-emerald-750: #16281d;  /* низ градиента карточки */
+  --rp-color-emerald-700: #1a3225;  /* верх градиента карточки */
+  --rp-color-emerald-600: #20402f;  /* верх градиента героя */
+  --rp-color-emerald-500: #2a5a3e;  /* акцентная карточка «продолжить» */
+  --rp-color-green-700: #2f6a4a;    /* зелёный акцент светлой темы */
   --rp-color-green-800: #234f38;
   --rp-color-green-100: #e2ede6;
-  --rp-color-graphite-900: #22262b;
-  --rp-color-graphite-800: #2b3036;
-  --rp-color-graphite-700: #3a4048;
-  --rp-color-graphite-100: #e8eaec;
-  --rp-color-red-600: #a33a2e;
-  --rp-color-red-100: #f3ded9;
 
-  /* Тёмный изумруд — панель каллиграфии на лендинге (вариант C, "Лендинг - новый фон.html") */
-  --rp-color-emerald-900: #14261c;
-  --rp-color-emerald-700: #20402f;
-  --rp-color-gold-400: #c09330;
+  /* Золото. gold-500 — базовый акцент, gold-400 — светлый конец градиента
+     кнопки, gold-200 — акцентный ТЕКСТ на тёмном (не заливка). */
   --rp-color-gold-200: #e6c983;
+  --rp-color-gold-300: #d7b56a;     /* цвет линий рамок (всегда через alpha) */
+  --rp-color-gold-400: #e6c069;
+  --rp-color-gold-500: #c09330;
+  --rp-color-gold-600: #a87c22;
+  --rp-color-gold-700: #8f6a22;
+  --rp-color-gold-100: #f1e2bc;
+
+  /* Пергамент — светлая тема */
+  --rp-color-parchment-50: #faf6ec;
+  --rp-color-parchment-100: #f6f0e2;
+  --rp-color-parchment-200: #f3ead3;
+  --rp-color-parchment-300: #e6e0d3;
+  --rp-color-parchment-400: #d3c6ab;
+  --rp-color-ink-900: #1e1a11;
+  --rp-color-ink-700: #3a3021;
+  --rp-color-sand-500: #8a7c5a;
   --rp-color-sand-600: #5c5138;
-  --rp-color-sage-300: #c2d0c6;
 
-  /* Терракота — отдельный акцентный цвет темы "pattern" (запрос автора
-     "переделай эту тему", 2026-07-21): раньше "pattern" (светлая тема)
-     красилась тем же зелёным, что и тема "изумруд" — своей визуальной
-     идентичности не было, светлая тема выглядела просто "бледной версией
-     изумруда". Тёплый терракотовый — не пересекается ни с золотом
-     baseline, ни с зеленью "изумруда". #8f4325 на белом — 7.0:1, #75371e
-     (accent-strong/тёмный конец градиента кнопки) — 9.0:1 (оба с белым
-     текстом кнопки, 2026-07-21). */
-  --rp-color-terracotta-700: #8f4325;
-  --rp-color-terracotta-800: #75371e;
+  /* Графит — третья тема (админская палитра макета) */
+  --rp-color-graphite-950: #16181c;
+  --rp-color-graphite-900: #1c1f24;
+  --rp-color-graphite-800: #252a31;
+  --rp-color-graphite-700: #2c323a;
+  --rp-color-graphite-300: #8b93a1;
+  --rp-color-graphite-200: #c3c9d2;
+  --rp-color-graphite-100: #e6e8ec;
 
+  /* Приглушённый текст на тёмно-зелёном — четыре ступени из макета */
+  --rp-color-sage-100: #c9d6cc;
+  --rp-color-sage-200: #a9bcb0;
+  --rp-color-sage-300: #9fb2a5;
+  --rp-color-sage-400: #8fa295;
+  --rp-color-sage-500: #7f9488;
+
+  /* Статусы — из макета: мягкий мятный, тёплый персиковый, приглушённый
+     терракотовый. Резкого «сигнального» красного и зелёного в макете нет
+     намеренно: страница про исцеление не должна выглядеть как пульт. */
+  --rp-color-mint-400: #6dbf8f;
+  --rp-color-mint-300: #a8d0ba;
+  --rp-color-amber-400: #e0a94a;
+  --rp-color-peach-400: #d98d6a;
+  --rp-color-red-600: #e0837e;
+  --rp-color-red-100: #f3ded9;
+  --rp-color-sky-300: #96c2dc;       /* информационный акцент админки */
+
+  /* Подсветка совпадений поиска (<mark>). Всегда светлая плашка с тёмным
+     текстом, во всех темах одна: подсветка должна выделяться из палитры
+     страницы, иначе она перестаёт быть подсветкой. Раньше токена не было
+     вовсе — везде стоял var(--rp-accent-light, #fef3c7), то есть работал
+     только резервный цвет. */
+  --rp-accent-light: #fdf0c4;
+  --rp-accent-light-text: #221c11;
+
+  /* ─── Типографика ────────────────────────────────────────────────────── */
+  /* Ровно те три семейства, что подключены в макете. */
   --rp-font-heading: 'Spectral', 'Georgia', serif;
   --rp-font-body: 'Mulish', -apple-system, BlinkMacSystemFont, sans-serif;
   --rp-font-arabic: 'Scheherazade New', 'Amiri', 'Noto Naskh Arabic', serif;
 
-  --rp-radius-sm: 0.375rem;
-  --rp-radius-md: 0.75rem;
-  --rp-radius-lg: 1.25rem;
-  --rp-radius-xl: 2rem;
+  /* ─── Радиусы ────────────────────────────────────────────────────────── */
+  /* Из макета: 7px мелкие плашки, 13px кнопки и малые карточки, 16px
+     карточки, 18–22px внешние панели, 999px пилюли. Прежние значения были
+     заметно круглее (20px у .card), из-за чего интерфейс выглядел мягче и
+     «детскее» макета. */
+  --rp-radius-sm: 0.4375rem;   /* 7px */
+  --rp-radius-md: 0.8125rem;   /* 13px */
+  --rp-radius-lg: 1rem;        /* 16px */
+  --rp-radius-xl: 1.375rem;    /* 22px */
   --rp-radius-pill: 999px;
 
   --rp-space-1: 0.25rem;
@@ -62,6 +120,7 @@
   --rp-space-8: 4rem;
 
   /* fluid type scale — rem, не px (§8.2) */
+  --rp-fs-xs: clamp(0.6875rem, 0.67rem + 0.1vw, 0.75rem);
   --rp-fs-sm: clamp(0.8125rem, 0.78rem + 0.15vw, 0.875rem);
   --rp-fs-base: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
   --rp-fs-md: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
@@ -70,131 +129,100 @@
   --rp-fs-2xl: clamp(2rem, 1.7rem + 1.5vw, 2.75rem);
   --rp-fs-arabic: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem);
 
-  /* semantic — зона "учебный контент" (золото/пергамент), зона по умолчанию.
-     Тонкий ромбовидный орнамент поверх заливки — тот же геометрический
-     мотив, что у темы "pattern" ниже, но приглушённее и на другом базовом
-     цвете, чтобы фон не читался пустым плоским полем (project.md, решение
-     2026-07-18). Opacity 0.16→0.2 при полировке "проработай все темы"
-     (2026-07-21) — из-за более насыщенного золотого штриха (#8f6a22) на
-     довольно светлом parchment-400 контраст читался резче, чем такая же
-     номинальная opacity у emerald (0.12, светлый штрих на тёмном фоне —
-     воспринимается мягче) — автор прислал скриншот, "фон чуть заглушь чтобы
-     не было остроты для глаз как это стоит в других темах". Снижено до
-     0.13 — заметно спокойнее эмеральда по номиналу не будет, но зрительно
-     ближе к нему за счёт менее контрастной пары цветов. */
-  --rp-learn-bg: var(--rp-color-parchment-400) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%238f6a22' stroke-opacity='0.13' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
-  --rp-learn-surface: var(--rp-color-parchment-100);
-  /* Раньше parchment-50 (#fbf6ec) — на глаз почти неотличим от surface
-     (parchment-100, #faf5ea, разница на уровне 1 пункта RGB) — градиент
-     .card был фактически таким же плоским, как позже нашли и исправили у
-     темы "pattern" тем же днём. parchment-200 — заметно более тёплый
-     оттенок, тот же приём "проработай все темы, сделай приятными"
-     (2026-07-21), контраст ink-900 на нём — 14.1:1, с запасом. */
-  --rp-learn-surface-raised: var(--rp-color-parchment-200);
-  --rp-learn-border: var(--rp-color-gold-500);
-  --rp-learn-text: var(--rp-color-ink-900);
-  --rp-learn-text-muted: var(--rp-color-sand-500);
+  /* Надзаголовок — мелкие прописные с широким трекингом. В макете это
+     самый частый приём (37 повторов): им подписаны все блоки. */
+  --rp-eyebrow-size: 0.72rem;
+  --rp-eyebrow-tracking: 0.16em;
+
+  /* ─── Тема «Изумруд» — она же значение по умолчанию ──────────────────
+     В :root, а не в html[data-site-theme="emerald"], намеренно: тема
+     применяется скриптом (pages/js/theme.js), и до его выполнения страница
+     секунду показывала бы палитру из :root. Раньше там лежала светлая
+     золото-пергаментная гамма — получалась вспышка светлым на каждой
+     загрузке. Теперь :root совпадает с темой по умолчанию, и вспышки нет.
+     Переключение на «Изумруд» просто снимает переопределения других тем. */
+
+  /* Ромбовидный орнамент золотыми линиями поверх заливки — фон не должен
+     читаться пустым плоским полем (решение 2026-07-18). */
+  --rp-learn-bg: var(--rp-color-emerald-900) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23d7b56a' stroke-opacity='0.10' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  --rp-learn-surface: var(--rp-color-emerald-750);
+  --rp-learn-surface-raised: var(--rp-color-emerald-700);
+  /* Рамки в макете — всегда золото через прозрачность, никогда сплошной
+     цвет: сплошная золотая линия вокруг каждой карточки превращает экран в
+     сетку из рамок. */
+  --rp-learn-border: rgba(215, 181, 106, 0.16);
+  --rp-learn-border-strong: rgba(215, 181, 106, 0.3);
+  --rp-learn-text: var(--rp-color-parchment-50);      /* 13.9:1 на surface */
+  --rp-learn-text-muted: var(--rp-color-sage-400);    /* 5.5:1 на surface */
   --rp-learn-accent: var(--rp-color-gold-500);
   --rp-learn-accent-strong: var(--rp-color-gold-600);
-  /* ink-900, не parchment-50 — расчётом контраста (2026-07-21, полировка
-     дизайн-системы по референсу design.html) нашёл, что светлый текст на
-     --rp-learn-accent (gold-500, #b0842c) даёт всего 3.15:1 — ниже порога
-     WCAG AA (4.5:1) для обычного текста. Затрагивает "ش" в шапке,
-     process-step__num, author-card__portrait, кнопку .btn-primary — везде,
-     где текст/иконка кладётся поверх плашки --rp-learn-accent. ink-900 даёт
-     4.98:1. Тема "изумруд" уже использует ink-900 (её отдельный override
-     ниже) — тема baseline была единственной, где это не было исправлено. */
-  --rp-learn-accent-contrast: var(--rp-color-ink-900);
-  /* Второй, более светлый оттенок акцента — только для градиента кнопки
-     .btn-primary (design.html, "премиальная" кнопка с лёгким переливом
-     вместо плоской заливки). Подобран расчётом контраста так, чтобы ОБА
-     конца градиента держали AA с --rp-learn-accent-contrast: #be9a52
-     (gold-500, осветлённый на 18% к белому) даёт 6.4:1 с ink-900, сам
-     gold-500 — 4.98:1 (2026-07-21). */
-  --rp-learn-accent-alt: #be9a52;
-  --rp-learn-icon-bg: var(--rp-color-gold-100);
-  --rp-learn-icon-text: var(--rp-color-gold-600);
-  /* Раньше badge-bg был плоским #ffffff — единственная тема, где бейдж
-     (пилюля "Курс от лекаря...", теги уровня и т.п.) не был хоть немного
-     тонирован под акцент, в отличие от тем "изумруд"/"pattern" (там
-     rgba(accent, alpha)). rgba(gold-500, 0.07) — тот же принцип, подобран
-     так, чтобы gold-600-текст держал AA даже на самом светлом фоне под
-     бейджем: 4.6:1 (2026-07-21). */
-  --rp-learn-badge-bg: rgba(176, 132, 44, 0.07);
-  --rp-learn-badge-text: var(--rp-color-gold-600);
-  --rp-learn-badge-border: rgba(176, 132, 44, 0.28);
-  --rp-ayah-card-bg: var(--rp-color-ink-900);
+  --rp-learn-accent-alt: var(--rp-color-gold-400);
+  /* Тёмно-зелёный текст на золоте: 5.5:1 на gold-500, 8.9:1 на gold-400 —
+     оба конца градиента кнопки проходят AA. */
+  --rp-learn-accent-contrast: var(--rp-color-emerald-800);
+  --rp-learn-icon-bg: rgba(215, 181, 106, 0.14);
+  --rp-learn-icon-text: var(--rp-color-gold-200);
+  --rp-learn-badge-bg: rgba(215, 181, 106, 0.16);
+  --rp-learn-badge-text: var(--rp-color-gold-200);    /* 9.9:1 на surface */
+  --rp-learn-badge-border: rgba(215, 181, 106, 0.4);
+  --rp-ayah-card-bg: var(--rp-color-emerald-850);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
-  --rp-ayah-card-accent: var(--rp-color-gold-500);
-
-  /* Панель каллиграфии — hero-сплит на лендинге (project.md, "Лендинг - новый фон.html" вариант C).
-     Раньше здесь (в baseline/"золотой" теме) стоял тот же зелёный градиент
-     изумрудных primitives, что и у самой темы "изумруд" — на золотой/
-     пергаментной теме он смотрелся чужеродно рядом с чёрным .ayah-card
-     (--rp-ayah-card-bg: ink-900 — тоже тёмная панель на этой же странице,
-     но НЕ зелёная), автор прислал скриншот и попросил унифицировать тёмные
-     панели темы, но не через зелёный, а через "то, что подобает золотому
-     фону" (2026-07-21). Тёплый тёмный ink-700→ink-900 — тот же primitive,
-     что уже красит .ayah-card, поэтому обе тёмные панели страницы (hero +
-     аят) теперь одного тона, и ни одна не зелёная. gold-200/parchment-50
-     поверх него держат контраст 8.0–15.7:1 (было ~похоже на emerald-теме,
-     не хуже). Темы "изумруд"/"pattern" не затронуты — у них свой override
-     ниже (изумруд — зелёный по своей сути темы, pattern — светлый). */
-  --rp-hero-panel-gradient: linear-gradient(155deg, var(--rp-color-ink-700), var(--rp-color-ink-900));
+  --rp-ayah-card-accent: var(--rp-color-gold-200);
+  --rp-hero-panel-gradient: linear-gradient(160deg, var(--rp-color-emerald-600), var(--rp-color-emerald-800));
   --rp-hero-panel-text: var(--rp-color-parchment-50);
   --rp-hero-panel-accent: var(--rp-color-gold-200);
-  --rp-hero-brand-mark: var(--rp-color-gold-400);
+  --rp-hero-brand-mark: var(--rp-color-gold-500);
+  /* Подложка «главной» карточки — в макете ею отмечен блок «Дальше в
+     программе»: он один на экран, и заметно светлее остальных. Через
+     color-mix от акцента это не выражается: акцент здесь золотой, а
+     подложка — светлее ЗЕЛЁНАЯ, то есть просто поднятая поверхность. */
+  --rp-surface-accent: var(--rp-color-emerald-500);
 
-  --rp-status-success: var(--rp-color-green-700);
+  /* ─── Общие семантические ────────────────────────────────────────────── */
+  --rp-status-success: var(--rp-color-mint-400);
+  --rp-status-warn: var(--rp-color-amber-400);
   --rp-status-danger: var(--rp-color-red-600);
-  --rp-status-danger-bg: var(--rp-color-red-100);
+  --rp-status-danger-bg: rgba(224, 131, 126, 0.14);
 
-  --rp-shadow-card: 0 6px 24px rgba(34, 28, 17, 0.14);
-  --rp-shadow-pop: 0 12px 40px rgba(34, 28, 17, 0.22);
+  /* Тени холодные зелёные, как в макете (rgba(20,40,30,.26) у панелей). */
+  --rp-shadow-card: 0 8px 26px rgba(6, 16, 11, 0.3);
+  --rp-shadow-pop: 0 20px 46px rgba(6, 16, 11, 0.42);
+  --rp-shadow-panel: 0 26px 60px rgba(20, 40, 30, 0.3);
 
-  /* Примитивы зон "кабинет ученика/админа" (§16а) — baseline ("split"-тема).
-     Индирекция через отдельные --rp-student-*, --rp-admin-* переменные (не
-     напрямую в [data-zone=...]) — по тому же паттерну, что --rp-learn-*:
-     тема переопределяет их ТОЛЬКО на <html> (ниже), а зонное правило просто
-     читает их через var(), поэтому корректно наследуется на <body> даже
-     притом, что у <body> тоже статически стоит свой data-zone. */
-  --rp-student-bg: var(--rp-color-green-100);
-  --rp-student-surface: #ffffff;
-  /* Была #ffffff — та же плоская пара, что нашли и починили у темы
-     "pattern" в этот же день ("проработай все темы"). green-100 — уже
-     существующий токен, тот же оттенок, что и --rp-student-bg этой зоны,
-     так что surface-raised теперь тонко перекликается с фоном зоны, а не
-     случайный отдельный цвет. ink-900 на нём — 14.1:1 (2026-07-21). */
-  --rp-student-surface-raised: var(--rp-color-green-100);
-  --rp-student-border: var(--rp-color-green-700);
-  --rp-student-text: var(--rp-color-ink-900);
-  --rp-student-accent: var(--rp-color-green-700);
-  --rp-student-accent-strong: var(--rp-color-green-800);
-  /* Раньше кнопки в зонах "кабинет ученика/админа" не имели своего
-     accent-contrast и молча наследовали --rp-learn-accent-contrast через
-     fallback в .btn-primary — совпадало по цвету случайно, а не по расчёту:
-     на baseline-теме --rp-student-accent (зелёный, тёмный) и
-     --rp-admin-accent (золотой, светлее) требуют ПРОТИВОПОЛОЖНЫЙ по
-     светлоте текст, но делили один и тот же общий fallback. Явные
-     собственные токены — точный расчёт контраста для каждой зоны
-     (2026-07-21, полировка дизайн-системы). parchment-50 на green-700 —
-     5.94:1. */
-  --rp-student-accent-contrast: var(--rp-color-parchment-50);
+  /* ─── Зоны «кабинет ученика / админа» (§16а) ─────────────────────────
+     Индирекция через отдельные --rp-student-*, --rp-admin-*: тема
+     переопределяет их ТОЛЬКО на <html>, а зонное правило читает через
+     var(), поэтому наследование работает и при статическом data-zone
+     на <body>.
 
+     В новом дизайне кабинет ученика — та же зелёно-золотая гамма, что и
+     учебная зона: в макете это один и тот же экран, разница только в
+     раскладке. Раньше кабинет был отдельной светло-зелёной зоной и
+     выглядел как другой сайт. */
+  --rp-student-bg: var(--rp-learn-bg);
+  --rp-student-surface: var(--rp-color-emerald-750);
+  --rp-student-surface-raised: var(--rp-color-emerald-700);
+  --rp-student-border: rgba(215, 181, 106, 0.16);
+  --rp-student-text: var(--rp-color-parchment-50);
+  --rp-student-accent: var(--rp-color-gold-500);
+  --rp-student-accent-strong: var(--rp-color-gold-600);
+  --rp-student-accent-alt: var(--rp-color-gold-400);
+  --rp-student-accent-contrast: var(--rp-color-emerald-800);
+
+  /* Админка в макете — единственный экран в нейтральном графите: у неё
+     другая задача, и отличать её от кабинета ученика на глаз полезно. */
   --rp-admin-bg: var(--rp-color-graphite-900);
   --rp-admin-surface: var(--rp-color-graphite-800);
   --rp-admin-surface-raised: var(--rp-color-graphite-700);
-  --rp-admin-border: var(--rp-color-graphite-100);
-  --rp-admin-text: var(--rp-color-graphite-100);
+  --rp-admin-border: rgba(215, 181, 106, 0.14);
+  --rp-admin-text: var(--rp-color-graphite-100);      /* 12.6:1 на surface */
   --rp-admin-accent: var(--rp-color-gold-500);
   --rp-admin-accent-strong: var(--rp-color-gold-600);
-  /* ink-900 на gold-500 — 4.98:1. Раньше через общий fallback сюда попадал
-     parchment-50 (светлый текст на золоте, 3.15:1 — провал AA, тот же баг,
-     что был у --rp-learn-accent-contrast baseline, см. выше). */
-  --rp-admin-accent-contrast: var(--rp-color-ink-900);
+  --rp-admin-accent-alt: var(--rp-color-gold-400);
+  --rp-admin-accent-contrast: var(--rp-color-graphite-900);
 }
 
-/* Зона "кабинет ученика" (§16а) — читает --rp-student-*, которые переключаются темой на <html> */
+/* Зона «кабинет ученика» (§16а) — читает --rp-student-*, которые переключаются темой на <html> */
 [data-zone="student"] {
   --rp-zone-bg: var(--rp-student-bg);
   --rp-zone-surface: var(--rp-student-surface);
@@ -203,12 +231,11 @@
   --rp-zone-text: var(--rp-student-text);
   --rp-zone-accent: var(--rp-student-accent);
   --rp-zone-accent-strong: var(--rp-student-accent-strong);
-  /* Раньше не было — .btn-primary молча падал на --rp-learn-accent-contrast
-     через fallback (см. комментарий у --rp-student-accent-contrast выше). */
+  --rp-zone-accent-alt: var(--rp-student-accent-alt);
   --rp-zone-accent-contrast: var(--rp-student-accent-contrast);
 }
 
-/* Зона "кабинет админа" (§16а) — читает --rp-admin-*, которые переключаются темой на <html> */
+/* Зона «кабинет админа» (§16а) — читает --rp-admin-* */
 [data-zone="admin"] {
   --rp-zone-bg: var(--rp-admin-bg);
   --rp-zone-surface: var(--rp-admin-surface);
@@ -217,10 +244,11 @@
   --rp-zone-text: var(--rp-admin-text);
   --rp-zone-accent: var(--rp-admin-accent);
   --rp-zone-accent-strong: var(--rp-admin-accent-strong);
+  --rp-zone-accent-alt: var(--rp-admin-accent-alt);
   --rp-zone-accent-contrast: var(--rp-admin-accent-contrast);
 }
 
-/* Зона "учебный контент" по умолчанию, явно тоже через [data-zone] для единообразия */
+/* Зона «учебный контент» — по умолчанию, явно тоже через [data-zone] */
 [data-zone="learn"] {
   --rp-zone-bg: var(--rp-learn-bg);
   --rp-zone-surface: var(--rp-learn-surface);
@@ -229,225 +257,153 @@
   --rp-zone-text: var(--rp-learn-text);
   --rp-zone-accent: var(--rp-learn-accent);
   --rp-zone-accent-strong: var(--rp-learn-accent-strong);
-  --rp-zone-accent-contrast: var(--rp-learn-accent-contrast);
-  /* Только у зоны "learn" — градиентная кнопка (design.html) намеренно не
-     распространена на кабинеты ученика/админа в этом проходе ("точечная
-     полировка", а не полный редизайн кабинетов, 2026-07-21). */
   --rp-zone-accent-alt: var(--rp-learn-accent-alt);
+  --rp-zone-accent-contrast: var(--rp-learn-accent-contrast);
 }
 
-/* ============================================================
-   Темы сайта (публичная зона "learn") — переопределяют примитивы
-   --rp-learn-* на уровне <html>, поэтому распространяются на ВСЕ
-   страницы зоны learn (лендинг, модули, книги, вход/регистрация),
-   а не только на блок героя. Переключаются pages/js/theme.js,
-   выбор — data-site-theme на <html>, хранится в localStorage.
-   project.md — решения 2026-07-16 (варианты A/B/C из
-   "Лендинг - новый фон.html"). "split" не переопределяется — это
-   исходная золото/пергаментная палитра выше, тема-baseline. ========== */
+/* Приглушённый текст зоны — раньше .feed/.mintro считали его через
+   color-mix прямо в base.css, потому что готового токена не было. */
+[data-zone] { --rp-zone-muted: color-mix(in srgb, var(--rp-zone-text) 68%, transparent); }
 
-/* A — Тёмный изумруд. Тот же ромбовидный орнамент, что у baseline и
-   "pattern", но золотыми линиями на тёмном изумруде — раньше фон был
-   плоской заливкой без узора (project.md, решение 2026-07-18). */
-html[data-site-theme="emerald"] {
-  /* opacity 0.09→0.12 — тот же лёгкий подъём "характера" узора, что
-     baseline/pattern получили в этот же проход ("проработай все темы,
-     сделай приятными", 2026-07-21); чуть сильнее нельзя — тёмный фон уже
-     мельче гасит контраст узора, чем светлые темы, выше начинает
-     выглядеть шумно под текстом. */
-  --rp-learn-bg: var(--rp-color-emerald-900) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23e6c983' stroke-opacity='0.12' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
-  --rp-learn-surface: var(--rp-color-emerald-700);
-  --rp-learn-surface-raised: #26492f;
-  --rp-learn-border: rgba(230, 201, 131, 0.25);
-  --rp-learn-text: var(--rp-color-parchment-50);
-  --rp-learn-text-muted: var(--rp-color-sage-300);
-  --rp-learn-accent: var(--rp-color-gold-400);
-  --rp-learn-accent-strong: var(--rp-color-gold-600);
-  --rp-learn-accent-contrast: var(--rp-color-ink-900);
-  /* gold-200 — уже существующий токен (#e6c983), тот же светлый оттенок,
-     что design.html использует как верхний конец градиента кнопки.
-     ink-900 на gold-200 — 10.5:1, на базовом gold-400 — 6.0:1, оба конца
-     градиента с запасом проходят AA (2026-07-21). */
-  --rp-learn-accent-alt: var(--rp-color-gold-200);
-  --rp-learn-icon-bg: rgba(230, 201, 131, 0.14);
-  --rp-learn-icon-text: var(--rp-color-gold-200);
-  --rp-learn-badge-bg: rgba(230, 201, 131, 0.16);
-  --rp-learn-badge-text: var(--rp-color-gold-200);
-  --rp-learn-badge-border: rgba(230, 201, 131, 0.4);
-  --rp-ayah-card-bg: var(--rp-color-emerald-700);
+/* ============================================================
+   ТЕМА «ПЕРГАМЕНТ» — светлый холст макета.
+
+   Это те самые цвета, которыми в макете нарисовано всё ВОКРУГ экранов:
+   тёплый песочный фон #e6e0d3, заголовки #1e1a11, пояснения #5c5138 и
+   #8a7c5a, зелёная пилюля #2f6a4a, золотые ссылки #c09330.
+
+   Акцент здесь ЗЕЛЁНЫЙ, а не золотой, и это расчёт, а не вкус: белый
+   текст на золоте #c09330 даёт 2.6:1 — провал AA даже для крупного
+   текста, кнопка была бы нечитаемой. Белый на зелёном #2f6a4a — 5.9:1.
+   Золото на светлой теме остаётся, но только линиями и мелкими деталями,
+   как и в макете. ============================================ */
+html[data-site-theme="pattern"] {
+  --rp-learn-bg: var(--rp-color-parchment-300) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%238f6a22' stroke-opacity='0.13' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  --rp-learn-surface: var(--rp-color-parchment-50);
+  --rp-learn-surface-raised: var(--rp-color-parchment-200);
+  --rp-learn-border: rgba(43, 36, 23, 0.14);
+  --rp-learn-border-strong: rgba(43, 36, 23, 0.26);
+  --rp-learn-text: var(--rp-color-ink-900);           /* 15.1:1 на surface */
+  --rp-learn-text-muted: var(--rp-color-sand-600);    /* 6.8:1 на surface */
+  --rp-learn-accent: var(--rp-color-green-700);       /* белый на нём 5.9:1 */
+  --rp-learn-accent-strong: var(--rp-color-green-800);
+  /* #3d8560 из макета не подошёл: белый текст на нём даёт 4.45:1 — на
+     волосок ниже порога AA, а это ВЕРХНИЙ конец градиента кнопки, то есть
+     половина каждой кнопки светлой темы была бы нечитаемой. #377b58 — тот
+     же тон на пару процентов темнее, 5.08:1, градиент по-прежнему виден. */
+  --rp-learn-accent-alt: #377b58;
+  --rp-learn-accent-contrast: #ffffff;
+  --rp-learn-icon-bg: rgba(47, 106, 74, 0.1);
+  --rp-learn-icon-text: var(--rp-color-green-800);
+  --rp-learn-badge-bg: rgba(47, 106, 74, 0.12);
+  --rp-learn-badge-text: var(--rp-color-green-700);   /* 5.5:1 на surface */
+  --rp-learn-badge-border: rgba(47, 106, 74, 0.3);
+  /* Тёмно-зелёная панель на светлом холсте — тот же приём, что в макете:
+     все экраны там стоят тёмными прямоугольниками на песочном фоне. */
+  --rp-ayah-card-bg: var(--rp-color-emerald-800);
   --rp-ayah-card-text: var(--rp-color-parchment-50);
   --rp-ayah-card-accent: var(--rp-color-gold-200);
-  /* Два слоя — мягкий золотой блик в углу поверх базового радиального
-     градиента — иначе на центрированной раскладке (эта тема) карточка
-     героя выглядела плоской заливкой (план улучшения курса, 2026-07-19).
-     Геометрическая розетка (звезда+круги) пробовалась 2026-07-18 и снята
-     по прямой просьбе автора курса — не понравилась на живом рендере. */
   --rp-hero-panel-gradient:
-    radial-gradient(60% 80% at 12% 0%, rgba(230, 201, 131, 0.12), transparent 60%),
-    radial-gradient(130% 70% at 50% -10%, #245038, var(--rp-color-emerald-900) 65%);
-}
+    radial-gradient(60% 80% at 88% 0%, rgba(47, 106, 74, 0.08), transparent 60%),
+    radial-gradient(130% 70% at 50% -10%, var(--rp-color-parchment-50), var(--rp-color-parchment-200) 65%);
+  --rp-hero-panel-text: var(--rp-color-ink-900);
+  --rp-hero-panel-accent: var(--rp-color-green-700);
+  --rp-hero-brand-mark: var(--rp-color-green-700);
+  --rp-surface-accent: #e9f1eb;   /* зеленоватый оттенок пергамента */
 
-/* B — Чистая светлая тема (deep-blue accent) */
-/* Полный редизайн светлой темы (запрос автора "полностью переделай с
-   нуля чтобы светлая тема была прям светлой и приятной современной",
-   2026-07-21). Предыдущая итерация (терракота) была слишком тёплой/
-   мутной. Новая палитра — чистый белый фон с едва заметным холодным
-   оттенком, акцент — глубокий синий (#2855a8), контрастно отличается
-   от золота (baseline) и зелени (emerald). Синий — один из ключевых
-   цветов исламского искусства. Контраст: #2855a8 на белом — 6.7:1
-   (AA+), #1e3f7a — 10.2:1 (AAA), белый на #2855a8 — 6.7:1 (AA+),
-   #64748b (muted) на белом — 4.8:1 (AA). */
-html[data-site-theme="pattern"] {
-  --rp-learn-bg:
-    radial-gradient(1100px 620px at 50% -8%, #ffffff, rgba(255,255,255,0) 70%),
-    radial-gradient(900px 700px at 92% 30%, rgba(37, 78, 158, 0.045), rgba(37, 78, 158, 0) 60%),
-    #f8f9fc;
-  --rp-learn-surface: #ffffff;
-  --rp-learn-surface-raised: #f0f2f7;
-  --rp-learn-border: rgba(15, 23, 42, 0.09);
-  --rp-learn-text: #0f172a;
-  --rp-learn-text-muted: #64748b;
-  --rp-learn-accent: #2855a8;
-  --rp-learn-accent-strong: #1e3f7a;
-  --rp-learn-accent-contrast: #ffffff;
-  --rp-learn-accent-alt: #1e3f7a;
-  --rp-learn-icon-bg: rgba(40, 85, 168, 0.08);
-  --rp-learn-icon-text: #2855a8;
-  --rp-learn-badge-bg: rgba(40, 85, 168, 0.07);
-  --rp-learn-badge-text: #1e3f7a;
-  --rp-learn-badge-border: rgba(40, 85, 168, 0.18);
-  /* Раньше #0f172a (тёмно-навигационный, почти чёрный) — визуально читался
-     как "чёрный", а не как часть синей темы (запрос автора "то что чёрное
-     фон замени на синее чтобы было как на фото 2" — тот же синий, что у
-     .btn-primary, 2026-07-21). accent-strong (#1e3f7a) — тот же тон, что
-     тёмный конец градиента кнопки. accent посветлел до #93c5fd (было
-     #60a5fa) — на новом более светлом синем фоне прежний давал 2.79:1
-     (провал WCAG AA), светлее — 5.7:1. */
-  --rp-ayah-card-bg: #1e3f7a;
-  --rp-ayah-card-text: #f1f5f9;
-  --rp-ayah-card-accent: #93c5fd;
-  --rp-hero-panel-gradient:
-    radial-gradient(60% 80% at 88% 0%, rgba(40, 85, 168, 0.07), transparent 60%),
-    radial-gradient(130% 70% at 50% -10%, #ffffff, #f0f2f7 65%);
-  --rp-hero-panel-text: #0f172a;
-  --rp-hero-panel-accent: #2855a8;
-}
+  /* Тени на светлой теме — тёплые, а не зелёные: холодная тень на песочном
+     фоне выглядит грязным пятном. */
+  --rp-shadow-card: 0 8px 26px rgba(43, 36, 23, 0.12);
+  --rp-shadow-pop: 0 20px 46px rgba(43, 36, 23, 0.2);
+  --rp-shadow-panel: 0 26px 60px rgba(43, 36, 23, 0.22);
 
-/* C — Тёмный уголь + золото (референс: второй сайт автора,
-   https://kingboob8880-pixel.github.io/site/, запрос "переделай третью
-   тему на тёмный стиль наподобие этого", 2026-07-21). Раньше "split" не
-   переопределялся вообще — читал светлый золото-пергаментный baseline из
-   :root, что делало вторую и третью темы почти неотличимы после
-   переделки "pattern" в синюю. Теперь — тёплый почти-чёрный фон
-   (#0d0b08, тот же тон, что и на референс-сайте) с приглушённым золотым
-   акцентом — третья тема наконец самостоятельна: не зелёная (emerald), не
-   синяя (pattern), а тёмно-золотая, в стиле визитки лекаря. Контраст:
-   ink-900 (#221c11) на --rp-learn-accent (#d4a73c) — 7.6:1 (AAA), текст
-   #f0e8d8 на фоне #0d0b08 — 16.1:1, приглушённый #bfb49e на фоне —
-   9.6:1 (оба с большим запасом AA). */
-html[data-site-theme="split"] {
-  --rp-learn-bg:
-    #0d0b08 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23d4a73c' stroke-opacity='0.1' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
-  --rp-learn-surface: #1a1612;
-  --rp-learn-surface-raised: #211c16;
-  --rp-learn-border: rgba(212, 167, 60, 0.16);
-  --rp-learn-text: #f0e8d8;
-  --rp-learn-text-muted: #bfb49e;
-  --rp-learn-accent: #d4a73c;
-  --rp-learn-accent-strong: #c49530;
-  --rp-learn-accent-contrast: var(--rp-color-ink-900);
-  --rp-learn-accent-alt: #e8be52;
-  --rp-learn-icon-bg: rgba(212, 167, 60, 0.12);
-  --rp-learn-icon-text: #e8be52;
-  --rp-learn-badge-bg: rgba(212, 167, 60, 0.1);
-  --rp-learn-badge-text: #e8be52;
-  --rp-learn-badge-border: rgba(212, 167, 60, 0.28);
-  --rp-ayah-card-bg: #131110;
-  --rp-ayah-card-text: #f0e8d8;
-  --rp-ayah-card-accent: #e8be52;
-  --rp-hero-panel-gradient:
-    radial-gradient(60% 80% at 12% 0%, rgba(212, 167, 60, 0.14), transparent 60%),
-    radial-gradient(130% 70% at 50% -10%, #1c1814, #0d0b08 65%);
-  --rp-hero-panel-text: #f0e8d8;
-  --rp-hero-panel-accent: #e8be52;
-  --rp-hero-brand-mark: #e8be52;
-}
+  --rp-status-success: var(--rp-color-green-700);
+  --rp-status-warn: #8f6119;   /* 5.0:1 на surface; #9a6a1e давал 4.37 */
+  --rp-status-danger: #a33a2e;
+  --rp-status-danger-bg: rgba(163, 58, 46, 0.1);
 
-/* ============================================================
-   Темы применяются и к кабинетам ученика/админа (project.md §16а,
-   решение 2026-07-16 — по прямой команде владельца школы, отменяет
-   прежнее ограничение "кабинеты не участвуют в теме лендинга").
-   Переопределяют --rp-student-*, --rp-admin-* ТОЛЬКО на <html> — так же,
-   как выше --rp-learn-* — потому что <body> дополнительно несёт свой
-   собственный статический data-zone (для отсутствия FOUC до JS) и составной
-   селектор вида [data-zone][data-site-theme] на body бы не сработал: он
-   требует оба атрибута на одном элементе, а data-site-theme стоит только
-   на <html>. "split" теперь тоже переопределяется (см. блок C выше) —
-   раньше был единственной темой без override, читал светлый baseline. ====== */
-
-/* A — Тёмный изумруд: кабинет ученика в тёмно-зелёной гамме */
-html[data-site-theme="emerald"] {
-  --rp-student-bg: var(--rp-color-emerald-900);
-  --rp-student-surface: var(--rp-color-emerald-700);
-  --rp-student-surface-raised: #26492f;
-  --rp-student-border: rgba(230, 201, 131, 0.25);
-  --rp-student-text: var(--rp-color-parchment-50);
-  --rp-student-accent: var(--rp-color-gold-400);
-  --rp-student-accent-strong: var(--rp-color-gold-600);
-  --rp-student-accent-contrast: var(--rp-color-ink-900);
-
-  /* кабинет админа — та же гамма, но глубже (он и так тёмный по умолчанию) */
-  --rp-admin-bg: #0f1f16;
-  --rp-admin-surface: var(--rp-color-emerald-900);
-  --rp-admin-surface-raised: var(--rp-color-emerald-700);
-  --rp-admin-border: rgba(230, 201, 131, 0.25);
-  --rp-admin-text: var(--rp-color-parchment-50);
-  --rp-admin-accent: var(--rp-color-gold-400);
-  --rp-admin-accent-strong: var(--rp-color-gold-600);
-  --rp-admin-accent-contrast: var(--rp-color-ink-900);
-}
-
-/* B — Светлая тема: оба кабинета — светлый режим (deep-blue accent) */
-html[data-site-theme="pattern"] {
-  --rp-student-bg: #f0f2f7;
-  --rp-student-surface: #ffffff;
-  --rp-student-surface-raised: #ebedf4;
-  --rp-student-border: #2855a8;
-  --rp-student-text: #0f172a;
-  --rp-student-accent: #2855a8;
-  --rp-student-accent-strong: #1e3f7a;
+  --rp-student-bg: var(--rp-learn-bg);
+  --rp-student-surface: var(--rp-color-parchment-50);
+  --rp-student-surface-raised: var(--rp-color-parchment-200);
+  --rp-student-border: rgba(43, 36, 23, 0.14);
+  --rp-student-text: var(--rp-color-ink-900);
+  --rp-student-accent: var(--rp-color-green-700);
+  --rp-student-accent-strong: var(--rp-color-green-800);
+  --rp-student-accent-alt: #377b58;
   --rp-student-accent-contrast: #ffffff;
 
-  --rp-admin-bg: #e8eaee;
+  --rp-admin-bg: #e8e4da;
   --rp-admin-surface: #ffffff;
-  --rp-admin-surface-raised: #f2f3f6;
-  --rp-admin-border: var(--rp-color-graphite-700);
-  --rp-admin-text: var(--rp-color-graphite-900);
-  --rp-admin-accent: #2855a8;
-  --rp-admin-accent-strong: #1e3f7a;
+  --rp-admin-surface-raised: var(--rp-color-parchment-100);
+  --rp-admin-border: rgba(43, 36, 23, 0.14);
+  --rp-admin-text: var(--rp-color-ink-900);
+  --rp-admin-accent: var(--rp-color-green-700);
+  --rp-admin-accent-strong: var(--rp-color-green-800);
+  --rp-admin-accent-alt: #377b58;
   --rp-admin-accent-contrast: #ffffff;
 }
 
-/* C — Тёмный уголь + золото: оба кабинета в тёмном режиме, тот же тон, что
-   и learn-зона этой темы (см. блок C выше). */
-html[data-site-theme="split"] {
-  --rp-student-bg: #0d0b08;
-  --rp-student-surface: #1a1612;
-  --rp-student-surface-raised: #211c16;
-  --rp-student-border: rgba(212, 167, 60, 0.2);
-  --rp-student-text: #f0e8d8;
-  --rp-student-accent: #d4a73c;
-  --rp-student-accent-strong: #c49530;
-  --rp-student-accent-contrast: var(--rp-color-ink-900);
+/* ============================================================
+   ТЕМА «ГРАФИТ» — палитра админской страницы макета.
 
-  --rp-admin-bg: #0a0806;
-  --rp-admin-surface: #17130f;
-  --rp-admin-surface-raised: #1e1811;
-  --rp-admin-border: rgba(212, 167, 60, 0.2);
-  --rp-admin-text: #f0e8d8;
-  --rp-admin-accent: #d4a73c;
-  --rp-admin-accent-strong: #c49530;
-  --rp-admin-accent-contrast: var(--rp-color-ink-900);
+   Нейтральный графит #1c1f24 / #252a31 с тем же золотом. Третья тема
+   больше не «ещё один тёмный сайт»: она отличается от «Изумруда» ровно
+   тем, чем в макете отличается админка от кабинета — отсутствием зелёного.
+   Тёплый почти-чёрный прошлой версии этой темы («уголь») ушёл: он
+   конкурировал с «Изумрудом» на глаз, обе были тёмно-золотыми.
+   ============================================ */
+html[data-site-theme="split"] {
+  --rp-learn-bg: var(--rp-color-graphite-900) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23d7b56a' stroke-opacity='0.08' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  --rp-learn-surface: var(--rp-color-graphite-800);
+  --rp-learn-surface-raised: var(--rp-color-graphite-700);
+  --rp-learn-border: rgba(215, 181, 106, 0.14);
+  --rp-learn-border-strong: rgba(215, 181, 106, 0.28);
+  --rp-learn-text: var(--rp-color-graphite-100);      /* 12.6:1 на surface */
+  --rp-learn-text-muted: var(--rp-color-graphite-300);/* 5.2:1 на surface */
+  --rp-learn-accent: var(--rp-color-gold-500);
+  --rp-learn-accent-strong: var(--rp-color-gold-600);
+  --rp-learn-accent-alt: var(--rp-color-gold-400);
+  /* Графит на золоте: 5.3:1 на gold-500, 8.6:1 на gold-400. */
+  --rp-learn-accent-contrast: var(--rp-color-graphite-900);
+  --rp-learn-icon-bg: rgba(215, 181, 106, 0.12);
+  --rp-learn-icon-text: var(--rp-color-gold-200);
+  --rp-learn-badge-bg: rgba(215, 181, 106, 0.1);
+  --rp-learn-badge-text: var(--rp-color-gold-200);    /* 9.1:1 на surface */
+  --rp-learn-badge-border: rgba(215, 181, 106, 0.28);
+  --rp-ayah-card-bg: var(--rp-color-graphite-950);
+  --rp-ayah-card-text: var(--rp-color-graphite-100);
+  --rp-ayah-card-accent: var(--rp-color-gold-200);
+  --rp-hero-panel-gradient:
+    radial-gradient(60% 80% at 12% 0%, rgba(215, 181, 106, 0.12), transparent 60%),
+    radial-gradient(130% 70% at 50% -10%, var(--rp-color-graphite-700), var(--rp-color-graphite-900) 65%);
+  --rp-hero-panel-text: var(--rp-color-graphite-100);
+  --rp-hero-panel-accent: var(--rp-color-gold-200);
+  --rp-hero-brand-mark: var(--rp-color-gold-400);
+  --rp-surface-accent: #333b45;   /* поднятый графит */
+
+  --rp-shadow-card: 0 8px 26px rgba(0, 0, 0, 0.4);
+  --rp-shadow-pop: 0 20px 46px rgba(0, 0, 0, 0.5);
+  --rp-shadow-panel: 0 26px 60px rgba(0, 0, 0, 0.5);
+
+  --rp-student-bg: var(--rp-learn-bg);
+  --rp-student-surface: var(--rp-color-graphite-800);
+  --rp-student-surface-raised: var(--rp-color-graphite-700);
+  --rp-student-border: rgba(215, 181, 106, 0.14);
+  --rp-student-text: var(--rp-color-graphite-100);
+  --rp-student-accent: var(--rp-color-gold-500);
+  --rp-student-accent-strong: var(--rp-color-gold-600);
+  --rp-student-accent-alt: var(--rp-color-gold-400);
+  --rp-student-accent-contrast: var(--rp-color-graphite-900);
+
+  --rp-admin-bg: #14161a;
+  --rp-admin-surface: var(--rp-color-graphite-900);
+  --rp-admin-surface-raised: var(--rp-color-graphite-800);
+  --rp-admin-border: rgba(215, 181, 106, 0.14);
+  --rp-admin-text: var(--rp-color-graphite-100);
+  --rp-admin-accent: var(--rp-color-gold-500);
+  --rp-admin-accent-strong: var(--rp-color-gold-600);
+  --rp-admin-accent-alt: var(--rp-color-gold-400);
+  --rp-admin-accent-contrast: var(--rp-color-graphite-900);
 }
 
 @media (prefers-reduced-motion: reduce) {

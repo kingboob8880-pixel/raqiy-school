@@ -62,11 +62,41 @@ body {
 
 img, video { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
-h1, h2, h3, h4 { font-family: var(--rp-font-heading); line-height: 1.25; margin: 0 0 var(--rp-space-3); }
-h1 { font-size: var(--rp-fs-2xl); }
+/* Насыщенность заголовков — из макета: Spectral 800 у крупных, 700 у
+   остальных. Раньше вес не задавался вовсе, и браузер брал дефолтный
+   bold (700) для всех: h1 выходил не сильнее h3, и иерархия держалась
+   только на кегле. */
+h1, h2, h3, h4 { font-family: var(--rp-font-heading); font-weight: 700; line-height: 1.22; margin: 0 0 var(--rp-space-3); }
+h1 { font-size: var(--rp-fs-2xl); font-weight: 800; line-height: 1.08; }
 h2 { font-size: var(--rp-fs-xl); }
 h3 { font-size: var(--rp-fs-lg); }
 p { margin: 0 0 var(--rp-space-4); }
+
+/* Надзаголовок — самый частый приём макета: мелкие прописные с широким
+   трекингом в акцентном цвете. Им подписан почти каждый блок. До этого
+   каждое место писало эти пять свойств заново (нашёл шесть копий). */
+.eyebrow {
+  display: block;
+  font-family: var(--rp-font-body);
+  font-size: var(--rp-eyebrow-size); font-weight: 800;
+  letter-spacing: var(--rp-eyebrow-tracking); text-transform: uppercase;
+  color: var(--rp-learn-badge-text, var(--rp-zone-accent));
+  margin: 0 0 var(--rp-space-2);
+}
+.eyebrow--muted { color: var(--rp-zone-muted, var(--rp-learn-text-muted)); }
+
+/* Полоса прокрутки внутри панелей — тонкая, золотом. В макете это
+   отдельный класс .sc; здесь применяем ко всему, что скроллится внутри
+   страницы, чтобы не помнить про класс в каждом новом блоке. */
+.sc, .doc-body, .messenger, .msg-list, .notif-panel__list, .table-scroll { scrollbar-width: thin; scrollbar-color: rgba(215, 181, 106, 0.32) transparent; }
+.sc::-webkit-scrollbar, .doc-body::-webkit-scrollbar, .messenger::-webkit-scrollbar,
+.msg-list::-webkit-scrollbar, .notif-panel__list::-webkit-scrollbar, .table-scroll::-webkit-scrollbar { width: 9px; height: 9px; }
+.sc::-webkit-scrollbar-thumb, .doc-body::-webkit-scrollbar-thumb, .messenger::-webkit-scrollbar-thumb,
+.msg-list::-webkit-scrollbar-thumb, .notif-panel__list::-webkit-scrollbar-thumb, .table-scroll::-webkit-scrollbar-thumb {
+  background: rgba(215, 181, 106, 0.28); border-radius: var(--rp-radius-pill);
+}
+.sc::-webkit-scrollbar-track, .doc-body::-webkit-scrollbar-track, .messenger::-webkit-scrollbar-track,
+.msg-list::-webkit-scrollbar-track, .notif-panel__list::-webkit-scrollbar-track, .table-scroll::-webkit-scrollbar-track { background: transparent; }
 .rtl { direction: rtl; unicode-bidi: isolate; }
 .arabic { font-family: var(--rp-font-arabic); font-size: var(--rp-fs-arabic); direction: rtl; }
 
@@ -171,18 +201,28 @@ p { margin: 0 0 var(--rp-space-4); }
   overflow: hidden; color: transparent;
 }
 .theme-switcher__btn[aria-pressed="true"] { border-color: var(--rp-zone-accent, var(--rp-learn-accent)); }
-.theme-switcher__btn[data-theme="emerald"] { background: linear-gradient(135deg, #245038, #16281d); }
-.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #f8f9fc, #b8c5db); }
-.theme-switcher__btn[data-theme="split"] { background: linear-gradient(135deg, #1a1612, #d4a73c); }
+/* Кружки-образцы: половина — фон темы, половина — её акцент. Раньше оба
+   конца градиента брались из фона, и «Изумруд» с «Графитом» выглядели
+   двумя почти одинаковыми тёмными точками — выбрать тему на глаз было
+   нельзя. Теперь видно и фон, и то, чем тема красит кнопки. */
+.theme-switcher__btn[data-theme="emerald"] { background: linear-gradient(135deg, #1a3225 48%, #c09330 52%); }
+.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #f3ead3 48%, #2f6a4a 52%); }
+.theme-switcher__btn[data-theme="split"] { background: linear-gradient(135deg, #252a31 48%, #c09330 52%); }
 
 /* ---------- Кнопки ---------- */
+/* Размеры из макета: высота 46px, радиус 13px, начертание 800. Прежняя
+   кнопка была ниже (44px), легче (700) и круглее (12px при старом
+   --rp-radius-md) — рядом с макетом читалась вяло. Вес 800, а не 700 —
+   в макете кнопка единственный элемент с максимальным начертанием, за
+   счёт этого она и «выступает» вперёд остального. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--rp-space-2);
-  font-family: var(--rp-font-body); font-size: var(--rp-fs-sm); font-weight: 700;
-  padding: 0.7rem 1.25rem; border-radius: var(--rp-radius-md);
+  font-family: var(--rp-font-body); font-size: var(--rp-fs-sm); font-weight: 800;
+  padding: 0 1.375rem; border-radius: var(--rp-radius-md);
   border: 1px solid transparent; cursor: pointer; text-decoration: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-  min-height: 2.75rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+  min-height: 2.875rem;
+  line-height: 1.2;
 }
 .btn:active { transform: translateY(1px); }
 /* Градиент + цветная тень — по референсу design.html ("премиальная"
@@ -212,7 +252,25 @@ p { margin: 0 0 var(--rp-space-4); }
 .btn-ghost { background: transparent; color: var(--rp-zone-text, var(--rp-learn-text)); }
 .btn-danger { background: var(--rp-status-danger); color: #fff; }
 .btn-block { width: 100%; }
-.btn-sm { padding: 0.45rem 0.85rem; min-height: 2.25rem; font-size: var(--rp-fs-sm); }
+.btn-sm { padding: 0 0.95rem; min-height: 2.375rem; font-size: var(--rp-fs-sm); }
+/* Вторая по важности кнопка в макете — не прозрачная рамка, а едва
+   заметная светлая плашка с золотой линией: на тёмном фоне пустая рамка
+   выглядит недоступной кнопкой. */
+.btn-soft {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--rp-learn-badge-border, var(--rp-zone-border));
+  color: var(--rp-zone-text, var(--rp-learn-text));
+}
+.btn-soft:hover { background: rgba(255, 255, 255, 0.1); }
+/* На светлой теме «белое по светлому» не работает — тонируем акцентом. */
+html[data-site-theme="pattern"] .btn-soft { background: var(--rp-learn-badge-bg); }
+html[data-site-theme="pattern"] .btn-soft:hover { background: color-mix(in srgb, var(--rp-zone-accent) 16%, transparent); }
+/* На телефоне главное действие — во всю ширину и выше: так до него
+   дотягивается большой палец (правило макета «приоритет действия сверху»). */
+@media (max-width: 34rem) {
+  .btn { min-height: 3.125rem; }
+  .btn-sm { min-height: 2.375rem; }
+}
 
 /* ---------- Карточки ---------- */
 /* Лёгкий диагональный градиент (surface-raised → surface) вместо плоской
@@ -246,6 +304,142 @@ p { margin: 0 0 var(--rp-space-4); }
 @media (prefers-reduced-motion: reduce) {
   .lift { transition: none; }
   .lift:hover { transform: none; }
+}
+
+/* ==========================================================================
+   РАСКЛАДОЧНЫЕ ПРИМИТИВЫ ИЗ МАКЕТА (2026-07-26, «Дизайн новейщий.html»)
+
+   Главный принцип макета автор сформулировал сам, первой же строкой:
+   «на ПК контент занимает ширину двумя колонками с липким рельсом слева,
+   на телефоне — одна колонка с крупными касаниями и приоритетом действия
+   сверху».
+
+   Раньше каждая страница решала это по-своему: кабинет ученика тянул
+   статистику в четыре колонки на всю ширину, «Об авторе» не имел
+   оглавления вовсе, глоссарий — алфавитного рельса. Эти классы — общий
+   набор, чтобы шесть страниц не изобретали раскладку шесть раз.
+   ========================================================================== */
+
+/* Две колонки: содержимое + правый рельс 300px (достижения, наставник,
+   статус). На узком экране рельс уходит ПОД содержимое, а не рядом:
+   300px рядом с текстом на телефоне превращают обе колонки в лапшу. */
+.rp-rail {
+  display: grid; grid-template-columns: minmax(0, 1fr) 19rem;
+  gap: var(--rp-space-5); align-items: start;
+}
+.rp-rail__main { min-width: 0; display: flex; flex-direction: column; gap: var(--rp-space-4); }
+.rp-rail__side { min-width: 0; display: flex; flex-direction: column; gap: var(--rp-space-4); }
+@media (max-width: 60rem) {
+  .rp-rail { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Липкое оглавление слева на страницах-простынях («Об авторе», книга).
+   210px из макета. Прилипает с отступом от шапки, высота которой
+   меняется — берём её из --rp-header-h, что измеряет layout.js. */
+.rp-toc {
+  position: sticky; top: calc(var(--rp-header-h, 4.5rem) + var(--rp-space-3));
+  align-self: start; display: flex; flex-direction: column; gap: 0.2rem;
+}
+.rp-toc__label {
+  font-size: var(--rp-fs-xs); font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--rp-zone-muted, var(--rp-learn-text-muted));
+  margin-bottom: var(--rp-space-2);
+}
+.rp-toc__item {
+  display: block; padding: 0.625rem 0.8rem; border-radius: var(--rp-radius-sm);
+  font-size: var(--rp-fs-sm); font-weight: 700; cursor: pointer;
+  text-decoration: none; color: var(--rp-zone-muted, var(--rp-learn-text-muted));
+  border-left: 2px solid transparent; background: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.rp-toc__item:hover { background: var(--rp-learn-icon-bg, var(--rp-zone-surface-raised)); color: var(--rp-zone-text); }
+.rp-toc__item.is-active {
+  background: var(--rp-learn-badge-bg, var(--rp-zone-surface-raised));
+  color: var(--rp-learn-badge-text, var(--rp-zone-accent));
+  border-left-color: var(--rp-zone-accent, var(--rp-learn-accent));
+}
+
+/* Тот же список на телефоне — горизонтальная лента чипов вместо колонки:
+   вертикальное оглавление там отняло бы весь первый экран. */
+.rp-chips {
+  display: flex; gap: var(--rp-space-2); overflow-x: auto;
+  padding-bottom: var(--rp-space-1); margin: 0 0 var(--rp-space-4);
+  -webkit-overflow-scrolling: touch;
+}
+.rp-chips__item {
+  flex: 0 0 auto; display: inline-flex; align-items: center;
+  height: 2.625rem; padding: 0 0.95rem; border-radius: var(--rp-radius-sm);
+  font-size: var(--rp-fs-sm); font-weight: 700; text-decoration: none; cursor: pointer;
+  background: var(--rp-zone-surface-raised); color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-border);
+}
+.rp-chips__item.is-active {
+  background: var(--rp-learn-badge-bg, var(--rp-zone-surface-raised));
+  color: var(--rp-learn-badge-text, var(--rp-zone-accent));
+  border-color: var(--rp-learn-badge-border, var(--rp-zone-accent));
+}
+
+/* Ряд статистики. В макете он ВСЕГДА ровный: четыре в строку на ПК, две
+   на телефоне — и никогда «три сверху, одна снизу». Поэтому колонки
+   заданы жёстко по числу, а не auto-fit: auto-fit при пяти карточках
+   как раз и даёт кривой хвост. */
+.rp-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--rp-space-3); }
+.rp-stats--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.rp-stats--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 48rem) { .rp-stats, .rp-stats--5, .rp-stats--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.rp-stat {
+  border-radius: var(--rp-radius-md); padding: var(--rp-space-4);
+  background: linear-gradient(165deg, var(--rp-zone-surface-raised), var(--rp-zone-surface));
+  border: 1px solid var(--rp-zone-border);
+}
+.rp-stat__value {
+  font-family: var(--rp-font-heading); font-weight: 800;
+  font-size: var(--rp-fs-lg); line-height: 1;
+  color: var(--rp-learn-badge-text, var(--rp-zone-accent));
+}
+.rp-stat__label { font-size: var(--rp-fs-xs); color: var(--rp-zone-muted, var(--rp-learn-text-muted)); margin-top: 0.4rem; }
+
+/* Полоса прогресса. В макете их три вида — тонкая у «продолжить» (7px),
+   средняя у слабых мест (9px) — но заливка везде одна: золотой градиент
+   на едва заметной подложке. */
+.rp-meter {
+  height: 0.5rem; border-radius: var(--rp-radius-pill); overflow: hidden;
+  background: color-mix(in srgb, var(--rp-zone-text) 14%, transparent);
+}
+.rp-meter--thick { height: 0.6rem; }
+.rp-meter__fill {
+  height: 100%; border-radius: var(--rp-radius-pill);
+  background: linear-gradient(90deg, var(--rp-zone-accent-alt, var(--rp-zone-accent)), var(--rp-zone-accent));
+  transition: width 0.5s ease;
+}
+
+/* Внешняя панель — самая крупная рамка страницы (в макете это «окно
+   браузера» вокруг каждого экрана). Отличается от .card радиусом и
+   тенью: панель одна на экран, карточек внутри неё десяток. */
+.rp-panel {
+  border-radius: var(--rp-radius-xl);
+  border: 1px solid var(--rp-zone-border);
+  background: var(--rp-zone-surface);
+  box-shadow: var(--rp-shadow-panel);
+  overflow: hidden;
+}
+
+/* Строка «показатель + полоса + процент + действие» — слабые места в
+   кабинете, разбор ошибок в тестах. */
+.rp-bar-row { display: flex; align-items: center; gap: var(--rp-space-3); }
+.rp-bar-row__name { flex: 0 0 7rem; font-size: var(--rp-fs-sm); font-weight: 700; }
+.rp-bar-row__meter { flex: 1 1 auto; min-width: 0; }
+.rp-bar-row__pct { flex: 0 0 2.75rem; text-align: right; font-size: var(--rp-fs-sm); font-weight: 800; }
+.rp-bar-row__act {
+  flex: 0 0 auto; background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; font-size: var(--rp-fs-sm); font-weight: 700;
+  color: var(--rp-learn-badge-text, var(--rp-zone-accent));
+}
+@media (max-width: 34rem) {
+  /* На телефоне имя показателя занимает свою строку: 7rem на узком
+     экране оставляли полосе полтора сантиметра. */
+  .rp-bar-row { flex-wrap: wrap; }
+  .rp-bar-row__name { flex: 1 1 100%; }
 }
 
 /* Карточка формулы: арабский текст + транскрипция + перевод + источник.
@@ -1133,21 +1327,51 @@ main.container { padding-block: var(--rp-space-6); }
 .section-banner img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
 .section-banner h2 { position: relative; z-index: 1; margin: 0; padding: var(--rp-space-4); color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.6); background: linear-gradient(0deg, rgba(0,0,0,0.55), transparent); width: 100%; }
 
-/* ---------- Карточка "Продолжить обучение" — обложка + точный следующий урок ---------- */
+/* ---------- Карточка "Продолжить обучение" ----------
+   Главное действие кабинета, поэтому единственная карточка на странице с
+   поднятой подложкой и усиленной рамкой — так в макете отмечен блок
+   «Дальше в программе».
+
+   Класс .card с неё снят (2026-07-26): раньше отступ, радиус и рамка
+   приходили оттуда, а здесь оставался только градиент. Теперь карточка
+   самостоятельна — иначе её нельзя было положить в рельс, не потянув за
+   собой общий вид всех карточек. */
 .continue-card {
-  display: flex; gap: var(--rp-space-5); align-items: center; flex-wrap: wrap;
-  background: linear-gradient(155deg, var(--rp-zone-surface), color-mix(in srgb, var(--rp-zone-accent) 12%, var(--rp-zone-surface)));
+  display: flex; gap: var(--rp-space-4); align-items: center; flex-wrap: wrap;
+  padding: var(--rp-space-5); border-radius: var(--rp-radius-lg);
+  background: linear-gradient(150deg, var(--rp-surface-accent, var(--rp-zone-surface-raised)), var(--rp-zone-surface));
+  border: 1px solid var(--rp-learn-border-strong, var(--rp-zone-border));
 }
+/* Обложка стоит прямо, а не повёрнутая на -3°, и в тонкой золотой рамке
+   вместо толстой светлой: в макете книга у «продолжить» — ровный
+   прямоугольник 74×96. Поворот съедал нижний угол картинки и на тёмной
+   теме толстая светлая рамка светилась ярче самой обложки. */
 .continue-card__cover {
-  width: 5.5rem; height: 7.5rem; object-fit: cover; flex: none; border-radius: var(--rp-radius-sm);
-  border: 3px solid var(--rp-zone-surface, #fff); outline: 1px solid var(--rp-zone-border);
-  box-shadow: var(--rp-shadow-pop); transform: rotate(-3deg);
+  width: 4.625rem; height: 6rem; object-fit: cover; flex: none;
+  border-radius: var(--rp-radius-sm);
+  border: 1px solid var(--rp-learn-border-strong, var(--rp-zone-border));
 }
 .continue-card__eyebrow {
-  display: inline-block; font-size: var(--rp-fs-sm); font-weight: 700; letter-spacing: 0.02em;
-  color: var(--rp-zone-accent); text-transform: uppercase; margin-bottom: 0.3rem;
+  display: inline-block;
+  font-size: var(--rp-eyebrow-size); font-weight: 800;
+  letter-spacing: var(--rp-eyebrow-tracking); text-transform: uppercase;
+  color: var(--rp-learn-badge-text, var(--rp-zone-accent)); margin-bottom: 0.4rem;
 }
-.continue-card__body { flex: 1; min-width: 12rem; }
+.continue-card__body { flex: 1 1 12rem; min-width: 0; }
+/* Подложка этой карточки светлее остальных, и приглушённый цвет текста на
+   ней проваливается: расчётом — 2.95:1 на «Изумруде» и 3.66:1 на
+   «Графите» вместо нужных 4.5:1. Внутри карточки приглушённый текст
+   осветляем до 82% основного — 5.6:1 и 6.7:1 соответственно. */
+.continue-card .form-note,
+.continue-card .rp-stat__label {
+  color: color-mix(in srgb, var(--rp-zone-text) 82%, transparent);
+}
+/* На телефоне кнопка «Продолжить» — во всю ширину под текстом, а не
+   сбоку: рядом с названием урока ей остаётся полтора сантиметра. */
+@media (max-width: 34rem) {
+  .continue-card { gap: var(--rp-space-3); }
+  .continue-card .btn { width: 100%; }
+}
 
 .data-table { width: 100%; border-collapse: collapse; font-size: var(--rp-fs-sm); }
 .data-table th, .data-table td { text-align: left; padding: var(--rp-space-3); border-bottom: 1px solid var(--rp-zone-border); }
@@ -1825,7 +2049,7 @@ body:has(.messenger-page) .footer { display: none; }
 .assignment-card__header {
   display: flex; align-items: center; gap: var(--rp-space-2);
   flex-wrap: wrap; margin-bottom: var(--rp-space-2);
-  font-size: var(--rp-text-sm);
+  font-size: var(--rp-fs-sm);
 }
 .assignment-card__icon { font-size: 1.3em; }
 .assignment-card__type {
@@ -1834,16 +2058,16 @@ body:has(.messenger-page) .footer { display: none; }
 }
 .assignment-card__duration {
   margin-left: auto;
-  color: var(--rp-zone-muted, var(--rp-learn-muted));
+  color: var(--rp-zone-muted, var(--rp-learn-text-muted));
   white-space: nowrap;
 }
 .assignment-card__title {
-  font-size: var(--rp-text-base);
+  font-size: var(--rp-fs-base);
   margin: 0 0 var(--rp-space-2);
 }
 .assignment-card__desc {
-  font-size: var(--rp-text-sm);
-  color: var(--rp-zone-muted, var(--rp-learn-muted));
+  font-size: var(--rp-fs-sm);
+  color: var(--rp-zone-muted, var(--rp-learn-text-muted));
   margin: 0; line-height: 1.55;
 }
 
