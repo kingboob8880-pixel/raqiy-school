@@ -709,6 +709,23 @@ const S = {
   "path.advanced":       { ru: "Продвинутый уровень", en: "Advanced Level", uz: "Yuqori daraja" },
   "path.modules":        { ru: "Модули", en: "Modules", uz: "Modullar" },
 
+  // «Путь ученика» — раскладка по макету автора (2026-07-26, «Все
+  // страницы - раскладка.html», страница 0). Статус модуля подписан
+  // СЛОВОМ, а не только цветом: цвет один не читается ни на монохромном
+  // экране, ни при дальтонизме.
+  "path.subtitle":       { ru: "11 модулей · от основ к самостоятельному приёму", en: "11 modules · from the fundamentals to seeing patients", uz: "11 modul · asoslardan mustaqil qabulgacha" },
+  "path.done":           { ru: "Пройден", en: "Completed", uz: "O'tildi" },
+  "path.now":            { ru: "Сейчас", en: "Current", uz: "Hozir" },
+  "path.locked":         { ru: "Откроется позже", en: "Opens later", uz: "Keyinroq ochiladi" },
+  "path.notStarted":     { ru: "Не начат", en: "Not started", uz: "Boshlanmagan" },
+  "path.of":             { ru: "из", en: "of", uz: "dan" },
+  "path.modulesWord":    { ru: "модулей", en: "modules", uz: "modul" },
+  "path.noBooks":        { ru: "Работа в программе", en: "Work in the app", uz: "Dasturda ishlash" },
+  // Короткие описания уровней — из макета.
+  "path.blurb.beginner":     { ru: "Фундамент: убеждённость, точный язык формул и адрес их применения.", en: "The foundation: certainty, the precise language of the formulas, and where to apply them.", uz: "Poydevor: ishonch, formulalarning aniq tili va ularni qo'llash manzili." },
+  "path.blurb.intermediate": { ru: "Диагностика без вреда, направленное применение и защита лекаря.", en: "Diagnosis without harm, targeted application, and the healer's protection.", uz: "Zararsiz tashxis, yo'naltirilgan qo'llash va shifokorning himoyasi." },
+  "path.blurb.advanced":     { ru: "Сложные случаи, различение подлинного и ложного, работа с пациентом.", en: "Difficult cases, telling the genuine from the false, working with a patient.", uz: "Murakkab holatlar, haqiqiyni soxtadan ajratish, bemor bilan ishlash." },
+
   // ── Weak areas (student dashboard) ──
   "dash.weak":           { ru: "Слабые места", en: "Weak areas", uz: "Zaif tomonlar" },
   "dash.needreview":     { ru: "Требует повторения", en: "Needs review", uz: "Takrorlash kerak" },

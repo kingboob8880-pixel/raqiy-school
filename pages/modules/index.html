@@ -8,25 +8,159 @@
 <link rel="stylesheet" href="../../design/tokens.css?v=21">
 <link rel="stylesheet" href="../../design/base.css?v=64">
 <style>
-  /* Закрытый модуль приглушён, но кликабелен (запрос автора, 2026-07-26):
-     раньше здесь стоял pointer-events: none, и клик по замку не делал
-     ничего. Теперь он открывает модалку «что внутри и как сюда попасть».
-     Приглушение оставлено — оно честно показывает, что модуль ещё закрыт. */
-  .path-step--locked { opacity: 0.55; }
-  .path-step--locked:hover { opacity: 0.8; }
+  /* ==================================================================
+     «ПУТЬ УЧЕНИКА» — РАСКЛАДКА ПО МАКЕТУ АВТОРА
+     (2026-07-26, «Все страницы - раскладка.html», страница 0: «две
+     колонки модулей, липкий рельс уровня — узкая полоса с пустым полем
+     убрана»).
 
-  /* Карточка-кнопка (закрытый модуль) и кнопка «Что внутри» — сбрасываем
-     собственный вид кнопки, чтобы карточка выглядела ровно так же, как
-     карточка-ссылка у открытого модуля. */
-  button.path-step {
-    width: 100%; background: none; border: 0; padding: 0;
-    font: inherit; color: inherit; text-align: left; cursor: pointer;
+     Что было. Вертикальная дорожка: одиннадцать карточек в один столбец
+     с линией-таймлайном слева. На ПК это узкая полоса посреди пустого
+     экрана, и четыре прокрутки до последнего модуля. Уровень был
+     подписан заголовком секции — и всё; пока листаешь Модуль 9, уже не
+     помнишь, к какому уровню он относится.
+
+     Что стало. Шапка страницы показывает общий прогресс цифрой и
+     полосой. Ниже фильтр по уровням. Каждый уровень — липкая карточка
+     слева (название, охват, описание, своя полоса прогресса) и модули
+     этого уровня в ДВЕ колонки справа. Карточка модуля несёт статус
+     («Пройден» / «Сейчас» / «Откроется позже»), строку смысла и ссылку
+     «Что внутри».
+     ================================================================== */
+
+  /* ── Шапка страницы: заголовок слева, прогресс справа ── */
+  .path-head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--rp-space-6); flex-wrap: wrap; }
+  .path-head__title { font-size: clamp(1.9rem, 1.2rem + 2.6vw, 2.75rem); margin: 0; }
+  .path-head__sub { color: var(--rp-learn-text-muted); margin: var(--rp-space-2) 0 0; }
+  .path-head__progress { display: flex; align-items: center; gap: var(--rp-space-5); }
+  .path-head__pct { text-align: right; }
+  .path-head__pct-value {
+    font-family: var(--rp-font-heading); font-weight: 800;
+    font-size: 2.125rem; line-height: 1; color: var(--rp-learn-badge-text);
   }
-  /* Обёртка открытого модуля: сама карточка и кнопка «Что внутри» под ней.
-     Кнопка сдвинута вправо на ширину маркера с зазором, чтобы вставать под
-     тело карточки, а не под кружок с номером. */
-  .path-row { display: flex; flex-direction: column; gap: 0.35rem; }
-  .path-row .path-step__what { margin-left: calc(2.9rem + var(--rp-space-4)); }
+  .path-head__pct-note { font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); margin-top: 0.35rem; }
+  .path-head__meter { width: 13rem; }
+  .path-head__scale { display: flex; justify-content: space-between; font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); margin-top: 0.45rem; }
+
+  /* ── Поиск и фильтры уровней одной строкой ── */
+  .path-controls { display: flex; gap: var(--rp-space-3); flex-wrap: wrap; margin: var(--rp-space-5) 0; }
+  .path-controls .search-field { flex: 1 1 22rem; max-width: none; margin: 0; }
+  .path-filters { display: flex; gap: var(--rp-space-2); flex-wrap: wrap; }
+  .path-filters button {
+    height: 3rem; padding: 0 1.125rem; border-radius: var(--rp-radius-md);
+    border: 1px solid var(--rp-learn-border-strong);
+    background: var(--rp-learn-badge-bg); color: var(--rp-learn-text);
+    font: inherit; font-size: var(--rp-fs-sm); font-weight: 700; cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .path-filters button:hover { border-color: var(--rp-learn-accent); }
+  .path-filters button.is-active {
+    background: var(--rp-learn-accent); color: var(--rp-learn-accent-contrast);
+    border-color: var(--rp-learn-accent);
+  }
+
+  /* ── Уровень: липкая карточка + модули в две колонки ── */
+  .path-level { display: grid; grid-template-columns: 14.5rem minmax(0, 1fr); gap: var(--rp-space-5); align-items: start; }
+  .path-level + .path-level { margin-top: var(--rp-space-6); }
+  .path-level__card {
+    position: sticky; top: calc(var(--rp-header-h, 4.5rem) + var(--rp-space-3));
+    border-radius: var(--rp-radius-lg); padding: var(--rp-space-5);
+    background: linear-gradient(165deg, var(--rp-learn-surface-raised), var(--rp-learn-surface));
+    border: 1px solid var(--rp-level-border, var(--rp-learn-border));
+  }
+  .path-level__top { display: flex; align-items: center; gap: var(--rp-space-3); }
+  .path-level__icon {
+    flex: none; width: 2.375rem; height: 2.375rem; border-radius: var(--rp-radius-md);
+    display: grid; place-items: center; font-size: 1.05rem;
+    background: var(--rp-level-icon-bg, var(--rp-learn-icon-bg)); color: var(--rp-level-accent, var(--rp-learn-accent));
+  }
+  .path-level__name { font-family: var(--rp-font-heading); font-weight: 700; font-size: var(--rp-fs-md); line-height: 1.1; }
+  .path-level__range { font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); }
+  .path-level__blurb { font-size: var(--rp-fs-sm); line-height: 1.55; color: var(--rp-learn-text-muted); margin: var(--rp-space-3) 0 0; }
+  .path-level__meter { height: 0.4375rem; border-radius: var(--rp-radius-pill); overflow: hidden; margin-top: var(--rp-space-4); background: color-mix(in srgb, var(--rp-learn-text) 10%, transparent); }
+  .path-level__fill { height: 100%; border-radius: var(--rp-radius-pill); background: var(--rp-level-accent, var(--rp-learn-accent)); }
+  .path-level__foot { display: flex; justify-content: space-between; font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); margin-top: var(--rp-space-2); }
+  .path-level__foot b { color: var(--rp-level-accent, var(--rp-learn-accent)); }
+
+  .path-modules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--rp-space-4); }
+
+  /* ── Карточка модуля ── */
+  .pm-card {
+    position: relative; display: flex; flex-direction: column;
+    border-radius: var(--rp-radius-lg); padding: var(--rp-space-5);
+    background: linear-gradient(165deg, var(--rp-learn-surface-raised), var(--rp-learn-surface));
+    border: 1px solid var(--pm-border, var(--rp-learn-border));
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  .pm-card:hover { transform: translateY(-3px); }
+  @media (prefers-reduced-motion: reduce) { .pm-card { transition: none; } .pm-card:hover { transform: none; } }
+  .pm-card__head { display: flex; align-items: flex-start; gap: var(--rp-space-3); }
+  .pm-card__num {
+    flex: none; width: 2.25rem; height: 2.25rem; border-radius: var(--rp-radius-pill);
+    display: grid; place-items: center;
+    font-family: var(--rp-font-heading); font-weight: 800; font-size: var(--rp-fs-sm);
+    background: var(--pm-num-bg); color: var(--pm-num-fg); border: 1px solid var(--pm-num-border);
+  }
+  .pm-card__title { font-family: var(--rp-font-heading); font-weight: 700; font-size: var(--rp-fs-md); line-height: 1.25; }
+  .pm-card__tag { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.4rem; font-size: var(--rp-fs-xs); font-weight: 800; color: var(--pm-tag-fg); }
+  .pm-card__text { font-size: var(--rp-fs-sm); line-height: 1.55; color: var(--rp-learn-text-muted); margin: var(--rp-space-3) 0 0; }
+  /* Подвал прижат к низу: в ряду из двух карточек описания разной длины,
+     без прижатия ссылки «Что внутри» вставали бы на разной высоте. */
+  .pm-card__foot {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--rp-space-3);
+    margin-top: auto; padding-top: var(--rp-space-4);
+    border-top: 1px solid var(--rp-learn-border);
+  }
+  .pm-card__what {
+    position: relative; z-index: 2;
+    background: none; border: 0; padding: 0; cursor: pointer;
+    font: inherit; font-size: var(--rp-fs-sm); font-weight: 800;
+    color: var(--rp-learn-badge-text);
+    display: inline-flex; align-items: center; gap: 0.35rem;
+  }
+  .pm-card__meta { font-size: var(--rp-fs-xs); color: var(--rp-learn-text-muted); white-space: nowrap; }
+
+  /* Растянутая ссылка: кликается вся карточка, но «Что внутри» лежит
+     выше по z-index и перехватывает свой клик. Так на карточке ровно
+     две цели, и обе — настоящие элементы управления, а не div с
+     обработчиком. */
+  .pm-card__go {
+    position: absolute; inset: 0; z-index: 1;
+    border: 0; background: none; cursor: pointer;
+    border-radius: inherit;
+  }
+  .pm-card__go:focus-visible { outline: 2px solid var(--rp-learn-accent); outline-offset: 2px; }
+
+  /* Статусы. Цвета взяты из макета: мятный — пройден, золотой — текущий,
+     приглушённый — закрыт. Статус подписан СЛОВОМ, а не только цветом:
+     иначе он не читается ни на монохромном экране, ни при дальтонизме. */
+  .pm-card--done { --pm-border: rgba(109,191,143,.34); --pm-num-bg: rgba(109,191,143,.16); --pm-num-fg: var(--rp-color-mint-400); --pm-num-border: rgba(109,191,143,.4); --pm-tag-fg: var(--rp-color-mint-400); }
+  .pm-card--now  { --pm-border: var(--rp-learn-badge-border); --pm-num-bg: linear-gradient(140deg, var(--rp-learn-accent-alt), var(--rp-learn-accent)); --pm-num-fg: var(--rp-learn-accent-contrast); --pm-num-border: var(--rp-learn-badge-border); --pm-tag-fg: var(--rp-learn-badge-text); }
+  .pm-card--lock { --pm-border: var(--rp-learn-border); --pm-num-bg: color-mix(in srgb, var(--rp-learn-text) 6%, transparent); --pm-num-fg: var(--rp-learn-text-muted); --pm-num-border: var(--rp-learn-border); --pm-tag-fg: var(--rp-learn-text-muted); }
+  /* Закрытый модуль приглушён, но кликабелен: клик открывает модалку
+     «что внутри и как сюда попасть». Раньше у него стоял
+     pointer-events: none и клик не делал ничего. */
+  .pm-card--lock { opacity: 0.62; }
+  .pm-card--lock:hover { opacity: 0.85; }
+  /* Текущий модуль выделен рамкой — единственный на всей странице. */
+  .pm-card--now { border-width: 1px; box-shadow: 0 0 0 1px var(--rp-learn-badge-border); }
+
+  @media (max-width: 62rem) {
+    /* Липкая колонка уровня на узком экране бессмысленна: она либо
+       занимает пол-экрана, либо прилипает поверх карточек. Уровень
+       становится обычной шапкой над своими модулями. */
+    .path-level { grid-template-columns: minmax(0, 1fr); gap: var(--rp-space-4); }
+    .path-level__card { position: static; }
+    .path-modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 44rem) {
+    .path-modules { grid-template-columns: minmax(0, 1fr); }
+    .path-head__progress { width: 100%; justify-content: space-between; }
+    .path-head__meter { flex: 1 1 auto; width: auto; }
+    .path-controls .search-field { flex: 1 1 100%; }
+    .path-filters { width: 100%; }
+    .path-filters button { flex: 1 1 auto; height: 2.75rem; padding: 0 0.75rem; }
+  }
 
   /* Совпадения по заголовкам внутри книг (поиск по содержанию курса) */
   .inside-hits { display: grid; gap: var(--rp-space-2); }
@@ -46,43 +180,66 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .inside-hit__more { font-size: var(--rp-fs-sm); color: var(--rp-learn-text-muted); padding-left: var(--rp-space-3); }
-  .inside-hit mark { background: var(--rp-accent-light, #fef3c7); color: #1a1a1a; border-radius: 2px; padding: 0 1px; }
+  .inside-hit mark { background: var(--rp-accent-light); color: var(--rp-accent-light-text); border-radius: 2px; padding: 0 1px; }
 </style>
 </head>
 <body data-zone="learn">
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
   <div id="site-header"></div>
   <main class="container">
-    <h1 id="page-title">Путь ученика</h1>
-    <p class="form-note" id="page-subtitle">11 этапов — от основ убеждённости до самостоятельного приёма пациентов в RUKYA Pro.</p>
-    <div class="search-field">
-      <input type="search" id="module-search" placeholder="Поиск по модулям и книгам…" data-placeholder-t="modules.search" aria-label="Поиск по модулям и книгам">
+    <div class="path-head">
+      <div style="min-width:0;">
+        <h1 class="path-head__title" id="page-title">Путь ученика</h1>
+        <p class="path-head__sub" id="page-subtitle">11 модулей · от основ к самостоятельному приёму</p>
+      </div>
+      <!-- Общий прогресс: цифра, подпись «N из 11» и полоса со шкалой
+           уровней. Появляется только для вошедшего ученика — гостю
+           показывать «0%» незачем, это не его результат, а отсутствие
+           входа. -->
+      <div class="path-head__progress" id="path-progress" hidden>
+        <div class="path-head__pct">
+          <div class="path-head__pct-value" id="path-pct">0%</div>
+          <div class="path-head__pct-note" id="path-pct-note"></div>
+        </div>
+        <div class="path-head__meter">
+          <div class="rp-meter"><div class="rp-meter__fill" id="path-meter" style="width:0%"></div></div>
+          <div class="path-head__scale"><span id="path-scale-a">Начальный</span><span id="path-scale-b">Продвинутый</span></div>
+        </div>
+      </div>
     </div>
+
+    <div class="path-controls">
+      <div class="search-field">
+        <input type="search" id="module-search" placeholder="Поиск по модулям и книгам…" data-placeholder-t="modules.search" aria-label="Поиск по модулям и книгам">
+      </div>
+      <div class="path-filters" id="path-filters" role="group" aria-label="Фильтр по уровню"></div>
+    </div>
+
     <p id="search-empty" class="form-note" data-t="modules.noResults" hidden>Ничего не найдено.</p>
     <!-- Лента достижений (запрос автора, 2026-07-26). Здесь она нужна не
          меньше, чем в кабинете: именно на этой странице ученик смотрит на
-         одиннадцать запертых модулей и решает, браться ли. -->
+         одиннадцать модулей и решает, браться ли. -->
     <div id="community-feed"></div>
     <div id="path-root"></div>
   </main>
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=26";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=27";
     import { MODULES, isModuleUnlocked } from "../js/modules-data.js?v=34";
-    import { statusBadgeHtml } from "../js/markdown-loader.js?v=31";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=20";
+    import { statusBadgeHtml } from "../js/markdown-loader.js?v=32";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=21";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
-    import { initCommunityFeed, stopCommunityFeed } from "../js/community-feed.js?v=4";
-    import { openModuleIntro } from "../js/module-intro.js?v=4";
+    import { initCommunityFeed, stopCommunityFeed } from "../js/community-feed.js?v=5";
+    import { openModuleIntro } from "../js/module-intro.js?v=5";
 
     renderHeader("learn");
     renderFooter();
 
     // Перевод статичных элементов страницы
     document.getElementById("page-title").textContent = t("modules.title");
-    document.getElementById("page-subtitle").textContent = t("modules.subtitle");
+    document.getElementById("page-subtitle").textContent = t("path.subtitle");
 
     const root = document.getElementById("path-root");
     const emptyNote = document.getElementById("search-empty");
@@ -93,88 +250,142 @@
     // Уровень раньше был обычным текстом в приглушённом meta-цвете — на
     // глаз неотличим от статус-бейджа рядом (независимая проверка,
     // 2026-07-19). Иконка + текст, не просто цвет — доступно и дальтоникам.
+    // Иконка уровня — та же, что была: символ, а не только цвет, чтобы
+    // уровень читался и при дальтонизме.
     const LEVEL_ICON = { "Начальный": "○", "Средний": "◐", "Продвинутый": "●", "Beginner": "○", "Intermediate": "◐", "Advanced": "●", "Boshlang'ich": "○", "O'rta": "◐", "Yuqori": "●" };
 
-    // Группировка по уровню — три секции с визуальным разделением
+    // Уровни. Цвета и короткие описания — из макета автора («Все страницы
+    // - раскладка.html», страница 0): мятный у пройденного начального,
+    // золотой у среднего, тёплый у продвинутого.
     const LEVEL_GROUPS = [
-      { level: "Начальный", key: "beginner", range: "1–3" },
-      { level: "Средний", key: "intermediate", range: "4–6" },
-      { level: "Продвинутый", key: "advanced", range: "7–11" },
+      { level: "Начальный",   key: "beginner",     range: "1–3",  accent: "var(--rp-color-mint-400)",  border: "rgba(109,191,143,.3)",  iconBg: "rgba(109,191,143,.14)" },
+      { level: "Средний",     key: "intermediate", range: "4–6",  accent: "var(--rp-color-gold-200)",  border: "rgba(215,181,106,.36)", iconBg: "rgba(215,181,106,.14)" },
+      { level: "Продвинутый", key: "advanced",     range: "7–11", accent: "var(--rp-color-peach-400)", border: "rgba(217,141,106,.32)", iconBg: "rgba(217,141,106,.14)" },
     ];
 
     let currentUser = null;
     let currentProgress = null;
     let currentIsAdmin = false;
+    let activeLevel = "all";
 
-    /** Первая фраза из текста ценности модуля (запрос автора, 2026-07-25).
-     *  В списке из одиннадцати модулей длинный абзац у каждого превратил бы
-     *  «Путь ученика» в простыню — берём первое предложение, полный текст
-     *  ученик увидит на самой странице модуля. У закрытых модулей строку не
-     *  показываем: смысл в том, чтобы вести к следующему шагу, а не дразнить
-     *  тем, что пока недоступно. */
+    function isUnlocked(m) {
+      return !currentUser || currentIsAdmin || isModuleUnlocked(m.id, currentProgress);
+    }
+    function isDone(m) {
+      return currentProgress?.[m.id]?.status === "done";
+    }
+    /** Статус модуля для карточки. «Сейчас» — ПЕРВЫЙ открытый несданный:
+     *  их не может быть двое, иначе подсказка «продолжай отсюда» теряет
+     *  смысл. Считается по всему списку, а не внутри уровня. */
+    const currentModuleId = () => {
+      const next = MODULES.find((m) => isUnlocked(m) && !isDone(m));
+      return next ? next.id : null;
+    };
+
+    function moduleState(m, curId) {
+      if (isDone(m)) return "done";
+      if (!isUnlocked(m)) return "lock";
+      return m.id === curId ? "now" : "lock2";
+    }
+
+    /** Первая фраза текста ценности модуля — она же строка смысла на
+     *  карточке. Полный текст ученик увидит на самой странице модуля. */
     function valueLine(m) {
-      if (!!currentUser && !currentIsAdmin && !isModuleUnlocked(m.id, currentProgress)) return "";
       const full = t("value." + m.id);
       if (!full || full === "value." + m.id) return "";
-      const first = full.split(/(?<=[.!?])\s/)[0] || full;
-      return `<span class="path-step__value">${first}</span>`;
+      return full.split(/(?<=[.!?])\s/)[0] || full;
     }
 
-    // Карточка модуля (запрос автора, 2026-07-26 — модалка «что внутри»).
-    //
-    // Закрытый модуль перестал быть мёртвым замком: раньше у него не было
-    // href и стоял pointer-events: none, то есть клик не делал ничего —
-    // ученик видел запертую дверь и не знал, что за ней. Теперь такая
-    // карточка — кнопка, открывающая модалку с описанием и условием входа.
-    //
-    // Открытый модуль по-прежнему открывается одним кликом: вставать между
-    // учеником и уроками с рекламной паузой значит мешать ему учиться.
-    // Модалка у него доступна отдельной кнопкой «Что внутри» — она лежит
-    // РЯДОМ со ссылкой, а не внутри неё: кнопка внутри <a> — невалидная
-    // вложенность интерактивных элементов, и скринридеры на ней путаются.
-    function moduleCardHtml(m, matchedLesson) {
-      const locked = !!currentUser && !currentIsAdmin && !isModuleUnlocked(m.id, currentProgress);
-      const lvl = localLevel(m.level);
-      const cls = `path-step reveal ${m.status === "certified" ? "path-step--done" : ""}${locked ? " path-step--locked" : ""}`;
-      const inner = `
-          <span class="path-step__marker">${m.id}</span>
-          <span class="path-step__body">
-            <span class="path-step__main">
-              <span class="path-step__title">${locked ? "🔒 " : ""}${moduleTitle(m)}</span>
-              <span class="path-step__meta">
-                <span><span class="level-tag" aria-hidden="true">${LEVEL_ICON[lvl] || ""}</span> ${lvl}</span>
-                ${matchedLesson ? `<span>· ${matchedLesson}</span>` : ""}
-              </span>
-              ${valueLine(m)}
-            </span>
-            <span class="path-step__status">${statusBadgeHtml(m.status)}</span>
-          </span>
-          <span class="path-step__go" aria-hidden="true">${locked ? "🔒" : "→"}</span>`;
+    const STATE_TAG = {
+      done:  () => `✓ ${t("path.done")}`,
+      now:   () => `▶ ${t("path.now")}`,
+      lock:  () => `🔒 ${t("path.locked")}`,
+      lock2: () => `○ ${t("path.notStarted")}`,
+    };
+    const STATE_CLASS = { done: "pm-card--done", now: "pm-card--now", lock: "pm-card--lock", lock2: "" };
 
-      if (locked) {
-        // <button>, а не <a> без href: карточка никуда не ведёт, она
-        // открывает окно. Клавиатура и скринридер должны понимать это так же,
-        // как понимает глаз.
-        return `<button type="button" class="${cls}" data-intro="${m.id}" data-locked="1">${inner}</button>`;
-      }
+    /** Карточка модуля.
+     *
+     *  Вся карточка кликается растянутым элементом .pm-card__go, а
+     *  «Что внутри» лежит выше по z-index и перехватывает свой клик. Так
+     *  на карточке ровно две цели, и обе — настоящие элементы управления:
+     *  кнопка внутри ссылки была бы невалидной вложенностью, а div с
+     *  обработчиком не даётся ни клавиатуре, ни скринридеру.
+     *
+     *  У закрытого модуля ссылки нет вовсе — там кнопка, открывающая
+     *  модалку «что внутри и как сюда попасть». */
+    function moduleCardHtml(m, matchedLesson, curId) {
+      const st = moduleState(m, curId);
+      const locked = st === "lock";
+      const nBooks = m.lessons.length;
+      const meta = nBooks
+        ? `${nBooks} ${t("intro.books")}${m.lessons.some((l) => l.exam) ? " · " + t("lesson.exam").toLowerCase() : ""}`
+        : t("path.noBooks");
+      const go = locked
+        ? `<button type="button" class="pm-card__go" data-intro="${m.id}" data-locked="1" aria-label="${t("intro.what")}: ${moduleTitle(m)}"></button>`
+        : `<a class="pm-card__go" href="module.html?id=${m.id}" aria-label="${t("intro.open")}: ${moduleTitle(m)}"></a>`;
       return `
-        <div class="path-row">
-          <a class="${cls}" href="module.html?id=${m.id}">${inner}</a>
-          <button type="button" class="path-step__what" data-intro="${m.id}">${t("intro.what")}</button>
+        <div class="pm-card reveal ${STATE_CLASS[st]}">
+          <div class="pm-card__head">
+            <span class="pm-card__num">${m.id}</span>
+            <div style="min-width:0;">
+              <div class="pm-card__title">${moduleTitle(m)}</div>
+              <div class="pm-card__tag">${STATE_TAG[st]()}</div>
+            </div>
+          </div>
+          <p class="pm-card__text">${matchedLesson ? "· " + matchedLesson : valueLine(m)}</p>
+          <div class="pm-card__foot">
+            <button type="button" class="pm-card__what" data-intro="${m.id}"${locked ? ' data-locked="1"' : ""}>${t("intro.what")} →</button>
+            <span class="pm-card__meta">${meta}</span>
+          </div>
+          ${go}
         </div>`;
     }
 
-    function sectionHeaderHtml(g) {
+    /** Карточка уровня слева: название, охват, описание, своя полоса. */
+    function levelCardHtml(g, mods) {
+      const done = mods.filter(isDone).length;
+      const pct = mods.length ? Math.round((done / mods.length) * 100) : 0;
       const lvl = localLevel(g.level);
-      const icon = LEVEL_ICON[lvl] || LEVEL_ICON[g.level] || "";
       return `
-        <div class="path-section__header reveal">
-          <span class="path-section__badge" aria-hidden="true">${icon}</span>
-          <span class="path-section__info">
-            <span class="path-section__title">${lvl}</span>
-            <span class="path-section__range">${t("nav.modules")} ${g.range}</span>
-          </span>
+        <div class="path-level__card" style="--rp-level-accent:${g.accent}; --rp-level-border:${g.border}; --rp-level-icon-bg:${g.iconBg};">
+          <div class="path-level__top">
+            <span class="path-level__icon" aria-hidden="true">${LEVEL_ICON[lvl] || LEVEL_ICON[g.level] || ""}</span>
+            <div style="min-width:0;">
+              <div class="path-level__name">${lvl}</div>
+              <div class="path-level__range">${t("nav.modules")} ${g.range}</div>
+            </div>
+          </div>
+          <p class="path-level__blurb">${t("path.blurb." + g.key)}</p>
+          <div class="path-level__meter"><div class="path-level__fill" style="width:${pct}%"></div></div>
+          <div class="path-level__foot"><span>${done} ${t("path.of")} ${mods.length}</span><b>${pct}%</b></div>
         </div>`;
+    }
+
+    /** Шапка: общий процент и полоса. Гостю не показываем — ноль
+     *  процентов у невошедшего означает не «ничего не пройдено», а
+     *  «мы не знаем, кто ты». */
+    function renderHeadProgress() {
+      const box = document.getElementById("path-progress");
+      if (!currentUser || currentIsAdmin) { box.hidden = true; return; }
+      const done = MODULES.filter(isDone).length;
+      const pct = Math.round((done / MODULES.length) * 100);
+      document.getElementById("path-pct").textContent = pct + "%";
+      document.getElementById("path-pct-note").textContent = `${done} ${t("path.of")} ${MODULES.length} ${t("path.modulesWord")}`;
+      document.getElementById("path-meter").style.width = pct + "%";
+      document.getElementById("path-scale-a").textContent = localLevel("Начальный");
+      document.getElementById("path-scale-b").textContent = localLevel("Продвинутый");
+      box.hidden = false;
+    }
+
+    /** Фильтр по уровню. Отдельная кнопка «Все» первой — как в макете. */
+    function renderFilters() {
+      const box = document.getElementById("path-filters");
+      const items = [{ key: "all", label: t("tests.all") }]
+        .concat(LEVEL_GROUPS.map((g) => ({ key: g.key, label: localLevel(g.level) })));
+      box.innerHTML = items.map((i) =>
+        `<button type="button" data-level="${i.key}" class="${activeLevel === i.key ? "is-active" : ""}" aria-pressed="${activeLevel === i.key}">${i.label}</button>`
+      ).join("");
     }
 
     let revealObserver = null;
@@ -297,27 +508,35 @@
 
     function renderList(query) {
       const q = query.trim().toLowerCase();
+      const curId = currentModuleId();
       let html;
+
       if (!q) {
-        // Группировка по уровню с секционными заголовками
-        html = LEVEL_GROUPS.map((g) => {
-          const mods = MODULES.filter((m) => m.level === g.level);
-          if (!mods.length) return "";
-          return `<section class="path-section path-section--${g.key}">
-            ${sectionHeaderHtml(g)}
-            <div class="path">${mods.map((m) => moduleCardHtml(m, null)).join("")}</div>
-          </section>`;
-        }).join("");
+        // Уровни: липкая карточка слева, модули этого уровня справа.
+        html = LEVEL_GROUPS
+          .filter((g) => activeLevel === "all" || activeLevel === g.key)
+          .map((g) => {
+            const mods = MODULES.filter((m) => m.level === g.level);
+            if (!mods.length) return "";
+            return `<section class="path-level">
+              ${levelCardHtml(g, mods)}
+              <div class="path-modules">${mods.map((m) => moduleCardHtml(m, null, curId)).join("")}</div>
+            </section>`;
+          }).join("");
         emptyNote.hidden = true;
       } else {
-        const matches = MODULES.map((m) => {
-          const mTitle = moduleTitle(m).toLowerCase();
-          const mLevel = localLevel(m.level).toLowerCase();
-          if (mTitle.includes(q) || m.title.toLowerCase().includes(q) || mLevel.includes(q)) return { m, matchedLesson: null };
-          const lesson = m.lessons.find((l) => lessonTitle(l).toLowerCase().includes(q) || l.title.toLowerCase().includes(q));
-          return lesson ? { m, matchedLesson: lessonTitle(lesson) } : null;
-        }).filter(Boolean);
-        html = `<div class="path">${matches.map(({ m, matchedLesson }) => moduleCardHtml(m, matchedLesson)).join("")}</div>`;
+        // При поиске уровни не рисуем: результат — плоская сетка карточек.
+        // Разложить три найденных модуля по трём липким рельсам значило бы
+        // показать три почти пустые секции.
+        const matches = MODULES.filter((m) => activeLevel === "all" || m.level === LEVEL_GROUPS.find((g) => g.key === activeLevel)?.level)
+          .map((m) => {
+            const mTitle = moduleTitle(m).toLowerCase();
+            const mLevel = localLevel(m.level).toLowerCase();
+            if (mTitle.includes(q) || m.title.toLowerCase().includes(q) || mLevel.includes(q)) return { m, matchedLesson: null };
+            const lesson = m.lessons.find((l) => lessonTitle(l).toLowerCase().includes(q) || l.title.toLowerCase().includes(q));
+            return lesson ? { m, matchedLesson: lessonTitle(lesson) } : null;
+          }).filter(Boolean);
+        html = `<div class="path-modules">${matches.map(({ m, matchedLesson }) => moduleCardHtml(m, matchedLesson, curId)).join("")}</div>`;
         // Раньше поиск умел только названия модулей и уроков. Ученик,
         // который помнит формулу или тему («сжигание», «узлы», «частица
         // ли»), но не помнит книгу, найти её не мог — а книг 63. Теперь
@@ -326,7 +545,10 @@
         html += insideHitsHtml(q);
         emptyNote.hidden = matches.length > 0 || lastInsideCount > 0;
       }
+
       root.innerHTML = html;
+      renderFilters();
+      renderHeadProgress();
       root.querySelectorAll(".reveal").forEach((el, i) => {
         if (revealObserver) {
           el.style.transitionDelay = `${Math.min(i * 40, 400)}ms`;
@@ -336,6 +558,15 @@
         }
       });
     }
+
+    // Фильтр по уровню. Слушатель на контейнере, а не на кнопках: кнопки
+    // перерисовываются вместе со списком при каждом вводе в поиск.
+    document.getElementById("path-filters").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-level]");
+      if (!btn) return;
+      activeLevel = btn.dataset.level;
+      renderList(document.getElementById("module-search").value);
+    });
 
     // Один обработчик на весь список: карточки перерисовываются при каждом
     // вводе в поиск и при определении входа, и вешать слушатели на каждую
