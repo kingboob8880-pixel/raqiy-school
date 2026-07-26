@@ -2072,8 +2072,15 @@ body:has(.messenger-page) .footer { display: none; }
   animation: mintro-in 0.28s cubic-bezier(0.2, 0.8, 0.3, 1) both;
 }
 @keyframes mintro-in { from { opacity: 0; transform: scale(0.94) translateY(14px); } to { opacity: 1; transform: none; } }
+/* Кому движение мешает — тому его нет вовсе. Не «покороче», а выключено:
+   строки, которые появляются по одной, для человека с укачиванием от
+   анимаций хуже, чем просто готовый текст. */
 @media (prefers-reduced-motion: reduce) {
-  .mintro-overlay, .mintro { animation: none; }
+  .mintro-overlay, .mintro,
+  .mintro__hero-bg, .mintro__hero-cover,
+  .mintro__eyebrow, .mintro__title, .mintro__rise {
+    animation: none !important;
+  }
 }
 .mintro__close {
   position: absolute; top: var(--rp-space-3); right: var(--rp-space-3); z-index: 2;
@@ -2086,32 +2093,102 @@ body:has(.messenger-page) .footer { display: none; }
 }
 .mintro__close:hover { background: rgba(0, 0, 0, 0.7); }
 
-/* Обложка модуля во всю ширину. Фиксированная высота вместо auto: обложки
-   у книг разной пропорции, и без неё модалка прыгала бы по высоте от
-   модуля к модулю. */
-.mintro__cover { position: relative; height: 11rem; flex: none; overflow: hidden; }
-.mintro__cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
-/* Затемнение снизу — иначе название модуля пропадает на светлой обложке. */
-.mintro__cover-veil {
+/* Шапка модалки: обложка ЦЕЛИКОМ + название рядом.
+
+   Так пришлось переделать по замечанию автора (2026-07-26): раньше обложка
+   растягивалась на всю ширину через object-fit: cover, и от рисунка
+   оставалась средняя полоса — у книги отрезало и верх, и низ. Обложки
+   вертикальные (примерно 0.7), а полоса была широкая и низкая, поэтому
+   обрезалось почти всё.
+
+   object-fit: contain на всю ширину эту беду не лечит, а меняет на другую:
+   вертикальный рисунок вписался бы в широкую полосу с чёрными полями по
+   бокам. Поэтому обложка стоит СЛЕВА в свой рост, как книга на полке, а
+   название — справа от неё. Полей нет, рисунок не обрезан.
+
+   Пустое место позади заполняет та же обложка, размытая и увеличенная:
+   шапка окрашивается собственными цветами книги, и у каждого модуля она
+   получается своя. */
+.mintro__hero {
+  position: relative; flex: none; overflow: hidden;
+  padding: var(--rp-space-5);
+}
+.mintro__hero-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover;
+  /* Здесь обрезка не беда: это не картинка, а фон — узнаваемых деталей от
+     него не требуется, только цвет. */
+  filter: blur(30px) saturate(1.35);
+  transform: scale(1.3);
+  opacity: 0.55;
+  animation: mintro-bg 18s ease-in-out infinite alternate;
+}
+@keyframes mintro-bg {
+  from { transform: scale(1.3) translate(0, 0); }
+  to   { transform: scale(1.45) translate(-2%, -2%); }
+}
+/* Затемнение поверх фона — на светлой обложке белый текст иначе исчезает. */
+.mintro__hero-veil {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.1) 100%);
+  background: linear-gradient(105deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0.66) 100%);
 }
-.mintro__cover-text {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  padding: var(--rp-space-4) var(--rp-space-5);
-  color: #fff;
+.mintro__hero-inner {
+  position: relative; display: flex; align-items: center;
+  gap: var(--rp-space-5);
 }
+.mintro__hero-cover {
+  flex: none; display: block; border-radius: var(--rp-radius-md);
+  overflow: hidden; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  /* Книга «встаёт на полку»: лёгкий доворот на месте, без прыжка. */
+  animation: mintro-cover 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+@keyframes mintro-cover {
+  from { opacity: 0; transform: perspective(60rem) rotateY(-18deg) translateX(-1.2rem); }
+  to   { opacity: 1; transform: none; }
+}
+.mintro__hero-cover img {
+  display: block;
+  /* width: auto при заданной высоте = пропорции сохранены, рисунок целый. */
+  height: 11rem; width: auto; max-width: 40vw;
+  /* Страховка на случай, если max-width всё-таки сработает (очень узкий
+     экран): без неё браузер оставил бы высоту 11rem и сжал ширину — книга
+     вышла бы приплюснутой. */
+  object-fit: contain;
+}
+/* Место под крестик: без отступа длинное название модуля заезжало бы прямо
+   под кнопку закрытия в правом верхнем углу. */
+.mintro__hero-text { min-width: 0; color: #fff; padding-right: 2rem; }
 .mintro__eyebrow {
-  margin: 0 0 0.25rem; font-size: 0.72rem; font-weight: 600;
+  display: block; margin: 0 0 0.35rem; font-size: 0.72rem; font-weight: 600;
   letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.85;
+  animation: mintro-rise 0.5s ease 0.1s both;
 }
-.mintro__title { margin: 0; font-size: clamp(1.25rem, 4vw, 1.7rem); line-height: 1.25; color: #fff; }
+.mintro__title {
+  margin: 0; font-size: clamp(1.25rem, 4vw, 1.75rem); line-height: 1.25; color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  animation: mintro-rise 0.5s ease 0.16s both;
+}
 
 .mintro__body {
   padding: var(--rp-space-5);
   overflow-y: auto; /* прокручивается содержимое, шапка и кнопка остаются */
   -webkit-overflow-scrolling: touch;
 }
+
+/* Содержимое появляется по строчкам, а не всё разом (просьба автора
+   «сделай лучше с анимацией», 2026-07-26). Задержку каждой строки задаёт
+   переменная --d прямо в разметке: пунктов «чему учит» от трёх до пяти в
+   зависимости от модуля, и попытка расписать это через :nth-child()
+   вылилась бы в лестницу правил под каждое количество.
+
+   Порядок появления совпадает с порядком чтения — крючок, потом пункты,
+   потом «после него». Всё укладывается примерно в полсекунды: анимация
+   должна вести взгляд, а не заставлять ждать. */
+@keyframes mintro-rise {
+  from { opacity: 0; transform: translateY(0.6rem); }
+  to   { opacity: 1; transform: none; }
+}
+.mintro__rise { animation: mintro-rise 0.45s ease var(--d, 0ms) both; }
 /* Крючок — единственная крупная фраза в модалке. Она и должна настраивать;
    всё остальное ниже отвечает на «а конкретно?». */
 .mintro__hook {
@@ -2150,6 +2227,16 @@ body:has(.messenger-page) .footer { display: none; }
   border-top: 1px solid var(--rp-zone-border);
   display: flex; justify-content: center;
 }
+/* Блик, скользящий по кнопке при наведении — тот же приём, что у карточек
+   модулей (.path-step__body::after): один визуальный язык на весь сайт. */
+.mintro__foot .btn { position: relative; overflow: hidden; }
+.mintro__foot .btn::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.28) 50%, transparent 58%);
+  transform: translateX(-130%); transition: transform 0.6s ease;
+}
+.mintro__foot .btn:hover::after { transform: translateX(130%); }
+@media (prefers-reduced-motion: reduce) { .mintro__foot .btn::after { display: none; } }
 .mintro__open { width: 100%; text-align: center; }
 .mintro__gate { width: 100%; text-align: center; }
 .mintro__gate-text { margin: 0 0 var(--rp-space-3); font-size: var(--rp-fs-sm); color: color-mix(in srgb, var(--rp-zone-text) 70%, transparent); }
@@ -2160,7 +2247,12 @@ body:has(.messenger-page) .footer { display: none; }
   /* На телефоне — лист снизу вместо окошка по центру: так до кнопки внизу
      дотягивается большой палец, а не приходится тянуться к середине экрана. */
   .mintro { max-height: 92dvh; border-radius: var(--rp-radius-lg) var(--rp-radius-lg) 0 0; }
-  .mintro__cover { height: 8.5rem; }
+  .mintro__hero { padding: var(--rp-space-4); }
+  /* Обложка ниже, но по-прежнему целая — и по-прежнему рядом с названием, а
+     не над ним: на узком экране вертикальная обложка во всю ширину съела бы
+     пол-экрана и оттеснила бы текст под сгиб. */
+  .mintro__hero-inner { gap: var(--rp-space-4); }
+  .mintro__hero-cover img { height: 8rem; max-width: 34vw; }
   .mintro__body { padding: var(--rp-space-4); }
   .mintro__foot { padding: var(--rp-space-3) var(--rp-space-4) calc(var(--rp-space-4) + env(safe-area-inset-bottom)); }
 }

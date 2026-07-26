@@ -37,10 +37,10 @@ export function closeModuleIntro() {
 /** Строка «Внутри: N книг · экзамен по каждой». У Модуля 11 уроков нет
  *  вовсе (это работа в программе), поэтому строку там не показываем — иначе
  *  получилось бы «0 книг», что выглядит как поломка, а не как замысел. */
-function contentsLine(mod) {
+function contentsLine(mod, delay) {
   const n = mod.lessons?.length || 0;
   if (!n) return "";
-  return `<p class="mintro__contents">${esc(t("intro.contains"))}: <strong>${n}</strong> ${esc(t("intro.books"))} · ${esc(t("intro.examEach"))}</p>`;
+  return `<p class="mintro__contents mintro__rise" style="--d:${delay}ms">${esc(t("intro.contains"))}: <strong>${n}</strong> ${esc(t("intro.books"))} · ${esc(t("intro.examEach"))}</p>`;
 }
 
 /**
@@ -57,6 +57,10 @@ export function openModuleIntro(mod, opts = {}) {
   if (!intro) return;
 
   lastFocused = trigger || document.activeElement;
+
+  // Адрес обложки считаем один раз: он подставляется дважды — в саму
+  // обложку и в размытый фон позади неё.
+  const cover = mod.cover ? esc(withBase(mod.cover)) : "";
 
   overlay = document.createElement("div");
   overlay.className = "mintro-overlay";
@@ -75,29 +79,32 @@ export function openModuleIntro(mod, opts = {}) {
     <div class="mintro">
       <button type="button" class="mintro__close" aria-label="${esc(t("common.close"))}">×</button>
 
-      <div class="mintro__cover">
-        ${mod.cover ? `<img src="${esc(withBase(mod.cover))}" alt="" loading="lazy">` : ""}
-        <div class="mintro__cover-veil"></div>
-        <div class="mintro__cover-text">
-          <p class="mintro__eyebrow">${esc(t("module.n"))} ${mod.id} · ${esc(localLevel(mod.level))}</p>
-          <h2 class="mintro__title">${esc(moduleTitle(mod))}</h2>
+      <div class="mintro__hero">
+        ${cover ? `<img class="mintro__hero-bg" src="${cover}" alt="" aria-hidden="true">` : ""}
+        <div class="mintro__hero-veil"></div>
+        <div class="mintro__hero-inner">
+          ${cover ? `<span class="mintro__hero-cover"><img src="${cover}" alt=""></span>` : ""}
+          <span class="mintro__hero-text">
+            <span class="mintro__eyebrow">${esc(t("module.n"))} ${mod.id} · ${esc(localLevel(mod.level))}</span>
+            <h2 class="mintro__title">${esc(moduleTitle(mod))}</h2>
+          </span>
         </div>
       </div>
 
       <div class="mintro__body">
-        <p class="mintro__hook">${esc(intro.hook)}</p>
+        <p class="mintro__hook mintro__rise" style="--d:0ms">${esc(intro.hook)}</p>
 
-        <h3 class="mintro__h">${esc(t("intro.learn"))}</h3>
+        <h3 class="mintro__h mintro__rise" style="--d:80ms">${esc(t("intro.learn"))}</h3>
         <ul class="mintro__list">
-          ${intro.learn.map((li) => `<li>${esc(li)}</li>`).join("")}
+          ${intro.learn.map((li, i) => `<li class="mintro__rise" style="--d:${120 + i * 70}ms">${esc(li)}</li>`).join("")}
         </ul>
 
-        <div class="mintro__after">
+        <div class="mintro__after mintro__rise" style="--d:${140 + intro.learn.length * 70}ms">
           <span class="mintro__after-label">${esc(t("intro.after"))}</span>
           <p class="mintro__after-text">${esc(intro.after)}</p>
         </div>
 
-        ${contentsLine(mod)}
+        ${contentsLine(mod, 200 + intro.learn.length * 70)}
       </div>
 
       <div class="mintro__foot">${cta}</div>
