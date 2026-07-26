@@ -5,7 +5,7 @@
 
 import { withBase } from "./base-path.js?v=6";
 import { MODULES } from "./modules-data.js?v=35";
-import { getLang, localizedDocPath, t } from "./i18n.js?v=22";
+import { getLang, localizedDocPath, t } from "./i18n.js?v=23";
 
 /** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter
  *  значений (title, source) через innerHTML (аудит, 2026-07-21). */

@@ -5,8 +5,8 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
 import { watchAuth, isAdmin, getAdminProfile, getStudentProfile } from "../../integration/auth.js?v=11";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=22";
-import { initNotifications, stopNotifications } from "./notifications.js?v=7";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=23";
+import { initNotifications, stopNotifications } from "./notifications.js?v=8";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");

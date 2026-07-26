@@ -61,6 +61,8 @@ const S = {
   "book.nodoc":        { ru: "Не указан документ (параметр ?doc=).", en: "No document specified (?doc= parameter).", uz: "Hujjat ko'rsatilmagan (?doc= parametri)." },
   "book.loaderror":    { ru: "Не удалось загрузить материал", en: "Failed to load content", uz: "Materialni yuklash imkoni bo'lmadi" },
   "book.examdone":     { ru: "Экзамен по этой книге сдан", en: "Book exam passed", uz: "Kitob imtihoni topshirildi" },
+  // Заголовок блока упражнений под текстом книги (решение автора, 2026-07-27).
+  "book.practice":     { ru: "Применить прочитанное", en: "Put it into practice", uz: "O'qilganni qo'llash" },
   "book.examcta":      { ru: "Прочитали книгу?", en: "Finished reading?", uz: "Kitobni o'qib bo'ldingizmi?" },
   "book.retake":       { ru: "Пересдать экзамен →", en: "Retake exam →", uz: "Qayta topshirish →" },
   "book.takeexam":     { ru: "Перейти к экзамену →", en: "Take the exam →", uz: "Imtihonga o'tish →" },
@@ -621,6 +623,10 @@ const S = {
   "assign.answeredYes":  { ru: "الحمد لله — Аллах ответил", en: "الحمد لله — Allah answered", uz: "الحمد لله — Alloh javob berdi" },
   "assign.answeredWait": { ru: "Пока продолжаю просить", en: "I keep asking", uz: "Hozircha so'rashda davom etaman" },
   "assign.answeredDone": { ru: "الحمد لله — Аллах ответил", en: "الحمد لله — Allah answered", uz: "الحمد لله — Alloh javob berdi" },
+  // Признак выполнения (решение автора, 2026-07-27). Без него у задания нет
+  // очевидного конца: человек либо бросает раньше времени, либо тянет
+  // бесконечно, так и не поняв, сделал он его или «поделал».
+  "assign.checkLabel":   { ru: "Сделано, когда", en: "Done when", uz: "Bajarilgan hisoblanadi" },
 
   // ── Modules search ──
   "modules.search":      { ru: "Поиск по названиям и содержанию книг…", en: "Search titles and book contents…", uz: "Sarlavhalar va kitob mazmuni bo'yicha qidirish…" },

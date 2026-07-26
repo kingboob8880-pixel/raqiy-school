@@ -2702,6 +2702,24 @@ body:has(.messenger-page) .footer { display: none; }
 @media print { .feed { display: none !important; } }
 
 /* ---------- Отметка выполнения заданий (запрос автора, 2026-07-26) ---------- */
+/* Признак выполнения (решение автора, 2026-07-27). Выделен рамкой слева и
+   стоит между описанием и кнопкой: это последнее, что ученик читает перед
+   тем, как решить, брать задание или нет, и первое, к чему возвращается,
+   когда решает, сделал он его или нет. */
+.assignment-card__check {
+  margin-top: var(--rp-space-3);
+  padding-left: var(--rp-space-3);
+  border-left: 2px solid var(--rp-learn-badge-border, var(--rp-zone-border));
+}
+.assignment-card__check-label {
+  display: block;
+  font-size: var(--rp-fs-xs); font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--rp-learn-badge-text, var(--rp-zone-accent));
+  margin-bottom: 0.2rem;
+}
+.assignment-card__check-text { font-size: var(--rp-fs-sm); line-height: 1.5; color: var(--rp-zone-muted); }
+
 .assignment-card__foot {
   display: flex; align-items: center; gap: var(--rp-space-3);
   flex-wrap: wrap; margin-top: var(--rp-space-3);
