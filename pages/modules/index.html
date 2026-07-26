@@ -6,9 +6,27 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Модули курса — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=20">
-<link rel="stylesheet" href="../../design/base.css?v=59">
+<link rel="stylesheet" href="../../design/base.css?v=60">
 <style>
-  .path-step--locked { opacity: 0.5; pointer-events: none; cursor: default; }
+  /* Закрытый модуль приглушён, но кликабелен (запрос автора, 2026-07-26):
+     раньше здесь стоял pointer-events: none, и клик по замку не делал
+     ничего. Теперь он открывает модалку «что внутри и как сюда попасть».
+     Приглушение оставлено — оно честно показывает, что модуль ещё закрыт. */
+  .path-step--locked { opacity: 0.55; }
+  .path-step--locked:hover { opacity: 0.8; }
+
+  /* Карточка-кнопка (закрытый модуль) и кнопка «Что внутри» — сбрасываем
+     собственный вид кнопки, чтобы карточка выглядела ровно так же, как
+     карточка-ссылка у открытого модуля. */
+  button.path-step {
+    width: 100%; background: none; border: 0; padding: 0;
+    font: inherit; color: inherit; text-align: left; cursor: pointer;
+  }
+  /* Обёртка открытого модуля: сама карточка и кнопка «Что внутри» под ней.
+     Кнопка сдвинута вправо на ширину маркера с зазором, чтобы вставать под
+     тело карточки, а не под кружок с номером. */
+  .path-row { display: flex; flex-direction: column; gap: 0.35rem; }
+  .path-row .path-step__what { margin-left: calc(2.9rem + var(--rp-space-4)); }
 
   /* Совпадения по заголовкам внутри книг (поиск по содержанию курса) */
   .inside-hits { display: grid; gap: var(--rp-space-2); }
@@ -50,13 +68,14 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=23";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=24";
     import { MODULES, isModuleUnlocked } from "../js/modules-data.js?v=34";
-    import { statusBadgeHtml } from "../js/markdown-loader.js?v=28";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=17";
+    import { statusBadgeHtml } from "../js/markdown-loader.js?v=29";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=18";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
-    import { initCommunityFeed, stopCommunityFeed } from "../js/community-feed.js?v=1";
+    import { initCommunityFeed, stopCommunityFeed } from "../js/community-feed.js?v=2";
+    import { openModuleIntro } from "../js/module-intro.js?v=1";
 
     renderHeader("learn");
     renderFooter();
@@ -101,11 +120,23 @@
       return `<span class="path-step__value">${first}</span>`;
     }
 
+    // Карточка модуля (запрос автора, 2026-07-26 — модалка «что внутри»).
+    //
+    // Закрытый модуль перестал быть мёртвым замком: раньше у него не было
+    // href и стоял pointer-events: none, то есть клик не делал ничего —
+    // ученик видел запертую дверь и не знал, что за ней. Теперь такая
+    // карточка — кнопка, открывающая модалку с описанием и условием входа.
+    //
+    // Открытый модуль по-прежнему открывается одним кликом: вставать между
+    // учеником и уроками с рекламной паузой значит мешать ему учиться.
+    // Модалка у него доступна отдельной кнопкой «Что внутри» — она лежит
+    // РЯДОМ со ссылкой, а не внутри неё: кнопка внутри <a> — невалидная
+    // вложенность интерактивных элементов, и скринридеры на ней путаются.
     function moduleCardHtml(m, matchedLesson) {
       const locked = !!currentUser && !currentIsAdmin && !isModuleUnlocked(m.id, currentProgress);
       const lvl = localLevel(m.level);
-      return `
-        <a class="path-step reveal ${m.status === "certified" ? "path-step--done" : ""}${locked ? " path-step--locked" : ""}" ${locked ? "" : `href="module.html?id=${m.id}"`}>
+      const cls = `path-step reveal ${m.status === "certified" ? "path-step--done" : ""}${locked ? " path-step--locked" : ""}`;
+      const inner = `
           <span class="path-step__marker">${m.id}</span>
           <span class="path-step__body">
             <span class="path-step__main">
@@ -118,8 +149,19 @@
             </span>
             <span class="path-step__status">${statusBadgeHtml(m.status)}</span>
           </span>
-          <span class="path-step__go" aria-hidden="true">${locked ? "🔒" : "→"}</span>
-        </a>`;
+          <span class="path-step__go" aria-hidden="true">${locked ? "🔒" : "→"}</span>`;
+
+      if (locked) {
+        // <button>, а не <a> без href: карточка никуда не ведёт, она
+        // открывает окно. Клавиатура и скринридер должны понимать это так же,
+        // как понимает глаз.
+        return `<button type="button" class="${cls}" data-intro="${m.id}" data-locked="1">${inner}</button>`;
+      }
+      return `
+        <div class="path-row">
+          <a class="${cls}" href="module.html?id=${m.id}">${inner}</a>
+          <button type="button" class="path-step__what" data-intro="${m.id}">${t("intro.what")}</button>
+        </div>`;
     }
 
     function sectionHeaderHtml(g) {
@@ -294,6 +336,22 @@
         }
       });
     }
+
+    // Один обработчик на весь список: карточки перерисовываются при каждом
+    // вводе в поиск и при определении входа, и вешать слушатели на каждую
+    // кнопку заново — лишняя работа и источник утечек.
+    root.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-intro]");
+      if (!btn) return;
+      e.preventDefault();
+      const mod = MODULES.find((m) => m.id === Number(btn.dataset.intro));
+      if (!mod) return;
+      openModuleIntro(mod, {
+        locked: btn.dataset.locked === "1",
+        requiredId: mod.id - 1,
+        trigger: btn,
+      });
+    });
 
     renderList("");
     // Индекс подгружаем при первом вводе и перерисовываем, когда пришёл —

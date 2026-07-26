@@ -640,6 +640,18 @@ const S = {
   "notif.day":       { ru: "дн", en: "d", uz: "kun" },
   "notif.yesterday": { ru: "вчера", en: "yesterday", uz: "kecha" },
 
+  // Модалка «что внутри модуля» (запрос автора, 2026-07-26). Сами тексты
+  // по модулям — pages/js/module-intro-data.js, здесь только подписи.
+  "intro.what":       { ru: "Что внутри", en: "What's inside", uz: "Ichida nima bor" },
+  "intro.learn":      { ru: "Чему учит", en: "What it teaches", uz: "Nimaga o'rgatadi" },
+  "intro.after":      { ru: "После него", en: "After it", uz: "Undan keyin" },
+  "intro.contains":   { ru: "Внутри", en: "Inside", uz: "Ichida" },
+  "intro.books":      { ru: "книг", en: "books", uz: "kitob" },
+  "intro.examEach":   { ru: "экзамен по каждой", en: "an exam for each", uz: "har biriga imtihon" },
+  "intro.open":       { ru: "Открыть модуль", en: "Open the module", uz: "Modulni ochish" },
+  "intro.opensAfter": { ru: "Откроется после экзамена по модулю", en: "Opens after the exam of module", uz: "Modul imtihonidan keyin ochiladi" },
+  "intro.goRequired": { ru: "Перейти к", en: "Go to", uz: "O'tish" },
+
   // Лента достижений (запрос автора «пусть будет автоматом», 2026-07-26).
   // Текст записи собирается здесь, а не хранится в базе: иначе на
   // английской и узбекской версиях сайта лента навсегда осталась бы
