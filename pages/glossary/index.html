@@ -192,7 +192,6 @@
     const tl = (key) => L[key]?.[lang] || L[key]?.ru || key;
 
     document.getElementById("page-title").textContent = tl("title");
-    document.getElementById("page-subtitle").textContent = `${TERMS.length} ${tl("termsWord")} · ${tl("subtitle")}`;
     const searchInput = document.getElementById("glossary-search");
     searchInput.placeholder = tl("search");
     document.getElementById("search-empty").textContent = tl("noResults");
@@ -257,6 +256,15 @@
       { ar: "أسماء الله الحسنى", translit: "Asma' Allah al-Husna", ru: "Прекрасные имена Аллаха", en: "Beautiful Names of Allah", uz: "Allohning go'zal ismlari", def: { ru: "99 имён Аллаха — используются в формулах заклинаний и методе уединения с таухидом.", en: "99 Names of Allah — used in incantation formulas and the tawhid seclusion method.", uz: "Allohning 99 ismi — afsun formulalari va tavhid bilan xilvatga chiqish usulida ishlatiladi." }, cat: "quran", modules: [1,2,8] },
       { ar: "وسوسة", translit: "Waswasa", ru: "Васваса", en: "Whispering / intrusive thoughts", uz: "Vasvasa", def: { ru: "Наущение шайтана — навязчивые мысли, внушаемые человеку для смущения и отдаления от Аллаха.", en: "Satanic whispering — intrusive thoughts implanted to confuse and distance one from Allah.", uz: "Shayton vasvasasi — odamni chalg'itish va Allohdan uzoqlashtirish uchun singdirilgan bezovta qiluvchi fikrlar." }, cat: "illness", modules: [6,7] },
     ];
+
+    // Подзаголовок со счётчиком — ТОЛЬКО здесь, после объявления TERMS.
+    // Раньше эта строка стояла выше по файлу, рядом с остальными
+    // переводами, и читала TERMS до его `const` — временная мёртвая зона,
+    // ReferenceError, и весь модуль страницы умирал на первой же строке.
+    // Внешне это выглядело как пустой словарь: ни фильтров, ни терминов,
+    // ни ошибок в интерфейсе (скриншот автора, 2026-07-26).
+    document.getElementById("page-subtitle").textContent =
+      `${TERMS.length} ${tl("termsWord")} · ${tl("subtitle")}`;
 
     // ── Render ──
     const root = document.getElementById("glossary-root");
