@@ -2012,10 +2012,16 @@ body:has(.messenger-page) .footer { display: none; }
   margin: var(--rp-space-5) 0 var(--rp-space-6);
   text-align: center;
 }
-.module-value__title {
-  font-size: var(--rp-fs-sm); font-weight: 700; letter-spacing: 0.1em;
+/* Не заголовок раздела, а тихая пометка (решение автора, 2026-07-26).
+   Прежний «ЧТО ДАЁТ ЭТОТ МОДУЛЬ» весом заголовка перетягивал внимание на
+   себя, и блок читался как продающее описание. Смысл другой: это
+   напоминание — мгновенное исцеление связано с верой в Аллаха. Поэтому
+   пометка мелкая и приглушённая, а главным в блоке остаётся сам хадис. */
+.module-value__label {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em;
   text-transform: uppercase; color: var(--rp-ayah-card-accent);
-  margin: 0 0 var(--rp-space-4);
+  opacity: 0.7; margin: 0 0 var(--rp-space-3);
 }
 .module-value__hadith {
   font-family: var(--rp-font-arabic); font-size: var(--rp-fs-arabic);
@@ -2039,6 +2045,85 @@ body:has(.messenger-page) .footer { display: none; }
 @media (max-width: 34rem) { .module-value { padding: var(--rp-space-4); } }
 /* На печати рамка ни к чему — на бумаге важен сам текст урока. */
 @media print { .module-value { display: none !important; } }
+
+/* ---------- Лента достижений учеников (запрос автора, 2026-07-26) ----------
+   Показывается по одной записи, поэтому высота фиксирована: без неё блок
+   дёргал бы всю страницу вверх-вниз каждые семь секунд, когда короткая
+   запись сменяется длинной. */
+.feed {
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  background: var(--rp-surface);
+  padding: var(--rp-space-4);
+  margin: var(--rp-space-5) 0;
+}
+.feed__head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--rp-space-3); margin-bottom: var(--rp-space-3);
+}
+.feed__title {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--rp-text-muted);
+}
+.feed__dots { display: flex; gap: 0.3rem; }
+.feed__dot {
+  width: 0.35rem; height: 0.35rem; border-radius: 50%;
+  background: var(--rp-border); transition: background 0.2s ease;
+}
+.feed__dot.is-on { background: var(--rp-accent); }
+.feed__body { min-height: 3.5rem; display: flex; align-items: center; }
+.feed__item {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: start; gap: var(--rp-space-3); width: 100%;
+  /* Мягкое появление — иначе смена записи выглядит как сбой отрисовки. */
+  animation: feed-in 0.35s ease both;
+}
+@keyframes feed-in { from { opacity: 0; transform: translateY(0.4rem); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .feed__item { animation: none; } }
+.feed__icon { font-size: 1.15rem; line-height: 1.4; }
+.feed__text { font-size: var(--rp-fs-base); line-height: 1.55; }
+.feed__time { font-size: var(--rp-fs-sm); color: var(--rp-text-muted); white-space: nowrap; }
+/* Свидетельство об ответе Аллаха выделяем — это главное, что автор хотел
+   показывать ученикам, а не сдача очередного экзамена. */
+.feed__item--answered .feed__text { font-weight: 600; }
+.feed__note {
+  font-size: var(--rp-fs-sm); color: var(--rp-text-muted);
+  margin: var(--rp-space-3) 0 0; line-height: 1.5;
+}
+@media (max-width: 34rem) {
+  .feed__item { grid-template-columns: auto 1fr; }
+  /* На узком экране дата уводит текст в две лишние строки — переносим её
+     под текст, а не режем сам текст. */
+  .feed__time { grid-column: 2; }
+}
+@media print { .feed { display: none !important; } }
+
+/* ---------- Отметка выполнения заданий (запрос автора, 2026-07-26) ---------- */
+.assignment-card__foot {
+  display: flex; align-items: center; gap: var(--rp-space-3);
+  flex-wrap: wrap; margin-top: var(--rp-space-3);
+  padding-top: var(--rp-space-3); border-top: 1px solid var(--rp-border);
+}
+.assignment-card__badge {
+  font-size: var(--rp-fs-sm); font-weight: 600; color: var(--rp-success, #2e7d32);
+}
+.assignment-card__undo {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; font-size: var(--rp-fs-sm);
+  color: var(--rp-text-muted); text-decoration: underline;
+}
+.assignment-card__undo:hover { color: var(--rp-text); }
+.assignment-card__answered { font-size: var(--rp-fs-sm); color: var(--rp-accent); }
+/* Выполненное задание не гасим полностью: к описанию практики ученик
+   возвращается и после того, как отметил её сделанной. */
+.assignment-card--done { border-color: var(--rp-accent); }
+.assignment-card__ask {
+  margin-top: var(--rp-space-3); padding: var(--rp-space-3);
+  border-radius: var(--rp-radius-md); background: var(--rp-surface-alt, rgba(0,0,0,0.03));
+}
+.assignment-card__ask-q { margin: 0 0 var(--rp-space-2); font-size: var(--rp-fs-sm); }
+.assignment-card__ask-btns { display: flex; gap: var(--rp-space-2); flex-wrap: wrap; }
+@media print { .assignment-card__foot, .assignment-card__ask { display: none !important; } }
 
 /* Короткая строка ценности в списке модулей («Путь ученика») */
 .path-step__value {

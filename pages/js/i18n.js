@@ -595,6 +595,19 @@ const S = {
   "assign.daily":        { ru: "Ежедневное", en: "Daily", uz: "Kundalik" },
   "assign.duration":     { ru: "Длительность", en: "Duration", uz: "Davomiyligi" },
 
+  // Отметка выполнения задания (запрос автора «пусть будет автоматом»,
+  // 2026-07-26): без неё лента достижений не имела бы источника — сервер
+  // видел только сданные тесты, а практику не видел вовсе.
+  "assign.markDone":     { ru: "Выполнил", en: "Done", uz: "Bajardim" },
+  "assign.isDone":       { ru: "Выполнено", en: "Completed", uz: "Bajarildi" },
+  "assign.undo":         { ru: "Снять отметку", en: "Undo", uz: "Belgini olish" },
+  // Вопрос задаётся только после отметки о выполнении и только по практике:
+  // у размышления «Аллах ответил?» смысла не имеет.
+  "assign.answeredQ":    { ru: "Аллах ответил на твою мольбу?", en: "Did Allah answer your supplication?", uz: "Alloh duoyingga javob berdimi?" },
+  "assign.answeredYes":  { ru: "الحمد لله — Аллах ответил", en: "الحمد لله — Allah answered", uz: "الحمد لله — Alloh javob berdi" },
+  "assign.answeredWait": { ru: "Пока продолжаю просить", en: "I keep asking", uz: "Hozircha so'rashda davom etaman" },
+  "assign.answeredDone": { ru: "الحمد لله — Аллах ответил", en: "الحمد لله — Allah answered", uz: "الحمد لله — Alloh javob berdi" },
+
   // ── Modules search ──
   "modules.search":      { ru: "Поиск по названиям и содержанию книг…", en: "Search titles and book contents…", uz: "Sarlavhalar va kitob mazmuni bo'yicha qidirish…" },
   "modules.noResults":   { ru: "Ничего не найдено.", en: "Nothing found.", uz: "Hech narsa topilmadi." },
@@ -627,7 +640,26 @@ const S = {
   "notif.day":       { ru: "дн", en: "d", uz: "kun" },
   "notif.yesterday": { ru: "вчера", en: "yesterday", uz: "kecha" },
 
-  "value.title":     { ru: "Что даёт этот модуль", en: "What this module gives you", uz: "Bu modul sizga nima beradi" },
+  // Лента достижений (запрос автора «пусть будет автоматом», 2026-07-26).
+  // Текст записи собирается здесь, а не хранится в базе: иначе на
+  // английской и узбекской версиях сайта лента навсегда осталась бы
+  // русской. {name} и {n} подставляет pages/js/community-feed.js.
+  "feed.title":       { ru: "Ученики школы", en: "Fellow students", uz: "Maktab shogirdlari" },
+  "feed.empty":       { ru: "Пока пусто. Первая запись может быть о тебе.", en: "Nothing yet. The first entry could be about you.", uz: "Hozircha bo'sh. Birinchi yozuv sen haqingda bo'lishi mumkin." },
+  "feed.module":      { ru: "{name} сдал экзамен Модуля {n}", en: "{name} passed the Module {n} exam", uz: "{name} {n}-modul imtihonidan o'tdi" },
+  "feed.practice":    { ru: "{name} довёл до конца практику Модуля {n}", en: "{name} completed the Module {n} practice", uz: "{name} {n}-modul amaliyotini oxiriga yetkazdi" },
+  // Формулировка автора (2026-07-26) и положение Модуля 10, §3: исцеление
+  // приписано Аллаху, ученик — причина, а не источник.
+  "feed.answered":    { ru: "{name} верно применил знание Модуля {n}: обратился к Аллаху с убеждённостью — и Аллах ответил и исцелил. الحمد لله", en: "{name} applied the knowledge of Module {n} rightly: he turned to Allah with certainty — and Allah answered and healed. الحمد لله", uz: "{name} {n}-modul ilmini to'g'ri qo'lladi: ishonch bilan Allohga yuzlandi — va Alloh javob berdi va shifo berdi. الحمد لله" },
+  "feed.graduate":    { ru: "{name} прошёл все 11 модулей курса", en: "{name} completed all 11 modules of the course", uz: "{name} kursning barcha 11 modulini tamomladi" },
+  "feed.certificate": { ru: "{name} получил сертификат раки", en: "{name} received the raqi certificate", uz: "{name} roqiy sertifikatini oldi" },
+  "feed.rukyaPro":    { ru: "{name} получил доступ к системе RUKYA Pro", en: "{name} received access to RUKYA Pro", uz: "{name} RUKYA Pro tizimiga ruxsat oldi" },
+  "feed.note":        { ru: "Записи появляются сами — по прогрессу учеников. Об ответе Аллаха свидетельствует сам ученик.", en: "Entries appear automatically from students' progress. Allah's answer is testified by the student himself.", uz: "Yozuvlar shogirdlarning natijasi bo'yicha o'zi paydo bo'ladi. Allohning javobiga shogirdning o'zi guvohlik beradi." },
+
+  // Заголовок «Что даёт этот модуль» убран по решению автора (2026-07-26):
+  // блок должен читаться не как продающее описание модуля, а как
+  // напоминание — мгновенное исцеление связано с твоей верой в Аллаха.
+  "value.reminder":  { ru: "Помни", en: "Remember", uz: "Eslab qol" },
   "value.hadithAr":  { ru: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي", en: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي", uz: "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي" },
   "value.hadithTr":  { ru: "Ана 'инда занни 'абди би", en: "Ana 'inda zanni 'abdi bi", uz: "Ana 'inda zanni 'abdi bi" },
   "value.hadithRu":  { ru: "«Я — таков, каким полагает Меня раб Мой»", en: "\"I am as My servant thinks of Me\"", uz: "«Men bandam Meni qanday o'ylasa, shundayman»" },
