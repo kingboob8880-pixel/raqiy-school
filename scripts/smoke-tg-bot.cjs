@@ -61,6 +61,7 @@ function applyOne(doc, key, value) {
 
 function docRef(pathStr) {
   return {
+    __path: pathStr,
     async get() {
       const d = store.get(pathStr);
       return { exists: d !== undefined, id: pathStr.split("/").pop(), data: () => clone(d) };
@@ -88,6 +89,7 @@ function collRef(name) {
     .map(([k, v]) => ({ id: k.split("/").pop(), data: () => clone(v) }));
   const api = {
     async get() { const docs = docsOf(); return { empty: !docs.length, docs, size: docs.length }; },
+    async listDocuments() { return docsOf().map((d) => docRef(`${name}/${d.id}`)); },
     async add(data) { store.set(`${name}/msg${store.size}`, clone(data)); },
     where(field, _op, val) {
       return {
@@ -102,7 +104,15 @@ function collRef(name) {
   return api;
 }
 
-const db = { doc: docRef, collection: collRef };
+const db = {
+  doc: docRef,
+  collection: collRef,
+  // batch/listDocuments нужны панели админа для удаления ученика.
+  batch: () => {
+    const ops = [];
+    return { delete: (ref) => ops.push(ref), async commit() { for (const r of ops) store.delete(r.__path); } };
+  },
+};
 
 // ── заглушка Telegram ───────────────────────────────────────────────────
 let sent = [];
@@ -161,6 +171,9 @@ global.fetch = async (url) => ({
 
 const bot = require(path.join(ROOT, "functions", "tg-student.js"));
 bot.init({ tg, db, CHAT: "999", logger: { warn() {}, error() {}, info() {} } });
+
+const admin = require(path.join(ROOT, "functions", "tg-admin.js"));
+admin.init({ tg, db, CHAT: "999", logger: { warn() {}, error() {}, info() {} } });
 
 // ── сценарии ────────────────────────────────────────────────────────────
 let failed = 0;
@@ -375,6 +388,77 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
   const linkBtn = sent.flatMap((m) => (m.reply_markup?.inline_keyboard || []).flat())
     .find((b) => String(b.callback_data || "").startsWith("tglink:"));
   check("кнопка привязки адресована автору", !!linkBtn, "кнопки: " + buttons().join(", "));
+
+  // ── 16. ПАНЕЛЬ УПРАВЛЕНИЯ В ЧАТЕ АВТОРА ───────────────────────────────
+  const acb = (d) => ({ id: "cb", data: d, message: { chat: { id: 999 } } });
+  const amsg = (t) => ({ chat: { id: 999 }, from: { username: "author" }, text: t });
+
+  reset();
+  check("панель отвечает на /admin", await admin.onMessage(amsg("/admin")));
+  check("меню показано", /Управление школой/.test(lastText()));
+
+  reset();
+  await admin.onCallback(acb("as:all:0"));
+  check("список учеников открылся", /Все ученики/.test(lastText()));
+
+  reset();
+  await admin.onCallback(acb("as:unpaid:0"));
+  check("фильтр «без оплаты» работает", /Без оплаты/.test(lastText()));
+
+  // Карточка: берём ученика, созданного при регистрации.
+  const regUid = (await db.doc(`tgUsers/${NEW}`).get()).data().uid;
+  reset();
+  await admin.onCallback(acb(`ac:${regUid}`));
+  check("карточка ученика открылась", /Ибрахим/.test(lastText()) && /Доступ:/.test(lastText()));
+  check("в карточке есть выдача полного доступа", buttons().some((b) => b === `ax:${regUid}`));
+
+  // Выдача доступа прямо из бота — то, ради чего всё и делалось.
+  reset();
+  await admin.onCallback(acb(`ap:${regUid}`));
+  check("оплата подтверждена из бота", store.get(`students/${regUid}`).paid === true);
+  reset();
+  await admin.onCallback(acb(`ax:${regUid}`));
+  check("полный доступ выдан из бота", store.get(`students/${regUid}`).fullAccess === true);
+  reset();
+  await admin.onCallback(acb(`ax:${regUid}`));
+  check("полный доступ снимается тем же нажатием", !store.get(`students/${regUid}`).fullAccess);
+  reset();
+  await admin.onCallback(acb(`ag:${regUid}`));
+  check("сертификат выдан из бота", store.get(`students/${regUid}`).certificateGranted === true);
+
+  // Письмо ученику.
+  reset();
+  await admin.onCallback(acb(`aw:${regUid}`));
+  check("панель ждёт текст письма", /Напишите сообщение/.test(lastText()));
+  reset();
+  check("текст письма перехвачен панелью", await admin.onMessage(amsg("Продолжайте, вы молодец.")));
+  check("письмо легло в переписку ученика",
+    [...store.keys()].some((k) => k.startsWith(`students/${regUid}/messages/`)));
+
+  // Поиск.
+  reset();
+  await admin.onCallback(acb("aq"));
+  reset();
+  check("поиск перехвачен панелью", await admin.onMessage(amsg("ибрахим")));
+  check("поиск нашёл и открыл карточку", /Ибрахим/.test(lastText()));
+
+  // Сводка и мониторинг.
+  reset();
+  await admin.onCallback(acb("ast"));
+  check("сводка по школе показана", /Сводка по школе/.test(lastText()) && /Учеников/.test(lastText()));
+  reset();
+  await admin.onCallback(acb("aatt"));
+  check("экран «требуют внимания» работает", /Требуют внимания/.test(lastText()));
+  reset();
+  await admin.onCallback(acb(`am:${regUid}`));
+  check("подробный прогресс по модулям", /по модулям/.test(lastText()) && /Модуль 11/.test(lastText()));
+
+  // ГЛАВНОЕ: панель не должна отзываться на кнопки учеников.
+  check("панель не перехватывает ученические кнопки",
+    !(await admin.onCallback(acb("mods"))) && !(await admin.onCallback(acb("t:m1-1")))
+    && !(await admin.onCallback(acb("pwd"))));
+  check("панель не перехватывает обычный текст ученика",
+    !(await admin.onMessage(amsg("просто текст"))));
 
   console.log(`\nПроверок провалено: ${failed}`);
   process.exit(failed ? 1 : 0);

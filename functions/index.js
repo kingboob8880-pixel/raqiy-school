@@ -99,6 +99,13 @@ async function tg(method, body) {
 const student = require("./tg-student");
 student.init({ tg, db, CHAT, logger });
 
+// Панель управления школой в чате автора (запрос автора 2026-07-27).
+// Раньше выдача полного доступа, доступ к RUKYA Pro, поиск ученика и
+// «кто застрял» жили только в кабинете на сайте — то есть требовали
+// компьютера ровно тогда, когда автор открывал бота с телефона.
+const admin = require("./tg-admin");
+admin.init({ tg, db, CHAT, logger });
+
 /** Уведомление УЧЕНИКУ на сайте (запрос автора, 2026-07-25).
  *
  * Пишем в students/{uid}/notifications — клиент подписан на эту коллекцию
@@ -450,15 +457,25 @@ exports.telegramWebhook = onRequest({ secrets: SECRETS }, async (req, res) => {
       // Кнопки админа и кнопки ученика различаются по чату, а не по виду
       // данных: одинаковые названия команд в двух ролях рано или поздно
       // пересекутся, и тогда ученик нажмёт админскую кнопку.
-      if (from === CHAT) await handleCallback(u.callback_query);
-      else await student.onCallback(u.callback_query);
+      if (from === CHAT) {
+        // Сначала новая панель. Старые кнопки (pay:/info:/reply:…) остаются
+        // рабочими: они разбросаны по уже отправленным сообщениям, и
+        // ломать их нажатием «обновись» нельзя.
+        const handled = await admin.onCallback(u.callback_query);
+        if (!handled) await handleCallback(u.callback_query);
+      } else {
+        await student.onCallback(u.callback_query);
+      }
     } else if (u.message?.text) {
       const from = String(u.message.chat.id);
       if (from === CHAT) {
         // Ответ на пересланный вопрос ученика — уходит ему; всё остальное
         // остаётся администраторскими командами.
         const replied = u.message.reply_to_message ? await student.mentorReply(u.message) : false;
-        if (!replied) await handleMessage(u.message);
+        if (replied) return;
+        // Панель могла ждать текст — поиск или письмо ученику.
+        const handled = await admin.onMessage(u.message);
+        if (!handled) await handleMessage(u.message);
       } else {
         await student.onMessage(u.message);
       }
@@ -620,14 +637,16 @@ async function handleMessage(msg) {
       chat_id: CHAT,
       text: [
         "<b>Бот школы рукии</b>", "",
-        "/students — список учеников",
-        "/paid — только оплатившие",
-        "/unpaid — неоплатившие",
-        "/stats — статистика", "",
-        "Уведомления приходят автоматически.",
-        "Кнопки под сообщениями — для быстрых действий.",
+        "Всё управление — кнопками, командовать не нужно:",
+        "открывайте панель и работайте оттуда.", "",
+        "/admin — панель управления",
+        "/stats — сводка по школе",
+        "/paid, /unpaid — быстрые списки", "",
+        "Уведомления о новых учениках, оплатах и вопросах приходят сами.",
+        "На вопрос ученика отвечайте <b>реплаем</b> — ответ уйдёт ему.",
       ].join("\n"),
       parse_mode: "HTML",
+      reply_markup: { inline_keyboard: [[{ text: "⚙️ Открыть панель", callback_data: "a" }]] },
     });
     return;
   }
