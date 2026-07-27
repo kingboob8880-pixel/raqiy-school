@@ -10,7 +10,7 @@
 //
 // Отметка «выполнил» и свидетельство «Аллах ответил» — запрос автора
 // 2026-07-26; сервер переносит уже поставленный флаг в общую ленту.
-import { t } from "./i18n.js?v=31";
+import { t } from "./i18n.js?v=32";
 import { markAssignmentDone, unmarkAssignmentDone } from "../../integration/firestore.js?v=27";
 import { openAssignment } from "./assignment-runner.js?v=3";
 import { assignmentGate } from "./assignments-gate.js?v=2";

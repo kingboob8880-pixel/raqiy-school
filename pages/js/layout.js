@@ -3,9 +3,9 @@
 // Внедряется в страницы на разной глубине вложенности, поэтому все ссылки —
 // через withBase() (см. base-path.js), а не относительные.
 import { withBase } from "./base-path.js?v=6";
-import { initSiteTheme } from "./theme.js?v=10";
-import { watchAuth, isAdmin, getAdminProfile, getStudentProfile } from "../../integration/auth.js?v=11";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=31";
+import { initSiteTheme } from "./theme.js?v=11";
+import { watchAuth, isAdmin, getAdminProfile, getStudentProfile } from "../../integration/auth.js?v=12";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=32";
 import { initNotifications, stopNotifications } from "./notifications.js?v=9";
 
 export function renderHeader(zone = "learn") {

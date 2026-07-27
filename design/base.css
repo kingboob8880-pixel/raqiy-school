@@ -194,22 +194,33 @@ p { margin: 0 0 var(--rp-space-4); }
 }
 .theme-switcher__label { font-size: var(--rp-fs-sm); color: var(--rp-zone-text, var(--rp-learn-text)); opacity: 0.7; display: none; }
 @media (min-width: 64rem) { .theme-switcher__label { display: inline; } }
+/* ⚠️ ЦЕЛЬ НАЖАТИЯ — 44px, ХОТЯ КРУЖОК ОСТАЁТСЯ 26px.
+   Было width/height: 1.6rem, то есть 26px на всю кнопку. Шесть таких целей
+   подряд в углу шапки (три темы + три языка), между ними по 2px — с
+   телефона промахнуться было проще, чем попасть: целился в РУ, попал в EN,
+   страница перезагрузилась на другом языке (аудит 2026-07-27).
+   Приём: сама кнопка 44×44 и прозрачная, а видимый кружок рисуется фоном с
+   background-clip: content-box внутри padding. Вид не изменился, палец
+   попадает. */
 .theme-switcher__btn {
   font: inherit; font-size: 0; font-weight: 700; cursor: pointer;
-  width: 1.6rem; height: 1.6rem; padding: 0; border-radius: var(--rp-radius-pill);
-  border: 2px solid transparent; box-shadow: 0 0 0 1px var(--rp-zone-border, var(--rp-learn-border));
+  width: 2.75rem; height: 2.75rem; padding: 0.575rem;
+  border-radius: var(--rp-radius-pill);
+  border: none; background-color: transparent;
+  background-clip: content-box; background-origin: content-box;
   overflow: hidden; color: transparent;
+  box-shadow: inset 0 0 0 1px var(--rp-zone-border, var(--rp-learn-border));
 }
-.theme-switcher__btn[aria-pressed="true"] { border-color: var(--rp-zone-accent, var(--rp-learn-accent)); }
+.theme-switcher__btn[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--rp-zone-accent, var(--rp-learn-accent)); }
 /* Кружки-образцы: половина — фон темы, половина — её акцент. Раньше оба
    конца градиента брались из фона, и «Изумруд» с «Графитом» выглядели
    двумя почти одинаковыми тёмными точками — выбрать тему на глаз было
    нельзя. Теперь видно и фон, и то, чем тема красит кнопки. */
-.theme-switcher__btn[data-theme="emerald"] { background: linear-gradient(135deg, #1a3225 48%, #c09330 52%); }
+.theme-switcher__btn[data-theme="emerald"] { background-image: linear-gradient(135deg, #1a3225 48%, #c09330 52%); }
 /* Образец светлой темы: почти белая половина, а не кремовая — в мелком
    кружке переключателя полутона не различаются. */
-.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #fffdf8 48%, #2f6a4a 52%); }
-.theme-switcher__btn[data-theme="split"] { background: linear-gradient(135deg, #252a31 48%, #c09330 52%); }
+.theme-switcher__btn[data-theme="pattern"] { background-image: linear-gradient(135deg, #fffdf8 48%, #2f6a4a 52%); }
+.theme-switcher__btn[data-theme="split"] { background-image: linear-gradient(135deg, #252a31 48%, #c09330 52%); }
 
 /* ---------- Кнопки ---------- */
 /* Размеры из макета: высота 46px, радиус 13px, начертание 800. Прежняя
@@ -254,7 +265,7 @@ p { margin: 0 0 var(--rp-space-4); }
 .btn-ghost { background: transparent; color: var(--rp-zone-text, var(--rp-learn-text)); }
 .btn-danger { background: var(--rp-status-danger); color: #fff; }
 .btn-block { width: 100%; }
-.btn-sm { padding: 0 0.95rem; min-height: 2.375rem; font-size: var(--rp-fs-sm); }
+.btn-sm { padding: 0 0.95rem; min-height: 2.75rem; font-size: var(--rp-fs-sm); }  /* 44px — минимум для пальца */
 /* Вторая по важности кнопка в макете — не прозрачная рамка, а едва
    заметная светлая плашка с золотой линией: на тёмном фоне пустая рамка
    выглядит недоступной кнопкой. */
@@ -1894,13 +1905,26 @@ body:has(.messenger-page) .footer { display: none; }
 .quiz-progress__bar { height: 100%; background: var(--rp-status-success); transition: width 0.4s cubic-bezier(.4,0,.2,1); }
 
 /* Навигационные точки */
-.quiz-dots { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-bottom: var(--rp-space-5); }
-.quiz-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; border: none; padding: 0; background: var(--rp-learn-surface-raised); cursor: pointer; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; }
+.quiz-dots { display: flex; flex-wrap: wrap; gap: 0; justify-content: center; margin-bottom: var(--rp-space-4); }
+/* ⚠️ Точка была 9.6px — попасть пальцем невозможно. Теперь цель 2.25rem,
+   а сама точка того же размера рисуется внутри отступов. Плюс отвеченные
+   вопросы теперь disabled в разметке: раньше они выглядели нажимаемыми
+   (курсор-палец, увеличение при наведении), а клик по ним молча ничего не
+   делал (аудит 2026-07-27). */
+.quiz-dot {
+  width: 2.25rem; height: 2.25rem; padding: 0.825rem;
+  box-sizing: border-box; border-radius: 50%; border: none;
+  background-color: var(--rp-learn-surface-raised);
+  background-clip: content-box;
+  cursor: pointer; transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.quiz-dot:disabled { cursor: default; }
+.quiz-dot:disabled:hover { transform: none; }
 .quiz-dot:hover { transform: scale(1.3); }
-.quiz-dot.is-current { background: var(--rp-learn-accent); transform: scale(1.35); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rp-learn-accent) 30%, transparent); }
-.quiz-dot.is-answered { background: var(--rp-learn-text-muted); }
-.quiz-dot.is-correct-dot { background: var(--rp-status-success); }
-.quiz-dot.is-wrong-dot { background: var(--rp-status-danger); }
+.quiz-dot.is-current { background-color: var(--rp-learn-accent); transform: scale(1.2); }
+.quiz-dot.is-answered { background-color: var(--rp-learn-text-muted); }
+.quiz-dot.is-correct-dot { background-color: var(--rp-status-success); }
+.quiz-dot.is-wrong-dot { background-color: var(--rp-status-danger); }
 
 /* Карточка вопроса — анимированный контейнер */
 .quiz-card { animation: quizFadeIn 0.3s ease; }
@@ -2098,9 +2122,12 @@ body:has(.messenger-page) .footer { display: none; }
   display: flex; gap: 2px; border-radius: var(--rp-radius-sm);
   overflow: hidden; border: 1.5px solid color-mix(in srgb, var(--rp-zone-text) 20%, transparent);
 }
+/* Та же история, что у кнопок тем: было 22×26px. Высоту доводим до 44px
+   отступами, подпись остаётся прежнего размера. */
 .lang-switcher__btn {
   background: transparent; color: var(--rp-zone-text);
-  border: none; padding: 0.2rem 0.45rem; font-size: var(--rp-fs-xs);
+  border: none; padding: 0.75rem 0.7rem; min-height: 2.75rem;
+  font-size: var(--rp-fs-xs);
   font-weight: 600; cursor: pointer; transition: all 0.15s ease;
   line-height: 1.2;
 }
@@ -2766,7 +2793,7 @@ body:has(.messenger-page) .footer { display: none; }
 .notif-root { position: relative; display: flex; align-items: center; }
 .notif-bell {
   position: relative; display: inline-flex; align-items: center; justify-content: center;
-  width: 2.25rem; height: 2.25rem; border-radius: var(--rp-radius-pill);
+  width: 2.75rem; height: 2.75rem; border-radius: var(--rp-radius-pill);
   border: 1px solid var(--rp-zone-border); background: transparent;
   color: var(--rp-zone-text); font-size: 1rem; line-height: 1; cursor: pointer;
 }

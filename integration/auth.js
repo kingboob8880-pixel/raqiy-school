@@ -12,6 +12,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { auth, db } from "./firebase-init.js?v=2";
+// Сообщения об ошибках входа берутся из общего словаря — чтобы они были
+// на языке, который человек выбрал в шапке.
+import { t } from "../pages/js/i18n.js?v=32";
 
 /** «Запомнить меня» — вход сохраняется между запусками браузера, пока
  *  человек сам не нажмёт «Выйти» (запрос автора, 2026-07-25: приходилось
@@ -38,13 +41,30 @@ const persistenceReady = setPersistence(auth, browserLocalPersistence)
 export async function registerStudent({ name, email, password }) {
   await persistenceReady;
   const cred = await createUserWithEmailAndPassword(auth, email, password);
-  await setDoc(doc(db, "students", cred.user.uid), {
-    name,
-    email,
-    paid: false, // ждёт ручного подтверждения админом, §18
-    createdAt: serverTimestamp(),
-    progress: {}, // { moduleId: { status: 'in_progress'|'done', quizScore: number } }
-  });
+  try {
+    await setDoc(doc(db, "students", cred.user.uid), {
+      name,
+      email,
+      paid: false, // ждёт ручного подтверждения админом, §18
+      createdAt: serverTimestamp(),
+      progress: {}, // { moduleId: { status: 'in_progress'|'done', quizScore: number } }
+    });
+  } catch (err) {
+    // ⚠️ ЛОВУШКА, В КОТОРУЮ ЧЕЛОВЕК ПОПАДАЛ БЕЗ ВЫХОДА (аудит 2026-07-27).
+    //
+    // Учётная запись к этому моменту УЖЕ создана — упала только запись
+    // профиля (сеть, правила). Человек видел общее «Что-то пошло не так»,
+    // нажимал «Зарегистрироваться» ещё раз и получал «Этот email уже
+    // зарегистрирован» — про адрес, которым он ни разу не пользовался.
+    // Дальше он либо уходил, либо писал автору.
+    //
+    // Аккаунт рабочий, войти по этой паре можно, а профиль досоздастся при
+    // первом входе. Поэтому говорим человеку именно это, отдельным кодом.
+    console.warn("registerStudent: аккаунт создан, профиль не записан", err);
+    const e = new Error("profile not created");
+    e.code = "raqiy/profile-not-created";
+    throw e;
+  }
   return cred.user;
 }
 
@@ -97,19 +117,25 @@ export async function resolveRole(user) {
  * известная точка потери пользователей на форме регистрации (план улучшения
  * курса, 2026-07-18, четвёртый проход). Неизвестные коды — нейтральный
  * fallback вместо необработанного текста. */
-const AUTH_ERROR_MESSAGES = {
-  "auth/email-already-in-use": "Этот email уже зарегистрирован — попробуйте войти вместо регистрации.",
-  "auth/invalid-email": "Проверьте формат email.",
-  "auth/weak-password": "Пароль слишком простой — минимум 6 символов.",
-  "auth/user-not-found": "Ученик с таким email не найден — проверьте адрес или зарегистрируйтесь.",
-  "auth/wrong-password": "Неверный пароль.",
-  "auth/invalid-credential": "Неверный email или пароль.",
-  "auth/invalid-login-credentials": "Неверный email или пароль.",
-  "auth/too-many-requests": "Слишком много попыток — подождите немного и попробуйте снова.",
-  "auth/network-request-failed": "Нет связи с сервером — проверьте интернет-соединение.",
+// ⚠️ ЗДЕСЬ КЛЮЧИ СЛОВАРЯ, А НЕ ГОТОВЫЕ СТРОКИ (правка 2026-07-27).
+// Раньше русский текст был вписан прямо сюда, и англо- или узбекоязычный
+// ученик получал русское сообщение об ошибке — ровно в тот момент, когда
+// он уже не может войти и раздражён. Шапка на его языке, а ошибка нет:
+// выглядит как поломка сайта.
+const AUTH_ERROR_KEYS = {
+  "auth/email-already-in-use": "authErr.emailInUse",
+  "auth/invalid-email": "authErr.badEmail",
+  "auth/weak-password": "authErr.weakPassword",
+  "auth/user-not-found": "authErr.noUser",
+  "auth/wrong-password": "authErr.wrongPassword",
+  "auth/invalid-credential": "authErr.badCredentials",
+  "auth/invalid-login-credentials": "authErr.badCredentials",
+  "auth/too-many-requests": "authErr.tooMany",
+  "auth/network-request-failed": "authErr.noNetwork",
+  // Аккаунт создан, а профиль записать не вышло — см. registerStudent.
+  "raqiy/profile-not-created": "authErr.profileLater",
 };
 
 export function friendlyAuthError(err) {
-  const code = err?.code || "";
-  return AUTH_ERROR_MESSAGES[code] || "Что-то пошло не так. Попробуйте ещё раз чуть позже.";
+  return t(AUTH_ERROR_KEYS[err?.code || ""] || "authErr.generic");
 }

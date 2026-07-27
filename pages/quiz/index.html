@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Тест — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=24">
-<link rel="stylesheet" href="../../design/base.css?v=73">
+<link rel="stylesheet" href="../../design/base.css?v=74">
 </head>
 <body data-zone="learn">
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
@@ -17,13 +17,13 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=33";
-    import { t, getLang, moduleTitle } from "../js/i18n.js?v=31";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=34";
+    import { t, getLang, moduleTitle } from "../js/i18n.js?v=32";
     import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=38";
     import { QUIZZES } from "../js/quiz-data.js?v=8";
     import { loadExamDoc } from "../js/exam-loader.js?v=9";
     import { assignmentsForBook } from "../js/assignments-data.js?v=6";
-    import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
+    import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=12";
     import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=27";
     import { withBase } from "../js/base-path.js?v=6";
 
@@ -155,6 +155,14 @@
       // Предупреждение при случайном уходе со страницы
       const warnLeave = (e) => { e.preventDefault(); };
       window.addEventListener("beforeunload", warnLeave);
+      /** Свои ссылки не должны вызывать браузерное «Изменения могут не
+       *  сохраниться». Человек нажимает кнопку САМОГО САЙТА — «Прервать
+       *  тест» или пункт меню — и получает пугающий системный диалог.
+       *  Снимаем предупреждение перед уходом по любой нашей ссылке. */
+      const dropLeaveWarning = () => window.removeEventListener("beforeunload", warnLeave);
+      document.addEventListener("click", (e) => {
+        if (e.target.closest("a[href]")) dropLeaveWarning();
+      }, true);
 
       const exitHref = isBookQuiz
         ? withBase(`/pages/modules/module.html?id=${mod.id}`)
@@ -168,7 +176,11 @@
           else if (answeredFlags[i]) {
             cls += answers[i] === questions[i].correct ? " is-correct-dot" : " is-wrong-dot";
           }
-          return `<button type="button" class="${cls}" data-go="${i}" title="${t("quiz.question")} ${i + 1}" aria-label="${t("quiz.question")} ${i + 1}"></button>`;
+          // Отвеченный вопрос переоткрыть нельзя — значит кнопка должна
+          // быть отключена, а не молча игнорировать нажатие. Раньше она
+          // выглядела рабочей: курсор-палец, увеличение при наведении.
+          const dead = answeredFlags[i] || i === current;
+          return `<button type="button" class="${cls}" data-go="${i}"${dead ? " disabled" : ""} title="${t("quiz.question")} ${i + 1}" aria-label="${t("quiz.question")} ${i + 1}"></button>`;
         }).join("");
       }
 
