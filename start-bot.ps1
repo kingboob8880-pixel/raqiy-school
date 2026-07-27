@@ -89,11 +89,27 @@ if (-not $fb) {
 Good "firebase $(((Run 'firebase' @('--version')).Text.Trim() -split "`r?`n")[0])"
 
 # ─────────────────────────────────────────────────────────────────────────
-Step 2 "Читаю functions\.env"
+Step 2 "Читаю functions\.env.local"
 
-$envPath = Join-Path $ROOT "functions\.env"
+# ИМЕННО .env.local. Содержимое functions\.env Firebase выкладывает вместе
+# с функциями как обычные переменные окружения, они сталкиваются с
+# секретами тех же имён, и Cloud Run отказывается разворачивать функцию.
+# Файлы .local используются только локальным эмулятором (2026-07-27).
+$envPath = Join-Path $ROOT "functions\.env.local"
+$oldEnv  = Join-Path $ROOT "functions\.env"
+
+if ((Test-Path $oldEnv) -and -not (Test-Path $envPath)) {
+    Move-Item $oldEnv $envPath
+    Good "functions\.env переименован в .env.local — иначе деплой падает"
+}
+if (Test-Path $oldEnv) {
+    Say "  [!] Есть и .env, и .env.local — .env нужно удалить" "Yellow"
+    Note "Из-за него деплой функции telegramWebhook не пройдёт."
+    Remove-Item $oldEnv -Force
+    Good "functions\.env удалён"
+}
 if (-not (Test-Path $envPath)) {
-    Fail "Нет файла functions\.env" "Скопируйте functions\.env.example в functions\.env и заполните."
+    Fail "Нет файла functions\.env.local" "Скопируйте functions\.env.example в functions\.env.local и заполните."
 }
 
 $cfg = @{}
@@ -104,7 +120,7 @@ foreach ($line in (Get-Content $envPath -Encoding UTF8)) {
     $cfg[$t.Substring(0, $i).Trim()] = $t.Substring($i + 1).Trim()
 }
 foreach ($key in @("TG_BOT_TOKEN", "TG_CHAT_ID", "TG_WEBHOOK_SECRET")) {
-    if (-not $cfg[$key]) { Fail "В functions\.env не заполнено: $key" }
+    if (-not $cfg[$key]) { Fail "В functions\.env.local не заполнено: $key" }
 }
 Good "Токен, chat_id и секрет на месте"
 
@@ -114,7 +130,7 @@ Step 3 "Спрашиваю у Telegram, чей это токен"
 try {
     $me = Invoke-RestMethod -Uri "https://api.telegram.org/bot$($cfg.TG_BOT_TOKEN)/getMe" -TimeoutSec 20
 } catch {
-    Fail "Telegram не ответил: $($_.Exception.Message)" "Проверьте интернет. Если он есть — токен в functions\.env неверный."
+    Fail "Telegram не ответил: $($_.Exception.Message)" "Проверьте интернет. Если он есть — токен в functions\.env.local неверный."
 }
 if (-not $me.ok) { Fail "Токен недействителен" "Возьмите новый: @BotFather -> /mybots -> ваш бот -> API Token" }
 
