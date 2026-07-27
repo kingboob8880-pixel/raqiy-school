@@ -116,7 +116,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "./js/layout.js?v=32";
-    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=34";
+    import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, renderMarkdown } from "./js/markdown-loader.js?v=34";
     import { t, getLang, moduleTitle } from "./js/i18n.js?v=30";
     import { printBarHtml, wirePrintBar } from "./js/print-doc.js?v=8";
     import { setupReadingPosition } from "./js/reading-position.js?v=8";
@@ -255,7 +255,7 @@
               // уже отрисовано из статического файла, ничего не ломаем.
               const full = await getFullBookContent(bookKey(docPath));
               if (full?.body) {
-                bodyEl.innerHTML = window.marked ? window.marked.parse(full.body) : bodyEl.innerHTML;
+                bodyEl.innerHTML = renderMarkdown(full.body) ?? bodyEl.innerHTML;
                 bodyEl.querySelectorAll("table").forEach((table) => {
                   const wrap = document.createElement("div");
                   wrap.className = "table-scroll";
@@ -318,7 +318,23 @@
           });
         })
         .catch((err) => {
-          root.innerHTML = `<p class="field-error">${t("book.loaderror")}: ${err.message}</p>`;
+          // ⚠️ НЕ ВСТАВЛЯТЬ err.message В РАЗМЕТКУ. В текст ошибки попадает
+          // адрес документа из ?doc= — то есть строка, которую задаёт
+          // открывающий страницу. Ссылка вида book.html?doc=<img onerror=…>
+          // давала промах загрузки, а сообщение о промахе исполняло эту
+          // разметку в браузере жертвы (найдено аудитом 2026-07-27).
+          // Подробности — в консоль, человеку — понятный текст и выход.
+          console.warn("book: не удалось загрузить", docPath, err);
+          root.classList.remove("skeleton-loading");
+          root.innerHTML = `
+            <div class="empty-state">
+              <p class="field-error">${t("book.loaderror")}</p>
+              <div class="hero-actions" style="justify-content:center; margin-top: var(--rp-space-4);">
+                <button type="button" class="btn btn-primary" id="book-retry">${t("dash.retryBtn")}</button>
+                <a class="btn btn-outline" href="${fallbackHref}">${t("book.backToModule")}</a>
+              </div>
+            </div>`;
+          document.getElementById("book-retry")?.addEventListener("click", () => location.reload());
         });
     }
 

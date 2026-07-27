@@ -9,6 +9,15 @@
     "trailingSlash": false,
     "headers": [
       {
+        "source": "/sw.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
         "source": "**/*.@(js|css)",
         "headers": [
           {
@@ -36,7 +45,10 @@
         ]
       }
     ],
-    "rewrites": []
+    "rewrites": [],
+    "predeploy": [
+      "node \"$RESOURCE_DIR/scripts/build-site.mjs\""
+    ]
   },
   "firestore": {
     "rules": "integration/firestore.rules"

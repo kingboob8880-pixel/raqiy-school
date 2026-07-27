@@ -70,6 +70,10 @@
     const root = document.getElementById("cert-root");
     const statusRoot = document.getElementById("cert-status");
 
+    /** Имя ученика — единственное, что на сертификат приходит от человека. */
+    const escName = (v) => String(v ?? "").replace(/[&<>"']/g,
+      (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
     const SPARK_PATH = `<path fill="currentColor" d="M50 3l6 30 30 6-30 6-6 30-6-30-30-6 30-6z"/>`;
 
     function certHtml({ name, sample, dateStr }) {
@@ -82,7 +86,9 @@
             ${sample ? `<span class="cert__watermark" data-t="cert.sample" aria-hidden="true">Пример</span>` : ""}
             <p class="cert__basmala" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
             <p class="cert__eyebrow" data-t="cert.completion">Сертификат о завершении</p>
-            <div class="cert__name">${name}</div>
+            <!-- Имя набирал человек — экранируем. Это единственное место,
+                 где своё имя попадало в разметку сырым (аудит 2026-07-27). -->
+            <div class="cert__name">${escName(name)}</div>
             <p class="cert__desc" data-t="cert.desc">прошёл(-ла) полный курс подготовки заклинателя (раки) — 11 модулей,
                25 книг, от основ убеждённости до итоговой практики под супервизией наставника.</p>
             <div class="cert__divider" aria-hidden="true"></div>

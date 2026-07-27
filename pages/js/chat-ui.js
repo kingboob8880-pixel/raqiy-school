@@ -11,6 +11,25 @@ function escapeHtml(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
+/** Безопасный адрес вложения.
+ *
+ *  Экранирования мало: оно не даёт выйти из атрибута, но `javascript:…`
+ *  внутри href остаётся рабочей ссылкой. Поле mediaUrl приходит из
+ *  документа сообщения, а правила Firestore разрешают ученику создавать
+ *  свои сообщения и не проверяют, что там лежит. То есть ученик мог
+ *  положить себе в переписку «файл» с адресом javascript:…, а код
+ *  выполнился бы у наставника, когда тот открыл бы чат и нажал на
+ *  карточку — в его сессии, с его правами (найдено аудитом 2026-07-27).
+ *
+ *  Пропускаем только то, чем реально бывают вложения: ссылку на хранилище
+ *  (https) и локальный предпросмотр перед отправкой (blob:). Всё
+ *  остальное превращается в пустую ссылку — файл не откроется, но и
+ *  ничего не выполнится. */
+function safeUrl(url) {
+  const raw = String(url ?? "").trim();
+  return /^(https:\/\/|blob:https?:\/\/)/i.test(raw) ? raw : "";
+}
+
 const GROUP_GAP_MS = 5 * 60 * 1000;
 
 function toDate(ts) { return ts?.toDate ? ts.toDate() : null; }
@@ -88,7 +107,7 @@ function renderMediaContent(m, q) {
     const bars = generateWaveform(m.duration);
     const barsHtml = bars.map((h) => `<span class="vp-bar" style="height:${h}%"></span>`).join("");
     return `<div class="msg__media msg__voice-player">
-      <audio preload="none" src="${escapeHtml(m.mediaUrl)}"></audio>
+      <audio preload="none" src="${escapeHtml(safeUrl(m.mediaUrl))}"></audio>
       <button type="button" class="vp-btn" aria-label="${escapeHtml(t("chat.play"))}">${PLAY_SVG}</button>
       <div class="vp-wave">${barsHtml}</div>
       <span class="vp-time">${formatDuration(m.duration)}</span>
@@ -96,7 +115,7 @@ function renderMediaContent(m, q) {
   }
   if (type === "video") {
     return `<div class="msg__media msg__video">
-      <video controls preload="none" src="${escapeHtml(m.mediaUrl)}" playsinline
+      <video controls preload="none" src="${escapeHtml(safeUrl(m.mediaUrl))}" playsinline
         onerror="this.hidden=true;this.nextElementSibling.hidden=false"></video>
       <p class="msg__media-err" hidden>${escapeHtml(t("chat.videoError"))}</p>
     </div>`;
@@ -106,11 +125,11 @@ function renderMediaContent(m, q) {
     const isImage = m.mimeType?.startsWith("image/");
     let preview = "";
     if (isImage) {
-      preview = `<img class="msg__file-preview" src="${escapeHtml(m.mediaUrl)}" alt="${escapeHtml(m.fileName)}" loading="lazy">`;
+      preview = `<img class="msg__file-preview" src="${escapeHtml(safeUrl(m.mediaUrl))}" alt="${escapeHtml(m.fileName)}" loading="lazy">`;
     }
     return `<div class="msg__media msg__file">
       ${preview}
-      <a class="msg__file-card" href="${escapeHtml(m.mediaUrl)}" target="_blank" rel="noopener" download="${escapeHtml(m.fileName)}">
+      <a class="msg__file-card" href="${escapeHtml(safeUrl(m.mediaUrl))}" target="_blank" rel="noopener" download="${escapeHtml(m.fileName)}">
         <span class="msg__file-icon">${icon}</span>
         <span class="msg__file-info">
           <span class="msg__file-name">${escapeHtml(m.fileName)}</span>

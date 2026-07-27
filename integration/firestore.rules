@@ -24,6 +24,26 @@ service cloud.firestore {
       return docId == '_content_archive_index_md';
     }
 
+    // Поля профиля, которые выдают права и потому ученику недоступны.
+    // Один список на create и update: раньше он был выписан только в
+    // update, и create его не проверял вовсе (см. пояснение у students).
+    function grantFields(keys) {
+      return keys.hasAny([
+        'paid', 'fullAccess', 'fullAccessAt',
+        'certificateGranted', 'certificateGrantedAt',
+        'rukyaProAccess',
+        // Привязку Telegram ставит только бот (Admin SDK). Ученик выдаёт
+        // себе лишь одноразовый КОД в своём кабинете; если бы он мог
+        // записать tgChatId сам, он привязал бы свой Telegram к чужой
+        // записи и получил чужой прогресс и чужую переписку.
+        'tgChatId', 'tgUsername',
+        // Допуск к практике. Ставится только по принятым разборам
+        // случаев — сервером или админом. Разреши это ученику, и он
+        // выдал бы себе допуск и сертификат сам.
+        'supervision'
+      ]);
+    }
+
     match /admins/{uid} {
       // Список админов не создаётся через клиент — только вручную в консоли Firebase
       // (integration/README.md, шаг "Первый админ"), чтобы никто не мог сам себя
@@ -33,7 +53,31 @@ service cloud.firestore {
     }
 
     match /students/{uid} {
-      allow create: if isOwner(uid);
+      // ⚠️ ФИЛЬТР ПОЛЕЙ НУЖЕН И НА CREATE, НЕ ТОЛЬКО НА UPDATE.
+      //
+      // Дыра, найденная аудитом 2026-07-27. Ниже стоит подробный запрет на
+      // запись полей доступа при update — а create до сегодняшнего дня
+      // проверял только «это твой uid». Обход занимал одну строку: ключ
+      // веб-приложения Firebase публичный по устройству (он лежит в
+      // integration/firebase-config.js и обязан быть открытым),
+      // регистрация свободная. Значит любой мог завести себе учётную
+      // запись и вместо формы сайта записать свой первый документ
+      // напрямую из консоли браузера:
+      //
+      //   setDoc(doc(db,'students',myUid), {
+      //     name:'x', email:'x@x.x',
+      //     paid:true, fullAccess:true, certificateGranted:true,
+      //     rukyaProAccess:true, supervision:{accepted:3}
+      //   })
+      //
+      // isOwner проходил — и человек получал весь платный курс, доступ к
+      // RUKYA Pro и сертификат школы рукьи, не заплатив и не отучившись.
+      // Последнее особенно важно: сертификат говорит другим людям, что
+      // этому человеку можно доверить своё здоровье.
+      //
+      // На create нужен именно keys().hasAny, а не diff(): сравнивать не с
+      // чем, документа ещё нет.
+      allow create: if isOwner(uid) && !grantFields(request.resource.data.keys());
       allow read: if isOwner(uid) || isAdmin();
       // Ученик правит свой профиль/прогресс, но не поля выданных прав —
       // их переключает только админ вручную (project.md §18).
@@ -44,23 +88,7 @@ service cloud.firestore {
       // выдать себе сертификат и доступ к программе. Ставим все четыре
       // разом: поле, которое выдаёт права, ученику писать нечего.
       allow update: if (isOwner(uid)
-                        && !request.resource.data.diff(resource.data).affectedKeys()
-                             .hasAny(['paid', 'fullAccess', 'fullAccessAt',
-                                      'certificateGranted', 'certificateGrantedAt',
-                                      'rukyaProAccess',
-                                      // Привязку Telegram ставит только бот
-                                      // (Admin SDK). Ученик выдаёт себе лишь
-                                      // одноразовый КОД в своём кабинете; если
-                                      // бы он мог записать сам tgChatId, он
-                                      // привязал бы свой Telegram к чужой
-                                      // записи и получил чужой прогресс.
-                                      'tgChatId', 'tgUsername',
-                                      // Допуск к практике. Ставится только
-                                      // по принятым разборам случаев —
-                                      // сервером или админом. Разреши это
-                                      // ученику, и он выдал бы себе допуск
-                                      // и сертификат сам.
-                                      'supervision']))
+                        && !grantFields(request.resource.data.diff(resource.data).affectedKeys()))
                     || isAdmin();
       allow delete: if isAdmin();
 

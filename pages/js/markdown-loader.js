@@ -58,11 +58,63 @@ export function statusBadgeHtml(status) {
   return `<span class="badge ${s.cls}">${t(s.key)}</span>`;
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// ОЧИСТКА HTML ПОСЛЕ MARKDOWN
+//
+// marked по устройству пропускает сырой HTML из markdown насквозь: это его
+// штатное поведение, а опцию sanitize из него убрали ещё в 5-й версии. То
+// есть <script> или <img onerror=…>, попавшие в текст книги, исполнялись бы
+// у каждого читателя (найдено аудитом 2026-07-27).
+//
+// Сегодня тексты пишет автор, и живой дыры тут нет. Но защита держалась
+// целиком на этом «сегодня»: тексты переезжают в Firestore, часть уроков
+// собирается скриптами, а один невнимательный copy-paste из веб-страницы
+// приносит в .md чужую разметку. Проверка должна стоять в коде, а не в
+// намерениях.
+//
+// СВОЙ САНИТАЙЗЕР, А НЕ DOMPurify С CDN — намеренно. Библиотека с чужого
+// адреса это ещё одна точка отказа: не загрузилась (нет сети, заблокирован
+// CDN) — и либо текст не показан вовсе, либо показан неочищенным. Здесь
+// разбор идёт средствами самого браузера, работает офлайн и не может «не
+// приехать».
+//
+// Порядок правильный: сначала выкидываем опасные узлы, потом обходим
+// оставшиеся и снимаем обработчики событий и ссылки-исполнялки.
+const FORBIDDEN_TAGS = "script,style,iframe,object,embed,link,meta,base,form,input,button,textarea,select";
+const SAFE_URL = /^(https?:\/\/|mailto:|tel:|#|\/|\.\/|\.\.\/|data:image\/(png|jpe?g|gif|webp|svg\+xml);)/i;
+
+export function sanitizeHtml(html) {
+  const doc = new DOMParser().parseFromString(String(html ?? ""), "text/html");
+  doc.body.querySelectorAll(FORBIDDEN_TAGS).forEach((el) => el.remove());
+
+  for (const el of doc.body.querySelectorAll("*")) {
+    for (const attr of [...el.attributes]) {
+      const name = attr.name.toLowerCase();
+      // on* — это onclick, onerror, onload и все остальные обработчики.
+      if (name.startsWith("on")) { el.removeAttribute(attr.name); continue; }
+      // srcdoc у фрейма и подобное — целый документ внутри атрибута.
+      if (name === "srcdoc") { el.removeAttribute(attr.name); continue; }
+      if (["href", "src", "xlink:href", "action", "formaction"].includes(name)
+          && !SAFE_URL.test(attr.value.trim())) {
+        el.removeAttribute(attr.name);
+      }
+    }
+  }
+  return doc.body.innerHTML;
+}
+
+/** marked + очистка. Единственная точка, где markdown превращается в HTML:
+ *  три вызова marked.parse по проекту разъезжались бы при первой правке. */
+export function renderMarkdown(md) {
+  return window.marked
+    ? sanitizeHtml(window.marked.parse(String(md ?? "")))
+    : null;   // библиотека не приехала — вызывающий покажет текст как есть
+}
+
 /** Рендерит doc {meta, body} в контейнер: заголовок, значок статуса, тело markdown. */
 export function renderDocInto(container, doc, { showTitle = true } = {}) {
-  const html = window.marked
-    ? window.marked.parse(doc.body)
-    : `<pre style="white-space:pre-wrap; overflow-wrap:anywhere;">${doc.body}</pre>`;
+  const html = renderMarkdown(doc.body)
+    ?? `<pre style="white-space:pre-wrap; overflow-wrap:anywhere;">${esc(doc.body)}</pre>`;
   container.innerHTML = `
     ${showTitle && doc.meta.title ? `<h1>${esc(doc.meta.title)}</h1>` : ""}
     <div class="doc-meta">
@@ -193,7 +245,7 @@ export function addReadingAids(container) {
     toc.setAttribute("aria-label", t("ml.toc"));
     toc.innerHTML = `
       <p class="doc-toc__title">${t("ml.toc")}</p>
-      <ol>${headings.map((h) => `<li><a href="#${h.id}">${h.textContent}</a></li>`).join("")}</ol>`;
+      <ol>${headings.map((h) => `<li><a href="#${esc(h.id)}">${esc(h.textContent)}</a></li>`).join("")}</ol>`;
     bodyEl.before(toc);
     // Пункты появляются "лесенкой" один за другим — вся группа видна разом
     // (оглавление в начале страницы), поэтому задержка по индексу здесь
@@ -445,7 +497,7 @@ export function enhanceContentLinks(bodyEl) {
     const label = a.textContent.trim() || resolved.title;
     a.href = resolved.href; // обычная навигация — на случай открытия в новой вкладке/ Ctrl+клика, где preventDefault ниже не сработает
     a.classList.add("content-ref-link");
-    a.innerHTML = `<span class="content-ref-link__icon" aria-hidden="true">${resolved.kind === "module" ? "▤" : "▸"}</span><span>${label}</span>`;
+    a.innerHTML = `<span class="content-ref-link__icon" aria-hidden="true">${resolved.kind === "module" ? "▤" : "▸"}</span><span>${esc(label)}</span>`;
     a.addEventListener("click", (e) => {
       e.preventDefault();
       openContentLinkModal(resolved, label);
@@ -506,7 +558,7 @@ export function openContentLinkModal({ href, kind }, label) {
     <div class="rp-modal" role="dialog" aria-modal="true" aria-labelledby="rp-modal-title">
       <button class="rp-modal__close" type="button" aria-label="${t("common.close")}">×</button>
       <p class="rp-modal__eyebrow">${kind === "module" ? t("ml.linkModule") : t("ml.linkBook")}</p>
-      <h3 id="rp-modal-title" class="rp-modal__title">${label}</h3>
+      <h3 id="rp-modal-title" class="rp-modal__title">${esc(label)}</h3>
       <p class="form-note">${t("ml.linkNote")}</p>
       <div class="rp-modal__actions">
         <a class="btn btn-primary" href="${href}">${t("ml.linkOpen")}</a>

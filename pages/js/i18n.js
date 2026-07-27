@@ -62,6 +62,7 @@ const S = {
   "book.loading":      { ru: "Загрузка…", en: "Loading…", uz: "Yuklanmoqda…" },
   "book.nodoc":        { ru: "Не указан документ (параметр ?doc=).", en: "No document specified (?doc= parameter).", uz: "Hujjat ko'rsatilmagan (?doc= parametri)." },
   "book.loaderror":    { ru: "Не удалось загрузить материал", en: "Failed to load content", uz: "Materialni yuklash imkoni bo'lmadi" },
+  "book.backToModule": { ru: "К модулю", en: "Back to module", uz: "Modulga" },
   "book.examdone":     { ru: "Экзамен по этой книге сдан", en: "Book exam passed", uz: "Kitob imtihoni topshirildi" },
   // Заголовок блока упражнений под текстом книги (решение автора, 2026-07-27).
   "book.practice":     { ru: "Применить прочитанное", en: "Put it into practice", uz: "O'qilganni qo'llash" },

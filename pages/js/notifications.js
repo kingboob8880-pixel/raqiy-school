@@ -48,6 +48,20 @@ function markSeen(id) {
   } catch { /* приватный режим — покажем ещё раз, не страшно */ }
 }
 
+/** Ссылка уведомления — только путь внутри сайта.
+ *
+ *  Уведомления создаёт сервер (правила Firestore запрещают запись с
+ *  клиента), так что сегодня в поле link лежит наш же путь. Но защита
+ *  держалась исключительно на правилах: в одном месте адрес подставлялся
+ *  в href вообще без экранирования, а схема не проверялась нигде. Стоит
+ *  однажды разрешить запись уведомлений откуда-то ещё — и появится
+ *  «javascript:…» в колокольчике. Проверка стоит одну строку.
+ */
+function safeLink(link) {
+  const raw = String(link ?? "");
+  return raw.startsWith("/") ? withBase(raw) : "";
+}
+
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
@@ -193,7 +207,7 @@ function showNotifToast(n) {
     <span class="notif-toast__body">
       <span class="notif-toast__title">${esc(n.title || "")}</span>
       ${n.body ? `<span class="notif-toast__text">${esc(n.body)}</span>` : ""}
-      ${n.link ? `<a class="notif-toast__link" href="${withBase(n.link)}">${esc(t("notif.open"))}</a>` : ""}
+      ${n.link ? `<a class="notif-toast__link" href="${esc(safeLink(n.link))}">${esc(t("notif.open"))}</a>` : ""}
     </span>
     <button type="button" class="notif-toast__close" aria-label="${esc(t("common.close"))}">×</button>`;
   document.body.appendChild(el);
