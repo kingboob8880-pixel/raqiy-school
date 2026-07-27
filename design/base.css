@@ -3124,3 +3124,18 @@ body:has(.messenger-page) .footer { display: none; }
   font-size: var(--rp-fs-sm); line-height: 1.5;
   color: var(--rp-zone-muted);
 }
+
+/* Намерение к упражнению — первый блок в окне (запрос автора 2026-07-27).
+   Оформлено как цитата, а не как обычный абзац: это текст, который держат
+   в сердце дословно, и он должен читаться иначе, чем инструкция вокруг. */
+.arun__block--intent {
+  padding: var(--rp-space-4);
+  border: 1px solid var(--rp-zone-accent);
+  border-radius: var(--rp-radius-md);
+  background: color-mix(in srgb, var(--rp-zone-accent) 8%, transparent);
+}
+.arun__intent {
+  margin: 0;
+  font-family: var(--rp-font-heading);
+  font-size: var(--rp-fs-md); line-height: 1.6;
+}

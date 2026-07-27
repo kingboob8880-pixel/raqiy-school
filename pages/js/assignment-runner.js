@@ -22,7 +22,8 @@
 //
 // Без входа окно работает целиком, но ничего не сохраняет: гость и админ
 // должны видеть упражнение как оно есть, а не пустое место.
-import { t } from "./i18n.js?v=26";
+import { t } from "./i18n.js?v=27";
+import { withBase } from "./base-path.js?v=6";
 import {
   logAssignmentDay, unlogAssignmentDay, saveAssignmentNote, saveAssignmentState,
   markAssignmentDone, unmarkAssignmentDone,
@@ -149,6 +150,7 @@ function render() {
       </header>
 
       <div class="arun__body">
+        ${intentHtml(a)}
         ${stepsHtml(a)}
         ${counterHtml(a)}
         ${daysHtml(a)}
@@ -177,6 +179,29 @@ function render() {
 
   const ta = overlay.querySelector("#arun-note");
   if (ta && draft) ta.value = draft;
+}
+
+/** Намерение к этому упражнению — первым блоком, до шагов.
+ *
+ *  Запрос автора 2026-07-27: «в модулях и в упражнениях говорится о
+ *  намерении, но о каком — не написано». Ученик читал «зарядите
+ *  намерение», закрывал книгу и придумывал формулировку сам. Здесь она
+ *  готовая, по каркасу «Волевого акта», и стоит ПЕРВОЙ: намерение
+ *  формулируют до действия, а не вспоминают в середине.
+ *
+ *  Квадратные скобки в тексте оставлены намеренно — их заполняет ученик.
+ *  Имя и место это второй и восьмой компоненты; подставить их за него
+ *  нельзя, а без них намерение пустое. */
+function intentHtml(a) {
+  if (!a.intent) return "";
+  return `
+    <section class="arun__block arun__block--intent">
+      <h3 class="arun__h">${esc(t("runner.intent"))}</h3>
+      <p class="arun__intent">${esc(a.intent)}</p>
+      <p class="arun__note-hint">${esc(t("runner.intentHint"))}
+        <a href="${withBase("/pages/book.html")}?doc=${encodeURIComponent("/content/reference/niyat.md")}">${esc(t("runner.intentAll"))}</a>
+      </p>
+    </section>`;
 }
 
 function stepsHtml(a) {

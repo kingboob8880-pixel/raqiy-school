@@ -24,6 +24,12 @@ export const MODULES = [
       { title: "Басира — духовное зрение сердцем", doc: "/content/module-1/basira.md", exam: "/content/exams/module-1-basira.md" },
       { title: "Эхсан и черпание силы от Аллаха", doc: "/content/module-1/ehsan-i-sila.md", exam: "/content/exams/module-1-ehsan-i-sila.md" },
       { title: "Волевой акт — искусство удержания намерения в сердце", doc: "/content/module-1/volevoy-akt.md", exam: "/content/exams/module-1-volevoy-akt.md" },
+      // Справочник шаблонов намерения (запрос автора 2026-07-27: «в модулях
+      // и упражнениях говорится о намерении, но о каком — не написано»).
+      // Стоит сразу после «Волевого акта»: там дана анатомия намерения, а
+      // здесь — готовые формулировки по случаям, собранные по тому же
+      // каркасу. Раньше ученик закрывал книгу и придумывал формулировку сам.
+      { title: "Шаблоны намерения — готовые формулировки для каждого случая", doc: "/content/reference/niyat.md", exam: "/content/exams/module-1-niyat.md" },
     ],
     intro_video: "/assets/video/rukya-intro.mp4",
   },

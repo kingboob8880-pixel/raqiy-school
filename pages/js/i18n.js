@@ -661,6 +661,12 @@ const S = {
   // закрывал вкладку и делал это где-то у себя, без порядка, без счёта и
   // без записи. Окно даёт шаги, счётчик, серию дней и наблюдения.
   "runner.open":         { ru: "Провести упражнение", en: "Run the exercise", uz: "Mashqni bajarish" },
+  // Намерение к упражнению (запрос автора 2026-07-27: «говорится о
+  // намерении, но о каком — не написано»). Стоит первым блоком в окне:
+  // намерение формулируют до действия, а не вспоминают в середине.
+  "runner.intent":       { ru: "Намерение", en: "Intention", uz: "Niyat" },
+  "runner.intentHint":   { ru: "Держите в сердце, не двигая губами. В квадратных скобках подставьте своё — без имени и места намерение пустое.", en: "Hold it in the heart, without moving your lips. Fill in the brackets — without a name and a place the intention is empty.", uz: "Yurakda saqlang, lablarni qimirlatmasdan. Qavs ichiga o'zingiznikini qo'ying — ism va joysiz niyat bo'sh." },
+  "runner.intentAll":    { ru: "Все шаблоны намерения →", en: "All intention templates →", uz: "Barcha niyat namunalari →" },
   "runner.steps":        { ru: "Шаги", en: "Steps", uz: "Bosqichlar" },
   "runner.stepOf":       { ru: "шаг {n} из {m}", en: "step {n} of {m}", uz: "{m} dan {n}-bosqich" },
   "runner.allSteps":     { ru: "Все шаги пройдены.", en: "All steps completed.", uz: "Barcha bosqichlar bajarildi." },
