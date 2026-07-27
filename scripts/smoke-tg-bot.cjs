@@ -389,6 +389,88 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
     .find((b) => String(b.callback_data || "").startsWith("tglink:"));
   check("кнопка привязки адресована автору", !!linkBtn, "кнопки: " + buttons().join(", "));
 
+  // ── 15б. ПОЛНЫЙ КРУГ МОДУЛЯ: книги → тест модуля → следующий модуль ────
+  //
+  // Главная проверка всего бота: ради неё автор и спрашивал. Раньше тестов
+  // модулей в боте не было вовсе, и ученик упирался в потолок Модуля 1.
+  const M = 61000;
+  const mmsg = (t) => ({ chat: { id: M }, from: { username: "modul" }, text: t });
+  const mcb = (d) => ({ id: "cb", data: d, message: { chat: { id: M } } });
+
+  store.set("students/UIDM", { name: "Проходящий", email: "m@m.m", paid: true, progress: {} });
+  await db.doc(`tgUsers/${M}`).set({ uid: "UIDM", state: {} });
+
+  // Модуль 2 закрыт, пока не сдан первый.
+  reset();
+  await bot.onCallback(mcb("mod:2"));
+  check("Модуль 2 закрыт до сдачи первого", /🔒/.test(lastText()));
+
+  // Сдаём экзамены всех книг Модуля 1.
+  const { modules } = require(path.join(ROOT, "functions", "course-data.json"));
+  const m1 = modules[0];
+  for (let li = 0; li < m1.lessons.length; li++) {
+    if (!m1.lessons[li].exam) continue;
+    reset();
+    await bot.onCallback(mcb(`ex:0:${li}`));
+    for (let q = 0; q < 4; q++) {
+      const st = (await db.doc(`tgUsers/${M}`).get()).data().state;
+      if (!st?.exam) break;
+      reset();
+      await bot.onCallback(mcb(`ea:${st.exam.qs[st.exam.i].correct}`));
+    }
+  }
+  const afterBooks = store.get("students/UIDM").progress.books || {};
+  const booksDone = m1.lessons.filter((l) => afterBooks[l.key]?.status === "done").length;
+  check("все книги Модуля 1 сданы", booksDone === m1.lessons.length, `сдано ${booksDone} из ${m1.lessons.length}`);
+  check("после последней книги предложен тест модуля",
+    buttons().some((b) => b === "mex:1"), "кнопки: " + buttons().join(", "));
+
+  // Модуль всё ещё НЕ закрыт — книги пройдены, но тест модуля не сдан.
+  check("модуль не закрывается сам по себе", store.get("students/UIDM").progress["1"]?.status !== "done");
+  reset();
+  await bot.onCallback(mcb("mod:2"));
+  check("Модуль 2 всё ещё закрыт", /🔒/.test(lastText()));
+
+  // Сдаём тест модуля.
+  reset();
+  await bot.onCallback(mcb("mex:1"));
+  check("тест модуля начался", /Тест Модуля 1/.test(lastText()));
+  for (let i = 0; i < 20; i++) {
+    const st = (await db.doc(`tgUsers/${M}`).get()).data().state;
+    if (!st?.mexam) break;
+    reset();
+    await bot.onCallback(mcb(`ea:${st.mexam.qs[st.mexam.i].correct}`));
+  }
+  check("Модуль 1 закрыт", store.get("students/UIDM").progress["1"]?.status === "done",
+    JSON.stringify(store.get("students/UIDM").progress["1"] || {}));
+  check("сказано, что открылся Модуль 2", /Модуль 1 сдан/.test(lastText()) && /Открыт/.test(lastText()));
+  check("дана кнопка на Модуль 2", buttons().some((b) => b === "mod:2"));
+
+  // Теперь второй модуль действительно открыт — и его упражнения тоже.
+  reset();
+  await bot.onCallback(mcb("mod:2"));
+  check("Модуль 2 открылся", !/🔒/.test(lastText()) && /Модуль 2/.test(lastText()));
+  reset();
+  await bot.onCallback(mcb("t:m2-1"));
+  check("упражнения Модуля 2 доступны после экзамена своей книги или закрыты по книге",
+    /🔒|СДЕЛАНО, КОГДА|Откроется/.test(lastText()));
+
+  // Провал теста модуля не закрывает модуль.
+  store.set("students/UIDF", { name: "Провальный", email: "f@f.f", paid: true, progress: {} });
+  await db.doc("tgUsers/62000").set({ uid: "UIDF", state: {} });
+  const fcb = (d) => ({ id: "cb", data: d, message: { chat: { id: 62000 } } });
+  reset();
+  await bot.onCallback(fcb("mex:1"));
+  for (let i = 0; i < 20; i++) {
+    const st = (await db.doc("tgUsers/62000").get()).data().state;
+    if (!st?.mexam) break;
+    const wrong = (st.mexam.qs[st.mexam.i].correct + 1) % st.mexam.qs[st.mexam.i].options.length;
+    reset();
+    await bot.onCallback(fcb(`ea:${wrong}`));
+  }
+  check("проваленный тест не закрывает модуль", store.get("students/UIDF").progress["1"]?.status !== "done");
+  check("предложена пересдача", buttons().some((b) => b === "mex:1"));
+
   // ── 16. ПАНЕЛЬ УПРАВЛЕНИЯ В ЧАТЕ АВТОРА ───────────────────────────────
   const acb = (d) => ({ id: "cb", data: d, message: { chat: { id: 999 } } });
   const amsg = (t) => ({ chat: { id: 999 }, from: { username: "author" }, text: t });

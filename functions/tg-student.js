@@ -278,12 +278,47 @@ async function screenModule(s, moduleId) {
     return;
   }
 
-  const rows = m.lessons.map((l, li) => {
-    const done = s.progress?.books?.[l.key]?.status === "done";
-    return [{ text: `${done ? "✅" : "▫️"} ${l.title.slice(0, 55)}`, callback_data: `les:${mi}:${li}` }];
-  });
+  const doneKeys = new Set(
+    Object.entries(s.progress?.books || {}).filter(([, v]) => v?.status === "done").map(([k]) => k));
+  const booksDone = m.lessons.filter((l) => doneKeys.has(l.key)).length;
+  const allBooks = booksDone === m.lessons.length;
+  const moduleDone = s.progress?.[m.id]?.status === "done";
+
+  const rows = m.lessons.map((l, li) => [{
+    text: `${doneKeys.has(l.key) ? "✅" : "▫️"} ${l.title.slice(0, 55)}`,
+    callback_data: `les:${mi}:${li}`,
+  }]);
+
+  // «Продолжить» — сразу на первый несданный урок. Так же, как кнопка
+  // «Продолжить обучение» в кабинете на сайте: человеку не нужно помнить,
+  // где он остановился.
+  const nextIdx = m.lessons.findIndex((l) => !doneKeys.has(l.key));
+  if (nextIdx >= 0) {
+    rows.unshift([{ text: `▶️ Продолжить: ${m.lessons[nextIdx].title.slice(0, 40)}`, callback_data: `les:${mi}:${nextIdx}` }]);
+  }
+
+  // Тест модуля — то, что закрывает модуль и открывает следующий.
+  if (!moduleDone && (COURSE.quizzes?.[m.id] || []).length) {
+    rows.push([{
+      text: allBooks ? "📝 Сдать тест модуля" : `📝 Тест модуля (осталось книг: ${m.lessons.length - booksDone})`,
+      callback_data: `mex:${m.id}`,
+    }]);
+  }
+  if (moduleDone && m.id < COURSE.modules.length) {
+    rows.push([{ text: `▶️ Модуль ${m.id + 1}`, callback_data: `mod:${m.id + 1}` }]);
+  }
   rows.push([{ text: "‹ Модули", callback_data: "mods" }, { text: "Меню", callback_data: "m" }]);
-  await send(s.chatId, `<b>Модуль ${m.id}. ${esc(m.title)}</b>\n${esc(m.level)} · уроков: ${m.lessons.length}`, rows);
+
+  const head = [
+    `<b>Модуль ${m.id}. ${esc(m.title)}</b>`,
+    `${esc(m.level)} · книг: ${booksDone} из ${m.lessons.length}`,
+    moduleDone
+      ? "\n✅ Модуль сдан."
+      : allBooks
+        ? "\nВсе книги пройдены. Остался тест модуля — он открывает следующий."
+        : "\nЧитайте книги и сдавайте их экзамены. Когда пройдёте все — откроется тест модуля.",
+  ].join("\n");
+  await send(s.chatId, head, rows);
 }
 
 async function screenLesson(s, mi, li, page = 0) {
@@ -362,7 +397,104 @@ async function examStart(s, mi, li) {
   });
   await setState(s.chatId, { exam: { key: l.key, mi, li, qs: prepared, i: 0, right: 0 } });
   await send(s.chatId, `<b>Экзамен: ${esc(l.title)}</b>\nВопросов: ${prepared.length}. Порог — ${Math.round(COURSE.passThreshold * 100)}%.`);
-  await examQuestion(s.chatId, { key: l.key, mi, li, qs: prepared, i: 0, right: 0 });
+  await examQuestion(s.chatId, { qs: prepared, i: 0 });
+}
+
+/** Тест МОДУЛЯ — тот самый, что закрывает модуль и открывает следующий.
+ *
+ *  Отличие от экзамена книги: результат пишется в progress.{модуль}.status,
+ *  а следующий модуль открывается именно по нему. Пока тестов модулей в
+ *  боте не было, ученик, прошедший все книги, упирался в потолок первого
+ *  модуля навсегда (найдено 2026-07-27 по вопросу автора). */
+async function moduleExamStart(s, moduleId) {
+  const m = COURSE.modules.find((x) => x.id === moduleId);
+  const bank = COURSE.quizzes?.[moduleId] || [];
+  if (!m || !bank.length) { await send(s.chatId, "Тест этого модуля пока не готов."); return; }
+  if (!hasFullText(s)) {
+    await send(s.chatId, "Тест модуля открыт тем, у кого открыт полный курс.",
+      [[{ text: "Купить курс", url: "https://t.me/ruqoq" }], [{ text: "‹ Назад", callback_data: `mod:${moduleId}` }]]);
+    return;
+  }
+  if (!isModuleUnlocked(moduleId, s)) { await screenModule(s, moduleId); return; }
+
+  const prepared = shuffle(bank).map((q) => {
+    const idx = shuffle(q.options.map((_, i) => i));
+    return { q: q.q, options: idx.map((i) => q.options[i]), correct: idx.indexOf(q.correct) };
+  });
+  await setState(s.chatId, { mexam: { moduleId, qs: prepared, i: 0, right: 0 } });
+  await send(s.chatId, [
+    `<b>Тест Модуля ${moduleId}. ${esc(m.title)}</b>`,
+    `Вопросов: ${prepared.length}. Порог — ${Math.round(COURSE.passThreshold * 100)}%.`,
+    "",
+    "Сдадите — модуль закроется, откроется следующий и его упражнения.",
+  ].join("\n"));
+  await examQuestion(s.chatId, prepared[0] ? { qs: prepared, i: 0 } : null);
+}
+
+async function moduleExamAnswer(s, choice) {
+  const ex = s.state?.mexam;
+  if (!ex) return;
+  const q = ex.qs[ex.i];
+  const ok = choice === q.correct;
+  if (ok) ex.right += 1;
+
+  await send(s.chatId, ok
+    ? "✅ Верно."
+    : `❌ Неверно. Правильный ответ: <b>${LETTERS[q.correct]}</b>. ${esc(q.options[q.correct])}`);
+
+  ex.i += 1;
+  if (ex.i < ex.qs.length) {
+    await setState(s.chatId, { mexam: ex });
+    await examQuestion(s.chatId, ex);
+    return;
+  }
+
+  const ratio = ex.right / ex.qs.length;
+  const passed = ratio >= COURSE.passThreshold;
+  const upd = {
+    [`progress.${ex.moduleId}.quizScore`]: ratio,
+    [`progress.${ex.moduleId}.status`]: passed ? "done" : "in_progress",
+    lastSeenAt: new Date(),
+    "progress.activityDates": FieldValue.arrayUnion(todayKey()),
+  };
+  if (passed) upd[`progress.${ex.moduleId}.passedAt`] = new Date();
+  await deps.db.doc(`students/${s.uid}`).update(upd);
+  await setState(s.chatId, {});
+
+  const m = COURSE.modules.find((x) => x.id === ex.moduleId);
+  const next = COURSE.modules.find((x) => x.id === ex.moduleId + 1);
+
+  if (!passed) {
+    await send(s.chatId, [
+      "📖 <b>Тест модуля не сдан</b>",
+      `Результат: <b>${Math.round(ratio * 100)}%</b> (${ex.right} из ${ex.qs.length})`,
+      "",
+      `Нужно ${Math.round(COURSE.passThreshold * 100)}%. Перечитайте книги модуля и попробуйте снова — это не потеря, а вторая попытка понять.`,
+    ].join("\n"), [
+      [{ text: "🔁 Пересдать", callback_data: `mex:${ex.moduleId}` }],
+      [{ text: "‹ К модулю", callback_data: `mod:${ex.moduleId}` }],
+    ]);
+    return;
+  }
+
+  // Сдал — говорим прямо, что именно открылось. Иначе человек не понимает,
+  // что дальше, и ждёт от бота следующего шага.
+  const openedTasks = (COURSE.assignments[ex.moduleId + 1] || []).length;
+  const rows = [];
+  if (next) {
+    rows.push([{ text: `▶️ Открыть Модуль ${next.id}. ${next.title.slice(0, 35)}`, callback_data: `mod:${next.id}` }]);
+    if (openedTasks) rows.push([{ text: "🏋 Упражнения", callback_data: "pr" }]);
+  }
+  rows.push([{ text: "📊 Мой прогресс", callback_data: "prog" }, { text: "Меню", callback_data: "m" }]);
+
+  await send(s.chatId, [
+    `🎉 <b>Модуль ${ex.moduleId} сдан!</b>`,
+    `${esc(m.title)} — <b>${Math.round(ratio * 100)}%</b>`,
+    "",
+    next
+      ? `Открыт <b>Модуль ${next.id}. ${esc(next.title)}</b>${openedTasks ? " и его упражнения" : ""}.`
+      : "Это был последний модуль курса. الحمد لله",
+  ].join("\n"), rows);
 }
 
 const LETTERS = ["А", "Б", "В", "Г", "Д", "Е"];
@@ -410,6 +542,24 @@ async function examAnswer(s, choice) {
   const rows = [];
   const tasks = (COURSE.assignments[m.id] || []).filter((a) => a.bookKey === ex.key);
   if (passed && tasks.length) rows.push([{ text: "🏋 К упражнению", callback_data: `t:${tasks[0].id}` }]);
+
+  // Была ли это последняя книга модуля? Тогда сразу зовём на тест модуля —
+  // иначе человек закрывает бота, не поняв, что модуль почти пройден.
+  let lastOfModule = false;
+  if (passed) {
+    const fresh = await deps.db.doc(`students/${s.uid}`).get();
+    const books = fresh.exists ? (fresh.data().progress?.books || {}) : {};
+    lastOfModule = m.lessons.every((l) => books[l.key]?.status === "done");
+    if (lastOfModule && fresh.data().progress?.[m.id]?.status !== "done") {
+      rows.push([{ text: "📝 Сдать тест модуля", callback_data: `mex:${m.id}` }]);
+    } else if (!lastOfModule) {
+      const nextIdx = m.lessons.findIndex((l) => books[l.key]?.status !== "done");
+      if (nextIdx >= 0) {
+        rows.push([{ text: `▶️ Следующая книга: ${m.lessons[nextIdx].title.slice(0, 35)}`, callback_data: `les:${ex.mi}:${nextIdx}` }]);
+      }
+    }
+  }
+
   if (!passed) rows.push([{ text: "🔁 Пересдать", callback_data: `ex:${ex.mi}:${ex.li}` }]);
   rows.push([{ text: "‹ К урокам", callback_data: `mod:${m.id}` }, { text: "Меню", callback_data: "m" }]);
 
@@ -418,6 +568,7 @@ async function examAnswer(s, choice) {
     `${esc(l.title)}`,
     `Результат: <b>${Math.round(ratio * 100)}%</b> (${ex.right} из ${ex.qs.length})`,
     passed ? "" : `Нужно ${Math.round(COURSE.passThreshold * 100)}%. Перечитайте книгу и попробуйте снова — это не потеря, а вторая попытка понять.`,
+    passed && lastOfModule ? "\n<b>Все книги модуля пройдены.</b> Остался тест модуля — он открывает следующий." : "",
   ].filter(Boolean).join("\n"), rows);
 }
 
@@ -941,7 +1092,13 @@ async function onCallback(cb) {
       case "les": await ack(cb.id); return screenLesson(s, Number(rest[0]), Number(rest[1]), 0);
       case "rd": await ack(cb.id); return screenLesson(s, Number(rest[0]), Number(rest[1]), Number(rest[2]));
       case "ex": await ack(cb.id); return examStart(s, Number(rest[0]), Number(rest[1]));
-      case "ea": await ack(cb.id); return examAnswer(s, Number(rest[0]));
+      case "mex": await ack(cb.id); return moduleExamStart(s, Number(rest[0]));
+      // Одна кнопка ответа на оба экзамена: какой сейчас идёт, знает
+      // состояние. Две разные кнопки означали бы, что ученик, вернувшийся к
+      // старому сообщению, отвечает не на тот экзамен.
+      case "ea":
+        await ack(cb.id);
+        return s.state?.mexam ? moduleExamAnswer(s, Number(rest[0])) : examAnswer(s, Number(rest[0]));
       case "pr": await ack(cb.id); return screenPractice(s);
       case "t": await ack(cb.id); return screenTask(s, rest[0]);
       case "ts": case "tc": case "tcr": case "td": case "tdone": case "tu":

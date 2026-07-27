@@ -29,6 +29,11 @@ const load = (rel) => import(pathToFileURL(join(ROOT, rel)).href);
 
 const { MODULES, QUIZ_PASS_THRESHOLD, bookKey } = await load("pages/js/modules-data.js");
 const { ASSIGNMENTS } = await load("pages/js/assignments-data.js");
+// Тесты модулей. Без них бот не может закрыть модуль, а значит и открыть
+// следующий: следующий модуль открывается по progress.{N}.status === "done",
+// а этот статус ставит именно тест модуля. Пропущены при первой сборке —
+// в боте ученик упирался в потолок первого модуля навсегда (2026-07-27).
+const { QUIZZES } = await load("pages/js/quiz-data.js");
 
 // Берём только то, что боту действительно нужно. Обложки, интро-видео и
 // прочее оформление сайта в Telegram не используются — незачем раздувать
@@ -70,6 +75,7 @@ const out = {
   passThreshold: QUIZ_PASS_THRESHOLD,
   modules,
   assignments,
+  quizzes: QUIZZES,
 };
 
 const dest = join(ROOT, "functions/course-data.json");
@@ -77,5 +83,10 @@ writeFileSync(dest, JSON.stringify(out, null, 1), "utf8");
 
 const lessons = modules.reduce((n, m) => n + m.lessons.length, 0);
 const tasks = Object.values(assignments).reduce((n, a) => n + a.length, 0);
-console.log(`Готово: ${modules.length} модулей, ${lessons} уроков, ${tasks} упражнений`);
+const quizQs = Object.values(QUIZZES).reduce((n, q) => n + q.length, 0);
+console.log(`Готово: ${modules.length} модулей, ${lessons} уроков, ${tasks} упражнений, ${quizQs} вопросов в тестах модулей`);
+
+// Тест модуля обязан быть у каждого: без него модуль не закрывается.
+const noQuiz = modules.filter((m) => !(QUIZZES[m.id] || []).length).map((m) => m.id);
+if (noQuiz.length) console.warn(`⚠️ Модули без теста: ${noQuiz.join(", ")} — они не смогут закрыться`);
 console.log(`  → ${dest}`);
