@@ -656,6 +656,17 @@ const S = {
   "admin.fullRevoked":   { ru: "Полный доступ закрыт", en: "Full access revoked", uz: "To'liq kirish yopildi" },
   "dash.fullAccess":     { ru: "Полный доступ", en: "Full access", uz: "To'liq kirish" },
 
+  // ── Обучение в Telegram (запрос автора 2026-07-27) ──
+  // Привязка нужна ради одного прогресса на сайт и бота: без неё ученик
+  // прошёл бы модуль в Telegram, зашёл на сайт — и увидел пусто.
+  "dash.tgTitle":        { ru: "Обучение в Telegram", en: "Learning in Telegram", uz: "Telegramda o'qish" },
+  "dash.tgNote":         { ru: "Читайте книги, сдавайте экзамены и ведите упражнения прямо в Telegram. Прогресс общий с сайтом — привяжите аккаунт один раз.", en: "Read the books, take exams and run exercises right in Telegram. Progress is shared with the site — link your account once.", uz: "Kitoblarni o'qing, imtihon topshiring va mashqlarni Telegramda bajaring. Jarayon sayt bilan umumiy — hisobni bir marta bog'lang." },
+  "dash.tgLink":         { ru: "Привязать Telegram", en: "Link Telegram", uz: "Telegramni bog'lash" },
+  "dash.tgGo":           { ru: "Открыть бота и завершить привязку →", en: "Open the bot and finish linking →", uz: "Botni ochib bog'lashni yakunlang →" },
+  "dash.tgCodeNote":     { ru: "Код действует 15 минут. Нажмите кнопку — бот откроется и привяжет аккаунт сам.", en: "The code is valid for 15 minutes. Tap the button — the bot will open and link the account itself.", uz: "Kod 15 daqiqa amal qiladi. Tugmani bosing — bot ochiladi va hisobni o'zi bog'laydi." },
+  "dash.tgLinked":       { ru: "Telegram привязан. Прогресс в боте и на сайте — общий.", en: "Telegram is linked. Progress is shared between the bot and the site.", uz: "Telegram bog'landi. Bot va saytdagi jarayon umumiy." },
+  "dash.tgOpen":         { ru: "Открыть бота", en: "Open the bot", uz: "Botni ochish" },
+
   // ── Окно упражнения (решение автора 2026-07-27) ──
   // Карточка описывала упражнение, но провести его было негде: человек
   // закрывал вкладку и делал это где-то у себя, без порядка, без счёта и

@@ -14,3 +14,7 @@ export const firebaseConfig = {
 export const TELEGRAM_PAYMENT_LINK = "https://t.me/ruqoq";
 export const QUIZ_PASS_THRESHOLD = 0.7; // 70%, project.md §16а
 
+// Учебный Telegram-бот (запрос автора 2026-07-27: «чтобы ученики могли
+// обучаться с телеграм-бота»). Здесь только имя — токен лежит в секретах
+// функций и в репозиторий не попадает.
+export const TELEGRAM_BOT_USERNAME = "Lechenya_bot";

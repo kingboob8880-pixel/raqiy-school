@@ -47,7 +47,14 @@ service cloud.firestore {
                         && !request.resource.data.diff(resource.data).affectedKeys()
                              .hasAny(['paid', 'fullAccess', 'fullAccessAt',
                                       'certificateGranted', 'certificateGrantedAt',
-                                      'rukyaProAccess']))
+                                      'rukyaProAccess',
+                                      // Привязку Telegram ставит только бот
+                                      // (Admin SDK). Ученик выдаёт себе лишь
+                                      // одноразовый КОД в своём кабинете; если
+                                      // бы он мог записать сам tgChatId, он
+                                      // привязал бы свой Telegram к чужой
+                                      // записи и получил чужой прогресс.
+                                      'tgChatId', 'tgUsername']))
                     || isAdmin();
       allow delete: if isAdmin();
 
@@ -121,6 +128,14 @@ service cloud.firestore {
     match /feed/{entryId} {
       allow read: if isSignedIn();
       allow write: if false;
+    }
+
+    // Привязка Telegram: tgUsers/{chatId} = { uid, state, linkedAt }.
+    // Пишет и читает только бот через Admin SDK — правила его не касаются.
+    // Клиенту закрыто полностью: в этой коллекции лежит соответствие
+    // «телеграм-аккаунт → ученик», и её чтение раскрыло бы, кто есть кто.
+    match /tgUsers/{chatId} {
+      allow read, write: if false;
     }
 
     // Полный текст платных книг/модулей (docId = bookKey() из

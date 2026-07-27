@@ -1,0 +1,1613 @@
+{
+ "generatedAt": "2026-07-27T09:25:47.075Z",
+ "note": "Сгенерировано scripts/build-course-data.mjs — руками не править.",
+ "passThreshold": 0.7,
+ "modules": [
+  {
+   "id": 1,
+   "title": "Основа основ",
+   "level": "Начальный",
+   "doc": "/content/module-1/index.md",
+   "lessons": [
+    {
+     "title": "Учебник якына — убеждённости",
+     "doc": "/content/module-1/yakyn.md",
+     "exam": "/content/exams/module-1-yakyn.md",
+     "key": "_content_module-1_yakyn_md"
+    },
+    {
+     "title": "Мольба заклинателя",
+     "doc": "/content/module-1/molba-zaklinatelya.md",
+     "exam": "/content/exams/module-1-molba-zaklinatelya.md",
+     "key": "_content_module-1_molba-zaklinatelya_md"
+    },
+    {
+     "title": "Теоретик и практик — как правильно формулировать мольбу",
+     "doc": "/content/module-1/teoretik-i-praktik.md",
+     "exam": "/content/exams/module-1-teoretik-i-praktik.md",
+     "key": "_content_module-1_teoretik-i-praktik_md"
+    },
+    {
+     "title": "Метод уединения с таухидом — визуализация через имена Аллаха",
+     "doc": "/content/module-1/metod-taukhid.md",
+     "exam": "/content/exams/module-1-metod-taukhid.md",
+     "key": "_content_module-1_metod-taukhid_md"
+    },
+    {
+     "title": "Фундаментальное состояние целителя — собранность, дыхание, фокус",
+     "doc": "/content/module-1/fundamentalnoe.md",
+     "exam": "/content/exams/module-1-fundamentalnoe.md",
+     "key": "_content_module-1_fundamentalnoe_md"
+    },
+    {
+     "title": "Басира — духовное зрение сердцем",
+     "doc": "/content/module-1/basira.md",
+     "exam": "/content/exams/module-1-basira.md",
+     "key": "_content_module-1_basira_md"
+    },
+    {
+     "title": "Эхсан и черпание силы от Аллаха",
+     "doc": "/content/module-1/ehsan-i-sila.md",
+     "exam": "/content/exams/module-1-ehsan-i-sila.md",
+     "key": "_content_module-1_ehsan-i-sila_md"
+    },
+    {
+     "title": "Волевой акт — искусство удержания намерения в сердце",
+     "doc": "/content/module-1/volevoy-akt.md",
+     "exam": "/content/exams/module-1-volevoy-akt.md",
+     "key": "_content_module-1_volevoy-akt_md"
+    },
+    {
+     "title": "Шаблоны намерения — короткие формулы для каждого случая",
+     "doc": "/content/reference/niyat.md",
+     "exam": "/content/exams/module-1-niyat.md",
+     "key": "_content_reference_niyat_md"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Основы заклинания",
+   "level": "Начальный",
+   "doc": "/content/module-2/index.md",
+   "lessons": [
+    {
+     "title": "Дозволенность заклинания — где проходит граница",
+     "doc": "/content/module-2/dozvolennost-zaklinaniya.md",
+     "exam": "/content/exams/module-2-dozvolennost-zaklinaniya.md",
+     "key": "_content_module-2_dozvolennost-zaklinaniya_md"
+    },
+    {
+     "title": "Что такое заклинание — пять качеств истинного заклинателя",
+     "doc": "/content/module-2/chto-takoe-zaklinanie.md",
+     "exam": "/content/exams/module-2-chto-takoe-zaklinanie.md",
+     "key": "_content_module-2_chto-takoe-zaklinanie_md"
+    },
+    {
+     "title": "Я заклинаю",
+     "doc": "/content/module-2/ya-zaklinayu.md",
+     "exam": "/content/exams/module-2-ya-zaklinayu.md",
+     "key": "_content_module-2_ya-zaklinayu_md"
+    },
+    {
+     "title": "Общее понятие заклинания — метод «Влияние Волей»",
+     "doc": "/content/module-2/obshchee-ponyatie-zaklinanie.md",
+     "exam": "/content/exams/module-2-obshchee-ponyatie-zaklinanie.md",
+     "key": "_content_module-2_obshchee-ponyatie-zaklinanie_md"
+    },
+    {
+     "title": "Виды заклинаний и их применение — три пути формулы «Арки»",
+     "doc": "/content/module-2/vidy-zaklinaniy.md",
+     "exam": "/content/exams/module-2-vidy-zaklinaniy.md",
+     "key": "_content_module-2_vidy-zaklinaniy_md"
+    },
+    {
+     "title": "Продвинутое заклинание — метод «Аллязи» (деривация атрибутов)",
+     "doc": "/content/module-2/prodvinutoe-zaklinanie.md",
+     "exam": "/content/exams/module-2-prodvinutoe-zaklinanie.md",
+     "key": "_content_module-2_prodvinutoe-zaklinanie_md"
+    },
+    {
+     "title": "Инструменты заклинателя: дозволенные практики",
+     "doc": "/content/module-2/instrumenty-zaklinatelya.md",
+     "exam": "/content/exams/module-2-instrumenty-zaklinatelya.md",
+     "key": "_content_module-2_instrumenty-zaklinatelya_md"
+    },
+    {
+     "title": "Речь с болезнью — полная методология сеанса рукьи",
+     "doc": "/content/module-2/rech-s-boleznyu.md",
+     "exam": "/content/exams/module-2-rech-s-boleznyu.md",
+     "key": "_content_module-2_rech-s-boleznyu_md"
+    },
+    {
+     "title": "Убирание грязи — диагностика и заклинание недугов души",
+     "doc": "/content/module-2/ubiranie-gryazi.md",
+     "exam": "/content/exams/module-2-ubiranie-gryazi.md",
+     "key": "_content_module-2_ubiranie-gryazi_md"
+    },
+    {
+     "title": "Классификация недугов (Справочник)",
+     "doc": "/content/reference/classification.md",
+     "exam": "/content/exams/reference-classification.md",
+     "key": "_content_reference_classification_md"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Основы применения",
+   "level": "Начальный",
+   "doc": "/content/module-3/index.md",
+   "lessons": [
+    {
+     "title": "Словарь органов тела (Справочник)",
+     "doc": "/content/reference/organs.md",
+     "exam": "/content/exams/reference-organs.md",
+     "key": "_content_reference_organs_md"
+    },
+    {
+     "title": "30 эмоциональных загрязнений — карта тела, механизм и дуа изгнания",
+     "doc": "/content/module-3/vliyanie-emots.md",
+     "exam": "/content/exams/module-3-vliyanie-emots.md",
+     "key": "_content_module-3_vliyanie-emots_md"
+    },
+    {
+     "title": "Влияние загрязнений на внешность и фигуру",
+     "doc": "/content/module-3/krasota.md",
+     "exam": "/content/exams/module-3-krasota.md",
+     "key": "_content_module-3_krasota_md"
+    },
+    {
+     "title": "Защита органов от страстей — дуа по каждому органу",
+     "doc": "/content/module-3/tablitsa-strasti.md",
+     "exam": "/content/exams/module-3-tablitsa-strasti.md",
+     "key": "_content_module-3_tablitsa-strasti_md"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Диагностика — протокол безопасности",
+   "level": "Средний",
+   "doc": "/content/module-4/index.md",
+   "lessons": [
+    {
+     "title": "Диагностика недугов души — три группы корневых проблем",
+     "doc": "/content/module-4/diagnostika.md",
+     "exam": "/content/exams/module-4-diagnostika.md",
+     "key": "_content_module-4_diagnostika_md"
+    },
+    {
+     "title": "Эмоциональные загрязнения — связь с диагностикой",
+     "doc": "/content/module-4/zagryazneniya.md",
+     "exam": "/content/exams/module-4-zagryazneniya.md",
+     "key": "_content_module-4_zagryazneniya_md"
+    },
+    {
+     "title": "Раны души — карта зажимов, метод устранения и 30 дуа выведения",
+     "doc": "/content/module-4/zazhimy.md",
+     "exam": "/content/exams/module-4-zazhimy.md",
+     "key": "_content_module-4_zazhimy_md"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Направленное применение",
+   "level": "Средний",
+   "doc": "/content/module-5/index.md",
+   "lessons": [
+    {
+     "title": "Очищение разума — авторские формулы по функциям тела и психики",
+     "doc": "/content/module-5/ochishchenie-razuma.md",
+     "exam": "/content/exams/module-5-ochishchenie-razuma.md",
+     "key": "_content_module-5_ochishchenie-razuma_md"
+    },
+    {
+     "title": "Хитаб аль-Исаба — Влияние Волей: метод по органам",
+     "doc": "/content/module-5/hitab-al-isaba.md",
+     "exam": "/content/exams/module-5-hitab-al-isaba.md",
+     "key": "_content_module-5_hitab-al-isaba_md"
+    },
+    {
+     "title": "Учебник по чтению заклинаний на органы по видам колдовства",
+     "doc": "/content/module-5/zaklinaniya-na-organy.md",
+     "exam": "/content/exams/module-5-zaklinaniya-na-organy.md",
+     "key": "_content_module-5_zaklinaniya-na-organy_md"
+    },
+    {
+     "title": "Учебное пособие по продвинутому заклинанию — метод «Аллязи»",
+     "doc": "/content/module-5/prodvinutoe-zaklinanie-posobie.md",
+     "exam": "/content/exams/module-5-prodvinutoe-zaklinanie-posobie.md",
+     "key": "_content_module-5_prodvinutoe-zaklinanie-posobie_md"
+    },
+    {
+     "title": "Сравнение сильного со слабым — компоненты эффективного заклинания",
+     "doc": "/content/module-5/sravnenie-silnogo-so-slabym.md",
+     "exam": "/content/exams/module-5-sravnenie-silnogo-so-slabym.md",
+     "key": "_content_module-5_sravnenie-silnogo-so-slabym_md"
+    },
+    {
+     "title": "Дуа против колдовства истощения — 13 формул",
+     "doc": "/content/module-5/protiv-istoshcheniya.md",
+     "exam": "/content/exams/module-5-protiv-istoshcheniya.md",
+     "key": "_content_module-5_protiv-istoshcheniya_md"
+    },
+    {
+     "title": "Лечение от сглаза водой — программа очищения",
+     "doc": "/content/module-5/lecheniya-sglaz.md",
+     "exam": "/content/exams/module-5-lecheniya-sglaz.md",
+     "key": "_content_module-5_lecheniya-sglaz_md"
+    },
+    {
+     "title": "Рукья против сихра, сглаза и зависти — подробное руководство",
+     "doc": "/content/module-5/sikhr-sglaz-posobie.md",
+     "exam": "/content/exams/module-5-sikhr-sglaz-posobie.md",
+     "key": "_content_module-5_sikhr-sglaz-posobie_md"
+    },
+    {
+     "title": "Краткая рукья от колдовства — сеанс 50–70 минут",
+     "doc": "/content/module-5/rukiya-sikhr.md",
+     "exam": "/content/exams/module-5-rukiya-sikhr.md",
+     "key": "_content_module-5_rukiya-sikhr_md"
+    },
+    {
+     "title": "Рукья для укрепления супружества — 10 дуа",
+     "doc": "/content/module-5/dua-strasti.md",
+     "exam": "/content/exams/module-5-dua-strasti.md",
+     "key": "_content_module-5_dua-strasti_md"
+    },
+    {
+     "title": "Руководство по убиранию чёрных линий",
+     "doc": "/content/module-5/ubiranie-liniy.md",
+     "exam": "/content/exams/module-5-ubiranie-liniy.md",
+     "key": "_content_module-5_ubiranie-liniy_md"
+    },
+    {
+     "title": "Метод избавления от джиннов — трёхступенчатый подход",
+     "doc": "/content/module-5/metod-izbavleniya.md",
+     "exam": "/content/exams/module-5-metod-izbavleniya.md",
+     "key": "_content_module-5_metod-izbavleniya_md"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Основы защиты",
+   "level": "Средний",
+   "doc": "/content/module-6/index.md",
+   "lessons": [
+    {
+     "title": "Базовые азкары и дуа защиты (Справочник)",
+     "doc": "/content/reference/azkar.md",
+     "exam": "/content/exams/reference-azkar.md",
+     "key": "_content_reference_azkar_md"
+    },
+    {
+     "title": "Дуа о Божественном Сокрытии и Защите",
+     "doc": "/content/module-6/dua-o-sokrytii.md",
+     "exam": "/content/exams/module-6-dua-o-sokrytii.md",
+     "key": "_content_module-6_dua-o-sokrytii_md"
+    },
+    {
+     "title": "Дуа личной защиты от джиннов и шайтанов",
+     "doc": "/content/module-6/dua-zashchity-ot-dzhinnov-i-shaytanov.md",
+     "exam": "/content/exams/module-6-dua-zashchity-ot-dzhinnov-i-shaytanov.md",
+     "key": "_content_module-6_dua-zashchity-ot-dzhinnov-i-shaytanov_md"
+    },
+    {
+     "title": "Арсенал против колдовства, сглаза и зависти",
+     "doc": "/content/module-6/arsenal-protiv-koldovstva.md",
+     "exam": "/content/exams/module-6-arsenal-protiv-koldovstva.md",
+     "key": "_content_module-6_arsenal-protiv-koldovstva_md"
+    },
+    {
+     "title": "Открытие духовных замков",
+     "doc": "/content/module-6/otkrytie-dukhovnykh-zamkov.md",
+     "exam": "/content/exams/module-6-otkrytie-dukhovnykh-zamkov.md",
+     "key": "_content_module-6_otkrytie-dukhovnykh-zamkov_md"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Изгнание духовных сущностей",
+   "level": "Продвинутый",
+   "doc": "/content/module-7/index.md",
+   "lessons": [
+    {
+     "title": "Заклинания на убийство и сжигание джиннов — четыре уровня формулы",
+     "doc": "/content/module-7/zaklinaniya-na-ubiystvo-dzhinnov.md",
+     "exam": "/content/exams/module-7-zaklinaniya-na-ubiystvo-dzhinnov.md",
+     "key": "_content_module-7_zaklinaniya-na-ubiystvo-dzhinnov_md"
+    },
+    {
+     "title": "Учебник по уничтожению и сжиганию джиннов и духовных сущностей",
+     "doc": "/content/module-7/unichtozhenie-dzhinnov-posobie.md",
+     "exam": "/content/exams/module-7-unichtozhenie-dzhinnov-posobie.md",
+     "key": "_content_module-7_unichtozhenie-dzhinnov-posobie_md"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Продвинутый Мастер",
+   "level": "Продвинутый",
+   "doc": "/content/module-8/index.md",
+   "lessons": [
+    {
+     "title": "Фундамент мастера — состояние заклинателя",
+     "doc": "/content/module-8/fundament-mastera.md",
+     "exam": "/content/exams/module-8-fundament-mastera.md",
+     "key": "_content_module-8_fundament-mastera_md"
+    },
+    {
+     "title": "Заклинание действием — продвинутые формулы",
+     "doc": "/content/module-8/prodvinutye-formuly.md",
+     "exam": "/content/exams/module-8-prodvinutye-formuly.md",
+     "key": "_content_module-8_prodvinutye-formuly_md"
+    },
+    {
+     "title": "Комбинированные формулы и уровни мастерства",
+     "doc": "/content/module-8/kombo-i-urovni.md",
+     "exam": "/content/exams/module-8-kombo-i-urovni.md",
+     "key": "_content_module-8_kombo-i-urovni_md"
+    },
+    {
+     "title": "Исцеление за секунды — доктрина мгновенного воздействия",
+     "doc": "/content/module-8/istselenie-za-sekundy.md",
+     "exam": "/content/exams/module-8-istselenie-za-sekundy.md",
+     "key": "_content_module-8_istselenie-za-sekundy_md"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Истинное vs ложное заклинание",
+   "level": "Продвинутый",
+   "doc": "/content/module-9/index.md",
+   "lessons": [
+    {
+     "title": "Границы веры — единственность Истины и вопрос заступничества",
+     "doc": "/content/module-9/granitsy-very-i-zastupnichestvo.md",
+     "exam": "/content/exams/module-9-granitsy-very-i-zastupnichestvo.md",
+     "key": "_content_module-9_granitsy-very-i-zastupnichestvo_md"
+    },
+    {
+     "title": "Что есть истина — разбор с доказательствами из Корана и Сунны",
+     "doc": "/content/module-9/sut-istiny.md",
+     "exam": "/content/exams/module-9-sut-istiny.md",
+     "key": "_content_module-9_sut-istiny_md"
+    },
+    {
+     "title": "Вопросы просьб у могилы — классификация обращений к умершим",
+     "doc": "/content/module-9/voprosy-mogil.md",
+     "exam": "/content/exams/module-9-voprosy-mogil.md",
+     "key": "_content_module-9_voprosy-mogil_md"
+    },
+    {
+     "title": "Вопросы заступничества — разбор у могилы Пророка ﷺ",
+     "doc": "/content/module-9/voprosy-zastup.md",
+     "exam": "/content/exams/module-9-voprosy-zastup.md",
+     "key": "_content_module-9_voprosy-zastup_md"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Истинный ракый vs лжеракый",
+   "level": "Продвинутый",
+   "doc": "/content/module-10/index.md",
+   "lessons": [
+    {
+     "title": "Разница между практиком и теоретиком в рукье",
+     "doc": "/content/module-10/raznitsa-praktik-vs-teoretik.md",
+     "exam": "/content/exams/module-10-raznitsa-praktik-vs-teoretik.md",
+     "key": "_content_module-10_raznitsa-praktik-vs-teoretik_md"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Работа в системе RUKYA Pro",
+   "level": "Продвинутый",
+   "doc": "/content/module-11/index.md",
+   "lessons": []
+  }
+ ],
+ "assignments": {
+  "1": [
+   {
+    "id": "m1-1",
+    "book": "/content/module-1/yakyn.md",
+    "bookKey": "_content_module-1_yakyn_md",
+    "title": "Первый этап программы якына",
+    "description": "Пройдите первый этап ковки убеждённости — «Очищение почвы» (дни 1–10): утренние и вечерние азкары с полным присутствием сердца. Дойдёте до конца — в уроке ждут следующие три этапа.",
+    "check": "Из десяти признаков растущего якына появился хотя бы первый: при словах «Бисмилляхи арки» ощущается импульс в груди, а не просто движение языком.",
+    "type": "daily",
+    "duration": "10 дней",
+    "steps": [
+     "Утром прочитайте азкары целиком, не ускоряя темп.",
+     "Держите внимание на смысле каждой фразы; ушло — вернитесь и повторите фразу заново.",
+     "Вечером повторите то же самое.",
+     "Отметьте день и запишите, появился ли отклик в груди."
+    ],
+    "days": 10,
+    "intent": "Ради Аллаха, чтобы Аллах укрепил мой якын — ×40",
+    "counter": null
+   },
+   {
+    "id": "m1-2",
+    "book": "/content/module-1/molba-zaklinatelya.md",
+    "bookKey": "_content_module-1_molba-zaklinatelya_md",
+    "title": "Своя мольба заклинателя",
+    "description": "Составьте собственную мольбу перед сеансом по образцу из урока: обращение к Аллаху, признание Его единственным Исцеляющим, просьба сделать вас причиной. Выучите наизусть и произносите перед каждым чтением.",
+    "check": "Мольба произносится наизусть, без запинки и без подглядывания, три дня подряд.",
+    "type": "practice",
+    "duration": "20 мин",
+    "steps": [
+     "Запишите обращение к Аллаху: признание, что Исцеляющий — только Он.",
+     "Запишите просьбу сделать вас причиной исцеления.",
+     "Соедините в одну мольбу и сократите до объёма, который удержите наизусть.",
+     "Произнесите вслух три раза, не подглядывая в запись."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах сделал меня причиной исцеления Его рабов — ×40",
+    "counter": null
+   },
+   {
+    "id": "m1-3",
+    "book": "/content/module-1/teoretik-i-praktik.md",
+    "bookKey": "_content_module-1_teoretik-i-praktik_md",
+    "title": "Переписать просьбу теоретика",
+    "description": "Возьмите пять своих обычных просьб к Аллаху и перепишите каждую из формы теоретика в форму практика — от «хорошо бы, если» к прямому обращению с убеждённостью в ответе.",
+    "check": "Пять пар записаны, и разницу между колонками видно без объяснений.",
+    "type": "reflection",
+    "duration": "20 мин",
+    "steps": [
+     "Выпишите пять своих обычных просьб к Аллаху — как они звучат на самом деле.",
+     "Во второй колонке перепишите каждую в форму практика: прямое обращение без «хорошо бы, если».",
+     "Прочитайте обе колонки вслух и отметьте, где меняется состояние."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m1-4",
+    "book": "/content/module-1/metod-taukhid.md",
+    "bookKey": "_content_module-1_metod-taukhid_md",
+    "title": "Уединение с таухидом",
+    "description": "Проведите 15 минут в уединении, размышляя над именами Аллаха по методу урока — аш-Шафи, аль-Кадир, аль-Муджиб. Запишите три наблюдения о своём состоянии до и после.",
+    "check": "После размышления при слове «аш-Шафи» приходит не определение, а уверенность.",
+    "type": "practice",
+    "duration": "15 мин",
+    "steps": [
+     "Уединитесь, отложите телефон, отмерьте пятнадцать минут.",
+     "Размышляйте над аш-Шафи: что значит, что исцеление — только у Него.",
+     "Перейдите к аль-Кадир, затем к аль-Муджиб.",
+     "Запишите три наблюдения о своём состоянии до и после."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах дал мне уверенность в том, что Он аш-Шафи — ×40",
+    "counter": null
+   },
+   {
+    "id": "m1-5",
+    "book": "/content/module-1/fundamentalnoe.md",
+    "bookKey": "_content_module-1_fundamentalnoe_md",
+    "title": "Вход в фундаментальное состояние",
+    "description": "Отрабатывайте вход в состояние целителя: собранность, дыхание, фокус. Дважды в день, до отчётливого ощущения тишины внутри.",
+    "check": "Вход в состояние занимает меньше минуты и узнаётся по ощущению, а не по секундомеру.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Сядьте прямо, выровняйте дыхание, закройте глаза.",
+     "Соберите внимание в одну точку — посторонние мысли не гоните, просто не идите за ними.",
+     "Дождитесь тишины внутри и отметьте, сколько это заняло.",
+     "Повторите второй раз в течение дня."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах собрал моё сердце — ×40",
+    "counter": null
+   },
+   {
+    "id": "m1-6",
+    "book": "/content/module-1/basira.md",
+    "bookKey": "_content_module-1_basira_md",
+    "title": "Дневник узнавания",
+    "description": "Каждый день записывайте один случай, когда вы поняли о человеке или ситуации больше, чем было сказано словами. Басира — не знание сокровенного, а проницательность: она тренируется вниманием, а не попыткой «увидеть».",
+    "check": "Семь записей, и в последних вы отмечаете не догадку, а признаки, по которым поняли.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "За день заметьте один случай, где вы поняли о человеке больше, чем было сказано словами.",
+     "Запишите три вещи: что было сказано, что вы поняли, по каким признакам.",
+     "Не пытайтесь «увидеть» — только наблюдайте и записывайте."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах дал мне проницательность в том, что я вижу — ×40",
+    "counter": null
+   },
+   {
+    "id": "m1-7",
+    "book": "/content/module-1/ehsan-i-sila.md",
+    "bookKey": "_content_module-1_ehsan-i-sila_md",
+    "title": "Намаз в эхсане",
+    "description": "Совершайте один намаз в день с полным присутствием — как будто видите Аллаха. Не добавляйте намазов, работайте с уже совершаемыми.",
+    "check": "Хотя бы в одном намазе вы ни разу не вспомнили о постороннем — от такбира до саляма.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Перед такбиром остановитесь и вспомните, перед Кем встаёте.",
+     "Совершите намаз, возвращая внимание каждый раз, как оно ушло.",
+     "После саляма отметьте, были ли посторонние мысли и на каком месте."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах принял этот намаз — ×10",
+    "counter": null
+   },
+   {
+    "id": "m1-8",
+    "book": "/content/module-1/volevoy-akt.md",
+    "bookKey": "_content_module-1_volevoy-akt_md",
+    "title": "Заряжение и удержание намерения",
+    "description": "Ежедневно: сформулируйте намерение по пяти элементам (кто, на кого, что, чем, ради чего), зарядите его сорока повторениями в сердце, затем прочитайте Аят аль-Курси, не отпуская намерение.",
+    "check": "Аят аль-Курси прочитан целиком, и внимание ни разу не сошло с намерения.",
+    "type": "daily",
+    "duration": "10 дней",
+    "steps": [
+     "Сформулируйте намерение по пяти элементам: кто, на кого, что, чем, ради чего.",
+     "Обратитесь к Аллаху сорок раз, удерживая намерение в сердце — считайте счётчиком, не в уме.",
+     "Не отпуская намерение, прочитайте Аят аль-Курси целиком.",
+     "Отметьте, сходило ли внимание, и на каком месте это случилось."
+    ],
+    "days": 10,
+    "intent": "Ради Аллаха, чтобы Аллах исцелил мою [орган] — ×40",
+    "counter": {
+     "label": "Обращения к Аллаху",
+     "targets": [
+      40
+     ]
+    }
+   },
+   {
+    "id": "m1-9",
+    "book": "/content/reference/niyat.md",
+    "bookKey": "_content_reference_niyat_md",
+    "title": "Своя формула намерения",
+    "description": "Возьмите свой случай — то, с чем работаете на себе прямо сейчас, — и соберите формулу: «Ради Аллаха, чтобы Аллах [что сделал] [кому или чему]». Коротко, чтобы повторить сорок раз не сбившись. Затем зарядите и прочитайте с ней.",
+    "check": "В формуле названы место и имя, а не «от всего плохого», и она повторяется сорок раз без единой запинки.",
+    "type": "practice",
+    "duration": "20 мин",
+    "steps": [
+     "Назовите свой случай конкретно: что именно и где именно.",
+     "Соберите формулу: «Ради Аллаха, чтобы Аллах [что сделал] [кому или чему]».",
+     "Сократите её так, чтобы повторить сорок раз не сбившись: длинную фразу вы потеряете на десятом повторе.",
+     "Зарядите сорока повторениями и прочитайте, не отпуская формулу."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах [что сделал] [кому] — ×40. Это каркас: подставь своё место и имя.",
+    "counter": null
+   }
+  ],
+  "2": [
+   {
+    "id": "m2-1",
+    "book": "/content/module-2/dozvolennost-zaklinaniya.md",
+    "bookKey": "_content_module-2_dozvolennost-zaklinaniya_md",
+    "title": "Границы дозволенного",
+    "description": "Выпишите условия дозволенности рукьи из урока и проверьте по ним пять практик, которые вам встречались — у знакомых, в роликах, в интернете. Что проходит, что нет и почему.",
+    "check": "По каждой из пяти есть вывод с доводом, а не «мне кажется».",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [
+     "Выпишите условия дозволенности рукьи из урока.",
+     "Вспомните пять практик, которые вам встречались — у знакомых, в роликах, в интернете.",
+     "Проверьте каждую по условиям и запишите вывод вместе с доводом."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m2-2",
+    "book": "/content/module-2/chto-takoe-zaklinanie.md",
+    "bookKey": "_content_module-2_chto-takoe-zaklinanie_md",
+    "title": "Анализ пяти качеств",
+    "description": "Оцените себя по пяти качествам истинного заклинателя (таква, якын, ильм, сабр, ихляс) от 0 до 10. Какое слабее всех? Составьте план его укрепления на неделю.",
+    "check": "Названо самое слабое качество и записано конкретное действие на каждый день недели.",
+    "type": "reflection",
+    "duration": "20 мин",
+    "steps": [
+     "Оцените себя от 0 до 10 по каждому качеству: таква, якын, ильм, сабр, ихляс.",
+     "Найдите самое низкое.",
+     "Распишите на семь дней по одному действию, укрепляющему именно его."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m2-3",
+    "book": "/content/module-2/ya-zaklinayu.md",
+    "bookKey": "_content_module-2_ya-zaklinayu_md",
+    "title": "Практика базовой формулы",
+    "description": "Прочитайте формулу «Бисмилляхи аркыка мин кулли шай-ин ю'зыка» (Муслим, 2186) над стаканом воды с полным присутствием сердца. Отметьте состояние якына до и после.",
+    "check": "При слове «аркыка» ощущается волевой импульс, а не только движение языка.",
+    "type": "practice",
+    "duration": "10 мин",
+    "steps": [
+     "Налейте стакан воды и поставьте перед собой.",
+     "Отметьте своё состояние якына до чтения.",
+     "Прочитайте «Бисмилляхи аркыка мин кулли шай-ин ю'зыка» с полным присутствием сердца.",
+     "Отметьте состояние после и то, что ощущалось на слове «аркыка»."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах сделал эту воду исцелением — ×40",
+    "counter": null
+   },
+   {
+    "id": "m2-4",
+    "book": "/content/module-2/obshchee-ponyatie-zaklinanie.md",
+    "bookKey": "_content_module-2_obshchee-ponyatie-zaklinanie_md",
+    "title": "Влияние волей",
+    "description": "Отработайте метод «Влияние Волей»: заряженное намерение плюс волевой импульс в момент произнесения формулы. На себе, по одному органу за раз.",
+    "check": "Волевой импульс приходит в момент произнесения, а не после него.",
+    "type": "practice",
+    "duration": "15 мин",
+    "steps": [
+     "Выберите один орган — на этом занятии работаете только с ним.",
+     "Зарядите намерение и удержите его.",
+     "В момент произнесения формулы дайте волевой импульс — одновременно, а не после.",
+     "Отметьте, совпали ли импульс и слово."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах убрал боль из моей [орган] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m2-5",
+    "book": "/content/module-2/vidy-zaklinaniy.md",
+    "bookKey": "_content_module-2_vidy-zaklinaniy_md",
+    "title": "Три пути формулы «Арки»",
+    "description": "Составьте по три формулы каждого пути: на орган, на предмет, на недуг. Затем произнесите каждую на себе, отмечая разницу в ощущении.",
+    "check": "Девять формул записаны, и вы без подсказки говорите, какой путь применить в конкретном случае.",
+    "type": "practice",
+    "duration": "25 мин",
+    "steps": [
+     "Составьте три формулы «Арки» на орган.",
+     "Составьте три на предмет.",
+     "Составьте три на недуг.",
+     "Произнесите каждую на себе и отметьте разницу в ощущении."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах вывел [недуг] из [орган] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m2-6",
+    "book": "/content/module-2/prodvinutoe-zaklinanie.md",
+    "bookKey": "_content_module-2_prodvinutoe-zaklinanie_md",
+    "title": "Метод «Аллязи»",
+    "description": "Составьте пять составных заклинаний методом «Аллязи» — через атрибуты Аллаха из Корана, каждый раз выбирая атрибут под конкретную нужду.",
+    "check": "Для каждой формулы вы называете аят, из которого взят атрибут.",
+    "type": "practice",
+    "duration": "30 мин",
+    "steps": [
+     "Назовите конкретную нужду.",
+     "Найдите в Коране атрибут Аллаха, отвечающий этой нужде, и выпишите аят.",
+     "Составьте формулу методом «Аллязи» через этот атрибут.",
+     "Повторите для пяти разных нужд."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах [что просишь] тем именем, которым Он назвал Себя в этом аяте — ×40",
+    "counter": null
+   },
+   {
+    "id": "m2-7",
+    "book": "/content/module-2/instrumenty-zaklinatelya.md",
+    "bookKey": "_content_module-2_instrumenty-zaklinatelya_md",
+    "title": "Ревизия инструментов",
+    "description": "Составьте список того, что вы применяете или собирались применять: вода, масло, мёд, чёрный тмин, соль. Отметьте по уроку, что дозволено, а что нет, с доводом.",
+    "check": "В списке нет ни одного пункта без пометки «дозволено / запрещено» и довода.",
+    "type": "reflection",
+    "duration": "20 мин",
+    "steps": [
+     "Выпишите всё, что применяете или собирались применять: вода, масло, мёд, чёрный тмин, соль.",
+     "Против каждого поставьте «дозволено» или «запрещено».",
+     "Против каждого запишите довод из урока."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m2-8",
+    "book": "/content/module-2/rech-s-boleznyu.md",
+    "bookKey": "_content_module-2_rech-s-boleznyu_md",
+    "title": "Полный сеанс на себе",
+    "description": "Проведите полный сеанс по методологии урока — от намерения до печати, со всеми этапами речи с болезнью. На себе.",
+    "check": "Сеанс пройден без подглядывания в текст, ни один этап не пропущен.",
+    "type": "practice",
+    "duration": "40 мин",
+    "steps": [
+     "Намерение по пяти элементам.",
+     "Вход в состояние целителя.",
+     "Речь с болезнью — по этапам урока, ни один не пропуская.",
+     "Чтение.",
+     "Печать. После — отметьте, где пришлось подглядеть в текст."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах исцелил мою [орган] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m2-9",
+    "book": "/content/module-2/ubiranie-gryazi.md",
+    "bookKey": "_content_module-2_ubiranie-gryazi_md",
+    "title": "Убирание грязи",
+    "description": "Определите у себя одно эмоциональное загрязнение по признакам из урока и проведите заклинание на его выведение.",
+    "check": "Загрязнение названо своим именем, формула составлена под него, а не общая.",
+    "type": "practice",
+    "duration": "20 мин",
+    "steps": [
+     "Пройдите признаки из урока и найдите у себя одно эмоциональное загрязнение.",
+     "Назовите его своим именем — не «тяжесть вообще», а конкретно.",
+     "Составьте формулу под него, а не общую.",
+     "Проведите заклинание на его выведение."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах очистил моё сердце от [гнева, обиды, зависти, страха] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m2-10",
+    "book": "/content/reference/classification.md",
+    "bookKey": "_content_reference_classification_md",
+    "title": "Карта недугов по памяти",
+    "description": "Закройте справочник и по памяти нарисуйте классификацию недугов: основные группы и что к какой относится. Затем сверьтесь и допишите пропущенное другим цветом.",
+    "check": "Со второй попытки схема воспроизводится без пропусков в основных группах.",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [
+     "Закройте справочник.",
+     "Нарисуйте по памяти классификацию: основные группы и что к какой относится.",
+     "Сверьтесь и допишите пропущенное другим цветом.",
+     "Через день повторите с чистого листа."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "3": [
+   {
+    "id": "m3-1",
+    "book": "/content/reference/organs.md",
+    "bookKey": "_content_reference_organs_md",
+    "title": "Двадцать органов по-арабски",
+    "description": "Выучите арабские названия двадцати органов из словаря — тех, что чаще всего звучат в жалобах: голова, глаза, уши, грудь, сердце, живот, спина, суставы, ноги.",
+    "check": "На двадцать русских названий вы отвечаете арабскими без пауз, и наоборот.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Выучите пять названий за день, произнося вслух.",
+     "Перед новыми повторите вчерашние.",
+     "К концу недели пройдите все двадцать в обе стороны."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах научил меня называть место точно — ×10",
+    "counter": null
+   },
+   {
+    "id": "m3-2",
+    "book": "/content/module-3/vliyanie-emots.md",
+    "bookKey": "_content_module-3_vliyanie-emots_md",
+    "title": "Карта эмоций",
+    "description": "В течение дня отслеживайте свои эмоциональные состояния и сопоставляйте с таблицей 30 загрязнений: какие обнаружили и где в теле они отзываются.",
+    "check": "Названы конкретные загрязнения с указанием органа, а не «было тяжело».",
+    "type": "daily",
+    "duration": "3 дня",
+    "steps": [
+     "Трижды за день остановитесь и назовите своё состояние.",
+     "Найдите его в таблице тридцати загрязнений.",
+     "Отметьте, где в теле оно отзывается."
+    ],
+    "days": 3,
+    "intent": "Ради Аллаха, чтобы Аллах показал мне, чем загрязнено моё сердце — ×40",
+    "counter": null
+   },
+   {
+    "id": "m3-3",
+    "book": "/content/module-3/krasota.md",
+    "bookKey": "_content_module-3_krasota_md",
+    "title": "Связь состояния и внешности",
+    "description": "Разберите по уроку три признака, по которым загрязнения проявляются во внешности. Проверьте на себе честно — без самобичевания, это наблюдение, а не приговор.",
+    "check": "Три признака описаны с указанием, какому загрязнению каждый соответствует.",
+    "type": "reflection",
+    "duration": "20 мин",
+    "steps": [
+     "Выпишите три признака из урока.",
+     "Проверьте на себе честно — это наблюдение, а не приговор.",
+     "Против каждого укажите, какому загрязнению он соответствует."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m3-4",
+    "book": "/content/module-3/tablitsa-strasti.md",
+    "bookKey": "_content_module-3_tablitsa-strasti_md",
+    "title": "Дуа по органам",
+    "description": "Выберите три органа из таблицы и читайте соответствующие дуа защиты от страстей каждый день, удерживая намерение на конкретном органе.",
+    "check": "Дуа читаются по памяти, и внимание всё чтение держится на органе.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Выберите три органа из таблицы.",
+     "Читайте их дуа, держа внимание на конкретном органе.",
+     "Отметьте день, если внимание держалось всё чтение."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах защитил мою [орган] от страсти — ×40",
+    "counter": null
+   }
+  ],
+  "4": [
+   {
+    "id": "m4-1",
+    "book": "/content/module-4/diagnostika.md",
+    "bookKey": "_content_module-4_diagnostika_md",
+    "title": "Тренировочный опрос",
+    "description": "Используя структуру опросника из 11 разделов, проведите тренировочный опрос близкого человека (с его согласия). Определите группу корневой проблемы.",
+    "check": "Группа названа, и вы можете указать, какие именно ответы к ней привели.",
+    "type": "practice",
+    "duration": "30 мин",
+    "steps": [
+     "Попросите согласия и объясните, что это учебный опрос.",
+     "Пройдите все одиннадцать разделов опросника, не пропуская.",
+     "Записывайте ответы дословно, не толкуя их по ходу.",
+     "Определите корневую группу и укажите, какие ответы к ней привели."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах показал мне причину — ×40",
+    "counter": null
+   },
+   {
+    "id": "m4-2",
+    "book": "/content/module-4/diagnostika.md",
+    "bookKey": "_content_module-4_diagnostika_md",
+    "title": "Красные флаги",
+    "description": "Изучите три красных флага — эпилепсия, психоз, суицидальные мысли. Напишите, как направите человека к врачу, сохранив с ним связь и не напугав его.",
+    "check": "Для каждого флага написана фраза, которую вы реально произнесёте, а не пересказ правила.",
+    "type": "reflection",
+    "duration": "20 мин",
+    "steps": [
+     "Выпишите три красных флага и их признаки.",
+     "Для каждого напишите фразу, которой направите человека к врачу.",
+     "Проверьте фразу: не пугает, не обесценивает, не обрывает связь."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m4-3",
+    "book": "/content/module-4/zagryazneniya.md",
+    "bookKey": "_content_module-4_zagryazneniya_md",
+    "title": "От загрязнения к диагнозу",
+    "description": "Возьмите свою карту эмоций из Модуля 3 и проведите её через диагностику: какое загрязнение к какой корневой группе ведёт.",
+    "check": "Каждое загрязнение из карты соотнесено с группой, ни одно не осталось без вывода.",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [
+     "Достаньте свою карту эмоций из Модуля 3.",
+     "Проведите каждое загрязнение через диагностику.",
+     "Против каждого запишите корневую группу и почему именно она."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m4-4",
+    "book": "/content/module-4/zazhimy.md",
+    "bookKey": "_content_module-4_zazhimy_md",
+    "title": "Карта зажимов и дуа выведения",
+    "description": "Найдите у себя один зажим по карте из урока, определите связанную с ним рану души и проведите дуа выведения.",
+    "check": "Зажим найден по карте, а не наугад, и названа рана, с которой он связан.",
+    "type": "practice",
+    "duration": "25 мин",
+    "steps": [
+     "Пройдите карту зажимов и найдите у себя один — по карте, а не наугад.",
+     "Определите связанную с ним рану души.",
+     "Проведите дуа выведения.",
+     "Отметьте состояние после."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах отпустил зажим в моей [место] — ×40",
+    "counter": null
+   }
+  ],
+  "5": [
+   {
+    "id": "m5-1",
+    "book": "/content/module-5/ochishchenie-razuma.md",
+    "bookKey": "_content_module-5_ochishchenie-razuma_md",
+    "title": "Очищение разума",
+    "description": "Примените авторские формулы по функциям психики: выберите одну функцию — память, сон, спокойствие, решимость — и работайте с ней всю неделю.",
+    "check": "Формула произносится по памяти, состояние до и после записано.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Выберите одну функцию: память, сон, спокойствие или решимость.",
+     "Запишите её состояние на сегодня.",
+     "Прочитайте формулу этой функции.",
+     "Вечером запишите изменение."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах вернул мне [сон, память, спокойствие, решимость] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m5-2",
+    "book": "/content/module-5/hitab-al-isaba.md",
+    "bookKey": "_content_module-5_hitab-al-isaba_md",
+    "title": "Влияние волей по органам",
+    "description": "Практикуйте Хитаб аль-Исаба на себе: один орган за занятие, полный цикл — намерение, влияние волей, чтение, печать. Без надавливания и без диагностики через боль.",
+    "check": "На каждом занятии проработан один орган, и внимание не сходило с него до конца.",
+    "type": "practice",
+    "duration": "25 мин",
+    "steps": [
+     "Выберите один орган.",
+     "Намерение.",
+     "Влияние волей.",
+     "Чтение.",
+     "Печать. Без надавливания и без диагностики через боль."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах исцелил мою [орган] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m5-3",
+    "book": "/content/module-5/zaklinaniya-na-organy.md",
+    "bookKey": "_content_module-5_zaklinaniya-na-organy_md",
+    "title": "Три уровня по видам колдовства",
+    "description": "Составьте таблицу: вид колдовства → орган-мишень → уровень чтения. Затем проведите чтение на себе по одной строке таблицы.",
+    "check": "Таблица заполнена по всем видам из урока, и одна строка отработана на практике.",
+    "type": "practice",
+    "duration": "35 мин",
+    "steps": [
+     "Составьте таблицу: вид колдовства → орган-мишень → уровень чтения.",
+     "Выберите одну строку.",
+     "Проведите чтение на себе по этой строке."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах разрушил колдовство в [орган] — ×70",
+    "counter": null
+   },
+   {
+    "id": "m5-4",
+    "book": "/content/module-5/prodvinutoe-zaklinanie-posobie.md",
+    "bookKey": "_content_module-5_prodvinutoe-zaklinanie-posobie_md",
+    "title": "Составное заклинание «Аллязи»",
+    "description": "Составьте развёрнутое заклинание методом «Аллязи» под конкретную нужду, соединив три атрибута Аллаха из разных аятов.",
+    "check": "Заклинание составлено, и для каждого атрибута назван его аят.",
+    "type": "practice",
+    "duration": "30 мин",
+    "steps": [
+     "Назовите конкретную нужду.",
+     "Найдите три атрибута Аллаха в трёх разных аятах.",
+     "Соедините их в одно развёрнутое заклинание.",
+     "Проверьте себя: для каждого атрибута назовите аят по памяти."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах [что просишь] тремя именами из этих аятов — ×40",
+    "counter": null
+   },
+   {
+    "id": "m5-5",
+    "book": "/content/module-5/sravnenie-silnogo-so-slabym.md",
+    "bookKey": "_content_module-5_sravnenie-silnogo-so-slabym_md",
+    "title": "Разбор по восьми компонентам",
+    "description": "После каждого своего чтения оценивайте себя по восьми компонентам от 0 до 10 — по состоянию во время чтения, а не по результату. Записывайте. Через неделю найдите самый низкий.",
+    "check": "Вы называете свой слабейший компонент по имени и работаете именно над ним, а не над тем, что и так получается.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Проведите чтение.",
+     "Сразу после оцените себя по восьми компонентам от 0 до 10 — по состоянию во время чтения, не по результату.",
+     "Запишите оценки.",
+     "В конце недели найдите самый низкий компонент и работайте с ним."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах показал мне мой слабейший компонент — ×10",
+    "counter": null
+   },
+   {
+    "id": "m5-6",
+    "book": "/content/module-5/protiv-istoshcheniya.md",
+    "bookKey": "_content_module-5_protiv-istoshcheniya_md",
+    "title": "Формулы против истощения",
+    "description": "Выучите три формулы из тринадцати — те, что подходят под ваше состояние. Читайте ежедневно с удержанием намерения.",
+    "check": "Три формулы читаются наизусть, и вы объясняете, почему выбрали именно их.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Прочитайте тринадцать формул и выберите три под своё состояние.",
+     "Запишите, почему именно эти.",
+     "Читайте их ежедневно, удерживая намерение."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах восполнил мои силы — ×40",
+    "counter": null
+   },
+   {
+    "id": "m5-7",
+    "book": "/content/module-5/lecheniya-sglaz.md",
+    "bookKey": "_content_module-5_lecheniya-sglaz_md",
+    "title": "Программа очищения водой",
+    "description": "Проведите на себе полную программу лечения водой по уроку — от заклинания воды до завершения.",
+    "check": "Программа пройдена целиком, ни один шаг не пропущен и не переставлен.",
+    "type": "practice",
+    "duration": "3 дня",
+    "steps": [
+     "Заклинайте воду по уроку.",
+     "Пройдите программу по шагам, не переставляя их местами.",
+     "Завершите так, как указано, и отметьте день."
+    ],
+    "days": 3,
+    "intent": "Ради Аллаха, чтобы Аллах сделал эту воду исцелением и снял с меня сглаз — ×40",
+    "counter": null
+   },
+   {
+    "id": "m5-8",
+    "book": "/content/module-5/sikhr-sglaz-posobie.md",
+    "bookKey": "_content_module-5_sikhr-sglaz-posobie_md",
+    "title": "Различение сихра, сглаза и зависти",
+    "description": "Составьте таблицу различий: признак → сихр, сглаз или зависть. Минимум пятнадцать признаков. Затем проверьте по ней описание из опроса Модуля 4.",
+    "check": "По таблице вы отличаете три поражения, не заглядывая в урок.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [
+     "Выпишите признаки сихра.",
+     "Выпишите признаки сглаза.",
+     "Выпишите признаки зависти — всего не менее пятнадцати строк.",
+     "Проверьте по таблице описание из опроса Модуля 4."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m5-9",
+    "book": "/content/module-5/rukiya-sikhr.md",
+    "bookKey": "_content_module-5_rukiya-sikhr_md",
+    "title": "Краткий сеанс от колдовства",
+    "description": "Проведите на себе краткий сеанс по уроку, уложившись в отведённое время. Заранее распишите порядок, чтобы не выбирать по ходу.",
+    "check": "Сеанс уложился в срок, и ни разу не пришлось решать «что дальше» во время чтения.",
+    "type": "practice",
+    "duration": "60 мин",
+    "steps": [
+     "Заранее распишите порядок сеанса целиком.",
+     "Засеките время.",
+     "Проведите сеанс, не выбирая по ходу, что дальше.",
+     "Отметьте, уложились ли и где сбились."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах разрушил колдовство [вид] в [орган] у [имя] — ×70",
+    "counter": null
+   },
+   {
+    "id": "m5-10",
+    "book": "/content/module-5/dua-strasti.md",
+    "bookKey": "_content_module-5_dua-strasti_md",
+    "title": "Дуа укрепления супружества",
+    "description": "Выучите три дуа из десяти и читайте их за свою семью ежедневно, удерживая намерение на конкретной нужде.",
+    "check": "Три дуа читаются наизусть, намерение каждый раз названо конкретно.",
+    "type": "daily",
+    "duration": "10 дней",
+    "steps": [
+     "Выберите три дуа из десяти и выучите наизусть.",
+     "Перед чтением назовите нужду конкретно.",
+     "Прочитайте наизусть за свою семью."
+    ],
+    "days": 10,
+    "intent": "Ради Аллаха, чтобы Аллах вернул любовь между мной и [имя] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m5-11",
+    "book": "/content/module-5/ubiranie-liniy.md",
+    "bookKey": "_content_module-5_ubiranie-liniy_md",
+    "title": "Порядок убирания линий",
+    "description": "Выпишите порядок работы по шагам и объясните, почему шаги идут именно в этом порядке и что будет, если их переставить.",
+    "check": "Порядок воспроизведён по памяти, и для каждого шага названа причина его места.",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [
+     "Выпишите шаги работы по порядку.",
+     "Против каждого запишите, почему он стоит именно здесь.",
+     "Опишите, что произойдёт, если переставить два соседних шага."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m5-12",
+    "book": "/content/module-5/metod-izbavleniya.md",
+    "bookKey": "_content_module-5_metod-izbavleniya_md",
+    "title": "Три ступени метода",
+    "description": "Разберите трёхступенчатый подход и составьте план сеанса для каждой ступени: что читается, сколько, при каком признаке переходить дальше.",
+    "check": "Для каждой ступени назван признак перехода, а не только содержание.",
+    "type": "reflection",
+    "duration": "30 мин",
+    "steps": [
+     "Разберите три ступени метода.",
+     "Для каждой распишите, что читается и сколько.",
+     "Для каждой назовите признак, по которому переходят дальше."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "6": [
+   {
+    "id": "m6-1",
+    "book": "/content/reference/azkar.md",
+    "bookKey": "_content_reference_azkar_md",
+    "title": "Азкары без пропусков",
+    "description": "Утренние и вечерние азкары целиком, каждый день. Ничего не добавляйте — задача в том, чтобы не пропустить ни одного дня.",
+    "check": "Десять дней подряд без единого пропуска. Пропустили — счёт начинается заново.",
+    "type": "daily",
+    "duration": "10 дней",
+    "steps": [
+     "Утренние азкары целиком.",
+     "Вечерние азкары целиком.",
+     "Ничего не добавляйте — задача только в том, чтобы не пропустить.",
+     "Отметьте день. Пропустили — счёт начинается заново."
+    ],
+    "days": 10,
+    "intent": "Ради Аллаха, чтобы Аллах принял мои азкары — ×10",
+    "counter": null
+   },
+   {
+    "id": "m6-2",
+    "book": "/content/module-6/dua-o-sokrytii.md",
+    "bookKey": "_content_module-6_dua-o-sokrytii_md",
+    "title": "Дуа сокрытия",
+    "description": "Выучите дуа о божественном сокрытии и читайте перед выходом из дома и перед сеансом.",
+    "check": "Дуа произносится наизусть и стало привычкой — вы замечаете, если забыли.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Выучите дуа о божественном сокрытии.",
+     "Произнесите перед выходом из дома.",
+     "Произнесите перед сеансом."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах сокрыл меня от глаз завистника — ×40",
+    "counter": null
+   },
+   {
+    "id": "m6-3",
+    "book": "/content/module-6/dua-zashchity-ot-dzhinnov-i-shaytanov.md",
+    "bookKey": "_content_module-6_dua-zashchity-ot-dzhinnov-i-shaytanov_md",
+    "title": "Личная защита",
+    "description": "Постройте свой набор личной защиты из урока: что читаете утром, что перед сном, что при ощущении угрозы. Запишите и следуйте ему.",
+    "check": "Набор записан и выполняется без напоминаний три дня подряд.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Запишите, что читаете утром.",
+     "Запишите, что читаете перед сном.",
+     "Запишите, что читаете при ощущении угрозы.",
+     "Следуйте набору и отмечайте день."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах защитил меня, мою семью и мой дом от всякого зла — ×40",
+    "counter": null
+   },
+   {
+    "id": "m6-4",
+    "book": "/content/module-6/arsenal-protiv-koldovstva.md",
+    "bookKey": "_content_module-6_arsenal-protiv-koldovstva_md",
+    "title": "Трёхуровневая защита",
+    "description": "Внедрите полную систему защиты — постоянную, ситуативную, боевую — в ежедневный распорядок. Отмечайте, какой уровень применяли и что его вызвало.",
+    "check": "За неделю применены все три уровня, и вы можете сказать, что именно вызвало каждый.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Постоянную защиту встройте в распорядок дня.",
+     "Ситуативную примените, когда обстановка этого потребует.",
+     "Боевую — при прямом столкновении.",
+     "Запишите, какой уровень применяли и что именно его вызвало."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах отвёл зло, направленное на меня — ×40",
+    "counter": null
+   },
+   {
+    "id": "m6-5",
+    "book": "/content/module-6/otkrytie-dukhovnykh-zamkov.md",
+    "bookKey": "_content_module-6_otkrytie-dukhovnykh-zamkov_md",
+    "title": "Работа с замком",
+    "description": "Определите у себя один духовный замок по признакам из урока и проведите работу по его открытию.",
+    "check": "Замок назван по типу из урока, и работа проведена по соответствующему ему порядку.",
+    "type": "practice",
+    "duration": "30 мин",
+    "steps": [
+     "Пройдите признаки и определите у себя один духовный замок.",
+     "Назовите его тип по уроку.",
+     "Проведите порядок открытия, соответствующий этому типу.",
+     "Отметьте изменение состояния."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах открыл этот замок — ×40",
+    "counter": null
+   }
+  ],
+  "7": [
+   {
+    "id": "m7-1",
+    "book": "/content/module-7/zaklinaniya-na-ubiystvo-dzhinnov.md",
+    "bookKey": "_content_module-7_zaklinaniya-na-ubiystvo-dzhinnov_md",
+    "title": "Четыре уровня формулы",
+    "description": "Разберите четырёхуровневую систему и составьте свою формулу для каждого уровня. Затем произнесите каждую на себе, находясь в защите, отмечая разницу.",
+    "check": "Четыре формулы составлены и произнесены, и вы называете признак перехода с уровня на уровень.",
+    "type": "practice",
+    "duration": "35 мин",
+    "steps": [
+     "Войдите в защиту — до этого шага дальше не идите.",
+     "Составьте формулу первого уровня и произнесите на себе.",
+     "То же для второго, третьего и четвёртого уровня.",
+     "Запишите признак, по которому переходят с уровня на уровень."
+    ],
+    "days": 0,
+    "intent": "Сначала: ради Аллаха, чтобы Аллах защитил меня в этом чтении — ×40. Затем: ради Аллаха, чтобы Аллах изгнал джинна — ×70",
+    "counter": null
+   },
+   {
+    "id": "m7-2",
+    "book": "/content/module-7/unichtozhenie-dzhinnov-posobie.md",
+    "bookKey": "_content_module-7_unichtozhenie-dzhinnov-posobie_md",
+    "title": "Тринадцать типов и протоколы",
+    "description": "Составьте карточки: тип сущности → признаки → протокол. По одной карточке в день. На последний день перемешайте и разложите по памяти.",
+    "check": "Тринадцать карточек раскладываются по памяти без ошибок в протоколах.",
+    "type": "daily",
+    "duration": "10 дней",
+    "steps": [
+     "Сделайте одну карточку: тип сущности → признаки → протокол.",
+     "Повторите вчерашние карточки.",
+     "На последний день перемешайте все тринадцать и разложите по памяти."
+    ],
+    "days": 10,
+    "intent": "Ради Аллаха, чтобы Аллах научил меня различать типы и протоколы — ×10",
+    "counter": null
+   },
+   {
+    "id": "m7-3",
+    "book": "/content/module-7/unichtozhenie-dzhinnov-posobie.md",
+    "bookKey": "_content_module-7_unichtozhenie-dzhinnov-posobie_md",
+    "title": "Своё сопротивление или чужое",
+    "description": "Записывайте моменты, когда при чтении на себе встречалось сопротивление: тяжесть, сонливость, раздражение, желание бросить. Отмечайте, что это было — состояние сущности или ваша собственная усталость и лень.",
+    "check": "Записано не менее пяти случаев, и в каждом сделан вывод с обоснованием, а не догадка.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Проведите чтение на себе.",
+     "Заметьте сопротивление: тяжесть, сонливость, раздражение, желание бросить.",
+     "Запишите вывод — состояние сущности или ваша усталость — и обоснуйте его."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах показал мне, где сущность, а где моя усталость — ×40",
+    "counter": null
+   }
+  ],
+  "8": [
+   {
+    "id": "m8-1",
+    "book": "/content/module-8/fundament-mastera.md",
+    "bookKey": "_content_module-8_fundament-mastera_md",
+    "title": "Столпы фундамента",
+    "description": "Проверьте себя по столпам фундамента мастера: обязательные намазы, ночная молитва, чтение аль-Бакара, истигфар. Что выполняется, что нет. Возьмите один невыполняемый и держите его неделю.",
+    "check": "Выбранный столп выполнен семь дней подряд без пропуска.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Пройдите список: обязательные намазы, ночная молитва, чтение аль-Бакара, истигфар.",
+     "Отметьте, что не выполняется.",
+     "Возьмите один невыполняемый столп и держите его семь дней."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах принял это от меня — ×10",
+    "counter": null
+   },
+   {
+    "id": "m8-2",
+    "book": "/content/module-8/prodvinutye-formuly.md",
+    "bookKey": "_content_module-8_prodvinutye-formuly_md",
+    "title": "Заклинание действием",
+    "description": "Отработайте продвинутые формулы урока с сопровождающим действием. На себе, по одной формуле за занятие.",
+    "check": "Формула и действие идут одновременно, а не одно за другим.",
+    "type": "practice",
+    "duration": "25 мин",
+    "steps": [
+     "Выберите одну продвинутую формулу.",
+     "Определите сопровождающее её действие.",
+     "Произнесите и сделайте одновременно.",
+     "Отметьте, совпали ли слово и действие."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах вывел [что] из моей [орган] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m8-3",
+    "book": "/content/module-8/kombo-i-urovni.md",
+    "bookKey": "_content_module-8_kombo-i-urovni_md",
+    "title": "Комбинированная формула",
+    "description": "Составьте комбинированную формулу из двух уровней и протестируйте на себе. Определите свой текущий уровень мастерства по шкале из урока.",
+    "check": "Формула составлена, применена, и уровень назван с обоснованием.",
+    "type": "practice",
+    "duration": "30 мин",
+    "steps": [
+     "Возьмите два уровня и соедините их в одну формулу.",
+     "Примените на себе.",
+     "Определите свой уровень мастерства по шкале урока и обоснуйте."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах вывел [что] из моей [орган] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m8-4",
+    "book": "/content/module-8/istselenie-za-sekundy.md",
+    "bookKey": "_content_module-8_istselenie-za-sekundy_md",
+    "title": "Лестница сжатия",
+    "description": "Начните лестницу: 40 → 30 → 20 → 10 → 3 → 1 → 0. Это количество обращений к Аллаху, а не количество дней. За эти десять дней — взять эталон на сорока и спуститься настолько, насколько получится честно.",
+    "check": "Плотность на текущей ступени сравнялась с эталоном сорока. Слабее — ступень не взята, возвращайтесь на предыдущую.",
+    "type": "daily",
+    "duration": "10 дней",
+    "steps": [
+     "Возьмите эталон: сорок обращений к Аллаху. Запомните плотность, которая появилась в груди.",
+     "Спуститесь на ступень ниже и наберите ту же плотность за меньшее число обращений.",
+     "Сравните с эталоном честно: слабее — ступень не взята, вернитесь на предыдущую.",
+     "Отметьте день и ступень, на которой остановились."
+    ],
+    "days": 10,
+    "intent": "Ради Аллаха, чтобы Аллах исцелил мою [орган] — повторять до плотности; число повторений и есть ступень лестницы",
+    "counter": {
+     "label": "Ступень лестницы",
+     "targets": [
+      40,
+      30,
+      20,
+      10,
+      3,
+      1
+     ]
+    }
+   },
+   {
+    "id": "m8-5",
+    "book": "/content/module-8/istselenie-za-sekundy.md",
+    "bookKey": "_content_module-8_istselenie-za-sekundy_md",
+    "title": "Двадцать обращений и один орган",
+    "description": "Полный цикл на себе: двадцать обращений к Аллаху до плотности → намерение по пяти элементам на один орган → удержание → чтение → печать. Один орган за занятие.",
+    "check": "Число обращений до появления плотности упало до устойчивых двадцати.",
+    "type": "practice",
+    "duration": "10 дней",
+    "steps": [
+     "Обращайтесь к Аллаху, пока не появится плотность, — считайте счётчиком.",
+     "Намерение по пяти элементам на один орган.",
+     "Удержание намерения.",
+     "Чтение, не отпуская намерение.",
+     "Печать. Запишите, сколько обращений понадобилось сегодня."
+    ],
+    "days": 10,
+    "intent": "Ради Аллаха, чтобы Аллах исцелил мою [орган] — ×20",
+    "counter": {
+     "label": "Обращения до плотности",
+     "targets": [
+      20
+     ]
+    }
+   }
+  ],
+  "9": [
+   {
+    "id": "m9-1",
+    "book": "/content/module-9/granitsy-very-i-zastupnichestvo.md",
+    "bookKey": "_content_module-9_granitsy-very-i-zastupnichestvo_md",
+    "title": "Границы своими словами",
+    "description": "Изложите письменно, где проходит граница между дозволенным обращением и обращением, выводящим из веры. Своими словами, как объясняли бы человеку без знаний.",
+    "check": "Объяснение умещается в половину страницы и не требует ни одного термина без пояснения.",
+    "type": "reflection",
+    "duration": "30 мин",
+    "steps": [
+     "Напишите, где проходит граница между дозволенным обращением и обращением, выводящим из веры.",
+     "Уберите каждый термин, который остался без пояснения.",
+     "Сократите до половины страницы."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m9-2",
+    "book": "/content/module-9/sut-istiny.md",
+    "bookKey": "_content_module-9_sut-istiny_md",
+    "title": "Ответ на чужой язык",
+    "description": "Возьмите пять утверждений из практик, выдающих себя за рукью — «энергетика», «биополе», «Космос как источник», «чистка чакр», «родовые программы». На каждое подготовьте ответ с доводом из Корана или Сунны. Проговорите вслух, как будто отвечаете человеку.",
+    "check": "Ответ на каждое произносится вслух без подготовки и без раздражения в голосе.",
+    "type": "practice",
+    "duration": "40 мин",
+    "steps": [
+     "Выпишите пять утверждений: «энергетика», «биополе», «Космос как источник», «чистка чакр», «родовые программы».",
+     "К каждому найдите довод из Корана или Сунны.",
+     "Проговорите ответ вслух, как будто перед вами человек.",
+     "Проверьте себя: нет ли в голосе раздражения."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах дал мне отвечать знанием, а не раздражением — ×10",
+    "counter": null
+   },
+   {
+    "id": "m9-3",
+    "book": "/content/module-9/voprosy-mogil.md",
+    "bookKey": "_content_module-9_voprosy-mogil_md",
+    "title": "Классификация обращений",
+    "description": "Составьте таблицу обращений к умершим: вид обращения → дозволено или нет → довод. Минимум восемь строк.",
+    "check": "По таблице вы разбираете новый пример, которого в уроке не было.",
+    "type": "reflection",
+    "duration": "30 мин",
+    "steps": [
+     "Составьте таблицу: вид обращения → дозволено или нет → довод.",
+     "Заполните не менее восьми строк.",
+     "Разберите по таблице новый пример, которого в уроке не было."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m9-4",
+    "book": "/content/module-9/voprosy-zastup.md",
+    "bookKey": "_content_module-9_voprosy-zastup_md",
+    "title": "Разбор вопроса заступничества",
+    "description": "Разберите один спорный вопрос из урока: выпишите обе позиции с их доводами, и только потом — вывод по разбору автора. Учитесь излагать позицию, с которой не согласны, честно.",
+    "check": "Позиция оппонента изложена так, что он признал бы её своей, — и только после этого дан разбор.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [
+     "Выпишите первую позицию с её доводами.",
+     "Выпишите вторую так, чтобы её сторонник признал изложение своим.",
+     "Только теперь прочитайте разбор автора и запишите вывод."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "10": [
+   {
+    "id": "m10-1",
+    "book": "/content/module-10/raznitsa-praktik-vs-teoretik.md",
+    "bookKey": "_content_module-10_raznitsa-praktik-vs-teoretik_md",
+    "title": "Самопроверка по десяти ошибкам",
+    "description": "Пройдите список десяти ошибок раки. Честно отметьте, какие могли бы допустить именно вы. Для каждой отмеченной — что сделаете, чтобы не допустить.",
+    "check": "Отмечена хотя бы одна ошибка. Если ни одной — проверка пройдена нечестно, начните заново.",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [
+     "Пройдите список десяти ошибок раки.",
+     "Отметьте те, которые могли бы допустить именно вы.",
+     "Для каждой отмеченной запишите, что сделаете, чтобы её не допустить."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m10-2",
+    "book": "/content/module-10/raznitsa-praktik-vs-teoretik.md",
+    "bookKey": "_content_module-10_raznitsa-praktik-vs-teoretik_md",
+    "title": "Разговор без обещаний",
+    "description": "Проговорите вслух три ответа, которые придётся давать: тому, кто требует гарантии; тому, у кого не вышло быстро; тому, кто отказывается идти к врачу. Ни в одном не должно быть обещания результата и перекладывания вины на пациента.",
+    "check": "Все три ответа произнесены вслух, и ни в одном нет ни гарантии, ни упрёка в слабой вере.",
+    "type": "practice",
+    "duration": "25 мин",
+    "steps": [
+     "Проговорите вслух ответ тому, кто требует гарантии.",
+     "Ответ тому, у кого не вышло быстро.",
+     "Ответ тому, кто отказывается идти к врачу.",
+     "Проверьте все три: нет обещания результата и нет упрёка в слабой вере."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах уберёг мой язык от обещаний и упрёков — ×10",
+    "counter": null
+   },
+   {
+    "id": "m10-3",
+    "book": "/content/module-10/raznitsa-praktik-vs-teoretik.md",
+    "bookKey": "_content_module-10_raznitsa-praktik-vs-teoretik_md",
+    "title": "Проверка речи о себе",
+    "description": "Неделю следите, как вы рассказываете о своей практике — вслух и про себя. Каждый раз, когда прозвучало «я вылечил», «мой метод помог», «благодаря мне», — записывайте и переформулируйте так, как учит урок: раки причина, исцеляет Аллах.",
+    "check": "К концу недели переформулировка происходит сразу, до того как фраза прозвучала вслух.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Следите за своей речью о практике — вслух и про себя.",
+     "Прозвучало «я вылечил», «мой метод помог», «благодаря мне» — запишите.",
+     "Переформулируйте так, как учит урок: раки — причина, исцеляет Аллах."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах уберёг меня от присвоения того, что принадлежит Ему — ×10",
+    "counter": null
+   }
+  ],
+  "11": [
+   {
+    "id": "m11-1",
+    "book": null,
+    "bookKey": null,
+    "title": "Знакомство с RUKYA Pro",
+    "description": "Изучите интерфейс RUKYA Pro по материалам модуля. Составьте список вопросов, которые возникли о работе системы, и задайте их наставнику.",
+    "check": "Вопросы заданы наставнику и получены ответы.",
+    "type": "reflection",
+    "duration": "20 мин",
+    "steps": [
+     "Пройдите интерфейс RUKYA Pro по материалам модуля.",
+     "Запишите вопросы, которые возникли по ходу.",
+     "Задайте их наставнику и запишите ответы."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m11-2",
+    "book": null,
+    "bookKey": null,
+    "title": "Карточка первого приёма",
+    "description": "Заполните в программе карточку одного приёма целиком: жалобы, опрос, вывод, план, отметка о направлении к врачу, если оно требовалось. На себе или на близком с его согласия.",
+    "check": "Карточка заполнена целиком, ни одно поле не пропущено, и вывод следует из записанного опроса.",
+    "type": "practice",
+    "duration": "40 мин",
+    "steps": [
+     "Получите согласие, если работаете с близким.",
+     "Заполните жалобы и опрос.",
+     "Запишите вывод — он должен следовать из записанного опроса, а не из впечатления.",
+     "Запишите план и отметку о направлении к врачу, если оно требовалось."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах облегчил [имя] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m11-3",
+    "book": null,
+    "bookKey": null,
+    "title": "Неделя ведения записей",
+    "description": "Ведите в программе записи о каждом своём чтении: дата, цель, что читалось, состояние по восьми компонентам, наблюдения. Так формируется привычка, без которой практика через год превращается в туман.",
+    "check": "Семь дней записей подряд, и по ним видна динамика хотя бы одного компонента.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "После чтения сразу откройте запись.",
+     "Внесите дату, цель и что читалось.",
+     "Оцените восемь компонентов и допишите наблюдения."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах показал мне правду о моей практике — ×10",
+    "counter": null
+   }
+  ]
+ }
+}

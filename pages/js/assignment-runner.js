@@ -22,12 +22,12 @@
 //
 // Без входа окно работает целиком, но ничего не сохраняет: гость и админ
 // должны видеть упражнение как оно есть, а не пустое место.
-import { t } from "./i18n.js?v=28";
+import { t } from "./i18n.js?v=29";
 import { withBase } from "./base-path.js?v=6";
 import {
   logAssignmentDay, unlogAssignmentDay, saveAssignmentNote, saveAssignmentState,
   markAssignmentDone, unmarkAssignmentDone,
-} from "../../integration/firestore.js?v=24";
+} from "../../integration/firestore.js?v=25";
 
 const ICONS = { reflection: "\u{1F4DD}", practice: "\u{1F3CB}", daily: "\u{1F4C5}" };
 

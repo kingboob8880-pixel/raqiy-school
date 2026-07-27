@@ -117,7 +117,7 @@
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "./js/layout.js?v=30";
     import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=34";
-    import { t, getLang, moduleTitle } from "./js/i18n.js?v=28";
+    import { t, getLang, moduleTitle } from "./js/i18n.js?v=29";
     import { printBarHtml, wirePrintBar } from "./js/print-doc.js?v=8";
     import { setupReadingPosition } from "./js/reading-position.js?v=8";
     import { bookKey, MODULES, isModuleUnlocked } from "./js/modules-data.js?v=38";
@@ -125,7 +125,7 @@
     import { renderAssignments } from "./js/assignments-ui.js?v=4";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=11";
-    import { getFullBookContent, saveUnderstanding, saveBookmark, removeBookmark, getBookmarks } from "../integration/firestore.js?v=24";
+    import { getFullBookContent, saveUnderstanding, saveBookmark, removeBookmark, getBookmarks } from "../integration/firestore.js?v=25";
 
     renderHeader("learn");
     renderFooter();

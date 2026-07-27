@@ -79,12 +79,12 @@
 
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=30";
-    import { t, getLang } from "../js/i18n.js?v=28";
+    import { t, getLang } from "../js/i18n.js?v=29";
     import { watchAuth, isAdmin } from "../../integration/auth.js?v=11";
     import {
       listStudents, sendMessage, sendMediaMessage, watchMessages, markThreadRead,
       watchThreadSummary, editMessage, deleteMessage, computeOverallProgress,
-    } from "../../integration/firestore.js?v=24";
+    } from "../../integration/firestore.js?v=25";
     import {
       renderMessages, wireChatForm, scrollToBottom, wireVoicePlayers,
       wireMessageActions, mediaBarHtml, wireScrollDown,

@@ -37,6 +37,16 @@ const TOTAL_MODULES = 11;
 const BOT = process.env.TG_BOT_TOKEN;
 const CHAT = process.env.TG_CHAT_ID;
 
+// Секрет вебхука. Раньше вебхук принимал любой POST от кого угодно: адрес
+// функции публичный, и подделать «обновление от Telegram» мог кто угодно.
+// Пока бот отвечал только автору, вреда от этого было немного. Теперь через
+// него идут данные учеников, поэтому Telegram просит проставлять секрет в
+// заголовке, а мы его проверяем.
+//   firebase functions:secrets:set TG_WEBHOOK_SECRET
+// и тем же значением задать вебхук:
+//   https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=<URL>&secret_token=<СЕКРЕТ>
+const HOOK_SECRET = process.env.TG_WEBHOOK_SECRET;
+
 if (!BOT || !CHAT) {
   // Не бросаем исключение: без этого весь набор функций не задеплоился бы,
   // включая те, что к Telegram отношения не имеют. Вместо этого пишем в лог
@@ -61,6 +71,13 @@ async function tg(method, body) {
     return { ok: false };
   }
 }
+
+// Бот для учеников (запрос автора 2026-07-27). Логика вынесена в отдельный
+// файл: здесь остаётся администраторская часть, там — учебная. В одном
+// файле они перепутались бы, а цена ошибки разная: перепутать чат админа с
+// чатом ученика значит показать чужие данные.
+const student = require("./tg-student");
+student.init({ tg, db, CHAT, logger });
 
 /** Уведомление УЧЕНИКУ на сайте (запрос автора, 2026-07-25).
  *
@@ -360,12 +377,32 @@ async function buildFeedEntries(uid, before, after, pB, pA) {
 // ─────────────────────────────────────────────────
 
 exports.telegramWebhook = onRequest(async (req, res) => {
+  // Проверка секрета — до любой работы с телом запроса.
+  if (HOOK_SECRET && req.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) {
+    logger.warn("webhook: неверный секрет");
+    res.sendStatus(401);
+    return;
+  }
+
   const u = req.body;
   try {
     if (u.callback_query) {
-      await handleCallback(u.callback_query);
-    } else if (u.message?.text && String(u.message.chat.id) === CHAT) {
-      await handleMessage(u.message);
+      const from = String(u.callback_query.message?.chat?.id);
+      // Кнопки админа и кнопки ученика различаются по чату, а не по виду
+      // данных: одинаковые названия команд в двух ролях рано или поздно
+      // пересекутся, и тогда ученик нажмёт админскую кнопку.
+      if (from === CHAT) await handleCallback(u.callback_query);
+      else await student.onCallback(u.callback_query);
+    } else if (u.message?.text) {
+      const from = String(u.message.chat.id);
+      if (from === CHAT) {
+        // Ответ на пересланный вопрос ученика — уходит ему; всё остальное
+        // остаётся администраторскими командами.
+        const replied = u.message.reply_to_message ? await student.mentorReply(u.message) : false;
+        if (!replied) await handleMessage(u.message);
+      } else {
+        await student.onMessage(u.message);
+      }
     }
   } catch (e) {
     logger.error("webhook", e);
@@ -628,5 +665,48 @@ exports.dailyReminders = functions.pubsub
     }
 
     logger.info(`dailyReminders: ${inactive.length} неактивных`);
+    return null;
+  });
+
+/** Утреннее напоминание УЧЕНИКАМ в Telegram (запрос автора 2026-07-27,
+ *  вместе с учебным ботом).
+ *
+ *  Почему только тем, у кого есть начатые многодневные упражнения.
+ *  Ежедневная рассылка «зайди позанимайся» всем подряд превращается в шум,
+ *  который отключают на третий день, и вместе с ней перестают читать всё
+ *  остальное. Здесь напоминание приходит, только когда человеку реально
+ *  есть что не потерять: он ведёт серию, и сегодня она ещё не отмечена.
+ *
+ *  Время — 8:00 по Москве: раньше утренних азкаров смысла нет. */
+exports.studentDailyPractice = functions.pubsub
+  .schedule("0 5 * * *")       // 05:00 UTC = 08:00 Москва
+  .timeZone("Europe/Moscow")
+  .onRun(async () => {
+    const links = await db.collection("tgUsers").get();
+    if (links.empty) return null;
+
+    let sent = 0;
+    for (const link of links.docs) {
+      try {
+        const s = await student.findStudent(link.id);
+        if (!s) continue;
+        const list = student.todayTasks(s);
+        if (!list.length) continue;
+
+        const rows = list.slice(0, 6).map(({ a, streak }) =>
+          [{ text: `${a.title.slice(0, 45)} · ${streak}/${a.days}`, callback_data: `t:${a.id}` }]);
+        rows.push([{ text: "Открыть меню", callback_data: "m" }]);
+
+        await student.send(link.id, [
+          "<b>🗓 Сегодня</b>", "",
+          ...list.slice(0, 6).map(({ a, streak }) => `• ${a.title} — серия ${streak} из ${a.days}`),
+          "", "Пропуск обнуляет серию — она считается только подряд.",
+        ].join("\n"), rows);
+        sent += 1;
+      } catch (e) {
+        logger.warn("studentDailyPractice", link.id, e);
+      }
+    }
+    logger.info(`studentDailyPractice: напоминаний отправлено ${sent}`);
     return null;
   });

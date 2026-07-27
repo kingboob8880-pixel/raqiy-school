@@ -13,7 +13,7 @@ import { db, storage } from "./firebase-init.js?v=2";
 import {
   ref, uploadBytes, getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
-import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=1";
+import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=2";
 // Уведомления теперь через Cloud Functions (functions/index.js)
 
 /** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
@@ -499,6 +499,41 @@ export async function saveAssignmentState(uid, moduleId, assignId, patch) {
   }
   if (!args.length) return;
   await updateDoc(doc(db, "students", uid), ...args);
+}
+
+// ---------------------------------------------------------------------------
+// Привязка Telegram (запрос автора 2026-07-27: «чтобы ученики могли
+// обучаться с телеграм-бота»).
+//
+// Зачем код, а не просто ввод email в боте. Прогресс, экзамены и журнал
+// упражнений лежат в students/{uid}, и бот пишет туда же — значит, привязка
+// даёт полный доступ к учебной записи. Ввод email такой доступ отдал бы
+// любому, кто email знает. Одноразовый код выдаётся уже вошедшему ученику в
+// его кабинете, живёт 15 минут и стирается ботом сразу после привязки.
+//
+// Сам факт привязки (поле tgChatId) ставит только бот через Admin SDK —
+// клиенту он запрещён правилами. Иначе один ученик мог бы привязать свой
+// Telegram к чужой записи.
+export async function createTelegramLinkCode(uid) {
+  // 128 бит из криптографического источника: код должен быть неугадываемым,
+  // потому что угадавший получил бы чужой учебный аккаунт.
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  const code = [...bytes].map((b) => b.toString(36).padStart(2, "0")).join("").slice(0, 24);
+
+  await updateDoc(doc(db, "students", uid), {
+    tgLinkCode: code,
+    tgLinkCodeAt: serverTimestamp(),
+  });
+  return code;
+}
+
+/** Отвязать Telegram — кнопка в кабинете. Сам документ tgUsers/{chatId}
+ *  удаляет бот при следующем обращении: клиенту эта коллекция закрыта. */
+export async function unlinkTelegram(uid) {
+  await updateDoc(doc(db, "students", uid), {
+    tgUnlinkRequested: true,
+  });
 }
 
 /** Живая подписка на общую ленту достижений (запрос автора «пусть будет
