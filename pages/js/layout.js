@@ -5,7 +5,7 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=8";
 import { watchAuth, isAdmin, getAdminProfile, getStudentProfile } from "../../integration/auth.js?v=11";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=29";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=30";
 import { initNotifications, stopNotifications } from "./notifications.js?v=8";
 
 export function renderHeader(zone = "learn") {
@@ -66,6 +66,7 @@ export function renderHeader(zone = "learn") {
           <a data-nav="modules" href="${withBase("/pages/modules/index.html")}"><span aria-hidden="true">📖</span>${t("nav.modules")}</a>
           <a data-nav="practice" href="${withBase("/pages/practice/index.html")}"><span aria-hidden="true">🏋</span>${t("nav.practice")}</a>
           <a data-nav="tests" href="${withBase("/pages/tests/index.html")}"><span aria-hidden="true">📝</span>${t("nav.tests")}</a>
+          <a data-nav="supervision" href="${withBase("/pages/supervision/index.html")}"><span aria-hidden="true">🎓</span>${t("nav.supervision")}</a>
           <a data-nav="flashcards" href="${withBase("/pages/flashcards/index.html")}"><span aria-hidden="true">🃏</span>${t("nav.flashcards")}</a>
           <a data-nav="glossary" href="${withBase("/pages/glossary/index.html")}"><span aria-hidden="true">📘</span>${t("nav.glossary")}</a>
           <a data-nav="dashboard" href="${withBase("/pages/dashboard/student.html")}"><span aria-hidden="true">👤</span>${t("nav.dashboard")}</a>
@@ -98,6 +99,7 @@ export function renderHeader(zone = "learn") {
     modules: path.includes("/pages/modules/") || path.includes("/pages/book.html"),
     practice: path.includes("/pages/practice/"),
     tests: path.includes("/pages/tests/"),
+    supervision: path.includes("/pages/supervision/"),
     flashcards: path.includes("/pages/flashcards/"),
     glossary: path.includes("/pages/glossary/"),
     dashboard: path.includes("/pages/dashboard/"),

@@ -18,6 +18,7 @@
 // когда-нибудь появится второй admin-чат, проверку добавлять надо там же,
 // в одном месте, а не рассыпать по обработчикам.
 const { FieldValue } = require("firebase-admin/firestore");
+const COURSE = require("./course-data.json");
 
 let deps = null; // { tg, db, CHAT, logger }
 function init(d) { deps = d; }
@@ -107,6 +108,7 @@ const FILTERS = {
 
 const MENU = [
   [{ text: "👥 Ученики", callback_data: "as:all:0" }, { text: "🔎 Найти", callback_data: "aq" }],
+  [{ text: "🎓 Разборы на проверке", callback_data: "sq" }],
   [{ text: "📊 Сводка по школе", callback_data: "ast" }],
   [{ text: "⚠️ Требуют внимания", callback_data: "aatt" }],
 ];
@@ -176,6 +178,7 @@ async function screenCard(uid) {
     `Последний визит: ${fmtDate(s.lastSeenAt)}${x.silent >= SILENT_DAYS ? ` — молчит ${x.silent} дн.` : ""}`,
     `Записан: ${fmtDate(s.createdAt)}${s.registeredVia === "telegram" ? " (через бота)" : ""}`,
     `Telegram: ${x.inTelegram ? "привязан" : "нет"}`,
+    `Супервизия: ${(s.supervision?.accepted || 0)} из ${CASES_REQUIRED}${(s.supervision?.accepted || 0) >= CASES_REQUIRED ? " — допущен" : ""}`,
     s.certificateGranted ? "Сертификат: выдан" : "",
     s.rukyaProAccess ? "RUKYA Pro: открыт" : "",
   ].filter(Boolean).join("\n");
@@ -390,6 +393,152 @@ async function screenAttention() {
   await send(out.join("\n"), rows);
 }
 
+// ───────────────────────────────── супервизия: очередь и разбор
+//
+// Это то, ради чего супервизия вообще существует: ученик прислал разбор
+// случая, автор его читает и выносит заключение. Принято нужное число раз
+// — человек допущен к практике, и только тогда получает сертификат.
+
+const CASES_REQUIRED = COURSE.casesRequired || 3;
+
+/** Все случаи, ждущие проверки. Собираем обходом учеников: коллекция
+ *  вложенная, и запрос по всем сразу требовал бы отдельного индекса —
+ *  ради школы в несколько десятков человек это лишнее усложнение. */
+async function pendingCases() {
+  const out = [];
+  for (const s of await allStudents()) {
+    const snap = await deps.db.collection(`students/${s.uid}/cases`)
+      .where("status", "==", "submitted").get();
+    for (const d of snap.docs) out.push({ uid: s.uid, name: s.name || s.email || s.uid, id: d.id, ...d.data() });
+  }
+  return out.sort((a, b) => (a.submittedAt?.toMillis?.() || 0) - (b.submittedAt?.toMillis?.() || 0));
+}
+
+async function screenQueue() {
+  const list = await pendingCases();
+  if (!list.length) {
+    await send("<b>🎓 Разборы на проверке</b>\n\nОчередь пуста.", [[{ text: "‹ Меню", callback_data: "a" }]]);
+    return;
+  }
+  const rows = list.slice(0, 15).map((c) =>
+    [{ text: `${c.name} · случай ${c.n}`.slice(0, 60), callback_data: `sr:${c.uid}:${c.id}` }]);
+  rows.push([{ text: "‹ Меню", callback_data: "a" }]);
+  await send(`<b>🎓 Разборы на проверке</b> — ${list.length}`, rows);
+}
+
+async function screenCase(uid, caseId) {
+  const [st, cs] = await Promise.all([
+    deps.db.doc(`students/${uid}`).get(),
+    deps.db.doc(`students/${uid}/cases/${caseId}`).get(),
+  ]);
+  if (!cs.exists) { await send("Разбор не найден.", [[{ text: "‹ Меню", callback_data: "a" }]]); return; }
+  const c = cs.data();
+  const s = st.exists ? st.data() : {};
+  const accepted = s.supervision?.accepted || 0;
+
+  const parts = [
+    `<b>${esc(s.name || s.email || uid)}</b> — случай ${c.n} из ${CASES_REQUIRED}`,
+    `Принято ранее: ${accepted}`,
+    "",
+  ];
+  for (const f of COURSE.caseFields) {
+    parts.push(`<b>${esc(f.title)}</b>`, esc(c.fields?.[f.key] || "—"), "");
+  }
+  if (c.verdict?.text) parts.push("<b>Прошлое заключение</b>", esc(c.verdict.text), "");
+
+  // Длинный текст — несколькими сообщениями, кнопки под последним.
+  const chunks = [];
+  let buf = "";
+  for (const p of parts) {
+    if ((buf + "\n" + p).length > 3400 && buf) { chunks.push(buf); buf = p; }
+    else buf = buf ? buf + "\n" + p : p;
+  }
+  if (buf) chunks.push(buf);
+
+  const rows = c.status === "accepted" ? [[{ text: "‹ Очередь", callback_data: "sq" }]] : [
+    [{ text: "✅ Принять разбор", callback_data: `sa:${uid}:${caseId}` }],
+    [{ text: "↩️ Вернуть с замечанием", callback_data: `sb:${uid}:${caseId}` }],
+    [{ text: "‹ Очередь", callback_data: "sq" }, { text: "Ученик", callback_data: `ac:${uid}` }],
+  ];
+
+  for (let i = 0; i < chunks.length; i++) {
+    await deps.tg("sendMessage", {
+      chat_id: deps.CHAT, text: chunks[i], parse_mode: "HTML", disable_web_page_preview: true,
+      ...(i === chunks.length - 1 ? { reply_markup: { inline_keyboard: rows } } : {}),
+    });
+  }
+}
+
+/** Принять разбор. Заключение спрашиваем всегда: «принято» без единого
+ *  слова наставника — это не супервизия, а кнопка. Именно слова автора и
+ *  есть то, за что ученик платит. */
+async function askVerdict(uid, caseId, accept) {
+  await deps.db.doc("bot_state/admin").set({
+    awaiting: `verdict:${accept ? "a" : "b"}:${uid}:${caseId}`, ts: Date.now(),
+  });
+  await send(accept
+    ? "✍️ Напишите заключение — что сделано верно и на что обратить внимание дальше."
+    : "✍️ Напишите замечание — что именно доработать в разборе.",
+    [[{ text: "Отмена", callback_data: `sr:${uid}:${caseId}` }]]);
+}
+
+async function applyVerdict(uid, caseId, accept, text) {
+  const ref = deps.db.doc(`students/${uid}/cases/${caseId}`);
+  await ref.update({
+    status: accept ? "accepted" : "returned",
+    verdict: { text, at: new Date() },
+    reviewedAt: new Date(),
+  });
+  await deps.db.doc("bot_state/admin").set({ awaiting: null });
+
+  const cs = await ref.get();
+  const c = cs.data();
+
+  if (accept) {
+    // Пересчитываем по факту, а не увеличиваем счётчик: повторная выдача
+    // вердикта не должна засчитать один и тот же разбор дважды.
+    const all = await deps.db.collection(`students/${uid}/cases`).where("status", "==", "accepted").get();
+    const accepted = all.size;
+    const passed = accepted >= CASES_REQUIRED;
+    await deps.db.doc(`students/${uid}`).update({
+      supervision: { accepted, status: passed ? "passed" : "in_review", updatedAt: new Date() },
+    });
+    await send(passed
+      ? `✅ Принято. Разборов принято: ${accepted} из ${CASES_REQUIRED} — ученик допущен к практике.`
+      : `✅ Принято. Разборов принято: ${accepted} из ${CASES_REQUIRED}.`,
+      [[{ text: "‹ Очередь", callback_data: "sq" }], [{ text: "Ученик", callback_data: `ac:${uid}` }]]);
+  } else {
+    await send("↩️ Возвращено на доработку.",
+      [[{ text: "‹ Очередь", callback_data: "sq" }]]);
+  }
+
+  // Ученику — заключение целиком, в Telegram и в колокольчик на сайте.
+  // Отдельным сообщением, а не превью: слова наставника здесь и есть суть.
+  const link = await deps.db.collection("tgUsers").where("uid", "==", uid).limit(1).get();
+  if (!link.empty) {
+    await deps.tg("sendMessage", {
+      chat_id: link.docs[0].id,
+      text: [
+        accept ? `✅ <b>Случай ${c.n} принят</b>` : `↩️ <b>Случай ${c.n} возвращён на доработку</b>`,
+        "", "<b>Заключение наставника</b>", esc(text),
+      ].join("\n"),
+      parse_mode: "HTML",
+      reply_markup: { inline_keyboard: [
+        [{ text: "🎓 Супервизия", callback_data: "sv" }],
+        [{ text: "Меню", callback_data: "m" }],
+      ]},
+    });
+  }
+  await deps.db.collection(`students/${uid}/notifications`).add({
+    type: "supervision",
+    title: accept ? `Случай ${c.n} принят` : `Случай ${c.n} возвращён на доработку`,
+    body: text.slice(0, 200),
+    link: "/pages/supervision/index.html",
+    read: false,
+    createdAt: new Date(),
+  });
+}
+
 // ───────────────────────────────── маршрутизация
 
 /** Текст из чата автора. Возвращает true, если сообщение было ответом на
@@ -403,6 +552,11 @@ async function onMessage(msg) {
 
   if (awaiting === "search") { await doSearch(text); return true; }
   if (awaiting?.startsWith?.("write:")) { await doWrite(awaiting.slice(6), text); return true; }
+  if (awaiting?.startsWith?.("verdict:")) {
+    const [, mode, uid, caseId] = awaiting.split(":");
+    await applyVerdict(uid, caseId, mode === "a", text);
+    return true;
+  }
 
   if (text === "/admin" || text === "/menu" || text === "/students") { await screenMenu(); return true; }
   if (text === "/stats") { await screenStats(); return true; }
@@ -426,6 +580,10 @@ async function onCallback(cb) {
     aw:   async () => askWrite(rest[0]),
     ad:   async () => askDelete(rest[0]),
     aD:   async () => doDelete(rest[0]),
+    sq:   async () => screenQueue(),
+    sr:   async () => screenCase(rest[0], rest[1]),
+    sa:   async () => askVerdict(rest[0], rest[1], true),
+    sb:   async () => askVerdict(rest[0], rest[1], false),
     noop: async () => {},
   };
 

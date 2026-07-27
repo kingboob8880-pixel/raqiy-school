@@ -34,6 +34,10 @@ const { ASSIGNMENTS } = await load("pages/js/assignments-data.js");
 // а этот статус ставит именно тест модуля. Пропущены при первой сборке —
 // в боте ученик упирался в потолок первого модуля навсегда (2026-07-27).
 const { QUIZZES } = await load("pages/js/quiz-data.js");
+// Форма разбора случая для супервизии Модуля 11. Один источник на сайт и
+// бота: две копии разъехались бы, и ученик из Telegram присылал бы не то,
+// что автор ждёт на сайте.
+const { CASE_FIELDS, CASES_REQUIRED } = await load("pages/js/case-form.js");
 
 // Берём только то, что боту действительно нужно. Обложки, интро-видео и
 // прочее оформление сайта в Telegram не используются — незачем раздувать
@@ -76,6 +80,8 @@ const out = {
   modules,
   assignments,
   quizzes: QUIZZES,
+  caseFields: CASE_FIELDS,
+  casesRequired: CASES_REQUIRED,
 };
 
 const dest = join(ROOT, "functions/course-data.json");
@@ -84,7 +90,7 @@ writeFileSync(dest, JSON.stringify(out, null, 1), "utf8");
 const lessons = modules.reduce((n, m) => n + m.lessons.length, 0);
 const tasks = Object.values(assignments).reduce((n, a) => n + a.length, 0);
 const quizQs = Object.values(QUIZZES).reduce((n, q) => n + q.length, 0);
-console.log(`Готово: ${modules.length} модулей, ${lessons} уроков, ${tasks} упражнений, ${quizQs} вопросов в тестах модулей`);
+console.log(`Готово: ${modules.length} модулей, ${lessons} уроков, ${tasks} упражнений, ${quizQs} вопросов в тестах модулей, ${CASE_FIELDS.length} шагов разбора случая`);
 
 // Тест модуля обязан быть у каждого: без него модуль не закрывается.
 const noQuiz = modules.filter((m) => !(QUIZZES[m.id] || []).length).map((m) => m.id);

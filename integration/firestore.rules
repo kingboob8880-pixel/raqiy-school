@@ -54,7 +54,13 @@ service cloud.firestore {
                                       // бы он мог записать сам tgChatId, он
                                       // привязал бы свой Telegram к чужой
                                       // записи и получил чужой прогресс.
-                                      'tgChatId', 'tgUsername']))
+                                      'tgChatId', 'tgUsername',
+                                      // Допуск к практике. Ставится только
+                                      // по принятым разборам случаев —
+                                      // сервером или админом. Разреши это
+                                      // ученику, и он выдал бы себе допуск
+                                      // и сертификат сам.
+                                      'supervision']))
                     || isAdmin();
       allow delete: if isAdmin();
 
@@ -90,6 +96,27 @@ service cloud.firestore {
                       || (isOwner(uid) && (onlyMarksRead() || editsOwnText()));
         allow delete: if isAdmin()
                       || (isOwner(uid) && resource.data.from == 'student');
+      }
+
+      // Разборы случаев для супервизии Модуля 11 (решение автора
+      // 2026-07-27). Ученик пишет свой черновик и отправляет его на
+      // проверку; заключение наставника и статус «принят» ставит только
+      // админ — иначе выпускник допускал бы к практике сам себя.
+      match /cases/{caseId} {
+        allow read: if isOwner(uid) || isAdmin();
+        allow create: if isAdmin()
+                      || (isOwner(uid) && request.resource.data.status in ['draft', 'submitted']);
+        // Ученик правит только своё содержимое и только пока случай не
+        // принят: принятый разбор — это документ о допуске, и менять его
+        // задним числом нельзя.
+        allow update: if isAdmin()
+                      || (isOwner(uid)
+                          && resource.data.status != 'accepted'
+                          && request.resource.data.status in ['draft', 'submitted']
+                          && !request.resource.data.diff(resource.data).affectedKeys()
+                               .hasAny(['verdict', 'reviewedAt', 'reviewedBy']));
+        allow delete: if isAdmin()
+                      || (isOwner(uid) && resource.data.status == 'draft');
       }
 
       // Уведомления ученику (запрос автора, 2026-07-25): сообщение от

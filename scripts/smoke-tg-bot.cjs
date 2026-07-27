@@ -15,6 +15,7 @@ const ROOT = path.join(__dirname, "..");
 
 // ── заглушка Firestore ──────────────────────────────────────────────────
 const store = new Map();
+let autoId = 0;
 
 // structuredClone, а не JSON: JSON превращает даты в строки, и проверка
 // срока действия кода начинала бы считать любой код просроченным.
@@ -62,6 +63,7 @@ function applyOne(doc, key, value) {
 function docRef(pathStr) {
   return {
     __path: pathStr,
+    id: pathStr.split('/').pop(),
     async get() {
       const d = store.get(pathStr);
       return { exists: d !== undefined, id: pathStr.split("/").pop(), data: () => clone(d) };
@@ -90,13 +92,18 @@ function collRef(name) {
   const api = {
     async get() { const docs = docsOf(); return { empty: !docs.length, docs, size: docs.length }; },
     async listDocuments() { return docsOf().map((d) => docRef(`${name}/${d.id}`)); },
+    // .doc() без аргумента — новый документ со сгенерированным id: так
+    // бот создаёт разбор случая.
+    doc(id) { return docRef(`${name}/${id || "auto" + (++autoId)}`); },
     async add(data) { store.set(`${name}/msg${store.size}`, clone(data)); },
     where(field, _op, val) {
       return {
         limit() { return this; },
         async get() {
           const docs = docsOf().filter((d) => getIn(d.data(), field.split(".")) === val);
-          return { empty: !docs.length, docs };
+          // size — настоящий QuerySnapshot его отдаёт, и код супервизии
+          // считает по нему число принятых разборов.
+          return { empty: !docs.length, docs, size: docs.length };
         },
       };
     },
@@ -541,6 +548,101 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
     && !(await admin.onCallback(acb("pwd"))));
   check("панель не перехватывает обычный текст ученика",
     !(await admin.onMessage(amsg("просто текст"))));
+
+  // ── 17. СУПЕРВИЗИЯ: ПОЛНЫЙ КРУГ ДО ДОПУСКА ────────────────────────────
+  //
+  // Ради этого всё и строилось: разбор случая, заключение наставника,
+  // допуск к практике. Проверяем и то, что легко упустить: возвращённый
+  // случай не засчитывается, а принять один и тот же дважды нельзя.
+  const SV = 71000;
+  const svmsg = (t) => ({ chat: { id: SV }, from: { username: "sv" }, text: t });
+  const svcb = (d) => ({ id: "cb", data: d, message: { chat: { id: SV } } });
+  const COURSE = require(path.join(ROOT, "functions", "course-data.json"));
+
+  // Ученик с полным доступом — супервизия открыта.
+  store.set("students/UIDSV", { name: "Выпускник", email: "v@v.v", paid: true, fullAccess: true, progress: {} });
+  await db.doc(`tgUsers/${SV}`).set({ uid: "UIDSV", state: {} });
+
+  reset();
+  await bot.onCallback(svcb("sv"));
+  check("экран супервизии открылся", /Супервизия/.test(lastText()) && /0<\/b> из 3|0 из 3/.test(lastText()));
+  check("предложено разобрать случай", buttons().some((b) => b === "svnew"));
+
+  // Заполняем все девять шагов.
+  reset();
+  await bot.onCallback(svcb("svnew"));
+  check("форма началась с первого шага", /шаг 1 из 9/.test(lastText()));
+
+  reset();
+  await bot.onMessage(svmsg("коротко"));
+  check("слишком короткий ответ отклонён", /Слишком коротко/.test(lastText()));
+
+  for (let i = 0; i < COURSE.caseFields.length; i++) {
+    reset();
+    await bot.onMessage(svmsg("Подробный ответ на этот шаг разбора случая, достаточно длинный чтобы наставник понял без переспрашивания."));
+  }
+  check("после последнего шага показан разбор целиком", /Случай 1/.test(lastText()));
+  check("предложена отправка наставнику", buttons().some((b) => String(b).startsWith("svs:")));
+
+  const caseId = buttons().find((b) => String(b).startsWith("svs:")).split(":")[1];
+  reset();
+  await bot.onCallback(svcb(`svs:${caseId}`));
+  check("случай отправлен", /отправлен наставнику/.test(lastText()));
+  check("автору пришло уведомление о разборе",
+    sent.some((m) => String(m.chat_id) === "999" && /Разбор случая на проверку/.test(m.text || "")));
+
+  // Автор видит очередь и открывает разбор.
+  const acb2 = (d) => ({ id: "cb", data: d, message: { chat: { id: 999 } } });
+  const amsg2 = (t) => ({ chat: { id: 999 }, from: { username: "author" }, text: t });
+  reset();
+  await admin.onCallback(acb2("sq"));
+  check("очередь разборов не пуста", /Разборы на проверке/.test(lastText()) && !/Очередь пуста/.test(lastText()));
+  reset();
+  await admin.onCallback(acb2(`sr:UIDSV:${caseId}`));
+  check("разбор открылся у автора", /Выпускник/.test(lastText()) && /Красные флаги/.test(lastText()));
+
+  // Сначала возвращаем с замечанием.
+  reset();
+  await admin.onCallback(acb2(`sb:UIDSV:${caseId}`));
+  check("панель ждёт замечание", /Напишите замечание/.test(lastText()));
+  reset();
+  await admin.onMessage(amsg2("Не назван орган в намерении. Доработайте шаг седьмой."));
+  check("случай возвращён", store.get(`students/UIDSV/cases/${caseId}`).status === "returned");
+  check("допуск не засчитан", (store.get("students/UIDSV").supervision?.accepted || 0) === 0);
+  check("ученику ушло заключение",
+    sent.some((m) => String(m.chat_id) === String(SV) && /возвращён на доработку/i.test(m.text || "")));
+
+  // Теперь принимаем — трижды, по одному случаю за раз.
+  const ids = [caseId];
+  for (let n = 2; n <= 3; n++) {
+    reset();
+    await bot.onCallback(svcb("svnew"));
+    for (let i = 0; i < COURSE.caseFields.length; i++) {
+      await bot.onMessage(svmsg("Подробный ответ на этот шаг разбора случая, достаточно длинный чтобы наставник понял без переспрашивания."));
+    }
+    const id = buttons().find((b) => String(b).startsWith("svs:"))?.split(":")[1];
+    if (id) { ids.push(id); await bot.onCallback(svcb(`svs:${id}`)); }
+  }
+  check("создано три случая", ids.length === 3, "создано " + ids.length);
+
+  for (const id of ids) {
+    reset();
+    await admin.onCallback(acb2(`sa:UIDSV:${id}`));
+    await admin.onMessage(amsg2("Разбор принят. Опрос полный, красные флаги проверены, вывод следует из ответов."));
+  }
+  const sv = store.get("students/UIDSV").supervision || {};
+  check("принято три разбора", sv.accepted === 3, JSON.stringify(sv));
+  check("ученик допущен к практике", sv.status === "passed");
+  check("ученику сообщено о принятии",
+    sent.some((m) => String(m.chat_id) === String(SV) && /принят/i.test(m.text || "")));
+
+  // Повторный вердикт по уже принятому не даёт четвёртого зачёта.
+  reset();
+  await admin.onCallback(acb2(`sa:UIDSV:${ids[0]}`));
+  await admin.onMessage(amsg2("Ещё раз принято."));
+  check("повторное принятие не удваивает зачёт",
+    (store.get("students/UIDSV").supervision?.accepted || 0) === 3,
+    JSON.stringify(store.get("students/UIDSV").supervision));
 
   console.log(`\nПроверок провалено: ${failed}`);
   process.exit(failed ? 1 : 0);

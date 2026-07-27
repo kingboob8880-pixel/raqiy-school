@@ -235,6 +235,7 @@ const MENU = [
   [{ text: "📖 Модули", callback_data: "mods" }, { text: "🏋 Практика", callback_data: "pr" }],
   [{ text: "📊 Мой прогресс", callback_data: "prog" }, { text: "🗓 Что сегодня", callback_data: "today" }],
   [{ text: "💬 Спросить наставника", callback_data: "ask" }],
+  [{ text: "🎓 Супервизия", callback_data: "sv" }],
 ];
 
 // Тем, кто записался через бота, нужен способ попасть и на сайт — своим же
@@ -729,7 +730,11 @@ async function screenProgress(s) {
     `Упражнения: <b>${tasksDone}</b>`,
     avg === null ? "" : `Средний балл: <b>${avg}%</b>`,
     "", hasFullText(s) ? "Доступ: полный" : "Доступ: вводные отрывки",
-  ].filter(Boolean).join("\n"), [[{ text: "‹ Меню", callback_data: "m" }]]);
+    `Супервизия: ${(s.supervision?.accepted || 0)} из ${COURSE.casesRequired || 3} разборов принято`,
+  ].filter(Boolean).join("\n"), [
+    [{ text: "🎓 Супервизия", callback_data: "sv" }],
+    [{ text: "‹ Меню", callback_data: "m" }],
+  ]);
 }
 
 /** «Что сегодня» — только начатые многодневные, которые сегодня ещё не
@@ -761,6 +766,177 @@ async function screenToday(s) {
     [{ text: `${a.title.slice(0, 45)} · ${streak}/${a.days}`, callback_data: `t:${a.id}` }]);
   rows.push([{ text: "‹ Меню", callback_data: "m" }]);
   await send(s.chatId, `<b>🗓 Сегодня</b>\n\nНе отмечено упражнений: ${list.length}`, rows);
+}
+
+// ───────────────────────────────── супервизия Модуля 11
+//
+// Решение автора 2026-07-27. «Финальный практикум под супервизией» был
+// обещанием без механизма: прислать разбор было некуда, посмотреть его
+// нечем, «допущен к практике» нигде не фиксировалось. Это самая дорогая
+// часть курса — и единственная, которой технически не существовало.
+//
+// Форма строгая и одна на сайт и бота (COURSE.caseFields). В свободном
+// рассказе первым выпадает то, о чём неудобно писать: не спросил про
+// красные флаги, вывод сделал по впечатлению, результата не было — а
+// именно это наставнику и нужно видеть.
+
+const CASE_ST = {
+  draft:     "✏️ Черновик",
+  submitted: "⏳ На проверке",
+  returned:  "↩️ Возвращён на доработку",
+  accepted:  "✅ Принят",
+};
+
+async function loadCases(uid) {
+  const snap = await deps.db.collection(`students/${uid}/cases`).get();
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.n || 0) - (b.n || 0));
+}
+
+async function screenSupervision(s) {
+  const need = COURSE.casesRequired || 3;
+  const cases = await loadCases(s.uid);
+  const accepted = cases.filter((c) => c.status === "accepted").length;
+  const passed = accepted >= need;
+
+  // Супервизия — финал курса. Пускать в неё раньше времени значит
+  // приглашать разбирать случаи того, кто ещё не прошёл диагностику.
+  const modulesDone = COURSE.modules.filter((m) => s.progress?.[m.id]?.status === "done").length;
+  const ready = s.fullAccess || modulesDone >= COURSE.modules.length - 1;
+
+  const out = [
+    "<b>🎓 Супервизия — допуск к практике</b>", "",
+    `Принято разборов: <b>${accepted}</b> из ${need}`,
+  ];
+
+  if (passed) {
+    out.push("", "Вы допущены к практике. الحمد لله");
+  } else if (!ready) {
+    out.push("", `Откроется, когда пройдёте модули курса. Сейчас сдано: ${modulesDone} из ${COURSE.modules.length}.`);
+  } else {
+    out.push("",
+      "Разберите случай своей практики по шагам — на себе или на близком с его согласия.",
+      "Наставник прочитает и ответит: примет или вернёт с замечанием.",
+      "",
+      `Всего шагов: ${COURSE.caseFields.length}. Отвечать можно не подряд — черновик сохраняется.`);
+  }
+
+  const rows = [];
+  for (const c of cases) {
+    rows.push([{ text: `${CASE_ST[c.status] || ""} · Случай ${c.n}`.slice(0, 60), callback_data: `svc:${c.id}` }]);
+  }
+  if (ready && !passed && cases.filter((c) => c.status !== "accepted").length === 0 && cases.length < need) {
+    rows.push([{ text: "➕ Разобрать случай", callback_data: "svnew" }]);
+  } else if (ready && !passed && !cases.some((c) => ["draft", "returned"].includes(c.status)) && cases.length < need) {
+    rows.push([{ text: "➕ Разобрать ещё случай", callback_data: "svnew" }]);
+  }
+  rows.push([{ text: "‹ Меню", callback_data: "m" }]);
+
+  await sendLong(s.chatId, out.join("\n"), rows);
+}
+
+async function caseNew(s) {
+  const need = COURSE.casesRequired || 3;
+  const cases = await loadCases(s.uid);
+  if (cases.length >= need && cases.every((c) => c.status === "accepted")) { await screenSupervision(s); return; }
+
+  const n = cases.length + 1;
+  const ref = deps.db.collection(`students/${s.uid}/cases`).doc();
+  await ref.set({ n, status: "draft", fields: {}, createdAt: new Date() });
+  await caseAsk(s, ref.id, 0);
+}
+
+/** Один шаг формы. Вопрос и подсказка идут вместе: подсказка здесь не
+ *  украшение, а половина обучения — она называет то, что человек чаще
+ *  всего пропускает. */
+async function caseAsk(s, caseId, idx) {
+  const f = COURSE.caseFields[idx];
+  if (!f) return caseReview(s, caseId);
+
+  await setState(s.chatId, { awaiting: `case:${caseId}:${idx}` });
+  await send(s.chatId, [
+    `<b>Разбор случая — шаг ${idx + 1} из ${COURSE.caseFields.length}</b>`,
+    `<b>${esc(f.title)}</b>`, "",
+    esc(f.q), "",
+    `<i>${esc(f.hint)}</i>`,
+  ].join("\n"), [[{ text: "Прервать — сохранится черновиком", callback_data: "sv" }]]);
+}
+
+async function caseAnswer(s, caseId, idx, text) {
+  const f = COURSE.caseFields[idx];
+  if (!f) return;
+  const v = String(text).trim();
+  if (v.length < f.min) {
+    await send(s.chatId, `Слишком коротко — нужно хотя бы ${f.min} знаков. Наставник должен понять случай, не переспрашивая.\n\nНапишите подробнее.`);
+    return;
+  }
+  await deps.db.doc(`students/${s.uid}/cases/${caseId}`).update({
+    [`fields.${f.key}`]: v.slice(0, 4000),
+    updatedAt: new Date(),
+  });
+  await caseAsk(s, caseId, idx + 1);
+}
+
+/** Показ собранного случая перед отправкой — и он же экран уже отправленного. */
+async function caseReview(s, caseId) {
+  const snap = await deps.db.doc(`students/${s.uid}/cases/${caseId}`).get();
+  if (!snap.exists) return screenSupervision(s);
+  const c = snap.data();
+  await setState(s.chatId, {});
+
+  const out = [`<b>Случай ${c.n}</b> — ${CASE_ST[c.status] || ""}`, ""];
+  const missing = [];
+  COURSE.caseFields.forEach((f, i) => {
+    const v = c.fields?.[f.key];
+    if (!v || String(v).trim().length < f.min) { missing.push(i); out.push(`${i + 1}. <b>${esc(f.title)}</b> — <i>не заполнено</i>`); }
+    else out.push(`${i + 1}. <b>${esc(f.title)}</b>\n${esc(v)}`);
+    out.push("");
+  });
+
+  if (c.verdict?.text) {
+    out.push("<b>Заключение наставника</b>", esc(c.verdict.text), "");
+  }
+
+  const rows = [];
+  if (c.status !== "accepted" && c.status !== "submitted") {
+    if (missing.length) {
+      rows.push([{ text: `✏️ Заполнить (осталось ${missing.length})`, callback_data: `svf:${caseId}:${missing[0]}` }]);
+    } else {
+      rows.push([{ text: "📨 Отправить наставнику", callback_data: `svs:${caseId}` }]);
+    }
+    rows.push([{ text: "✏️ Править с начала", callback_data: `svf:${caseId}:0` }]);
+  }
+  rows.push([{ text: "‹ Супервизия", callback_data: "sv" }]);
+  await sendLong(s.chatId, out.join("\n"), rows);
+}
+
+async function caseSubmit(s, caseId) {
+  const ref = deps.db.doc(`students/${s.uid}/cases/${caseId}`);
+  const snap = await ref.get();
+  if (!snap.exists) return;
+  const c = snap.data();
+
+  const missing = COURSE.caseFields.filter((f) => String(c.fields?.[f.key] || "").trim().length < f.min);
+  if (missing.length) { await send(s.chatId, "Ещё не всё заполнено."); return caseReview(s, caseId); }
+
+  await ref.update({ status: "submitted", submittedAt: new Date() });
+  await send(s.chatId, [
+    `📨 Случай ${c.n} отправлен наставнику.`, "",
+    "Он прочитает и ответит: примет или вернёт с замечанием. Ответ придёт сюда.",
+  ].join("\n"), [[{ text: "‹ Супервизия", callback_data: "sv" }]]);
+
+  await deps.tg("sendMessage", {
+    chat_id: deps.CHAT,
+    text: [
+      "🎓 <b>Разбор случая на проверку</b>", "",
+      `Ученик: ${esc(s.name || s.email || "")}`,
+      `Случай ${c.n} из ${COURSE.casesRequired || 3}`,
+    ].join("\n"),
+    parse_mode: "HTML",
+    reply_markup: { inline_keyboard: [
+      [{ text: "📖 Открыть разбор", callback_data: `sr:${s.uid}:${caseId}` }],
+      [{ text: "🎓 Все на проверке", callback_data: "sq" }],
+    ]},
+  });
 }
 
 // ───────────────────────────────── связь с наставником
@@ -1059,6 +1235,10 @@ async function onMessage(msg) {
   const aw = s.state?.awaiting;
   if (aw === "mentor") return saveMentorQuestion(s, text);
   if (aw?.startsWith?.("note:")) return saveObservation(s, aw.slice(5), text);
+  if (aw?.startsWith?.("case:")) {
+    const [, caseId, idx] = aw.split(":");
+    return caseAnswer(s, caseId, Number(idx), text);
+  }
 
   if (text === "/menu" || text === "/help") return screenMenu(s);
   if (text === "/today") return screenToday(s);
@@ -1111,6 +1291,11 @@ async function onCallback(cb) {
       case "today": await ack(cb.id); return screenToday(s);
       case "ask": await ack(cb.id); return askMentor(s);
       case "pwd": await ack(cb.id); return sendPasswordLink(s);
+      case "sv":   await ack(cb.id); return screenSupervision(s);
+      case "svnew": await ack(cb.id); return caseNew(s);
+      case "svc":  await ack(cb.id); return caseReview(s, rest[0]);
+      case "svf":  await ack(cb.id); return caseAsk(s, rest[0], Number(rest[1]));
+      case "svs":  await ack(cb.id); return caseSubmit(s, rest[0]);
       default: await ack(cb.id);
     }
   } catch (e) {

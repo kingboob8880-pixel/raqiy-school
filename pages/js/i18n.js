@@ -27,6 +27,7 @@ const S = {
   "nav.about":         { ru: "Об авторе", en: "About", uz: "Muallif haqida" },
   "nav.modules":       { ru: "Модули", en: "Modules", uz: "Modullar" },
   "nav.practice":      { ru: "Практика", en: "Practice", uz: "Amaliyot" },
+  "nav.supervision":   { ru: "Супервизия", en: "Supervision", uz: "Supervizor" },
   "nav.tests":         { ru: "Тесты", en: "Tests", uz: "Testlar" },
   "nav.flashcards":    { ru: "Карточки", en: "Flashcards", uz: "Kartochkalar" },
   "nav.glossary":      { ru: "Словарь", en: "Glossary", uz: "Lug'at" },
@@ -526,7 +527,7 @@ const S = {
   "cert.notReady":       { ru: "Ваш сертификат ещё не готов", en: "Your certificate is not ready yet", uz: "Sertifikatingiz hali tayyor emas" },
   "cert.modulesOf":      { ru: "Пройдено модулей:", en: "Modules completed:", uz: "Yakunlangan modullar:" },
   "cert.of":             { ru: "из", en: "of", uz: "dan" },
-  "cert.notReadyNote":   { ru: "Сертификат выдаётся после завершения всех модулей и прохождения всех тестов.", en: "Certificate is issued after completing all modules and passing all tests.", uz: "Sertifikat barcha modullarni yakunlash va barcha testlarni topshirgandan keyin beriladi." },
+  "cert.notReadyNote": { ru: "Сертификат выдаётся после всех модулей И принятых наставником разборов случаев. Тест показывает, что вы прочитали; разбор случая — что вы умеете.", en: "The certificate is issued after all modules AND case write-ups accepted by the mentor. A test shows you have read; a case write-up shows you can do.", uz: "Sertifikat barcha modullardan va ustoz qabul qilgan holat tahlillaridan keyin beriladi." },
   "cert.continue":       { ru: "Продолжить обучение", en: "Continue learning", uz: "O'qishni davom ettirish" },
   "cert.congrats":       { ru: "Поздравляем — курс пройден полностью. Вот ваш сертификат:", en: "Congratulations — course completed. Here is your certificate:", uz: "Tabriklaymiz — kurs to'liq yakunlandi. Mana sizning sertifikatingiz:" },
   "cert.dlPdf":          { ru: "Скачать PDF", en: "Download PDF", uz: "PDF yuklab olish" },
@@ -712,6 +713,35 @@ const S = {
   "practice.empty":      { ru: "Под эти условия ничего не подошло.", en: "Nothing matches these filters.", uz: "Bu shartlarga hech narsa mos kelmadi." },
   "practice.locked":     { ru: "Модуль ещё не открыт", en: "Module not unlocked yet", uz: "Modul hali ochilmagan" },
   "practice.guestLead":  { ru: "Войдите, чтобы отмечать выполнение и вести записи.", en: "Sign in to mark progress and keep notes.", uz: "Bajarilishini belgilash va yozuvlar yuritish uchun kiring." },
+
+  // ── Супервизия Модуля 11 (решение автора 2026-07-27) ──
+  // «Финальный практикум под супервизией» был обещанием без механизма:
+  // прислать разбор было некуда, а «допущен к практике» нигде не
+  // фиксировалось. Теперь это ступень с собственным допуском.
+  "sv.title":        { ru: "Супервизия", en: "Supervision", uz: "Supervizor nazorati" },
+  "sv.lead":         { ru: "Разберите случаи своей практики по шагам. Наставник прочитает каждый и ответит: примет или вернёт с замечанием. Принятые разборы дают допуск к практике и сертификат.", en: "Write up cases from your own practice step by step. The mentor reads each one and replies: accepted, or returned with a note. Accepted cases grant admission to practice and the certificate.", uz: "O'z amaliyotingizdagi holatlarni bosqichma-bosqich yozing. Ustoz har birini o'qib javob beradi." },
+  "sv.case":         { ru: "Случай", en: "Case", uz: "Holat" },
+  "sv.verdict":      { ru: "Заключение наставника", en: "Mentor's verdict", uz: "Ustoz xulosasi" },
+  "sv.inProgress":   { ru: "Допуск к практике", en: "Admission to practice", uz: "Amaliyotga ruxsat" },
+  "sv.passed":       { ru: "Вы допущены к практике", en: "You are admitted to practice", uz: "Siz amaliyotga qo'yildingiz" },
+  "sv.passedNote":   { ru: "Разборы приняты наставником. الحمد لله", en: "Your cases were accepted by the mentor. الحمد لله", uz: "Holatlaringiz qabul qilindi. الحمد لله" },
+  "sv.notReady":     { ru: "Откроется, когда пройдёте модули курса. Сдано модулей:", en: "Opens once you finish the course modules. Modules passed:", uz: "Kurs modullarini tugatganingizda ochiladi. Topshirilgan:" },
+  "sv.howNote":      { ru: "Разберите случай своей практики — на себе или на близком с его согласия. Работа с посторонним пациентом до допуска не ведётся.", en: "Write up a case from your practice — on yourself or on a close person with their consent.", uz: "O'z amaliyotingizdan holatni yozing — o'zingizda yoki roziligi bilan yaqiningizda." },
+  "sv.newCase":      { ru: "➕ Разобрать случай", en: "➕ Write up a case", uz: "➕ Holatni yozish" },
+  "sv.continue":     { ru: "Продолжить разбор", en: "Continue", uz: "Davom etish" },
+  "sv.formTitle":    { ru: "Разбор случая", en: "Case write-up", uz: "Holat tahlili" },
+  "sv.formNote":     { ru: "Отвечайте честно, включая «результата не было». Разбор без результата полезнее приукрашенного: наставник видит, где сорвалось.", en: "Answer honestly, including «there was no result». A case without a result is more useful than an embellished one.", uz: "Halol javob bering, «natija bo'lmadi» ham. Bezatilgandan foydali." },
+  "sv.min":          { ru: "минимум знаков:", en: "minimum characters:", uz: "kamida belgi:" },
+  "sv.saveDraft":    { ru: "Сохранить черновик", en: "Save draft", uz: "Qoralamani saqlash" },
+  "sv.submit":       { ru: "Отправить наставнику", en: "Send to mentor", uz: "Ustozga yuborish" },
+  "sv.saved":        { ru: "Черновик сохранён", en: "Draft saved", uz: "Qoralama saqlandi" },
+  "sv.sent":         { ru: "Отправлено наставнику", en: "Sent to the mentor", uz: "Ustozga yuborildi" },
+  "sv.notFilled":    { ru: "Не заполнено", en: "Not filled in", uz: "To'ldirilmagan" },
+  "sv.needLogin":    { ru: "Войдите, чтобы открыть супервизию.", en: "Sign in to open supervision.", uz: "Supervizorni ochish uchun kiring." },
+  "cert.casesOf":    { ru: "Принято разборов случаев:", en: "Case write-ups accepted:", uz: "Qabul qilingan holatlar:" },
+  "cert.toSupervision": { ru: "Перейти к супервизии", en: "Go to supervision", uz: "Supervizorga o'tish" },
+
+  "sv.adminNote":    { ru: "Разборы учеников приходят вам в Telegram — панель управления, «🎓 Разборы на проверке».", en: "Student case write-ups reach you in Telegram — admin panel, «Cases for review».", uz: "O'quvchilar tahlillari sizga Telegramda keladi." },
 
   // ── Modules search ──
   "modules.search":      { ru: "Поиск по названиям и содержанию книг…", en: "Search titles and book contents…", uz: "Sarlavhalar va kitob mazmuni bo'yicha qidirish…" },

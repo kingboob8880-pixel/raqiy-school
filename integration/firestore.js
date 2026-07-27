@@ -13,7 +13,7 @@ import { db, storage } from "./firebase-init.js?v=2";
 import {
   ref, uploadBytes, getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
-import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=2";
+import { QUIZ_PASS_THRESHOLD } from "./firebase-config.js?v=3";
 // Уведомления теперь через Cloud Functions (functions/index.js)
 
 /** Сегодняшняя дата в виде "YYYY-MM-DD" (локальная, не UTC) — ключ для
@@ -533,6 +533,43 @@ export async function createTelegramLinkCode(uid) {
 export async function unlinkTelegram(uid) {
   await updateDoc(doc(db, "students", uid), {
     tgUnlinkRequested: true,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Супервизия Модуля 11 — разборы случаев (решение автора 2026-07-27).
+//
+// «Финальный практикум под супервизией наставника» был обещанием без
+// механизма: прислать разбор было некуда, посмотреть его нечем, «допущен к
+// практике» нигде не фиксировалось. Это самая дорогая часть курса.
+//
+// Ученик пишет черновик и отправляет; заключение наставника и статус
+// «принят» ставит только админ — правила Firestore это и закрепляют.
+export function watchCases(uid, onChange, onError) {
+  const q = query(collection(db, "students", uid, "cases"), orderBy("n", "asc"));
+  return onSnapshot(q, (snap) => {
+    onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }, (err) => { console.warn("watchCases", err); onError?.(err); });
+}
+
+/** Новый разбор. Номер — следующий по порядку: он попадает и в заголовок у
+ *  наставника, и в «случай 2 из 3» у ученика. */
+export async function createCase(uid, n) {
+  const ref = await addDoc(collection(db, "students", uid, "cases"), {
+    n, status: "draft", fields: {}, createdAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export async function saveCaseDraft(uid, caseId, fields) {
+  await updateDoc(doc(db, "students", uid, "cases", caseId), {
+    fields, updatedAt: serverTimestamp(),
+  });
+}
+
+export async function submitCase(uid, caseId, fields) {
+  await updateDoc(doc(db, "students", uid, "cases", caseId), {
+    fields, status: "submitted", submittedAt: serverTimestamp(),
   });
 }
 

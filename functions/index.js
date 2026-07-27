@@ -96,6 +96,7 @@ async function tg(method, body) {
 // файл: здесь остаётся администраторская часть, там — учебная. В одном
 // файле они перепутались бы, а цена ошибки разная: перепутать чат админа с
 // чатом ученика значит показать чужие данные.
+const COURSE_CASES_REQUIRED = require("./course-data.json").casesRequired || 3;
 const student = require("./tg-student");
 student.init({ tg, db, CHAT, logger });
 
@@ -362,8 +363,18 @@ exports.onProgress = functions.runWith({ secrets: SECRETS }).firestore
     const allDone = Object.entries(pA)
       .filter(([k, v]) => k !== "activityDates" && k !== "books" && typeof v === "object" && v?.status)
       .every(([, v]) => v.status === "done");
-    if (allDone && !after.certificateGranted) {
+    // Кнопку «выдать сертификат» предлагаем только тогда, когда пройдено
+    // и то и другое: модули и супервизия (решение автора 2026-07-27).
+    // Раньше она появлялась за одни тесты — то есть за прочитанное, а не
+    // за умение. Автор при этом может выдать сертификат из карточки
+    // ученика в любой момент: у него бывают основания, которых система
+    // не знает.
+    const svAccepted = after.supervision?.accepted || 0;
+    const svPassed = svAccepted >= (COURSE_CASES_REQUIRED);
+    if (allDone && svPassed && !after.certificateGranted) {
       buttons.unshift([{ text: "🎓 Выдать сертификат", callback_data: `cert:${uid}` }]);
+    } else if (allDone && !svPassed && !after.certificateGranted) {
+      lines.push(`Супервизия: ${svAccepted} из ${COURSE_CASES_REQUIRED} — сертификат ждёт разборов`);
     }
     await tg("sendMessage", {
       chat_id: CHAT,
