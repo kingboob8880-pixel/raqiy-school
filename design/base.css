@@ -3108,3 +3108,19 @@ body:has(.messenger-page) .footer { display: none; }
 .pr-group__meta { font-size: var(--rp-fs-xs); color: var(--rp-zone-muted); }
 .pr-group--locked { opacity: 0.55; }
 .pr-today__done { margin: var(--rp-space-3) 0 0; font-weight: 700; color: var(--rp-zone-accent); }
+
+/* Закрытое упражнение (решение автора 2026-07-27: «упражнения должны
+   открываться по прохождению»). Показываем название и условие, но не
+   описание и не шаги: иначе замок ничего не значит — задание можно было
+   бы прочитать и «сделать» мимо курса. Приглушаем, но не прячем: ученик
+   должен видеть, что впереди, и чем это открыть. */
+.assignment-card--locked {
+  border-style: dashed;
+  background: color-mix(in srgb, var(--rp-zone-text) 3%, transparent);
+}
+.assignment-card--locked .assignment-card__title { color: var(--rp-zone-muted); }
+.assignment-card__lock {
+  margin: var(--rp-space-2) 0 0;
+  font-size: var(--rp-fs-sm); line-height: 1.5;
+  color: var(--rp-zone-muted);
+}

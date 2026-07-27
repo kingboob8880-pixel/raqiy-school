@@ -10,9 +10,11 @@
 //
 // Отметка «выполнил» и свидетельство «Аллах ответил» — запрос автора
 // 2026-07-26; сервер переносит уже поставленный флаг в общую ленту.
-import { t } from "./i18n.js?v=24";
+import { t } from "./i18n.js?v=25";
 import { markAssignmentDone, unmarkAssignmentDone } from "../../integration/firestore.js?v=23";
 import { openAssignment } from "./assignment-runner.js?v=1";
+import { assignmentGate } from "./assignments-gate.js?v=1";
+import { withBase } from "./base-path.js?v=6";
 
 const ICONS = { reflection: "\u{1F4DD}", practice: "\u{1F3CB}", daily: "\u{1F4C5}" };
 
@@ -43,7 +45,7 @@ const answerAsked = new Set();
  */
 export function renderAssignments(container, items, opts = {}) {
   if (!container || !items || !items.length) return;
-  const { uid = null, moduleId = null, progress = {}, heading = "", preview = false } = opts;
+  const { uid = null, moduleId = null, progress = {}, heading = "", preview = false, currentBook = null } = opts;
 
   const mp = progress?.[moduleId] || {};
   const doneSet = new Set(mp.doneAssignments || []);
@@ -57,6 +59,10 @@ export function renderAssignments(container, items, opts = {}) {
       asked: answerAsked.has(a.id),
       interactive: !!uid || preview,
       preview,
+      currentBook,
+      // Замок считаем на карточку, а не на список: в одном модуле часть
+      // книг сдана, часть нет.
+      gate: assignmentGate(a, progress, { moduleId, preview }),
     })).join("")}</div>`;
   container.hidden = false;
 
@@ -124,17 +130,51 @@ export function renderAssignments(container, items, opts = {}) {
 }
 
 function cardHtml(a, st) {
-  return `
-    <div class="card lift assignment-card${st.done ? " assignment-card--done" : ""}" data-id="${esc(a.id)}">
+  const head = `
       <div class="assignment-card__header">
-        <span class="assignment-card__icon">${ICONS[a.type] || ICONS.reflection}</span>
+        <span class="assignment-card__icon">${st.gate.open ? (ICONS[a.type] || ICONS.reflection) : "\u{1F512}"}</span>
         <span class="assignment-card__type">${esc(t("assign." + a.type))}</span>
         <span class="assignment-card__duration">${esc(t("assign.duration"))}: ${esc(a.duration)}</span>
       </div>
-      <h3 class="assignment-card__title">${esc(a.title)}</h3>
+      <h3 class="assignment-card__title">${esc(a.title)}</h3>`;
+
+  // Закрытое упражнение: название, условие и путь к нему. Описание, шаги и
+  // признак выполнения скрыты — иначе замок ничего не значит, задание
+  // можно было бы просто прочитать и «сделать» мимо курса.
+  if (!st.gate.open) {
+    return `
+    <div class="card assignment-card assignment-card--locked" data-id="${esc(a.id)}">
+      ${head}
+      ${lockHtml(a, st)}
+    </div>`;
+  }
+
+  return `
+    <div class="card lift assignment-card${st.done ? " assignment-card--done" : ""}" data-id="${esc(a.id)}">
+      ${head}
       <p class="assignment-card__desc">${esc(a.description)}</p>
       ${checkHtml(a)}
       ${footHtml(a, st)}
+    </div>`;
+}
+
+/** Условие открытия и ссылка на то, чем его выполнить. Без ссылки замок
+ *  превращается в «нельзя» без объяснения, куда идти. */
+function lockHtml(a, st) {
+  if (st.gate.why === "module") {
+    return `
+      <p class="assignment-card__lock">${esc(t("assign.lockModule"))} ${st.gate.moduleId}</p>
+      <div class="assignment-card__foot">
+        <a class="btn btn-outline btn-sm" href="${withBase("/pages/modules/module.html")}?id=${st.gate.moduleId}">${esc(t("assign.goModule"))}</a>
+      </div>`;
+  }
+  const bookLink = st.currentBook === a.book ? "" :
+    `<a class="btn btn-outline btn-sm" href="${withBase("/pages/book.html")}?doc=${encodeURIComponent(a.book)}">${esc(t("assign.goBook"))}</a>`;
+  return `
+    <p class="assignment-card__lock">${esc(t("assign.lockExam"))}</p>
+    <div class="assignment-card__foot">
+      ${bookLink}
+      <a class="btn btn-ghost btn-sm" href="${withBase("/pages/quiz/index.html")}?exam=${encodeURIComponent(st.gate.exam)}">${esc(t("assign.goExam"))}</a>
     </div>`;
 }
 

@@ -629,6 +629,18 @@ const S = {
   // бесконечно, так и не поняв, сделал он его или «поделал».
   "assign.checkLabel":   { ru: "Сделано, когда", en: "Done when", uz: "Bajarilgan hisoblanadi" },
 
+  // Замок на упражнении (решение автора 2026-07-27: «упражнения должны
+  // открываться по прохождению»). Условие — сданный экзамен книги: до него
+  // задание невыполнимо, потому что опирается на её метод, и человек либо
+  // бросит на первом шаге, либо сделает своё и решит, что метод не работает.
+  "assign.lockExam":     { ru: "🔒 Откроется, когда вы сдадите экзамен этой книги.", en: "🔒 Unlocks once you pass this book's exam.", uz: "🔒 Ushbu kitob imtihonini topshirsangiz ochiladi." },
+  "assign.lockModule":   { ru: "🔒 Откроется вместе с модулем", en: "🔒 Unlocks together with module", uz: "🔒 Modul bilan birga ochiladi —" },
+  "assign.goBook":       { ru: "Открыть книгу", en: "Open the book", uz: "Kitobni ochish" },
+  "assign.goExam":       { ru: "Сдать экзамен", en: "Take the exam", uz: "Imtihon topshirish" },
+  "assign.goModule":     { ru: "К модулю", en: "Go to module", uz: "Modulga" },
+  "assign.openCount":    { ru: "открыто", en: "unlocked", uz: "ochiq" },
+  "quiz.toPractice":     { ru: "К упражнению →", en: "To the exercise →", uz: "Mashqqa →" },
+
   // ── Окно упражнения (решение автора 2026-07-27) ──
   // Карточка описывала упражнение, но провести его было негде: человек
   // закрывал вкладку и делал это где-то у себя, без порядка, без счёта и
