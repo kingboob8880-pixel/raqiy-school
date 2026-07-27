@@ -360,8 +360,8 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=32";
-    import { t, getLang } from "../js/i18n.js?v=30";
+    import { renderHeader, renderFooter, saveOnExit } from "../js/layout.js?v=33";
+    import { t, getLang } from "../js/i18n.js?v=31";
     import { watchAuth } from "../../integration/auth.js?v=11";
     import { doc, updateDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
     import { db } from "../../integration/firebase-init.js?v=2";
@@ -615,17 +615,46 @@
       if (fcCard.classList.contains("is-flipped") && actions) actions.hidden = false;
     }
 
-    // ── Firestore persistence ──
+    // ── Сохранение прогресса ──
+    //
+    // ⚠️ ЗДЕСЬ ТЕРЯЛАСЬ ЦЕЛАЯ СЕССИЯ ПОВТОРЕНИЙ (найдено аудитом 2026-07-27).
+    //
+    // Было так: scheduleSave() сбрасывал таймер на КАЖДОЙ оценке карточки.
+    // Карточки листают быстрее, чем раз в две секунды, — значит запись не
+    // уходила ни разу за всё занятие, и весь прогресс жил в памяти вкладки.
+    // Ушёл со страницы, свернул браузер на телефоне, система выгрузила
+    // вкладку — и часа работы нет, без единой ошибки на экране.
+    //
+    // Второй слой той же беды: запасная копия в localStorage лежала ТОЛЬКО
+    // в catch. Firestore без сети не отклоняет запись, а держит её в
+    // ожидании, — то есть catch не срабатывал, и запасная копия не
+    // появлялась именно тогда, когда была нужнее всего.
+    //
+    // Теперь: local сначала и всегда, сеть потом; у дебаунса есть потолок;
+    // и то, что не успело уйти, дописывается при уходе со страницы.
+    const LOCAL_KEY = "fc_progress";
+    let firstPendingAt = 0;   // когда появилась первая несохранённая правка
+
+    function saveLocal() {
+      try { localStorage.setItem(LOCAL_KEY, JSON.stringify(cardProgress)); } catch {}
+    }
+
     function scheduleSave() {
+      saveLocal();                       // мгновенно и без сети
+      if (!firstPendingAt) firstPendingAt = Date.now();
       if (saveTimeout) clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(() => saveToFirestore(), 2000);
+      // Потолок 10 секунд: без него быстрое пролистывание откладывало
+      // запись бесконечно — таймер сбрасывался раньше, чем срабатывал.
+      const wait = Date.now() - firstPendingAt >= 10000 ? 0 : 2000;
+      saveTimeout = setTimeout(() => saveToFirestore(), wait);
     }
 
     async function saveToFirestore() {
-      if (!currentUser) {
-        try { localStorage.setItem("fc_progress", JSON.stringify(cardProgress)); } catch {}
-        return;
-      }
+      clearTimeout(saveTimeout);
+      saveTimeout = null;
+      firstPendingAt = 0;
+      saveLocal();
+      if (!currentUser) return;
       try {
         const today = todayStr();
         await updateDoc(doc(db, "students", currentUser.uid), {
@@ -635,9 +664,13 @@
         });
       } catch (e) {
         console.warn("flashcard save error", e);
-        try { localStorage.setItem("fc_progress", JSON.stringify(cardProgress)); } catch {}
       }
     }
+
+    // Уходит со страницы — дописываем. localStorage синхронный, он успеет
+    // всегда; запись в базу может не долететь, но локальная копия подхватится
+    // при следующем заходе (loadProgress берёт её, если в профиле пусто).
+    saveOnExit(() => { saveLocal(); if (currentUser) saveToFirestore(); });
 
     async function loadProgress() {
       if (currentUser) {

@@ -43,13 +43,13 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=32";
-    import { t, getLang, moduleTitle } from "../js/i18n.js?v=30";
+    import { renderHeader, renderFooter, showLoadError } from "../js/layout.js?v=33";
+    import { t, getLang, moduleTitle } from "../js/i18n.js?v=31";
     import { MODULES, isModuleUnlocked } from "../js/modules-data.js?v=38";
     import { ASSIGNMENTS, allAssignments } from "../js/assignments-data.js?v=6";
     import { countOpen } from "../js/assignments-gate.js?v=2";
     import { renderAssignments } from "../js/assignments-ui.js?v=4";
-    import { openAssignment } from "../js/assignment-runner.js?v=2";
+    import { openAssignment } from "../js/assignment-runner.js?v=3";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
 
     renderHeader("learn");
@@ -227,12 +227,20 @@
 
     watchAuth(async (user) => {
       if (user) {
-        admin = await isAdmin(user.uid);
-        uid = user.uid;
-        const profile = admin ? null : await getStudentProfile(user.uid);
-        progress = profile?.progress || {};
-        fullAccess = !!profile?.fullAccess;
-        unlockedOf = admin ? () => true : (id) => isModuleUnlocked(id, progress, fullAccess);
+        // Без try/catch любая осечка сети оставляла страницу на слове
+        // «Загрузка…» навсегда — без объяснения и без выхода.
+        try {
+          admin = await isAdmin(user.uid);
+          uid = user.uid;
+          const profile = admin ? null : await getStudentProfile(user.uid);
+          progress = profile?.progress || {};
+          fullAccess = !!profile?.fullAccess;
+          unlockedOf = admin ? () => true : (id) => isModuleUnlocked(id, progress, fullAccess);
+        } catch (err) {
+          console.warn("practice: профиль не загрузился", err);
+          showLoadError(document.getElementById("pr-list"));
+          return;
+        }
       } else {
         // Гостю показываем весь список, но без отметок: упражнения — часть
         // описания курса, прятать их за входом незачем. Открытым считаем

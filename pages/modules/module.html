@@ -30,17 +30,17 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=32";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=33";
     import { getModule, bookKey, isModuleUnlocked } from "../js/modules-data.js?v=38";
-    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal, renderMarkdown } from "../js/markdown-loader.js?v=34";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=30";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal, renderMarkdown } from "../js/markdown-loader.js?v=35";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=31";
     import { printBarHtml, wirePrintBar } from "../js/print-doc.js?v=8";
     import { setupReadingPosition } from "../js/reading-position.js?v=8";
     import { ASSIGNMENTS } from "../js/assignments-data.js?v=6";
     import { renderAssignments } from "../js/assignments-ui.js?v=4";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
-    import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=26";
+    import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=27";
 
     renderHeader("learn");
     renderFooter();
@@ -189,7 +189,19 @@
             if (bodyEl) applyRegisterWall(bodyEl);
             return;
           }
-          const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
+          // См. пояснение в book.html: без try/catch осечка сети оставляла
+          // страницу без пейвола, упражнений и кнопки теста — молча.
+          let profile, admin;
+          try {
+            [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
+          } catch (err) {
+            console.warn("module: профиль не загрузился", err);
+            const warn = document.createElement("p");
+            warn.className = "field-error";
+            warn.textContent = t("dash.loadError");
+            root.prepend(warn);
+            return;
+          }
           // Module lock check — students cannot access module N+1 until module N quiz is passed
           // fullAccess — доступ, выданный автором вручную (2026-07-27).
           const fullAccess = !!profile?.fullAccess;

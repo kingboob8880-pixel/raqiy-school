@@ -599,25 +599,33 @@ export function watchFeed(onChange, onError) {
   });
 }
 
-/** Save a bookmark for a lesson */
+/** Закладка в книге.
+ *
+ *  ⚠️ ЧИТАТЬ-МЕНЯТЬ-ПИСАТЬ ЗДЕСЬ НЕЛЬЗЯ (правка по аудиту 2026-07-27).
+ *  Раньше код читал весь массив закладок, добавлял одну и записывал массив
+ *  целиком. Человек читает книгу с телефона и с компьютера — обычное дело:
+ *  закладка, поставленная на телефоне, стиралась следующим сохранением с
+ *  компьютера, потому что тот записывал свой, уже устаревший список.
+ *  Молча, без ошибки.
+ *
+ *  arrayUnion добавляет элемент на стороне сервера, не трогая остальные, —
+ *  и порядок операций перестаёт иметь значение. */
 export async function saveBookmark(uid, bookId, bookmark) {
   // bookmark: { id, text, note, createdAt }
-  const docRef = doc(db, "students", uid);
-  const snap = await getDoc(docRef);
-  const data = snap.data() || {};
-  const bookmarks = data.bookmarks || {};
-  const arr = bookmarks[bookId] || [];
-  arr.push(bookmark);
-  await updateDoc(docRef, { [`bookmarks.${bookId}`]: arr });
+  await updateDoc(doc(db, "students", uid), {
+    [`bookmarks.${bookId}`]: arrayUnion(bookmark),
+  });
 }
 
+/** Удаление — тем же приёмом, но arrayRemove сверяет элемент целиком, а у
+ *  нас на руках только id. Поэтому находим объект в текущем списке и
+ *  удаляем именно его: остальные закладки при этом не переписываются. */
 export async function removeBookmark(uid, bookId, bookmarkId) {
   const docRef = doc(db, "students", uid);
   const snap = await getDoc(docRef);
-  const data = snap.data() || {};
-  const bookmarks = data.bookmarks || {};
-  const arr = (bookmarks[bookId] || []).filter(b => b.id !== bookmarkId);
-  await updateDoc(docRef, { [`bookmarks.${bookId}`]: arr });
+  const target = (snap.data()?.bookmarks?.[bookId] || []).find((b) => b.id === bookmarkId);
+  if (!target) return;
+  await updateDoc(docRef, { [`bookmarks.${bookId}`]: arrayRemove(target) });
 }
 
 export async function getBookmarks(uid, bookId) {

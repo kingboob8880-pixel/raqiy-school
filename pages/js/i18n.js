@@ -116,6 +116,7 @@ const S = {
   "dash.certificate":  { ru: "Сертификат", en: "Certificate", uz: "Sertifikat" },
 
   // Tests page
+  "tests.started":     { ru: "Начат", en: "Started", uz: "Boshlangan" },
   "tests.title":       { ru: "Тесты и экзамены", en: "Tests & Exams", uz: "Testlar va imtihonlar" },
   "tests.modules":     { ru: "Тесты по модулям", en: "Module tests", uz: "Modul testlari" },
   "tests.books":       { ru: "Экзамены по книгам", en: "Book exams", uz: "Kitob imtihonlari" },
@@ -735,6 +736,8 @@ const S = {
   "sv.min":          { ru: "минимум знаков:", en: "minimum characters:", uz: "kamida belgi:" },
   "sv.saveDraft":    { ru: "Сохранить черновик", en: "Save draft", uz: "Qoralamani saqlash" },
   "sv.submit":       { ru: "Отправить наставнику", en: "Send to mentor", uz: "Ustozga yuborish" },
+  "sv.saveFailed":     { ru: "Не удалось сохранить. Проверьте связь и попробуйте ещё раз — написанное осталось в форме.", en: "Could not save. Check your connection and try again — your text is still in the form.", uz: "Saqlab bo'lmadi. Aloqani tekshirib, qayta urinib ko'ring — yozganingiz shaklda qoldi." },
+  "sv.cancelConfirm":  { ru: "Закрыть разбор? Написанное будет потеряно.", en: "Close this case? Your text will be lost.", uz: "Tahlilni yopamizmi? Yozganingiz yo'qoladi." },
   "sv.saved":        { ru: "Черновик сохранён", en: "Draft saved", uz: "Qoralama saqlandi" },
   "sv.sent":         { ru: "Отправлено наставнику", en: "Sent to the mentor", uz: "Ustozga yuborildi" },
   "sv.notFilled":    { ru: "Не заполнено", en: "Not filled in", uz: "To'ldirilmagan" },

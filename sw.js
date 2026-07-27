@@ -22,7 +22,7 @@
  *     прибиты к точной версии в адресе.
  */
 
-const VERSION = "v1";
+const VERSION = "v2";   // бампится при правке sw.js — старые кеши чистятся в activate
 const SHELL_CACHE = `rp-shell-${VERSION}`;
 const RUNTIME_CACHE = `rp-runtime-${VERSION}`;
 
@@ -67,8 +67,33 @@ self.addEventListener("activate", (e) => {
   })());
 });
 
-/** Запросы, которые SW не должен касаться ни при каких условиях. */
+/** Библиотеки с чужих адресов, которые МОЖНО и НУЖНО кешировать.
+ *
+ *  ⚠️ ИЗ-ЗА НИХ ОФЛАЙН НЕ РАБОТАЛ ВОВСЕ (найдено аудитом 2026-07-27).
+ *
+ *  Список «не трогать» ниже отсекал всё с gstatic — правильно для данных
+ *  Firebase, но именно оттуда грузится и САМ Firebase SDK. Без сети импорт
+ *  падал, а вместе с ним падал весь граф модулей страницы: не отрабатывал
+ *  даже layout.js, то есть не появлялось ни шапки, ни навигации, ни
+ *  подвала. Оставался голый HTML со словом «Загрузка…». То же с marked
+ *  для разметки книг. Сайт обещает офлайн-чтение (есть offline.html и
+ *  манифест), а на деле офлайн не открывалась ни одна страница.
+ *
+ *  Кешировать их безопасно: адрес содержит номер версии, значит новая
+ *  версия — это новый адрес, устаревшего ответа быть не может.
+ */
+function isVendorLib(url) {
+  return (
+    (url.hostname === "www.gstatic.com" && url.pathname.startsWith("/firebasejs/")) ||
+    url.hostname === "cdn.jsdelivr.net" ||
+    url.hostname === "cdnjs.cloudflare.com"
+  );
+}
+
+/** Запросы, которые SW не должен касаться ни при каких условиях.
+ *  Это ДАННЫЕ: профили учеников, переписка, файлы. В кеше им не место. */
 function isBypassed(url) {
+  if (isVendorLib(url)) return false;
   const h = url.hostname;
   return (
     h.includes("firebase") ||
@@ -83,6 +108,7 @@ function isBypassed(url) {
 
 /** Версионированные ассеты сайта (?v=N) и статика, неизменная по адресу. */
 function isImmutable(url) {
+  if (isVendorLib(url)) return true;   // адрес содержит версию библиотеки
   if (url.searchParams.has("v")) return true;
   return /\.(png|jpg|jpeg|webp|svg|woff2?|ttf|mp4|ogg|mp3)$/i.test(url.pathname);
 }

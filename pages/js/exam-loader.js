@@ -3,7 +3,7 @@
 // Формат: front matter (title/book/status) + нумерованный список вопросов,
 // у каждого — варианты чекбоксами "- [ ]"/"- [x]" (один правильный).
 import { withBase } from "./base-path.js?v=6";
-import { parseFrontMatter } from "./markdown-loader.js?v=34";
+import { parseFrontMatter } from "./markdown-loader.js?v=35";
 
 function parseQuestions(body) {
   const questions = [];

@@ -194,10 +194,10 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=32";
-    import { t, getLang, moduleTitle, localLevel } from "../js/i18n.js?v=30";
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=33";
+    import { t, getLang, moduleTitle, localLevel } from "../js/i18n.js?v=31";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=11";
-    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage, editMessage, deleteMessage, createTelegramLinkCode } from "../../integration/firestore.js?v=26";
+    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage, editMessage, deleteMessage, createTelegramLinkCode } from "../../integration/firestore.js?v=27";
     import { TELEGRAM_BOT_USERNAME } from "../../integration/firebase-config.js?v=3";
     import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress, computeAchievements } from "../js/modules-data.js?v=38";
     import { withBase } from "../js/base-path.js?v=6";
@@ -530,13 +530,22 @@
         document.getElementById("unpaid-notice").hidden = false;
       }
 
+      // ⚠️ localStorage В TRY/CATCH. При наглухо запрещённом хранилище
+      // (жёсткие настройки приватности, «блокировать все cookie») само
+      // обращение к localStorage бросает исключение. Оно прилетало
+      // посреди этого колбэка — и всё, что ниже, не выполнялось вовсе:
+      // живой чат, форма отправки сообщения, кнопка «Выйти». Кабинет
+      // выглядел наполовину мёртвым, причём молча. Везде в проекте эти
+      // обращения обёрнуты, здесь единственное место, где забыли.
       const ONBOARDING_KEY = "raqiy-onboarding-dismissed";
+      const readFlag = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+      const writeFlag = (k, v) => { try { localStorage.setItem(k, v); } catch { /* приватный режим */ } };
       const hasAnyProgress = !!profile?.progress && Object.keys(profile.progress).some((k) => k !== "activityDates");
-      if (!hasAnyProgress && !localStorage.getItem(ONBOARDING_KEY)) {
+      if (!hasAnyProgress && !readFlag(ONBOARDING_KEY)) {
         const onboardingCard = document.getElementById("onboarding-card");
         onboardingCard.hidden = false;
         document.getElementById("onboarding-dismiss").addEventListener("click", () => {
-          localStorage.setItem(ONBOARDING_KEY, "1");
+          writeFlag(ONBOARDING_KEY, "1");
           onboardingCard.hidden = true;
         });
       }
@@ -594,6 +603,13 @@
         } catch (err) {
           console.warn("sendMessage error", err);
           showToast(t("dash.msgFailed"));
+          // ⚠️ ОБЯЗАТЕЛЬНО ПРОБРОСИТЬ. Форма чата очищает поле только если
+          // отправка ОТКЛОНИЛАСЬ; проглотив ошибку здесь, мы говорили ей
+          // «всё хорошо» — и написанное стиралось вместе с сообщением «не
+          // отправлено». Человек терял свой текст ровно в тот момент,
+          // когда его надо было отправить повторно. В кабинете наставника
+          // (chat.html) это было сделано правильно, а здесь забыли.
+          throw err;
         }
       }, async (file, type, duration) => {
         try {

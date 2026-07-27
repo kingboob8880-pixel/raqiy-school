@@ -5,8 +5,8 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=10";
 import { watchAuth, isAdmin, getAdminProfile, getStudentProfile } from "../../integration/auth.js?v=11";
-import { LANGS, getLang, setLang, t } from "./i18n.js?v=30";
-import { initNotifications, stopNotifications } from "./notifications.js?v=8";
+import { LANGS, getLang, setLang, t } from "./i18n.js?v=31";
+import { initNotifications, stopNotifications } from "./notifications.js?v=9";
 
 export function renderHeader(zone = "learn") {
   const root = document.getElementById("site-header");
@@ -299,4 +299,54 @@ export function renderFooter() {
       </div>
     </footer>
   `;
+}
+
+/** Показать «не загрузилось» вместо вечного «Загрузка…».
+ *
+ *  Зачем понадобилось. Аудит 2026-07-27 нашёл семь страниц, где чтение
+ *  профиля стоит внутри async-колбэка без try/catch: практика, тесты,
+ *  супервизия, сертификат, книга, модуль, «Путь ученика». Любая осечка —
+ *  оборвалась мобильная сеть, не доехали правила, человек в лифте — и
+ *  страница навсегда замирала на слове «Загрузка…». Ни объяснения, ни
+ *  кнопки: для ученика это выглядит как «сайт сломался», и он уходит.
+ *
+ *  Приём взят из кабинета ученика, где он уже был написан (showGateError):
+ *  короткое объяснение и кнопка «Повторить». Вынесен сюда, чтобы восьмая
+ *  страница не появилась снова без него.
+ *
+ *  onRetry по умолчанию — перезагрузка: она надёжнее повторного вызова
+ *  того же кода, потому что заново поднимает и авторизацию.
+ */
+export function showLoadError(container, onRetry) {
+  if (!container) return;
+  container.classList.remove("skeleton-loading");
+  container.innerHTML = `
+    <div class="empty-state">
+      <p class="field-error">${t("dash.loadError")}</p>
+      <button type="button" class="btn btn-outline btn-sm" data-load-retry>${t("dash.retryBtn")}</button>
+    </div>`;
+  container.querySelector("[data-load-retry]")
+    ?.addEventListener("click", () => (onRetry ? onRetry() : location.reload()));
+}
+
+/** Сохранить состояние, когда страницу вот-вот закроют.
+ *
+ *  Отложенная запись (дебаунс) экономит обращения к базе, но у неё есть
+ *  цена: всё, что не успело уйти, живёт только в памяти вкладки. Закрыл
+ *  вкладку, свернул браузер на телефоне, система выгрузила страницу —
+ *  и данных нет, без единой ошибки.
+ *
+ *  Слушаем ДВА события, и это не перестраховка:
+ *   • visibilitychange — единственное, что надёжно срабатывает на
+ *     мобильных, когда приложение уходит в фон и его потом убивают;
+ *   • pagehide — обычный уход со страницы на компьютере.
+ *  beforeunload намеренно не берём: на мобильных он часто не приходит
+ *  вовсе, а на компьютере в паре с диалогами ведёт себя непредсказуемо.
+ */
+export function saveOnExit(flush) {
+  const run = () => { try { flush(); } catch (e) { console.warn("saveOnExit", e); } };
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") run();
+  });
+  window.addEventListener("pagehide", run);
 }

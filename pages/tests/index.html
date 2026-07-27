@@ -21,9 +21,9 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=32";
+    import { renderHeader, renderFooter, showLoadError } from "../js/layout.js?v=33";
     import { MODULES, bookKey } from "../js/modules-data.js?v=38";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=30";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=31";
     import { watchAuth, getStudentProfile } from "../../integration/auth.js?v=11";
     import { withBase } from "../js/base-path.js?v=6";
 
@@ -34,8 +34,16 @@
     document.querySelectorAll("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t); });
 
     function statusBadge(state) {
-      if (state?.status === "done") return `<span class="badge badge-passed">✓ ${Math.round(state.quizScore * 100)}%</span>`;
-      if (state?.status === "in_progress") return `<span class="badge badge-pending">✗ ${Math.round(state.quizScore * 100)}%</span>`;
+      // ⚠️ Балл есть не всегда. Статус "in_progress" ставится при начале
+      // модуля, а quizScore появляется только после сданного теста — и
+      // ученик видел бейдж «✗ NaN%». Проверяем число, а не статус.
+      const pct = typeof state?.quizScore === "number" ? `${Math.round(state.quizScore * 100)}%` : "";
+      if (state?.status === "done") return `<span class="badge badge-passed">✓${pct ? " " + pct : ""}</span>`;
+      if (state?.status === "in_progress") {
+        return pct
+          ? `<span class="badge badge-pending">✗ ${pct}</span>`
+          : `<span class="badge badge-pending">${t("tests.started")}</span>`;
+      }
       return `<span class="badge badge-pending">—</span>`;
     }
 
@@ -132,6 +140,11 @@
       renderSummary(progress);
       renderFilter(progress);
       const root = document.getElementById("tests-root");
+      // Снять класс обязательно: он задаёт стиль заглушки «Загрузка…»
+      // (мелкий приглушённый текст по центру), и без этого его наследовал
+      // весь список тестов. На соседних страницах класс снимается, здесь
+      // забыли (аудит 2026-07-27).
+      root.classList.remove("skeleton-loading");
 
       root.innerHTML = MODULES.map((m) => {
         const mStats = moduleTestStats(m, progress);
@@ -211,8 +224,13 @@
 
     watchAuth(async (user) => {
       if (!user) { render(null); return; }
-      const profile = await getStudentProfile(user.uid);
-      render(profile?.progress);
+      try {
+        const profile = await getStudentProfile(user.uid);
+        render(profile?.progress);
+      } catch (err) {
+        console.warn("tests: профиль не загрузился", err);
+        showLoadError(document.getElementById("tests-root"));
+      }
     });
   </script>
 </body>

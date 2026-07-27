@@ -22,12 +22,12 @@
 //
 // Без входа окно работает целиком, но ничего не сохраняет: гость и админ
 // должны видеть упражнение как оно есть, а не пустое место.
-import { t } from "./i18n.js?v=30";
+import { t } from "./i18n.js?v=31";
 import { withBase } from "./base-path.js?v=6";
 import {
   logAssignmentDay, unlogAssignmentDay, saveAssignmentNote, saveAssignmentState,
   markAssignmentDone, unmarkAssignmentDone,
-} from "../../integration/firestore.js?v=26";
+} from "../../integration/firestore.js?v=27";
 
 const ICONS = { reflection: "\u{1F4DD}", practice: "\u{1F3CB}", daily: "\u{1F4C5}" };
 
@@ -421,6 +421,21 @@ function flushState() {
   if (!patch || !ctx?.uid || !ctx?.moduleId) return;
   saveAssignmentState(ctx.uid, ctx.moduleId, ctx.a.id, patch).catch((err) => fail(err, "runner state"));
 }
+
+// ⚠️ ДОПИСЫВАЕМ ПРИ УХОДЕ СО СТРАНИЦЫ (найдено аудитом 2026-07-27).
+//
+// flushState() вызывался только из closeAssignment() — то есть если ученик
+// закрыл окно упражнения крестиком. А делают иначе: отсчитали сорок
+// повторов и свернули браузер, не закрывая окно. На телефоне система
+// потом выгружает вкладку — и счётчик, отмеченный шаг и выбранная ступень
+// пропадают. Человек уверен, что практика засчитана, а в прогрессе пусто.
+//
+// Слушатели вешаются один раз на модуль, а не на каждое открытие окна:
+// иначе за занятие их накопились бы десятки.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") flushState();
+});
+window.addEventListener("pagehide", flushState);
 
 // Не молчим: без сообщения ученик решит, что отметка прошла, и будет
 // ждать её в ленте — а её там не будет.
