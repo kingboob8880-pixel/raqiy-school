@@ -13,12 +13,22 @@
 // Запуск (после любой правки модулей, уроков или упражнений):
 //   node scripts/build-course-data.mjs
 import { writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+// ПОЧЕМУ ТАК, А НЕ ЧЕРЕЗ new URL(...).pathname.
+// На Windows .pathname даёт «/C:/Users/…» — с ведущим слэшем. Такой путь
+// не годится ни для fs, ни для import(): Node принимает его за имя пакета
+// и падает в package_json_reader. Ловится это только на Windows, поэтому
+// в Linux скрипт работал, а у автора — нет (2026-07-27).
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-const { MODULES, QUIZ_PASS_THRESHOLD, bookKey } = await import(join(ROOT, "pages/js/modules-data.js"));
-const { ASSIGNMENTS } = await import(join(ROOT, "pages/js/assignments-data.js"));
+// import() принимает либо спецификатор пакета, либо file://-адрес.
+// Абсолютный путь Windows не является ни тем, ни другим.
+const load = (rel) => import(pathToFileURL(join(ROOT, rel)).href);
+
+const { MODULES, QUIZ_PASS_THRESHOLD, bookKey } = await load("pages/js/modules-data.js");
+const { ASSIGNMENTS } = await load("pages/js/assignments-data.js");
 
 // Берём только то, что боту действительно нужно. Обложки, интро-видео и
 // прочее оформление сайта в Telegram не используются — незачем раздувать

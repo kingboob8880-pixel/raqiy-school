@@ -23,10 +23,13 @@
 //
 // Запуск:  node scripts/smoke-pages.mjs
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+// fileURLToPath, а не .pathname: на Windows .pathname даёт «/C:/Users/…»
+// с ведущим слэшем, и fs такой путь не находит (исправлено 2026-07-27).
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PAGES = join(ROOT, "pages");
 
 function htmlFiles(dir) {
