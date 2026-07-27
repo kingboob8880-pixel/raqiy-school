@@ -47,6 +47,19 @@ const CHAT = process.env.TG_CHAT_ID;
 //   https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=<URL>&secret_token=<СЕКРЕТ>
 const HOOK_SECRET = process.env.TG_WEBHOOK_SECRET;
 
+// ⚠️ СЕКРЕТЫ НУЖНО ОБЪЯВЛЯТЬ У КАЖДОЙ ФУНКЦИИ.
+//
+// Само по себе `firebase functions:secrets:set` кладёт значение в Secret
+// Manager, но НЕ подставляет его в process.env. Функция получает секрет
+// только если он перечислен в её объявлении: у первого поколения — через
+// .runWith({ secrets: [...] }), у второго — опцией { secrets: [...] }.
+//
+// Без этого process.env.TG_BOT_TOKEN остаётся пустым, tg() тихо
+// пропускает отправку (см. проверку выше), и всё выглядит так, будто
+// «бот задеплоился, но молчит» — без единой ошибки в логах.
+// Найдено 2026-07-27 при подготовке инструкции по запуску.
+const SECRETS = ["TG_BOT_TOKEN", "TG_CHAT_ID", "TG_WEBHOOK_SECRET"];
+
 if (!BOT || !CHAT) {
   // Не бросаем исключение: без этого весь набор функций не задеплоился бы,
   // включая те, что к Telegram отношения не имеют. Вместо этого пишем в лог
@@ -172,7 +185,7 @@ function moduleEntries(progress) {
 // ─────────────────────────────────────────────────
 
 /** Новый ученик */
-exports.onNewStudent = functions.firestore
+exports.onNewStudent = functions.runWith({ secrets: SECRETS }).firestore
   .document("students/{uid}")
   .onCreate(async (snap, ctx) => {
     const data = snap.data();
@@ -190,7 +203,7 @@ exports.onNewStudent = functions.firestore
   });
 
 /** Сообщение от ученика */
-exports.onChatMessage = functions.firestore
+exports.onChatMessage = functions.runWith({ secrets: SECRETS }).firestore
   .document("students/{uid}/messages/{msgId}")
   .onCreate(async (snap, ctx) => {
     const msg = snap.data();
@@ -229,7 +242,7 @@ exports.onChatMessage = functions.firestore
   });
 
 /** Прогресс ученика */
-exports.onProgress = functions.firestore
+exports.onProgress = functions.runWith({ secrets: SECRETS }).firestore
   .document("students/{uid}")
   .onUpdate(async (change, ctx) => {
     const before = change.before.data();
@@ -376,7 +389,7 @@ async function buildFeedEntries(uid, before, after, pB, pA) {
 // WEBHOOK (кнопки + ответы + команды)
 // ─────────────────────────────────────────────────
 
-exports.telegramWebhook = onRequest(async (req, res) => {
+exports.telegramWebhook = onRequest({ secrets: SECRETS }, async (req, res) => {
   // Проверка секрета — до любой работы с телом запроса.
   if (HOOK_SECRET && req.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) {
     logger.warn("webhook: неверный секрет");
@@ -611,7 +624,7 @@ async function handleMessage(msg) {
 /** Ежедневная проверка неактивных учеников — отправляет напоминание в Telegram
  * ученикам, которые не заходили 3+ дня. Бот пишет админу список таких учеников
  * с кнопкой «Написать» для каждого. Запуск: каждый день в 10:00 UTC+3. */
-exports.dailyReminders = functions.pubsub
+exports.dailyReminders = functions.runWith({ secrets: SECRETS }).pubsub
   .schedule("0 7 * * *")       // 07:00 UTC = 10:00 Москва
   .timeZone("Europe/Moscow")
   .onRun(async () => {
@@ -678,7 +691,7 @@ exports.dailyReminders = functions.pubsub
  *  есть что не потерять: он ведёт серию, и сегодня она ещё не отмечена.
  *
  *  Время — 8:00 по Москве: раньше утренних азкаров смысла нет. */
-exports.studentDailyPractice = functions.pubsub
+exports.studentDailyPractice = functions.runWith({ secrets: SECRETS }).pubsub
   .schedule("0 5 * * *")       // 05:00 UTC = 08:00 Москва
   .timeZone("Europe/Moscow")
   .onRun(async () => {
