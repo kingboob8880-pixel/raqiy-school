@@ -72,3 +72,6 @@ functions/.env
 # Токен живёт только в functions/.env (локально) и в секретах Firebase
 # (в бою). Образец без значений — functions/.env.example.
 /integration/telegram-config.js
+
+# Лог запуска бота — рабочий файл, не для репозитория.
+start-bot.log
