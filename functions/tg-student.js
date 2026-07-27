@@ -24,6 +24,7 @@
 // Проверка одна: paid || fullAccess (см. hasFullText).
 const COURSE = require("./course-data.json");
 const { FieldValue, FieldPath } = require("firebase-admin/firestore");
+const { getAuth } = require("firebase-admin/auth");
 
 // Адрес сайта — для ссылок «дочитать в браузере» и для загрузки текстов
 // уроков и экзаменов. Переопределяется переменной SITE_URL, если сайт
@@ -236,6 +237,13 @@ const MENU = [
   [{ text: "💬 Спросить наставника", callback_data: "ask" }],
 ];
 
+// Тем, кто записался через бота, нужен способ попасть и на сайт — своим же
+// аккаунтом. Остальным эта кнопка не нужна: у них пароль уже есть.
+const MENU_TG_REGISTERED = [
+  ...MENU,
+  [{ text: "🔑 Пароль для входа на сайт", callback_data: "pwd" }],
+];
+
 async function screenMenu(s) {
   const done = Object.entries(s.progress || {})
     .filter(([k, v]) => !["activityDates", "books"].includes(k) && v?.status === "done").length;
@@ -244,7 +252,7 @@ async function screenMenu(s) {
     "",
     `Пройдено модулей: <b>${done}</b> из ${COURSE.modules.length}`,
     hasFullText(s) ? "" : "\n⬜ Курс не оплачен — доступны вводные отрывки книг.",
-  ].filter(Boolean).join("\n"), MENU);
+  ].filter(Boolean).join("\n"), s.registeredVia === "telegram" ? MENU_TG_REGISTERED : MENU);
 }
 
 async function screenModules(s) {
@@ -707,16 +715,164 @@ async function linkByCode(chatId, code, from) {
 
 async function greetUnlinked(chatId) {
   await send(chatId, [
-    "<b>Школа рукии</b>", "",
-    "Чтобы учиться здесь, привяжите свой аккаунт — тогда прогресс будет общим с сайтом:",
+    "<b>Школа рукии</b>",
+    "Ассаламу алейкум.", "",
+    "Здесь можно читать книги курса, сдавать экзамены и вести упражнения — прямо в Telegram.",
     "",
-    "1. Откройте кабинет на сайте",
-    "2. Нажмите «Привязать Telegram»",
-    "3. Перейдите по ссылке, которую он даст",
+    "<b>Если вы уже учитесь на сайте</b> — привяжите аккаунт, чтобы прогресс был общим: кабинет → «Привязать Telegram».",
+    "",
+    "<b>Если вас в школе ещё нет</b> — можно записаться прямо здесь, сайт не понадобится.",
   ].join("\n"), [
-    [{ text: "Открыть кабинет", url: `${SITE}/pages/dashboard/student.html` }],
+    [{ text: "📝 Записаться в школу", callback_data: "reg" }],
+    [{ text: "У меня есть аккаунт на сайте", url: `${SITE}/pages/dashboard/student.html` }],
     [{ text: "Купить курс", url: "https://t.me/ruqoq" }],
   ]);
+}
+
+// ───────────────────────────────── регистрация прямо в боте
+//
+// Запрос автора 2026-07-27: «для тех учеников, которые не могут попасть на
+// сайт». Раньше единственная дорога в школу шла через браузер: не открылся
+// сайт — человека нет.
+//
+// ПОЧЕМУ СОЗДАЁМ УЧЁТНУЮ ЗАПИСЬ FIREBASE, А НЕ ПРОСТО ЗАПИСЬ В БАЗЕ.
+// Прогресс лежит в students/{uid}, где uid — идентификатор учётной записи.
+// Заведи мы запись со случайным идентификатором, то в день, когда человек
+// всё-таки откроет сайт и зарегистрируется там, у него появился бы ВТОРОЙ
+// аккаунт, а первый с его прогрессом остался бы недостижимым. Поэтому
+// учётная запись создаётся сразу, через Admin SDK, и uid один и тот же.
+//
+// Пароль не задаётся: человек его не вводит и не придумывает. Когда сайт
+// понадобится, бот выдаёт ссылку на установку пароля (кнопка ниже).
+
+async function regStart(s_chatId) {
+  await setState(s_chatId, { awaiting: "reg_name" });
+  await send(s_chatId, [
+    "<b>Запись в школу</b>", "",
+    "Напишите ваше имя — как к вам обращаться.",
+  ].join("\n"), [[{ text: "Отмена", callback_data: "cancel" }]]);
+}
+
+async function regName(chatId, text) {
+  const name = String(text).trim().slice(0, 60);
+  if (name.length < 2) {
+    await send(chatId, "Слишком коротко. Напишите имя целиком.");
+    return;
+  }
+  await setState(chatId, { awaiting: "reg_email", regName: name });
+  await send(chatId, [
+    `Приятно познакомиться, ${esc(name)}.`, "",
+    "Теперь напишите вашу почту. Она нужна, чтобы вы могли войти и с сайта — тем же аккаунтом, с тем же прогрессом.",
+  ].join("\n"), [[{ text: "Отмена", callback_data: "cancel" }]]);
+}
+
+// Проверка почты нарочно простая. Строгая регулярка отсекает редкие, но
+// вполне рабочие адреса, а настоящая проверка — это письмо, которого мы
+// здесь не шлём. Задача — отсеять опечатки вроде «ivan@mail» и «ivan.ru».
+function looksLikeEmail(v) {
+  return /^[^\s@]+@[^\s@.]+\.[^\s@]{2,}$/.test(v);
+}
+
+async function regEmail(s, chatId, text) {
+  const email = String(text).trim().toLowerCase();
+  const name = s.state?.regName || "";
+
+  if (!looksLikeEmail(email)) {
+    await send(chatId, "Это не похоже на почту. Пример: имя@почта.ру\n\nНапишите ещё раз.");
+    return;
+  }
+
+  const auth = getAuth();
+
+  // Почта занята — значит аккаунт уже есть. Молча привязать к нему чужой
+  // Telegram нельзя: назвать чужой адрес может кто угодно, и это был бы
+  // захват аккаунта вместе со всем прогрессом. Решает автор.
+  let existing = null;
+  try { existing = await auth.getUserByEmail(email); } catch (e) { /* нет такого — это норма */ }
+
+  if (existing) {
+    await setState(chatId, {});
+    await send(chatId, [
+      "Аккаунт с такой почтой уже есть.", "",
+      "Если он ваш — я передал просьбу наставнику, он привяжет этот Telegram вручную. Обычно это занимает недолго.",
+      "",
+      "Если сайт открывается — быстрее сделать самому: кабинет → «Привязать Telegram».",
+    ].join("\n"), [[{ text: "‹ Назад", callback_data: "m" }]]);
+
+    await deps.tg("sendMessage", {
+      chat_id: deps.CHAT,
+      text: [
+        "🔗 <b>Просьба привязать Telegram</b>", "",
+        `Имя в боте: ${esc(name || "—")}`,
+        `Почта: <code>${esc(email)}</code>`,
+        `Telegram: @${esc(s.username || "—")} (chat ${chatId})`,
+        "",
+        "Аккаунт с такой почтой уже существует. Привязывать?",
+        "Нажимайте только если уверены, что это тот же человек.",
+      ].join("\n"),
+      parse_mode: "HTML",
+      reply_markup: { inline_keyboard: [
+        [{ text: "🔗 Привязать", callback_data: `tglink:${existing.uid}:${chatId}` }],
+      ]},
+    });
+    return;
+  }
+
+  // Создаём учётную запись и профиль ученика. Форма профиля — ровно та же,
+  // что при регистрации на сайте (integration/auth.js#registerStudent):
+  // иначе кабинет и бот показывали бы разное.
+  let user;
+  try {
+    user = await auth.createUser({ email, displayName: name, emailVerified: false });
+  } catch (e) {
+    deps.logger.error("createUser", e);
+    await send(chatId, "Не получилось создать аккаунт. Напишите наставнику — он заведёт вас вручную.",
+      [[{ text: "‹ Назад", callback_data: "m" }]]);
+    return;
+  }
+
+  await deps.db.doc(`students/${user.uid}`).set({
+    name,
+    email,
+    paid: false,              // оплату подтверждает автор вручную
+    createdAt: new Date(),
+    progress: {},
+    tgChatId: String(chatId),
+    tgUsername: s.username || null,
+    registeredVia: "telegram",
+  });
+  await deps.db.doc(`tgUsers/${chatId}`).set({ uid: user.uid, state: {}, linkedAt: new Date() });
+
+  await send(chatId, [
+    `Готово, ${esc(name)}. Вы записаны в школу.`, "",
+    "Сейчас открыт первый модуль во вводных отрывках. Полный курс открывается после оплаты — наставник подтвердит её вручную.",
+  ].join("\n"), [
+    [{ text: "📖 Начать с Модуля 1", callback_data: "mod:1" }],
+    [{ text: "Купить курс", url: "https://t.me/ruqoq" }],
+    [{ text: "🔑 Пароль для входа на сайт", callback_data: "pwd" }],
+  ]);
+
+  const fresh = await findStudent(chatId);
+  if (fresh) await screenMenu(fresh);
+}
+
+/** Ссылка на установку пароля — чтобы тот же аккаунт открылся и на сайте,
+ *  когда сайт заработает. Ссылку выдаёт Firebase, живёт она ограниченно. */
+async function sendPasswordLink(s) {
+  if (!s.email) { await send(s.chatId, "У аккаунта нет почты — напишите наставнику."); return; }
+  try {
+    const link = await getAuth().generatePasswordResetLink(s.email);
+    await send(s.chatId, [
+      "<b>Вход на сайт</b>", "",
+      `Почта: <code>${esc(s.email)}</code>`,
+      "",
+      "Откройте ссылку и задайте пароль — после этого сможете войти на сайте с тем же прогрессом.",
+      "Ссылка одноразовая и действует ограниченное время.",
+    ].join("\n"), [[{ text: "Задать пароль", url: link }], [{ text: "‹ Меню", callback_data: "m" }]]);
+  } catch (e) {
+    deps.logger.error("resetLink", e);
+    await send(s.chatId, "Не получилось создать ссылку. Напишите наставнику.");
+  }
 }
 
 // ───────────────────────────────── маршрутизация
@@ -730,6 +886,15 @@ async function onMessage(msg) {
     if (code) return linkByCode(chatId, code, msg.from);
     const s = await findStudent(chatId);
     return s ? screenMenu(s) : greetUnlinked(chatId);
+  }
+
+  // Регистрация идёт ДО поиска ученика: человека в базе ещё нет, но
+  // состояние диалога уже есть — иначе бот забывал бы, что спросил имя.
+  const link = await deps.db.doc(`tgUsers/${chatId}`).get();
+  const pending = link.exists ? (link.data().state || {}) : {};
+  if (pending.awaiting === "reg_name") return regName(chatId, text);
+  if (pending.awaiting === "reg_email") {
+    return regEmail({ state: pending, username: msg.from?.username }, chatId, text);
   }
 
   const s = await findStudent(chatId);
@@ -750,6 +915,16 @@ async function onMessage(msg) {
 async function onCallback(cb) {
   const chatId = cb.message.chat.id;
   const data = cb.data || "";
+
+  // Эти две кнопки нажимают ДО того, как аккаунт существует.
+  if (data === "reg") { await ack(cb.id); return regStart(chatId); }
+  if (data === "cancel") {
+    await ack(cb.id);
+    await setState(chatId, {});
+    const who = await findStudent(chatId);
+    return who ? screenMenu(who) : greetUnlinked(chatId);
+  }
+
   const s = await findStudent(chatId);
   if (!s) { await ack(cb.id); return greetUnlinked(chatId); }
 
@@ -774,6 +949,7 @@ async function onCallback(cb) {
       case "prog": await ack(cb.id); return screenProgress(s);
       case "today": await ack(cb.id); return screenToday(s);
       case "ask": await ack(cb.id); return askMentor(s);
+      case "pwd": await ack(cb.id); return sendPasswordLink(s);
       default: await ack(cb.id);
     }
   } catch (e) {
@@ -782,4 +958,4 @@ async function onCallback(cb) {
   }
 }
 
-module.exports = { init, onMessage, onCallback, mentorReply, todayTasks, streakOf, mdToTelegram, findStudent, send };
+module.exports = { init, onMessage, onCallback, mentorReply, todayTasks, streakOf, mdToTelegram, findStudent, send, looksLikeEmail };

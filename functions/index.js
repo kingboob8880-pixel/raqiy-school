@@ -452,6 +452,31 @@ async function handleCallback(cb) {
       });
       break;
     }
+    // Привязка Telegram к существующему аккаунту — по просьбе ученика,
+    // который записывался через бота и назвал уже занятую почту (запрос
+    // автора 2026-07-27: регистрация для тех, кто не может попасть на
+    // сайт). Молча такую привязку делать нельзя: назвать чужой адрес может
+    // кто угодно, и это был бы захват чужого прогресса. Решает автор.
+    case "tglink": {
+      const [, targetUid, targetChat] = cb.data.split(":");
+      const t = await db.doc(`students/${targetUid}`).get();
+      if (!t.exists) { await ack(cbId, "Ученик не найден"); return; }
+      await db.doc(`students/${targetUid}`).update({ tgChatId: String(targetChat) });
+      await db.doc(`tgUsers/${targetChat}`).set({ uid: targetUid, state: {}, linkedAt: new Date() });
+      await ack(cbId, "🔗 Привязано");
+      await tg("sendMessage", {
+        chat_id: CHAT,
+        text: `🔗 <b>${t.data().name || t.data().email || targetUid}</b> — Telegram привязан`,
+        parse_mode: "HTML",
+      });
+      await tg("sendMessage", {
+        chat_id: targetChat,
+        text: "Наставник подтвердил — аккаунт привязан. Прогресс общий с сайтом.",
+        reply_markup: { inline_keyboard: [[{ text: "Открыть меню", callback_data: "m" }]] },
+      });
+      break;
+    }
+
     case "unpay": {
       if (!s) { await ack(cbId, "Ученик не найден"); return; }
       await db.doc(`students/${uid}`).update({ paid: false });

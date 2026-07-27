@@ -120,8 +120,33 @@ require.cache[FAKE] = {
     FieldPath: FP,
   },
 };
+
+// Заглушка Admin Auth: регистрация в боте заводит настоящую учётную запись,
+// и без подмены прогон полез бы в живой Firebase.
+const users = new Map();   // email -> { uid, email, displayName }
+let uidSeq = 0;
+const FAKE_AUTH = path.join(ROOT, "scripts", ".fake-auth.cjs");
+require.cache[FAKE_AUTH] = {
+  id: FAKE_AUTH, filename: FAKE_AUTH, loaded: true, exports: {
+    getAuth: () => ({
+      async getUserByEmail(email) {
+        const u = users.get(email);
+        if (!u) { const e = new Error("no user"); e.code = "auth/user-not-found"; throw e; }
+        return u;
+      },
+      async createUser({ email, displayName }) {
+        const u = { uid: "UIDNEW" + (++uidSeq), email, displayName };
+        users.set(email, u);
+        return u;
+      },
+      async generatePasswordResetLink(email) { return "https://example.test/reset?e=" + email; },
+    }),
+  },
+};
+
 Module._resolveFilename = function (request, ...rest) {
   if (request === "firebase-admin/firestore") return FAKE;
+  if (request === "firebase-admin/auth") return FAKE_AUTH;
   return origResolve.call(this, request, ...rest);
 };
 
@@ -154,7 +179,7 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
   // 1. Незнакомый чат — предложение привязаться, ничего лишнего.
   reset();
   await bot.onMessage(msg("/start"));
-  check("гость получает приглашение привязать аккаунт", /привяжите свой аккаунт/i.test(lastText()));
+  check("гость получает приглашение привязать аккаунт", /привяжите аккаунт/i.test(lastText()));
   check("гостю не показан курс", !/Модули курса/.test(lastText()));
 
   // 2. Привязка по коду.
@@ -284,6 +309,72 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
   reset();
   await bot.onCallback(cbq("today"));
   check("экран «сегодня» работает", /Сегодня/.test(lastText()));
+
+  // ── 14. РЕГИСТРАЦИЯ ПРЯМО В БОТЕ ──────────────────────────────────────
+  const NEW = 55501;
+  const nmsg = (t) => ({ chat: { id: NEW }, from: { username: "novichok" }, text: t });
+  const ncb = (d) => ({ id: "cb", data: d, message: { chat: { id: NEW } } });
+
+  reset();
+  await bot.onMessage(nmsg("/start"));
+  check("новичку предложена запись в школу", /Записаться в школу|записаться прямо здесь/i.test(lastText()));
+
+  reset();
+  await bot.onCallback(ncb("reg"));
+  check("бот спросил имя", /Напишите ваше имя/i.test(lastText()));
+
+  reset();
+  await bot.onMessage(nmsg("А"));
+  check("слишком короткое имя отклонено", /Слишком коротко/i.test(lastText()));
+
+  reset();
+  await bot.onMessage(nmsg("Ибрахим"));
+  check("бот спросил почту", /напишите вашу почту/i.test(lastText()));
+
+  reset();
+  await bot.onMessage(nmsg("ибрахим собака почта"));
+  check("кривая почта отклонена", /не похоже на почту/i.test(lastText()));
+
+  reset();
+  await bot.onMessage(nmsg("ibrahim@mail.ru"));
+  check("регистрация прошла", /Вы записаны в школу/i.test(lastText()));
+
+  const newLink = await db.doc(`tgUsers/${NEW}`).get();
+  check("Telegram привязан к новому аккаунту", newLink.exists && !!newLink.data().uid);
+  const newDoc = store.get(`students/${newLink.data().uid}`);
+  check("профиль создан как на сайте",
+    newDoc && newDoc.name === "Ибрахим" && newDoc.email === "ibrahim@mail.ru"
+    && newDoc.paid === false && typeof newDoc.progress === "object",
+    JSON.stringify(newDoc || {}).slice(0, 200));
+  check("помечено, что записался через бота", newDoc.registeredVia === "telegram");
+
+  // Записавшемуся через бота нужен путь на сайт своим же аккаунтом.
+  reset();
+  await bot.onCallback(ncb("pwd"));
+  check("выдана ссылка на установку пароля", buttons().some((b) => String(b).includes("reset?e=ibrahim")));
+
+  // Новичок сразу работает как обычный ученик.
+  reset();
+  await bot.onCallback(ncb("mods"));
+  check("новичок видит модули", /Модули курса/.test(lastText()));
+
+  // ── 15. ЗАНЯТАЯ ПОЧТА — привязку решает автор, а не бот ───────────────
+  const OTHER = 55502;
+  const omsg = (t) => ({ chat: { id: OTHER }, from: { username: "chuzhoy" }, text: t });
+  const ocb = (d) => ({ id: "cb", data: d, message: { chat: { id: OTHER } } });
+
+  reset();
+  await bot.onCallback(ocb("reg"));
+  await bot.onMessage(omsg("Посторонний"));
+  reset();
+  await bot.onMessage(omsg("ibrahim@mail.ru"));
+  check("занятая почта НЕ привязывается молча", /уже есть/i.test(lastText()));
+  check("чужой Telegram не получил доступ", !(await db.doc(`tgUsers/${OTHER}`).get()).data()?.uid);
+  check("автору ушла просьба с кнопкой",
+    sent.some((m) => String(m.chat_id) === "999" && /Просьба привязать/i.test(m.text || "")));
+  const linkBtn = sent.flatMap((m) => (m.reply_markup?.inline_keyboard || []).flat())
+    .find((b) => String(b.callback_data || "").startsWith("tglink:"));
+  check("кнопка привязки адресована автору", !!linkBtn, "кнопки: " + buttons().join(", "));
 
   console.log(`\nПроверок провалено: ${failed}`);
   process.exit(failed ? 1 : 0);
