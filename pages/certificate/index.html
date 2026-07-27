@@ -59,7 +59,7 @@
     import { MODULES } from "../js/modules-data.js?v=38";
     import { watchAuth, getStudentProfile } from "../../integration/auth.js?v=12";
     import { withBase } from "../js/base-path.js?v=6";
-    import { t, getLang, applyTranslations } from "../js/i18n.js?v=33";
+    import { t, getLang, applyTranslations } from "../js/i18n.js?v=34";
 
     renderHeader("learn");
     renderFooter();
@@ -97,7 +97,7 @@
                 <div class="cert__sign-name">Абу Мухаммад</div>
                 <div class="cert__sign-role" data-t="cert.founder">Основатель школы</div>
               </div>
-              <div class="cert__seal" data-t="cert.sealText">РУКИЯ<br>${new Date().getFullYear()}</div>
+              <div class="cert__seal">${t("cert.sealText")}<br>${new Date().getFullYear()}</div>
               <div class="cert__date">
                 <div class="cert__date-value">${dateStr}</div>
                 <div class="cert__date-label" data-t="cert.dateLabel">Дата выдачи</div>

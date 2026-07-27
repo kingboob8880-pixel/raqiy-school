@@ -24,9 +24,28 @@ service cloud.firestore {
       return docId == '_content_archive_index_md';
     }
 
-    // Поля профиля, которые выдают права и потому ученику недоступны.
-    // Один список на create и update: раньше он был выписан только в
-    // update, и create его не проверял вовсе (см. пояснение у students).
+    // ⚠️ ЗАПРЕТ НА CREATE ЧУТЬ МЯГЧЕ, ЧЕМ НА UPDATE, И ЭТО НЕ НЕДОСМОТР.
+    //
+    // Форма регистрации создаёт профиль с `paid: false` — то есть ключ
+    // 'paid' в новом документе ЕСТЬ. Первая версия правки (2026-07-27)
+    // проверяла только наличие ключа, и регистрация на сайте перестала
+    // работать у всех сразу: create отклонялся, аккаунт в Auth
+    // создавался, а профиля не было. Поймано проверкой до выкладки.
+    //
+    // Поэтому на create смотрим не только на ключ, но и на значение:
+    // 'paid' допустим ровно со значением false. `paid: true` при создании
+    // по-прежнему невозможен — а именно он и давал бы бесплатный курс.
+    // Остальные поля прав на create запрещены как ключи: их форма
+    // регистрации не пишет вовсе, и появиться им неоткуда.
+    function createIsClean(d) {
+      return !d.keys().hasAny([
+        'fullAccess', 'fullAccessAt',
+        'certificateGranted', 'certificateGrantedAt',
+        'rukyaProAccess', 'tgChatId', 'tgUsername', 'supervision'
+      ]) && (!('paid' in d) || d.paid == false);
+    }
+
+    // Поля прав при ОБНОВЛЕНИИ профиля — их ученик не трогает вовсе.
     function grantFields(keys) {
       return keys.hasAny([
         'paid', 'fullAccess', 'fullAccessAt',
@@ -77,7 +96,7 @@ service cloud.firestore {
       //
       // На create нужен именно keys().hasAny, а не diff(): сравнивать не с
       // чем, документа ещё нет.
-      allow create: if isOwner(uid) && !grantFields(request.resource.data.keys());
+      allow create: if isOwner(uid) && createIsClean(request.resource.data);
       allow read: if isOwner(uid) || isAdmin();
       // Ученик правит свой профиль/прогресс, но не поля выданных прав —
       // их переключает только админ вручную (project.md §18).

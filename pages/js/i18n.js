@@ -308,7 +308,7 @@ const S = {
   "dash.certBanner":   { ru: "🎓 Сертификат получен!", en: "🎓 Certificate received!", uz: "🎓 Sertifikat olindi!" },
   "dash.openCert":     { ru: "Открыть сертификат →", en: "Open certificate →", uz: "Sertifikatni ochish →" },
   "dash.checkLogin":   { ru: "Проверка входа…", en: "Checking login…", uz: "Kirish tekshirilmoqda…" },
-  "dash.loadError":    { ru: "Не удалось загрузить кабинет — проверьте связь с интернетом.", en: "Could not load dashboard — check internet connection.", uz: "Kabinetni yuklab bo'lmadi — internet aloqangizni tekshiring." },
+  "dash.loadError":    { ru: "Не удалось загрузить данные. Проверьте связь.", en: "Could not load the data. Check your connection.", uz: "Ma'lumotlarni yuklab bo'lmadi. Aloqani tekshiring." },
   "dash.welcomeBack":  { ru: "С возвращением!", en: "Welcome back!", uz: "Qaytganingiz bilan!" },
   "dash.earned":       { ru: "✓ Получено", en: "✓ Earned", uz: "✓ Olingan" },
   "dash.howItWorks":   { ru: "Как устроено обучение", en: "How the course works", uz: "Kurs qanday ishlaydi" },

@@ -5,7 +5,7 @@
 import { withBase } from "./base-path.js?v=6";
 import { initSiteTheme } from "./theme.js?v=11";
 import { watchAuth, isAdmin, getAdminProfile, getStudentProfile } from "../../integration/auth.js?v=12";
-import { LANGS, getLang, setLang, t, applyTranslations } from "./i18n.js?v=33";
+import { LANGS, getLang, setLang, t, applyTranslations } from "./i18n.js?v=34";
 import { initNotifications, stopNotifications } from "./notifications.js?v=9";
 
 export function renderHeader(zone = "learn") {

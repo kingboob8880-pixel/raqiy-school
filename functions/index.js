@@ -362,14 +362,20 @@ exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).fire
     // Для того, кто сменил телефон или отдал старый, это прямая утечка
     // собственной переписки с наставником.
     if (after.tgUnlinkRequested) {
+      const chatId = before.tgChatId || after.tgChatId;
       try {
-        const chatId = before.tgChatId || after.tgChatId;
-        if (chatId) await db.doc(`tgUsers/${chatId}`).delete();
+        // ⚠️ ПОРЯДОК ВАЖЕН: сначала снимаем флаг и поля привязки, потом
+        // удаляем запись бота. Наоборот было хуже: упади второй шаг, и
+        // флаг tgUnlinkRequested остался бы true навсегда — а вместе с ним
+        // и ранний выход ниже. Тогда КАЖДОЕ следующее изменение профиля
+        // этого ученика уходило бы в пустоту: ни уведомления об оплате, ни
+        // о сертификате, ни записи в ленту. Молча и насовсем.
         await db.doc(`students/${uid}`).update({
           tgChatId: FieldValue.delete(),
           tgUsername: FieldValue.delete(),
           tgUnlinkRequested: FieldValue.delete(),
         });
+        if (chatId) await db.doc(`tgUsers/${chatId}`).delete();
         if (chatId) {
           await tg("sendMessage", {
             chat_id: chatId,
@@ -377,10 +383,14 @@ exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).fire
           });
         }
         logger.info("telegram отвязан", uid);
+        // Выходим только при успехе: документ мы уже переписали, и второй
+        // проход триггера обработает всё остальное.
+        return null;
       } catch (e) {
         logger.error("отвязка telegram", uid, e);
+        // Не выходим: даже если отвязка не удалась, ученик должен получать
+        // свои уведомления. Флаг снимется при следующей попытке.
       }
-      return null;   // документ только что изменён нами — второй проход не нужен
     }
 
     // ── Уведомления ученику о том, что открыл наставник ────────────────

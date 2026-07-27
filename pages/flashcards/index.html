@@ -361,7 +361,7 @@
 
   <script type="module">
     import { renderHeader, renderFooter, saveOnExit } from "../js/layout.js?v=35";
-    import { t, getLang } from "../js/i18n.js?v=33";
+    import { t, getLang } from "../js/i18n.js?v=34";
     import { watchAuth } from "../../integration/auth.js?v=12";
     import { doc, updateDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
     import { db } from "../../integration/firebase-init.js?v=2";
@@ -670,22 +670,47 @@
     // Уходит со страницы — дописываем. localStorage синхронный, он успеет
     // всегда; запись в базу может не долететь, но локальная копия подхватится
     // при следующем заходе (loadProgress берёт её, если в профиле пусто).
-    saveOnExit(() => { saveLocal(); if (currentUser) saveToFirestore(); });
+    saveOnExit(() => {
+      // ⚠️ НИЧЕГО НЕ ПИШЕМ, ЕСЛИ ПИСАТЬ НЕЧЕГО. Между подпиской и загрузкой
+      // профиля cardProgress пуст: уход со страницы в это окно записал бы
+      // пустоту поверх всего прогресса — и локально, и в базе. Окно тем
+      // шире, чем хуже сеть, то есть ровно в том случае, ради которого
+      // страховка и писалась (поймано проверкой до выкладки).
+      if (!firstPendingAt) return;
+      saveLocal();
+      if (currentUser) saveToFirestore();
+    });
+
+    /** Читаем ОБА источника и сливаем по карточкам.
+     *
+     *  Раньше локальная копия бралась, только если в профиле пусто, — и
+     *  ровно тот случай, ради которого страховка писалась (успели
+     *  сохранить локально, до базы не долетело), у любого не-первого
+     *  захода данные всё равно терял: база отдавала старое, свежее
+     *  местное выбрасывалось.
+     *
+     *  Сравниваем по дате последнего повторения: у карточки она есть
+     *  всегда (её ставит rateCard). Кто новее — тот и прав. */
+    function readLocal() {
+      try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "null") || {}; }
+      catch { return {}; }
+    }
 
     async function loadProgress() {
+      let remote = {};
       if (currentUser) {
         try {
           const profile = await getStudentProfile(currentUser.uid);
-          if (profile?.flashcards) {
-            cardProgress = profile.flashcards;
-            return;
-          }
+          remote = profile?.flashcards || {};
         } catch (e) { console.warn("load flashcards", e); }
       }
-      try {
-        const stored = localStorage.getItem("fc_progress");
-        if (stored) cardProgress = JSON.parse(stored);
-      } catch {}
+      const local = readLocal();
+      const merged = { ...remote };
+      for (const [key, val] of Object.entries(local)) {
+        const r = merged[key];
+        if (!r || String(val?.lastReview || "") > String(r.lastReview || "")) merged[key] = val;
+      }
+      cardProgress = merged;
     }
 
     // ── Stats ──

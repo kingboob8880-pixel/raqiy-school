@@ -18,10 +18,10 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=35";
-    import { t, getLang, moduleTitle } from "../js/i18n.js?v=33";
+    import { t, getLang, moduleTitle } from "../js/i18n.js?v=34";
     import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=38";
     import { QUIZZES } from "../js/quiz-data.js?v=8";
-    import { loadExamDoc } from "../js/exam-loader.js?v=9";
+    import { loadExamDoc } from "../js/exam-loader.js?v=10";
     import { assignmentsForBook } from "../js/assignments-data.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=12";
     import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=27";
@@ -161,7 +161,15 @@
        *  Снимаем предупреждение перед уходом по любой нашей ссылке. */
       const dropLeaveWarning = () => window.removeEventListener("beforeunload", warnLeave);
       document.addEventListener("click", (e) => {
-        if (e.target.closest("a[href]")) dropLeaveWarning();
+        const a = e.target.closest("a[href]");
+        // Только ссылки, которые ДЕЙСТВИТЕЛЬНО уводят со страницы. Раньше
+        // предупреждение снимал любой якорь («к содержимому», ссылка на
+        // модуль в тексте) — и после одного такого клика защита от
+        // случайного ухода не возвращалась до конца теста.
+        if (!a) return;
+        const href = a.getAttribute("href") || "";
+        if (href.startsWith("#") || a.target === "_blank") return;
+        dropLeaveWarning();
       }, true);
 
       const exitHref = isBookQuiz
@@ -409,8 +417,20 @@
           btn.textContent = t("quiz.saving");
           try {
             await saveResult();
+            // ⚠️ ЗДЕСЬ НЕЛЬЗЯ ЗВАТЬ render(): она рисует ТЕКУЩИЙ ВОПРОС, а
+            // экран результата собирает finish(). Перерисовка выбрасывала
+            // человека обратно в уже завершённый тест и стирала его балл с
+            // экрана (поймано проверкой до выкладки). Меняем только сам
+            // блок ошибки.
             saveFailed = false;
-            render();                 // перерисуем без сообщения об ошибке
+            const box = btn.closest(".quiz-result, div, section") || btn.parentElement;
+            const errText = document.querySelector(".quiz-result .field-error");
+            if (errText) {
+              errText.classList.remove("field-error");
+              errText.classList.add("form-note");
+              errText.textContent = t("quiz.saveOk");
+            }
+            btn.remove();
           } catch (err) {
             console.warn("повторное сохранение результата", err);
             btn.disabled = false;
