@@ -261,6 +261,8 @@ const S = {
   "quiz.timeSpent":    { ru: "затрачено", en: "spent", uz: "sarflangan" },
   "quiz.min":          { ru: "мин", en: "min", uz: "daq" },
   "quiz.sec":          { ru: "сек", en: "sec", uz: "son" },
+  "quiz.saveRetry":    { ru: "Сохранить результат ещё раз", en: "Save the result again", uz: "Natijani qayta saqlash" },
+  "quiz.saving":       { ru: "Сохраняем…", en: "Saving…", uz: "Saqlanmoqda…" },
   "quiz.saveFailed":   { ru: "Не удалось сохранить результат. Попробуйте ещё раз позже.", en: "Could not save result. Try again later.", uz: "Natijani saqlash imkoni bo'lmadi. Keyinroq qayta urinib ko'ring." },
   "quiz.notLoggedIn":  { ru: "Вы не вошли — результат не сохранён.", en: "You're not signed in — result not saved.", uz: "Siz tizimga kirmadingiz — natija saqlanmadi." },
   "quiz.backModule":   { ru: "Вернуться к модулю", en: "Back to module", uz: "Modulga qaytish" },
@@ -902,6 +904,8 @@ const S = {
   "bookmark.empty":      { ru: "Нет закладок", en: "No bookmarks", uz: "Xatcho'plar yo'q" },
   "bookmark.save":       { ru: "Сохранить", en: "Save", uz: "Saqlash" },
   "bookmark.saved":      { ru: "Закладка сохранена", en: "Bookmark saved", uz: "Xatcho'p saqlandi" },
+  "bookmark.delete":     { ru: "Удалить закладку", en: "Delete bookmark", uz: "Xatcho'pni o'chirish" },
+  "bookmark.deleteConfirm": { ru: "Удалить эту закладку?", en: "Delete this bookmark?", uz: "Bu xatcho'p o'chirilsinmi?" },
   "bookmark.deleted":    { ru: "Закладка удалена", en: "Bookmark deleted", uz: "Xatcho'p o'chirildi" },
 
   // ── Module locking ──
@@ -1023,4 +1027,22 @@ export function localizedDocPath(basePath) {
   const lang = getLang();
   if (lang === "ru") return basePath;
   return basePath.replace(/^\/content\//, `/content/${lang}/`);
+}
+
+/** Перевести всё, что помечено в разметке, внутри корня.
+ *
+ *  Раньше этот цикл был скопирован в каждой странице по-своему: где-то
+ *  только data-t, где-то ещё placeholder и aria-label, а где-то он
+ *  выполнялся ДО того, как содержимое отрисовано, — и всё нарисованное
+ *  позже оставалось русским на английской и узбекской версиях (так вышло
+ *  на странице сертификата). Один источник вместо шести копий.
+ *
+ *  root — можно передать только что отрисованный кусок: тогда переведётся
+ *  он, а не вся страница заново.
+ */
+export function applyTranslations(root = document) {
+  root.querySelectorAll("[data-t]").forEach((el) => { el.textContent = t(el.dataset.t); });
+  root.querySelectorAll("[data-placeholder-t]").forEach((el) => { el.placeholder = t(el.dataset.placeholderT); });
+  root.querySelectorAll("[data-aria-t]").forEach((el) => { el.setAttribute("aria-label", t(el.dataset.ariaT)); });
+  root.querySelectorAll("[data-title-t]").forEach((el) => { el.setAttribute("title", t(el.dataset.titleT)); });
 }

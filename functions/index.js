@@ -349,6 +349,40 @@ exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).fire
     const after = change.after.data();
     const uid = ctx.params.uid;
 
+    // ── Отвязка Telegram ───────────────────────────────────────────────
+    //
+    // ⚠️ КНОПКА «ОТВЯЗАТЬ TELEGRAM» НИЧЕГО НЕ ДЕЛАЛА (аудит 2026-07-27).
+    //
+    // В кабинете она ставила флаг tgUnlinkRequested — и всё: этого поля не
+    // читал никто. Сам ученик очистить привязку не может (правила это
+    // запрещают, и правильно делают), коллекция tgUsers ему закрыта
+    // целиком. То есть отвязать Telegram было НЕВОЗМОЖНО в принципе:
+    // телефон, на котором открыт бот, сохранял полный доступ к учебному
+    // аккаунту навсегда. При этом человек видел подтверждение, что отвязал.
+    // Для того, кто сменил телефон или отдал старый, это прямая утечка
+    // собственной переписки с наставником.
+    if (after.tgUnlinkRequested) {
+      try {
+        const chatId = before.tgChatId || after.tgChatId;
+        if (chatId) await db.doc(`tgUsers/${chatId}`).delete();
+        await db.doc(`students/${uid}`).update({
+          tgChatId: FieldValue.delete(),
+          tgUsername: FieldValue.delete(),
+          tgUnlinkRequested: FieldValue.delete(),
+        });
+        if (chatId) {
+          await tg("sendMessage", {
+            chat_id: chatId,
+            text: "Аккаунт отвязан от этого чата. Чтобы вернуться к обучению, привяжите его заново в кабинете на сайте.",
+          });
+        }
+        logger.info("telegram отвязан", uid);
+      } catch (e) {
+        logger.error("отвязка telegram", uid, e);
+      }
+      return null;   // документ только что изменён нами — второй проход не нужен
+    }
+
     // ── Уведомления ученику о том, что открыл наставник ────────────────
     // Раньше про это ученик узнавал случайно: зашёл и заметил, что кнопка
     // появилась. Реагируем только на переход false → true — иначе любое

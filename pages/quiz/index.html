@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Тест — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=24">
-<link rel="stylesheet" href="../../design/base.css?v=74">
+<link rel="stylesheet" href="../../design/base.css?v=75">
 </head>
 <body data-zone="learn">
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
@@ -17,8 +17,8 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter } from "../js/layout.js?v=34";
-    import { t, getLang, moduleTitle } from "../js/i18n.js?v=32";
+    import { renderHeader, renderFooter } from "../js/layout.js?v=35";
+    import { t, getLang, moduleTitle } from "../js/i18n.js?v=33";
     import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=38";
     import { QUIZZES } from "../js/quiz-data.js?v=8";
     import { loadExamDoc } from "../js/exam-loader.js?v=9";
@@ -304,12 +304,18 @@
         const passed = ratio >= QUIZ_PASS_THRESHOLD;
         const pctNum = Math.round(ratio * 100);
 
+        // ⚠️ РЕЗУЛЬТАТ МОЖНО БЫЛО ПОТЕРЯТЬ БЕЗ ВОЗВРАТА (аудит 2026-07-27).
+        // Сдал на 90%, сеть моргнула — балл не записан, и повторить
+        // сохранение было нечем: только пересдавать весь экзамен заново.
+        // Теперь функция сохранения вынесена, и её вызывает кнопка.
+        const saveResult = () => (isBookQuiz
+          ? recordBookQuizResult(currentUser.uid, resultKey, ratio, currentStudentName)
+          : recordQuizResult(currentUser.uid, resultKey, ratio, currentStudentName));
+
         let saveFailed = false;
         if (currentUser) {
-          try {
-            if (isBookQuiz) await recordBookQuizResult(currentUser.uid, resultKey, ratio, currentStudentName);
-            else await recordQuizResult(currentUser.uid, resultKey, ratio, currentStudentName);
-          } catch (e) { console.warn(e); saveFailed = true; }
+          try { await saveResult(); }
+          catch (e) { console.warn(e); saveFailed = true; }
         }
 
         // Сданный экзамен книги открывает её упражнение — ведём прямо к
@@ -380,7 +386,9 @@
               </div>
             </div>
 
-            ${saveFailed ? `<p class="field-error">${t("quiz.saveFailed")}</p>` : ""}
+            ${saveFailed ? `
+              <p class="field-error">${t("quiz.saveFailed")}</p>
+              <p><button type="button" class="btn btn-outline btn-sm" id="quiz-resave">${t("quiz.saveRetry")}</button></p>` : ""}
             ${!currentUser ? `<p class="form-note">${t("quiz.notLoggedIn")} <a href="${withBase("/pages/auth/login.html")}">${t("auth.login")}</a></p>` : ""}
 
             <div class="quiz-result__actions">
@@ -393,6 +401,22 @@
           </div>
           ${reviewHtml}
         `;
+
+        // Повторное сохранение результата — без пересдачи всего экзамена.
+        document.getElementById("quiz-resave")?.addEventListener("click", async (e) => {
+          const btn = e.currentTarget;
+          btn.disabled = true;
+          btn.textContent = t("quiz.saving");
+          try {
+            await saveResult();
+            saveFailed = false;
+            render();                 // перерисуем без сообщения об ошибке
+          } catch (err) {
+            console.warn("повторное сохранение результата", err);
+            btn.disabled = false;
+            btn.textContent = t("quiz.saveRetry");
+          }
+        });
 
         // Анимация кольца
         requestAnimationFrame(() => {

@@ -22,7 +22,7 @@
 //
 // Без входа окно работает целиком, но ничего не сохраняет: гость и админ
 // должны видеть упражнение как оно есть, а не пустое место.
-import { t } from "./i18n.js?v=32";
+import { t } from "./i18n.js?v=33";
 import { withBase } from "./base-path.js?v=6";
 import {
   logAssignmentDay, unlogAssignmentDay, saveAssignmentNote, saveAssignmentState,

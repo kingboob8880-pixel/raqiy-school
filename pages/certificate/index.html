@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Сертификат — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=24">
-<link rel="stylesheet" href="../../design/base.css?v=74">
+<link rel="stylesheet" href="../../design/base.css?v=75">
 <style>
   .cert-frame { max-width: 42rem; margin: var(--rp-space-6) auto; padding: var(--rp-space-3);
     background: var(--rp-color-parchment-50); border-radius: var(--rp-radius-lg);
@@ -54,12 +54,12 @@
   <div id="site-footer" class="no-print"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter, showLoadError } from "../js/layout.js?v=34";
+    import { renderHeader, renderFooter, showLoadError } from "../js/layout.js?v=35";
     import { CASES_REQUIRED, supervisionPassed } from "../js/case-form.js?v=1";
     import { MODULES } from "../js/modules-data.js?v=38";
     import { watchAuth, getStudentProfile } from "../../integration/auth.js?v=12";
     import { withBase } from "../js/base-path.js?v=6";
-    import { t, getLang } from "../js/i18n.js?v=32";
+    import { t, getLang, applyTranslations } from "../js/i18n.js?v=33";
 
     renderHeader("learn");
     renderFooter();
@@ -112,6 +112,7 @@
     introEl.textContent = t("cert.sampleIntro");
     root.innerHTML = certHtml({ name: "Абдуллах", sample: true, dateStr: new Date().toLocaleDateString("ru-RU") });
     statusRoot.innerHTML = `<a class="btn btn-primary" data-t="cert.startFree" href="${withBase("/pages/auth/register.html")}">Начать бесплатно →</a>`;
+      applyTranslations(statusRoot);
 
     watchAuth(async (user) => {
       if (!user) return; // гость уже видит образец выше, дальше ничего не грузим
@@ -158,12 +159,14 @@
                 : `<a class="btn btn-primary" href="${withBase("/pages/modules/index.html")}">${t("cert.continue")}</a>`}
             </div>
           </div>`;
+      applyTranslations(statusRoot);
         return;
       }
 
       introEl.textContent = t("cert.congrats");
       const completionDate = profile?.completedAt?.toDate?.() ?? new Date();
       root.innerHTML = certHtml({ name: profile.name || "Ученик", sample: false, dateStr: completionDate.toLocaleDateString("ru-RU") });
+      applyTranslations(root);
       // RUKYA PRO — программа для приёма пациентов, обещанная в Модуле 11.
       // Блок открывается только тем, кто реально закончил курс (та же
       // проверка allDone, что решает, показывать ли сам сертификат выше).
@@ -195,6 +198,7 @@
              При первом запуске Windows может показать предупреждение SmartScreen (программа новая,
              без платной цифровой подписи) — это ожидаемо, нужно нажать «Подробнее» → «Выполнить в любом случае».</p>
         </div>`;
+      applyTranslations(statusRoot);
 
       // Скачивание PDF и PNG через html2canvas + jsPDF (CDN)
       const certEl = root.querySelector(".cert-frame");
@@ -248,9 +252,12 @@
       });
     });
 
-    document.querySelectorAll("[data-t]").forEach(el => {
-      el.textContent = t(el.dataset.t);
-    });
+    // ⚠️ ПЕРЕВОД ВЫЗЫВАЕТСЯ И ПОСЛЕ ОТРИСОВКИ. Этот цикл выполнялся один
+    // раз, ДО watchAuth, — а сертификат, статус и кнопки рисуются позже, в
+    // колбэке. На английской и узбекской версии они так и оставались
+    // русскими (аудит 2026-07-27). Теперь перевод — общая функция
+    // (i18n.applyTranslations), и она же вызывается в конце отрисовки.
+    applyTranslations();
   </script>
 </body>
 </html>
