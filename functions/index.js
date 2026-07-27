@@ -5,6 +5,7 @@
 // больше не отдаёт (падало на деплое: "functions.firestore.document is
 // not a function", 2026-07-26).
 const functions = require("firebase-functions/v1");
+const { sweepFeed } = require("./feed-sweep");
 const { onRequest } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
@@ -59,6 +60,24 @@ const HOOK_SECRET = process.env.TG_WEBHOOK_SECRET;
 // «бот задеплоился, но молчит» — без единой ошибки в логах.
 // Найдено 2026-07-27 при подготовке инструкции по запуску.
 const SECRETS = ["TG_BOT_TOKEN", "TG_CHAT_ID", "TG_WEBHOOK_SECRET"];
+
+// РЕГИОН — ТОТ ЖЕ, ГДЕ БАЗА (правка 2026-07-27).
+//
+// База Firestore этого проекта создана в asia-southeast1 (Сингапур), а
+// функции жили в us-central1 (США). Каждое срабатывание триггера гоняло
+// данные через полмира и обратно; сам firebase писал об этом при каждом
+// деплое:
+//   «The following functions have triggers in different regions than they
+//    are located: onNewStudent (us-central1, Trigger: asia-southeast1)»
+//
+// Регион базы после создания не меняется, регион функций — меняется.
+// Поэтому переносим функции к базе, а не наоборот.
+//
+// ⚠️ ПОСЛЕ СМЕНЫ РЕГИОНА МЕНЯЕТСЯ АДРЕС ВЕБХУКА. Старые функции остаются
+// в us-central1 и должны быть удалены вручную, иначе будут работать две
+// копии бота одновременно и отвечать на одно сообщение дважды. Это делает
+// скрипт SETUP-FIREBASE.bat.
+const REGION = "asia-southeast1";
 
 if (!BOT || !CHAT) {
   // Не бросаем исключение: без этого весь набор функций не задеплоился бы,
@@ -209,6 +228,33 @@ async function pushFeed(uid, kind, key, extra) {
   }
 }
 
+/** Убрать запись из ленты.
+ *
+ * Правка 2026-07-27 по замечанию автора: он снял у ученика доступ к RUKYA
+ * Pro, а строка «М получил доступ к системе RUKYA Pro» осталась висеть в
+ * ленте у всех.
+ *
+ * Причина была в том, что лента писалась только «вперёд»: каждое условие в
+ * buildFeedEntries проверяло переход из «не было» в «стало», а обратный
+ * переход не проверял никто. Для сданного экзамена это правильно — сдал
+ * однажды, значит сдал. Но доступ и сертификат отзываются, и запись о них
+ * — это утверждение о текущем положении дел, а не о событии в прошлом.
+ * Оставлять её после отзыва значит показывать ученикам неправду.
+ *
+ * Работает это только потому, что id записи детерминированный
+ * (uid__вид__ключ): удалить нужную запись можно, не разыскивая её запросом.
+ *
+ * Ленту в кабинете слушает onSnapshot — строка исчезает у всех сразу, без
+ * перезагрузки страницы.
+ */
+async function dropFeed(uid, kind, key) {
+  try {
+    await db.collection("feed").doc(`${uid}__${kind}__${key}`).delete();
+  } catch (e) {
+    logger.warn("dropFeed", uid, kind, key, e);
+  }
+}
+
 /** Одно имя без фамилии — то, что попадает в ленту. Пустое имя заменяем
  * нейтральным «Ученик»: строка «получил сертификат» без подлежащего
  * читалась бы как обрывок. */
@@ -231,7 +277,7 @@ function moduleEntries(progress) {
 // ─────────────────────────────────────────────────
 
 /** Новый ученик */
-exports.onNewStudent = functions.runWith({ secrets: SECRETS }).firestore
+exports.onNewStudent = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
   .document("students/{uid}")
   .onCreate(async (snap, ctx) => {
     const data = snap.data();
@@ -249,7 +295,7 @@ exports.onNewStudent = functions.runWith({ secrets: SECRETS }).firestore
   });
 
 /** Сообщение от ученика */
-exports.onChatMessage = functions.runWith({ secrets: SECRETS }).firestore
+exports.onChatMessage = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
   .document("students/{uid}/messages/{msgId}")
   .onCreate(async (snap, ctx) => {
     const msg = snap.data();
@@ -296,7 +342,7 @@ exports.onChatMessage = functions.runWith({ secrets: SECRETS }).firestore
   });
 
 /** Прогресс ученика */
-exports.onProgress = functions.runWith({ secrets: SECRETS }).firestore
+exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
   .document("students/{uid}")
   .onUpdate(async (change, ctx) => {
     const before = change.before.data();
@@ -441,11 +487,20 @@ async function buildFeedEntries(uid, before, after, pB, pA) {
     await pushFeed(uid, "graduate", "all", { firstName: name });
   }
 
+  // Сертификат и доступ к RUKYA Pro — не события прошлого, а положение дел
+  // на сейчас. Поэтому они ходят в обе стороны: выдали — запись появилась,
+  // отозвали — исчезла. Экзамены и практика выше так не делают намеренно:
+  // сданное однажды остаётся сданным.
   if (!before.certificateGranted && after.certificateGranted) {
     await pushFeed(uid, "certificate", "one", { firstName: name });
+  } else if (before.certificateGranted && !after.certificateGranted) {
+    await dropFeed(uid, "certificate", "one");
   }
+
   if (!before.rukyaProAccess && after.rukyaProAccess) {
     await pushFeed(uid, "rukyaPro", "one", { firstName: name });
+  } else if (before.rukyaProAccess && !after.rukyaProAccess) {
+    await dropFeed(uid, "rukyaPro", "one");
   }
 }
 
@@ -453,7 +508,7 @@ async function buildFeedEntries(uid, before, after, pB, pA) {
 // WEBHOOK (кнопки + ответы + команды)
 // ─────────────────────────────────────────────────
 
-exports.telegramWebhook = onRequest({ secrets: SECRETS }, async (req, res) => {
+exports.telegramWebhook = onRequest({ region: REGION, secrets: SECRETS }, async (req, res) => {
   // Проверка секрета — до любой работы с телом запроса.
   if (HOOK_SECRET && req.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) {
     logger.warn("webhook: неверный секрет");
@@ -725,10 +780,12 @@ async function handleMessage(msg) {
 /** Ежедневная проверка неактивных учеников — отправляет напоминание в Telegram
  * ученикам, которые не заходили 3+ дня. Бот пишет админу список таких учеников
  * с кнопкой «Написать» для каждого. Запуск: каждый день в 10:00 UTC+3. */
-exports.dailyReminders = functions.runWith({ secrets: SECRETS }).pubsub
+exports.dailyReminders = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
   .schedule("0 7 * * *")       // 07:00 UTC = 10:00 Москва
   .timeZone("Europe/Moscow")
   .onRun(async () => {
+    await sweepFeed(db, logger);
+
     const snaps = await db.collection("students").where("paid", "==", true).get();
     if (snaps.empty) return null;
 
@@ -792,7 +849,7 @@ exports.dailyReminders = functions.runWith({ secrets: SECRETS }).pubsub
  *  есть что не потерять: он ведёт серию, и сегодня она ещё не отмечена.
  *
  *  Время — 8:00 по Москве: раньше утренних азкаров смысла нет. */
-exports.studentDailyPractice = functions.runWith({ secrets: SECRETS }).pubsub
+exports.studentDailyPractice = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
   .schedule("0 5 * * *")       // 05:00 UTC = 08:00 Москва
   .timeZone("Europe/Moscow")
   .onRun(async () => {
