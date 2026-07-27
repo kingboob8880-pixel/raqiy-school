@@ -46,10 +46,46 @@
 .fc-tip__title { font-size: var(--rp-fs-sm); font-weight: 800; color: var(--rp-learn-badge-text); }
 .fc-tip__text { font-size: var(--rp-fs-sm); line-height: 1.5; color: var(--rp-zone-muted); margin: 0.35rem 0 0; }
 
-/* Подсказки по клавишам под кнопками оценки. */
+/* Навигация по карточкам.
+   Раньше здесь стояли три <span> с текстом «← назад · пробел — перевернуть ·
+   вперёд →» — подсказка о клавишах, оформленная так, что читалась как ряд
+   кнопок (замечание автора 2026-07-27). Нажимать их было бесполезно вдвойне:
+   это был не элемент управления, и самих переходов «назад/вперёд» в коде не
+   существовало — ни по клику, ни по стрелкам. С телефона, где клавиатуры
+   нет, вернуться к предыдущей карточке было нечем вовсе.
+   Теперь это настоящие кнопки, а подпись о клавише осталась подписью. */
 .fc-keys {
-  display: flex; justify-content: center; gap: var(--rp-space-4); flex-wrap: wrap;
-  margin-top: var(--rp-space-3); font-size: var(--rp-fs-xs); color: var(--rp-zone-muted);
+  display: flex; justify-content: center; align-items: center;
+  gap: var(--rp-space-3); flex-wrap: wrap;
+  margin-top: var(--rp-space-4);
+}
+.fc-nav {
+  display: inline-flex; align-items: center; gap: var(--rp-space-2);
+  padding: var(--rp-space-2) var(--rp-space-4);
+  border: 1px solid var(--rp-zone-border, var(--rp-color-gold-500));
+  border-radius: var(--rp-radius-md);
+  background: transparent;
+  color: var(--rp-zone-text);
+  font-family: var(--rp-font-body);
+  font-size: var(--rp-fs-sm);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+}
+.fc-nav:hover:not(:disabled) { background: var(--rp-color-gold-100); color: var(--rp-color-gold-700); }
+.fc-nav:active:not(:disabled) { transform: scale(0.96); }
+.fc-nav:focus-visible { outline: 2px solid var(--rp-color-gold-500); outline-offset: 2px; }
+/* Отключённую кнопку не прячем, а гасим: исчезающая кнопка сдвигает соседние
+   ровно в тот момент, когда по ним целятся пальцем. */
+.fc-nav:disabled { opacity: 0.4; cursor: default; }
+.fc-nav--flip { border-color: var(--rp-color-gold-500); color: var(--rp-color-gold-600); font-weight: 600; }
+.fc-keys__hint {
+  flex-basis: 100%; text-align: center;
+  font-size: var(--rp-fs-xs); color: var(--rp-zone-muted);
+}
+/* На телефоне подсказку про клавиши не показываем — клавиш там нет. */
+@media (max-width: 48rem) {
+  .fc-keys__hint { display: none; }
+  .fc-nav { flex: 1 1 auto; justify-content: center; }
 }
 
 @media (max-width: 60rem) {
@@ -498,14 +534,32 @@
       });
       sessionQueue = due;
       sessionIndex = 0;
+      // Очередь пересобрана (сменили модуль, сбросили прогресс) — отменять
+      // в ней нечего: старые шаги относятся к карточкам, которых в новой
+      // очереди может уже не быть.
+      stepHistory = [];
     }
+
+    // История шагов назад. Хранит, каким было состояние карточки ДО оценки,
+    // чтобы кнопка «Назад» действительно отменяла шаг, а не просто
+    // показывала карточку заново с уже записанной оценкой. Без этого
+    // «Назад» после ошибочного «Знаю» выглядела бы работающей, но карточка
+    // всё равно уехала бы в дальний ящик повторений.
+    let stepHistory = [];
 
     function rateCard(rating) {
       // rating: "easy" → box+1, "review" → stay, "hard" → box-1 (min 0)
       const card = sessionQueue[sessionIndex];
       if (!card) return;
       const key = cardKey(card);
-      const prog = cardProgress[key] || { box: 0, lastReview: todayStr() };
+      const before = cardProgress[key];
+      stepHistory.push({
+        key,
+        // Копия, а не ссылка: ниже мы правим тот же объект по месту.
+        before: before ? { ...before } : null,
+      });
+
+      const prog = before ? { ...before } : { box: 0, lastReview: todayStr() };
 
       if (rating === "easy") prog.box = Math.min(prog.box + 1, 4);
       else if (rating === "hard") prog.box = Math.max(prog.box - 1, 0);
@@ -517,6 +571,42 @@
       sessionIndex++;
       scheduleSave();
       render();
+    }
+
+    /** «Пропустить» — отложить карточку, не оценивая.
+     *  Прогресс не трогаем намеренно: неотвеченная карточка должна остаться
+     *  в очереди на повторение, а не считаться пройденной сегодня. */
+    function skipCard() {
+      if (sessionIndex >= sessionQueue.length) return;
+      stepHistory.push(null);   // отменять нечего, но шаг назад возможен
+      sessionIndex++;
+      render();
+    }
+
+    /** «Назад» — предыдущая карточка с отменой того, что на ней сделали. */
+    function prevCard() {
+      if (sessionIndex === 0) return;
+      const step = stepHistory.pop();
+      if (step) {
+        if (step.before) cardProgress[step.key] = step.before;
+        else delete cardProgress[step.key];   // карточку видели впервые
+        scheduleSave();
+      }
+      sessionIndex--;
+      render();
+    }
+
+    /** Переворот карточки — одно место для клика по карточке, кнопки и
+     *  пробела: три копии этих четырёх строк разъехались бы. */
+    function flipCard() {
+      const fcCard = document.getElementById("fc-card");
+      const actions = document.getElementById("fc-actions");
+      if (!fcCard) return;
+      fcCard.classList.toggle("is-flipped");
+      // Оценки показываем, увидев ответ, и обратно уже не прячем: спрятать
+      // их при повторном перевороте значило бы отобрать у человека кнопку,
+      // на которую он уже нацелился.
+      if (fcCard.classList.contains("is-flipped") && actions) actions.hidden = false;
     }
 
     // ── Firestore persistence ──
@@ -671,9 +761,23 @@
       const btnHard = { ru: "Не знаю", en: "Don't know", uz: "Bilmayman" };
       const btnReview = { ru: "Повторить", en: "Review", uz: "Takrorlash" };
       const btnEasy = { ru: "Знаю", en: "Know it", uz: "Bilaman" };
-      const keyPrev = { ru: "← назад", en: "← back", uz: "← orqaga" };
-      const keyFlip = { ru: "пробел — перевернуть", en: "space — flip", uz: "bo'shliq — ag'darish" };
-      const keyNext = { ru: "вперёд →", en: "forward →", uz: "oldinga →" };
+      const keyPrev = { ru: "← Назад", en: "← Back", uz: "← Orqaga" };
+      const keyFlip = { ru: "Перевернуть", en: "Flip", uz: "Ag'darish" };
+      const keyNext = { ru: "Пропустить →", en: "Skip →", uz: "O'tkazib yuborish →" };
+      // «Вперёд» переименовано в «Пропустить»: кнопка не листает вперёд по
+      // уже разобранному, а откладывает текущую карточку без оценки — она
+      // вернётся в следующий заход. «Вперёд» обещало бы другое.
+      const keysHint = {
+        ru: "Клавиши: ← → листать · пробел — перевернуть · 1 2 3 — оценка",
+        en: "Keys: ← → navigate · space — flip · 1 2 3 — rate",
+        uz: "Tugmalar: ← → o'tish · bo'shliq — ag'darish · 1 2 3 — baho",
+      };
+      const titlePrev = { ru: "Вернуться к предыдущей карточке и отменить её оценку",
+                          en: "Back to the previous card and undo its rating",
+                          uz: "Oldingi kartochkaga qaytish va bahoni bekor qilish" };
+      const titleNext = { ru: "Отложить эту карточку без оценки",
+                          en: "Skip this card without rating",
+                          uz: "Bu kartochkani bahosiz qoldirish" };
 
       cardArea.innerHTML = `
         <div class="fc-card-wrapper" id="fc-card-wrapper">
@@ -696,30 +800,37 @@
           <button class="fc-btn-review" data-rate="review">${btnReview[lang] || btnReview.ru}</button>
           <button class="fc-btn-easy" data-rate="easy">${btnEasy[lang] || btnEasy.ru}</button>
         </div>
-        <div class="fc-keys" aria-hidden="true">
-          <span>${keyPrev[lang] || keyPrev.ru}</span>
-          <span>${keyFlip[lang] || keyFlip.ru}</span>
-          <span>${keyNext[lang] || keyNext.ru}</span>
+        <div class="fc-keys">
+          <button type="button" class="fc-nav" data-nav="prev" ${sessionIndex === 0 ? "disabled" : ""}
+                  title="${titlePrev[lang] || titlePrev.ru}">${keyPrev[lang] || keyPrev.ru}</button>
+          <button type="button" class="fc-nav fc-nav--flip" data-nav="flip">${keyFlip[lang] || keyFlip.ru}</button>
+          <button type="button" class="fc-nav" data-nav="next"
+                  title="${titleNext[lang] || titleNext.ru}">${keyNext[lang] || keyNext.ru}</button>
+          <span class="fc-keys__hint">${keysHint[lang] || keysHint.ru}</span>
         </div>
         ${!currentUser ? `<p class="fc-login-note">${{ru:"Войдите, чтобы сохранить прогресс",en:"Sign in to save progress",uz:"Progressni saqlash uchun tizimga kiring"}[lang] || "Войдите, чтобы сохранить прогресс"}</p>` : ""}
       `;
 
       // Flip handler
       const wrapper = document.getElementById("fc-card-wrapper");
-      const fcCard = document.getElementById("fc-card");
       const actions = document.getElementById("fc-actions");
-      wrapper.addEventListener("click", () => {
-        fcCard.classList.toggle("is-flipped");
-        if (fcCard.classList.contains("is-flipped")) {
-          actions.hidden = false;
-        }
-      });
+      wrapper.addEventListener("click", flipCard);
 
       // Rate handlers
       actions.querySelectorAll("button[data-rate]").forEach(btn => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
           rateCard(btn.dataset.rate);
+        });
+      });
+
+      // Навигация: назад, перевернуть, пропустить.
+      cardArea.querySelectorAll("button[data-nav]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (btn.dataset.nav === "prev") prevCard();
+          else if (btn.dataset.nav === "next") skipCard();
+          else flipCard();
         });
       });
     }
@@ -754,6 +865,11 @@
       if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
       const fcCard = document.getElementById("fc-card");
       const actions = document.getElementById("fc-actions");
+      // Стрелки: подпись про них висела на странице с самого начала, а
+      // обработчика не было — нажатие не делало ничего (2026-07-27).
+      if (e.key === "ArrowLeft") { e.preventDefault(); prevCard(); return; }
+      if (e.key === "ArrowRight") { e.preventDefault(); skipCard(); return; }
+
       if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
         if (fcCard && !fcCard.classList.contains("is-flipped")) {
