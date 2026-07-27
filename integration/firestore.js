@@ -7,7 +7,7 @@
 import {
   doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, addDoc,
   serverTimestamp, query, orderBy, where, arrayUnion, arrayRemove, onSnapshot,
-  writeBatch, getCountFromServer, limit,
+  writeBatch, getCountFromServer, limit, FieldPath,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 import { db, storage } from "./firebase-init.js?v=2";
 import {
@@ -409,6 +409,71 @@ export async function unmarkAssignmentDone(uid, moduleId, assignId) {
     [`progress.${moduleId}.doneAssignments`]: arrayRemove(assignId),
     [`progress.${moduleId}.answeredAssignments`]: arrayRemove(assignId),
   });
+}
+
+// ---------------------------------------------------------------------------
+// Журнал выполнения упражнения (решение автора 2026-07-27).
+//
+// Зачем понадобился: отметка «выполнил» — это один флаг, а половина
+// заданий идёт по нескольку дней. «Десять дней подряд без пропуска» и
+// «сделал один раз» выглядели в базе одинаково, и ученик не видел ни
+// серии, ни места, где сорвался. Флаг остаётся (он означает «задание
+// закрыто»), журнал добавляется рядом.
+//
+// Схема:  progress.{moduleId}.log.{assignId} = {
+//            days:  ["2026-07-27", …]        — отмеченные дни
+//            notes: [{ d, text }, …]         — наблюдения ученика
+//            step:  3                        — сколько шагов отмечено
+//            count: 12                       — счётчик повторений
+//            target: 30                      — выбранная ступень лестницы
+//          }
+//
+// ВАЖНО про FieldPath. Идентификаторы заданий содержат дефис («m1-8»), а
+// в строковом пути Firestore дефис — часть имени сегмента только внутри
+// обратных кавычек; собирать такой путь строкой значит рано или поздно
+// получить неверный сегмент. FieldPath принимает сегменты списком и
+// ничего не разбирает — поэтому здесь только он.
+function logPath(moduleId, assignId, leaf) {
+  return new FieldPath("progress", String(moduleId), "log", assignId, leaf);
+}
+
+/** Отметить сегодняшний день выполненным. arrayUnion, а не push: два
+ *  нажатия за день не должны давать два дня в серии. */
+export async function logAssignmentDay(uid, moduleId, assignId) {
+  await updateDoc(doc(db, "students", uid),
+    logPath(moduleId, assignId, "days"), arrayUnion(todayKey()),
+    "lastSeenAt", serverTimestamp(),
+    "progress.activityDates", arrayUnion(todayKey()));
+}
+
+/** Снять сегодняшний день — нажали по ошибке. Задним числом дни не
+ *  снимаем: подправленная серия перестаёт что-либо значить. */
+export async function unlogAssignmentDay(uid, moduleId, assignId) {
+  await updateDoc(doc(db, "students", uid),
+    logPath(moduleId, assignId, "days"), arrayRemove(todayKey()));
+}
+
+/** Наблюдение ученика. Хранится с датой и только дописывается: смысл
+ *  записей в том, чтобы через неделю увидеть динамику, а переписанная
+ *  задним числом запись динамику стирает. */
+export async function saveAssignmentNote(uid, moduleId, assignId, text) {
+  const clean = String(text || "").trim().slice(0, 1000);
+  if (!clean) return;
+  await updateDoc(doc(db, "students", uid),
+    logPath(moduleId, assignId, "notes"), arrayUnion({ d: todayKey(), text: clean }),
+    "lastSeenAt", serverTimestamp(),
+    "progress.activityDates", arrayUnion(todayKey()));
+}
+
+/** Текущее состояние окна: отмеченные шаги, счётчик, выбранная ступень.
+ *  patch — любые из { step, count, target }. */
+export async function saveAssignmentState(uid, moduleId, assignId, patch) {
+  const args = [];
+  for (const leaf of ["step", "count", "target"]) {
+    if (patch[leaf] !== undefined) args.push(logPath(moduleId, assignId, leaf), patch[leaf]);
+  }
+  if (!args.length) return;
+  await updateDoc(doc(db, "students", uid), ...args);
 }
 
 /** Живая подписка на общую ленту достижений (запрос автора «пусть будет

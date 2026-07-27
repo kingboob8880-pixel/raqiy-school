@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
+<title>Практика — Онлайн-школа рукии</title>
+<link rel="stylesheet" href="../../design/tokens.css?v=22">
+<link rel="stylesheet" href="../../design/base.css?v=68">
+</head>
+<body data-zone="learn">
+  <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript. Пожалуйста, включите его в настройках браузера.</p></noscript>
+  <div id="site-header"></div>
+
+  <main class="container">
+    <!-- СТРАНИЦА «ПРАКТИКА» (решение автора 2026-07-27).
+
+         Зачем понадобилась. Упражнение привязано к книге и показывается под
+         её текстом — это правильно в момент чтения, но бесполезно потом:
+         ответ на вопрос «что мне делать сегодня» оказался размазан по 53
+         книгам, и чтобы его собрать, ученику пришлось бы обойти весь курс.
+         Здесь все упражнения лежат вместе, с фильтрами и блоком «Сегодня».
+
+         Карточки рисует тот же assignments-ui.js, что на странице книги и
+         модуля: третья копия разметки и логики отметки разъехалась бы с
+         первыми двумя на первой же правке. -->
+    <h1 data-t="practice.title">Практика</h1>
+    <p class="form-note" id="page-lead" style="margin-bottom: var(--rp-space-4);"></p>
+    <p class="form-note" id="guest-note" style="margin-bottom: var(--rp-space-4);" hidden></p>
+
+    <section id="today" class="pr-today" hidden></section>
+
+    <div class="pr-controls">
+      <input id="pr-search" type="search" class="pr-controls__search" autocomplete="off">
+      <div id="pr-status" class="pr-filters"></div>
+      <div id="pr-type" class="pr-filters"></div>
+    </div>
+    <p id="pr-count" class="pr-count"></p>
+
+    <div id="pr-list" class="skeleton-loading">Загрузка…</div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script type="module">
+    import { renderHeader, renderFooter } from "../js/layout.js?v=30";
+    import { t, getLang, moduleTitle } from "../js/i18n.js?v=24";
+    import { MODULES, isModuleUnlocked } from "../js/modules-data.js?v=35";
+    import { ASSIGNMENTS, allAssignments } from "../js/assignments-data.js?v=4";
+    import { renderAssignments } from "../js/assignments-ui.js?v=2";
+    import { openAssignment } from "../js/assignment-runner.js?v=1";
+    import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
+
+    renderHeader("learn");
+    renderFooter();
+    document.documentElement.lang = getLang();
+    document.title = `${t("practice.title")} — ${t("site.title")}`;
+
+    document.querySelector("[data-t='practice.title']").textContent = t("practice.title");
+    document.getElementById("page-lead").textContent = t("practice.lead");
+    document.getElementById("pr-search").placeholder = t("modules.search");
+
+    const ALL = allAssignments();
+
+    // Состояние страницы. Фильтры не сохраняются между заходами намеренно:
+    // человек приходит сюда за «что сегодня», а не за прошлым выбором, и
+    // унаследованный фильтр прятал бы от него половину списка.
+    let uid = null, admin = false, progress = {}, unlockedOf = () => true;
+    let status = "all", type = "all", queryText = "";
+
+    const STATUS = [
+      ["all", "practice.all"],
+      ["work", "practice.inWork"],
+      ["new", "practice.notStarted"],
+      ["done", "practice.doneOnly"],
+    ];
+    const TYPES = [
+      ["all", "practice.all"],
+      ["practice", "assign.practice"],
+      ["daily", "assign.daily"],
+      ["reflection", "assign.reflection"],
+    ];
+
+    function todayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+
+    function logOf(a) { return progress?.[a.moduleId]?.log?.[a.id] || {}; }
+    function isDone(a) { return (progress?.[a.moduleId]?.doneAssignments || []).includes(a.id); }
+    /** «В работе» — начал, но не закрыл: есть хоть один отмеченный день,
+     *  шаг или счётчик. Иначе непонятно, чем «в работе» отличается от
+     *  «открыл и передумал». */
+    function isStarted(a) {
+      const l = logOf(a);
+      return !!(l.days?.length || l.step || l.count || l.notes?.length);
+    }
+
+    function matches(a) {
+      if (type !== "all" && a.type !== type) return false;
+      if (status === "done" && !isDone(a)) return false;
+      if (status === "work" && (isDone(a) || !isStarted(a))) return false;
+      if (status === "new" && (isDone(a) || isStarted(a))) return false;
+      if (queryText) {
+        const hay = `${a.title} ${a.description} ${a.check || ""}`.toLowerCase();
+        if (!hay.includes(queryText)) return false;
+      }
+      return true;
+    }
+
+    function renderFilters() {
+      document.getElementById("pr-status").innerHTML = STATUS.map(([k, key]) =>
+        `<button type="button" class="pr-filter${k === status ? " is-on" : ""}" data-status="${k}">${t(key)}</button>`).join("");
+      document.getElementById("pr-type").innerHTML = TYPES.map(([k, key]) =>
+        `<button type="button" class="pr-filter${k === type ? " is-on" : ""}" data-type="${k}">${t(key)}</button>`).join("");
+    }
+
+    /** Блок «Сегодня»: только многодневные упражнения, которые уже начаты и
+     *  сегодня ещё не отмечены. Не начатые сюда не попадают намеренно —
+     *  иначе блок превратился бы в список из двадцати четырёх пунктов и
+     *  перестал отвечать на свой единственный вопрос. */
+    function renderToday() {
+      const box = document.getElementById("today");
+      const key = todayKey();
+      const started = ALL.filter((a) => a.days && !isDone(a) && logOf(a).days?.length);
+      if (!uid || !started.length) { box.hidden = true; return; }
+
+      const left = started.filter((a) => !(logOf(a).days || []).includes(key));
+      box.hidden = false;
+      box.innerHTML = `
+        <h2 class="eyebrow eyebrow--muted">${t("practice.today")}</h2>
+        ${left.length ? `
+          <ul class="pr-today__list">
+            ${left.map((a) => `
+              <li class="pr-today__item">
+                <span class="pr-today__name">${esc(a.title)}</span>
+                <span class="pr-today__meta">${t("runner.streak")}: ${(logOf(a).days || []).length} / ${a.days}</span>
+                <button type="button" class="btn btn-primary btn-sm" data-run="${esc(a.id)}" data-mod="${a.moduleId}">${t("runner.open")}</button>
+              </li>`).join("")}
+          </ul>`
+          : `<p class="pr-today__done">${t("practice.todayDone")}</p>`}`;
+    }
+
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function render() {
+      renderFilters();
+      renderToday();
+
+      const root = document.getElementById("pr-list");
+      root.classList.remove("skeleton-loading");
+      root.innerHTML = "";
+
+      let shown = 0;
+      for (const mod of MODULES) {
+        const items = (ASSIGNMENTS[mod.id] || []).filter(matches);
+        if (!items.length) continue;
+        const open = unlockedOf(mod.id);
+
+        const group = document.createElement("section");
+        group.className = "pr-group" + (open ? "" : " pr-group--locked");
+        group.innerHTML = `
+          <div class="pr-group__head">
+            <h2 class="pr-group__title">${t("module.n")} ${mod.id} · ${esc(moduleTitle(mod))}</h2>
+            <span class="pr-group__meta">${open ? `${items.length}` : t("practice.locked")}</span>
+          </div>`;
+        root.appendChild(group);
+
+        // У закрытого модуля показываем только заголовок: упражнения к
+        // тексту, который ещё нельзя прочитать, выполнять нечем.
+        if (!open) continue;
+
+        const holder = document.createElement("div");
+        group.appendChild(holder);
+        renderAssignments(holder, items, {
+          uid: admin ? null : uid,
+          moduleId: mod.id,
+          progress,
+          preview: admin,
+        });
+        shown += items.length;
+      }
+
+      document.getElementById("pr-count").textContent =
+        shown ? `${t("practice.count")}: ${shown}` : t("practice.empty");
+    }
+
+    // Один обработчик на документ: список перерисовывается целиком после
+    // каждого изменения фильтра, и вешать слушатели на кнопки заново
+    // означало бы копить их пачками.
+    document.addEventListener("click", (e) => {
+      const f = e.target.closest("[data-status], [data-type]");
+      if (f) {
+        if (f.dataset.status) status = f.dataset.status;
+        if (f.dataset.type) type = f.dataset.type;
+        render();
+        return;
+      }
+      // Кнопка из блока «Сегодня» — открывает то же окно упражнения.
+      const run = e.target.closest("#today [data-run]");
+      if (run) {
+        const a = ALL.find((x) => x.id === run.dataset.run);
+        if (a) openAssignment(a, {
+          uid: admin ? null : uid,
+          moduleId: Number(run.dataset.mod),
+          progress,
+          onChange: render,
+        });
+      }
+    });
+
+    let searchTimer = null;
+    document.getElementById("pr-search").addEventListener("input", (e) => {
+      clearTimeout(searchTimer);
+      const v = e.target.value.trim().toLowerCase();
+      searchTimer = setTimeout(() => { queryText = v; render(); }, 200);
+    });
+
+    watchAuth(async (user) => {
+      if (user) {
+        admin = await isAdmin(user.uid);
+        uid = user.uid;
+        const profile = admin ? null : await getStudentProfile(user.uid);
+        progress = profile?.progress || {};
+        unlockedOf = admin ? () => true : (id) => isModuleUnlocked(id, progress);
+      } else {
+        // Гостю показываем весь список, но без отметок: упражнения — часть
+        // описания курса, прятать их за входом незачем. Открытым считаем
+        // только первый модуль, как и везде на сайте.
+        uid = null; admin = false; progress = {};
+        unlockedOf = (id) => id <= 1;
+        const note = document.getElementById("guest-note");
+        note.textContent = t("practice.guestLead");
+        note.hidden = false;
+      }
+      render();
+    });
+  </script>
+</body>
+</html>

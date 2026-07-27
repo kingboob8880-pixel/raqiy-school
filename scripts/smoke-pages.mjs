@@ -75,7 +75,12 @@ function makeSandbox() {
     console: { log() {}, warn() {}, error() {}, info() {} },
     localStorage: { getItem: () => null, setItem() {}, removeItem() {}, key: () => null, length: 0 },
     sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} },
-    location: { href: "", search: "", pathname: "/pages/x.html", hash: "" },
+    // hostname/protocol нужны base-path.js: он смотрит, github.io это или
+    // нет, чтобы понять, отдаётся сайт из подпапки репозитория или из корня.
+    location: {
+      href: "http://localhost/pages/x.html", search: "", pathname: "/pages/x.html", hash: "",
+      hostname: "localhost", host: "localhost", protocol: "http:", origin: "http://localhost",
+    },
     navigator: { language: "ru", userAgent: "node" },
     fetch: () => Promise.resolve({ ok: false, json: () => Promise.resolve(null), text: () => Promise.resolve("") }),
     setTimeout, clearTimeout, setInterval, clearInterval,
@@ -146,5 +151,45 @@ for (const file of htmlFiles(PAGES)) {
   }
 }
 
-console.log(`\nПроверено страниц: ${checked}, с ошибками: ${failed}`);
+// ---------------------------------------------------------------------------
+// ВТОРОЙ ПРОХОД: модули pages/js/*.js (добавлено 2026-07-27).
+//
+// Зачем понадобился. Первый проход выполняет только код, написанный прямо
+// в странице, а все импорты подменяет заглушками — то есть сами модули не
+// запускаются вовсе. Половина логики сайта живёт именно в них, и ошибка
+// уровня «читаю const до объявления» внутри модуля прошла бы мимо теста
+// незамеченной, хотя убивает страницу так же наглухо.
+//
+// Проверяется то же самое: доходит ли верхний уровень модуля до конца.
+// Тела экспортированных функций не вызываются — для этого нужен настоящий
+// DOM, которого здесь нет.
+function stripExports(code) {
+  return code
+    .replace(/^\s*export\s+default\s+/gm, "const __default = ")
+    .replace(/^\s*export\s+(?=(async\s+)?function|const|let|var|class)/gm, "")
+    .replace(/^\s*export\s*\{[^}]*\}\s*;?/gm, "");
+}
+
+const JS_DIR = join(PAGES, "js");
+let jsChecked = 0;
+for (const name of readdirSync(JS_DIR).sort()) {
+  if (!name.endsWith(".js")) continue;
+  const file = join(JS_DIR, name);
+  jsChecked++;
+  const code = stripExports(stripImports(readFileSync(file, "utf8")));
+  const sandbox = makeSandbox();
+  sandbox.__stub = stub;
+  try {
+    vm.createContext(sandbox);
+    new vm.Script(`(function () { ${code} })();`, { filename: file })
+      .runInContext(sandbox, { timeout: 5000 });
+    console.log("OK   " + relative(ROOT, file));
+  } catch (e) {
+    failed++;
+    console.log("FAIL " + relative(ROOT, file));
+    console.log("     " + String(e && e.message).split("\n")[0]);
+  }
+}
+
+console.log(`\nПроверено страниц: ${checked}, модулей: ${jsChecked}, с ошибками: ${failed}`);
 process.exit(failed ? 1 : 0);

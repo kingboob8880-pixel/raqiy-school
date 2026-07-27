@@ -26,6 +26,7 @@ const S = {
   "site.title":        { ru: "Онлайн-школа рукии", en: "Online Ruqyah School", uz: "Onlayn ruqya maktabi" },
   "nav.about":         { ru: "Об авторе", en: "About", uz: "Muallif haqida" },
   "nav.modules":       { ru: "Модули", en: "Modules", uz: "Modullar" },
+  "nav.practice":      { ru: "Практика", en: "Practice", uz: "Amaliyot" },
   "nav.tests":         { ru: "Тесты", en: "Tests", uz: "Testlar" },
   "nav.flashcards":    { ru: "Карточки", en: "Flashcards", uz: "Kartochkalar" },
   "nav.glossary":      { ru: "Словарь", en: "Glossary", uz: "Lug'at" },
@@ -627,6 +628,46 @@ const S = {
   // очевидного конца: человек либо бросает раньше времени, либо тянет
   // бесконечно, так и не поняв, сделал он его или «поделал».
   "assign.checkLabel":   { ru: "Сделано, когда", en: "Done when", uz: "Bajarilgan hisoblanadi" },
+
+  // ── Окно упражнения (решение автора 2026-07-27) ──
+  // Карточка описывала упражнение, но провести его было негде: человек
+  // закрывал вкладку и делал это где-то у себя, без порядка, без счёта и
+  // без записи. Окно даёт шаги, счётчик, серию дней и наблюдения.
+  "runner.open":         { ru: "Провести упражнение", en: "Run the exercise", uz: "Mashqni bajarish" },
+  "runner.steps":        { ru: "Шаги", en: "Steps", uz: "Bosqichlar" },
+  "runner.stepOf":       { ru: "шаг {n} из {m}", en: "step {n} of {m}", uz: "{m} dan {n}-bosqich" },
+  "runner.allSteps":     { ru: "Все шаги пройдены.", en: "All steps completed.", uz: "Barcha bosqichlar bajarildi." },
+  // Считает кнопка, а не голова: держать число в уме мешает удерживать
+  // намерение, ради которого упражнение и делается.
+  "runner.tap":          { ru: "нажимайте на каждом повторе", en: "tap on every repetition", uz: "har takrorda bosing" },
+  "runner.reset":        { ru: "Сбросить", en: "Reset", uz: "Tozalash" },
+  "runner.target":       { ru: "Ступень", en: "Step level", uz: "Bosqich" },
+  "runner.days":         { ru: "Дни", en: "Days", uz: "Kunlar" },
+  "runner.streak":       { ru: "Серия", en: "Streak", uz: "Ketma-ketlik" },
+  "runner.markToday":    { ru: "Отметить сегодня", en: "Mark today", uz: "Bugunni belgilash" },
+  "runner.unmarkToday":  { ru: "Снять отметку за сегодня", en: "Unmark today", uz: "Bugungi belgini olish" },
+  "runner.totalDays":    { ru: "Всего отмечено дней", en: "Days marked in total", uz: "Jami belgilangan kunlar" },
+  "runner.notes":        { ru: "Наблюдения", en: "Observations", uz: "Kuzatuvlar" },
+  "runner.notePh":       { ru: "Что получилось, что нет, что заметили…", en: "What worked, what didn't, what you noticed…", uz: "Nima bo'ldi, nima bo'lmadi, nimani sezdingiz…" },
+  "runner.noteSave":     { ru: "Записать", en: "Save", uz: "Yozib qo'yish" },
+  "runner.noteEmpty":    { ru: "Записей пока нет.", en: "No entries yet.", uz: "Hozircha yozuvlar yo'q." },
+  "runner.guest":        { ru: "Войдите как ученик — тогда отметки и записи сохранятся.", en: "Sign in as a student to save your marks and notes.", uz: "O'quvchi sifatida kiring — belgilar va yozuvlar saqlanadi." },
+  "runner.previewNote":  { ru: "Режим просмотра: отметки доступны только ученикам.", en: "Preview mode: marks are available to students only.", uz: "Ko'rish rejimi: belgilar faqat o'quvchilar uchun." },
+
+  // ── Страница «Практика» ──
+  "practice.title":      { ru: "Практика", en: "Practice", uz: "Amaliyot" },
+  "practice.lead":       { ru: "Все упражнения курса в одном месте — чтобы не искать их по книгам.", en: "Every exercise of the course in one place — no need to hunt through the books.", uz: "Kursning barcha mashqlari bir joyda — kitoblardan izlashning hojati yo'q." },
+  "practice.today":      { ru: "Сегодня", en: "Today", uz: "Bugun" },
+  "practice.todayNone":  { ru: "На сегодня ничего не начато. Возьмите любое упражнение ниже — и оно появится здесь.", en: "Nothing started for today. Pick any exercise below and it will appear here.", uz: "Bugunga hech narsa boshlanmagan. Quyidagi istalgan mashqni oling — u shu yerda paydo bo'ladi." },
+  "practice.todayDone":  { ru: "На сегодня всё отмечено. الحمد لله", en: "Everything is marked for today. الحمد لله", uz: "Bugunga hammasi belgilandi. الحمد لله" },
+  "practice.all":        { ru: "Все", en: "All", uz: "Barchasi" },
+  "practice.inWork":     { ru: "В работе", en: "In progress", uz: "Jarayonda" },
+  "practice.notStarted": { ru: "Не начатые", en: "Not started", uz: "Boshlanmagan" },
+  "practice.doneOnly":   { ru: "Выполненные", en: "Completed", uz: "Bajarilgan" },
+  "practice.count":      { ru: "Показано", en: "Shown", uz: "Ko'rsatilgan" },
+  "practice.empty":      { ru: "Под эти условия ничего не подошло.", en: "Nothing matches these filters.", uz: "Bu shartlarga hech narsa mos kelmadi." },
+  "practice.locked":     { ru: "Модуль ещё не открыт", en: "Module not unlocked yet", uz: "Modul hali ochilmagan" },
+  "practice.guestLead":  { ru: "Войдите, чтобы отмечать выполнение и вести записи.", en: "Sign in to mark progress and keep notes.", uz: "Bajarilishini belgilash va yozuvlar yuritish uchun kiring." },
 
   // ── Modules search ──
   "modules.search":      { ru: "Поиск по названиям и содержанию книг…", en: "Search titles and book contents…", uz: "Sarlavhalar va kitob mazmuni bo'yicha qidirish…" },

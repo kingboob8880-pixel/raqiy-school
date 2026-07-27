@@ -2860,3 +2860,251 @@ body:has(.messenger-page) .footer { display: none; }
 .msg-scroll-down:hover { background: color-mix(in srgb, var(--rp-zone-accent) 15%, var(--rp-zone-surface)); }
 /* Контейнер переписки — точка отсчёта для кнопки */
 .messenger__view { position: relative; }
+
+/* ==========================================================================
+   ОКНО УПРАЖНЕНИЯ (.arun) — решение автора 2026-07-27
+   --------------------------------------------------------------------------
+   До него карточка задания только ОПИСЫВАЛА упражнение, а провести его
+   было негде: человек закрывал вкладку и делал это где-то у себя, без
+   порядка, без счёта и без записи. Здесь четыре части — шаги, счётчик,
+   серия дней, наблюдения.
+
+   Оверлей и появление повторяют .mintro намеренно: два окна на одном
+   сайте не должны открываться по-разному.
+   ========================================================================== */
+.arun-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0, 0, 0, 0.68); backdrop-filter: blur(4px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: var(--rp-space-4);
+  overflow-y: auto;
+  animation: mintro-fade 0.2s ease both;
+}
+.arun {
+  position: relative;
+  width: min(42rem, 100%);
+  margin: auto;
+  background: var(--rp-zone-surface); color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-border);
+  border-radius: var(--rp-radius-lg);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+  animation: mintro-in 0.28s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arun-overlay, .arun { animation: none !important; }
+}
+.arun__close {
+  position: absolute; top: var(--rp-space-3); right: var(--rp-space-3); z-index: 2;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%;
+  border: 1px solid var(--rp-zone-border); cursor: pointer;
+  font-size: 1.4rem; line-height: 1;
+  background: var(--rp-zone-surface); color: var(--rp-zone-text);
+}
+.arun__close:hover { background: color-mix(in srgb, var(--rp-zone-text) 8%, var(--rp-zone-surface)); }
+
+.arun__head {
+  padding: var(--rp-space-5) var(--rp-space-5) var(--rp-space-4);
+  border-bottom: 1px solid var(--rp-zone-border);
+  padding-right: 3.5rem; /* место под крестик */
+}
+.arun__eyebrow {
+  display: inline-flex; align-items: center; gap: var(--rp-space-2);
+  font-size: var(--rp-fs-xs); letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 700; color: var(--rp-zone-accent);
+}
+.arun__title { margin: var(--rp-space-2) 0 var(--rp-space-2); font-size: var(--rp-fs-lg); }
+.arun__desc { margin: 0; font-size: var(--rp-fs-sm); line-height: 1.6; color: var(--rp-zone-muted); }
+
+.arun__body { padding: var(--rp-space-4) var(--rp-space-5); }
+.arun__block + .arun__block { margin-top: var(--rp-space-5); }
+.arun__h {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--rp-space-3);
+  margin: 0 0 var(--rp-space-3); font-size: var(--rp-fs-xs);
+  letter-spacing: 0.08em; text-transform: uppercase; font-weight: 800;
+  color: var(--rp-zone-accent);
+}
+.arun__h-note { font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--rp-zone-muted); }
+
+/* --- Шаги. Кнопка на всю строку: на телефоне попасть в галочку размером
+   с флажок невозможно, а промах здесь означает потерянный шаг. --- */
+.arun-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--rp-space-2); }
+.arun-step__btn {
+  width: 100%; display: flex; align-items: flex-start; gap: var(--rp-space-3);
+  text-align: left; cursor: pointer; font: inherit;
+  padding: var(--rp-space-3);
+  background: transparent; color: inherit;
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-md);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.arun-step__btn:hover { background: color-mix(in srgb, var(--rp-zone-text) 5%, transparent); }
+.arun-step__num {
+  flex: 0 0 auto; width: 1.75rem; height: 1.75rem; border-radius: 50%;
+  display: grid; place-items: center; font-size: var(--rp-fs-sm); font-weight: 800;
+  border: 1px solid var(--rp-zone-border); color: var(--rp-zone-muted);
+}
+.arun-step__text { font-size: var(--rp-fs-sm); line-height: 1.55; }
+.arun-step.is-now > .arun-step__btn { border-color: var(--rp-zone-accent); }
+.arun-step.is-now .arun-step__num { border-color: var(--rp-zone-accent); color: var(--rp-zone-accent); }
+.arun-step.is-done > .arun-step__btn { background: color-mix(in srgb, var(--rp-zone-accent) 10%, transparent); }
+.arun-step.is-done .arun-step__num {
+  background: var(--rp-zone-accent); border-color: var(--rp-zone-accent);
+  color: var(--rp-zone-accent-contrast);
+}
+.arun-step.is-done .arun-step__text { color: var(--rp-zone-muted); }
+.arun__all-steps {
+  margin: var(--rp-space-3) 0 0; font-size: var(--rp-fs-sm); font-weight: 700;
+  color: var(--rp-zone-accent);
+}
+
+/* --- Счётчик. Кнопка крупная намеренно: по ней жмут не глядя, с закрытыми
+   глазами, удерживая намерение. Мелкая кнопка заставляла бы целиться. --- */
+.arun-targets { display: flex; flex-wrap: wrap; gap: var(--rp-space-2); margin-bottom: var(--rp-space-3); }
+.arun-target {
+  min-width: 2.75rem; padding: var(--rp-space-2) var(--rp-space-3);
+  cursor: pointer; font: inherit; font-weight: 700;
+  background: transparent; color: var(--rp-zone-muted);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-pill);
+}
+.arun-target.is-on {
+  background: var(--rp-zone-accent); border-color: var(--rp-zone-accent);
+  color: var(--rp-zone-accent-contrast);
+}
+.arun-count {
+  width: 100%; min-height: 7rem; cursor: pointer; font: inherit;
+  display: grid; place-items: center; gap: 0.15rem;
+  padding: var(--rp-space-4);
+  background: color-mix(in srgb, var(--rp-zone-accent) 10%, transparent);
+  color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-accent); border-radius: var(--rp-radius-md);
+  transition: transform 0.06s ease;
+}
+.arun-count:active { transform: scale(0.985); }
+.arun-count__n { font-size: 3rem; line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; }
+.arun-count__of { font-size: var(--rp-fs-md); font-weight: 700; color: var(--rp-zone-muted); }
+.arun-count__hint { font-size: var(--rp-fs-xs); color: var(--rp-zone-muted); }
+.arun-count__bar {
+  height: 0.375rem; margin-top: var(--rp-space-2);
+  background: color-mix(in srgb, var(--rp-zone-text) 12%, transparent);
+  border-radius: var(--rp-radius-pill); overflow: hidden;
+}
+.arun-count__bar > span { display: block; height: 100%; background: var(--rp-zone-accent); transition: width 0.2s ease; }
+.arun-count__ctrls { display: flex; gap: var(--rp-space-2); margin-top: var(--rp-space-2); }
+.arun-count__minor {
+  padding: var(--rp-space-1) var(--rp-space-3); cursor: pointer; font: inherit;
+  font-size: var(--rp-fs-sm); background: transparent; color: var(--rp-zone-muted);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
+}
+.arun-count__minor:hover { color: var(--rp-zone-text); }
+
+/* --- Сетка дней. Пропуск гасит клетки целиком, а не одну: «десять дней
+   подряд» и значит подряд, и увиденный обнулённый ряд честнее любой
+   надписи. --- */
+.arun-days { display: flex; flex-wrap: wrap; gap: var(--rp-space-2); margin-bottom: var(--rp-space-3); }
+.arun-day {
+  width: 2.25rem; height: 2.25rem; display: grid; place-items: center;
+  font-size: var(--rp-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--rp-zone-muted);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
+}
+.arun-day.is-on {
+  background: var(--rp-zone-accent); border-color: var(--rp-zone-accent);
+  color: var(--rp-zone-accent-contrast);
+}
+
+.arun__block--check {
+  padding: var(--rp-space-3) var(--rp-space-4);
+  border-left: 2px solid var(--rp-zone-accent);
+  background: color-mix(in srgb, var(--rp-zone-accent) 7%, transparent);
+  border-radius: 0 var(--rp-radius-sm) var(--rp-radius-sm) 0;
+}
+.arun__block--check .arun__h { margin-bottom: var(--rp-space-2); }
+.arun__check { margin: 0; font-size: var(--rp-fs-sm); line-height: 1.55; }
+
+.arun-note {
+  width: 100%; resize: vertical; font: inherit; font-size: var(--rp-fs-sm);
+  padding: var(--rp-space-3); margin-bottom: var(--rp-space-2);
+  background: var(--rp-zone-surface); color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-sm);
+}
+.arun-notes { list-style: none; margin: var(--rp-space-3) 0 0; padding: 0; display: grid; gap: var(--rp-space-2); }
+.arun-notes > li {
+  font-size: var(--rp-fs-sm); line-height: 1.5;
+  padding-left: var(--rp-space-3); border-left: 2px solid var(--rp-zone-border);
+}
+.arun-notes__d { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--rp-zone-muted); margin-right: var(--rp-space-2); }
+.arun__note-hint { margin: var(--rp-space-2) 0 0; font-size: var(--rp-fs-sm); color: var(--rp-zone-muted); }
+
+.arun__foot {
+  display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap;
+  padding: var(--rp-space-4) var(--rp-space-5);
+  border-top: 1px solid var(--rp-zone-border);
+}
+.arun__done { font-weight: 800; color: var(--rp-zone-accent); }
+.arun__guest { margin: 0; flex: 1 1 100%; font-size: var(--rp-fs-sm); color: var(--rp-zone-muted); }
+.arun__ask {
+  padding: var(--rp-space-4) var(--rp-space-5);
+  border-top: 1px solid var(--rp-zone-border);
+  background: color-mix(in srgb, var(--rp-zone-accent) 8%, transparent);
+  border-radius: 0 0 var(--rp-radius-lg) var(--rp-radius-lg);
+}
+.arun__ask-q { margin: 0 0 var(--rp-space-3); font-size: var(--rp-fs-sm); font-weight: 700; }
+.arun__ask-btns { display: flex; gap: var(--rp-space-2); flex-wrap: wrap; }
+
+/* Режим просмотра — админу. Кнопки видны, но выключены: полностью скрытые
+   заставляли автора думать, что карточка сломана (замечание 2026-07-27). */
+.assignment-card__preview {
+  margin: var(--rp-space-2) 0 0; font-size: var(--rp-fs-xs); color: var(--rp-zone-muted);
+}
+.assignment-card__foot .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* ==========================================================================
+   СТРАНИЦА «ПРАКТИКА» (.pr-*)
+   Все упражнения курса в одном месте: раньше ответ на вопрос «что мне
+   делать сегодня» был размазан по 53 книгам.
+   ========================================================================== */
+.pr-today {
+  padding: var(--rp-space-5);
+  border: 1px solid var(--rp-zone-accent);
+  border-radius: var(--rp-radius-lg);
+  background: color-mix(in srgb, var(--rp-zone-accent) 8%, transparent);
+  margin-bottom: var(--rp-space-6);
+}
+.pr-today__list { list-style: none; margin: var(--rp-space-3) 0 0; padding: 0; display: grid; gap: var(--rp-space-2); }
+.pr-today__item {
+  display: flex; align-items: center; gap: var(--rp-space-3); flex-wrap: wrap;
+  padding: var(--rp-space-3);
+  background: var(--rp-zone-surface);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-md);
+}
+.pr-today__name { flex: 1 1 12rem; font-weight: 700; font-size: var(--rp-fs-sm); }
+.pr-today__meta { font-size: var(--rp-fs-xs); color: var(--rp-zone-muted); font-variant-numeric: tabular-nums; }
+
+.pr-controls { display: flex; flex-wrap: wrap; gap: var(--rp-space-3); align-items: center; margin-bottom: var(--rp-space-4); }
+.pr-controls__search {
+  flex: 1 1 16rem; min-width: 0; font: inherit; font-size: var(--rp-fs-sm);
+  padding: var(--rp-space-3);
+  background: var(--rp-zone-surface); color: var(--rp-zone-text);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-md);
+}
+.pr-filters { display: flex; flex-wrap: wrap; gap: var(--rp-space-2); }
+.pr-filter {
+  padding: var(--rp-space-2) var(--rp-space-3); cursor: pointer; font: inherit;
+  font-size: var(--rp-fs-sm); font-weight: 700;
+  background: transparent; color: var(--rp-zone-muted);
+  border: 1px solid var(--rp-zone-border); border-radius: var(--rp-radius-pill);
+}
+.pr-filter.is-on {
+  background: var(--rp-zone-accent); border-color: var(--rp-zone-accent);
+  color: var(--rp-zone-accent-contrast);
+}
+.pr-count { font-size: var(--rp-fs-sm); color: var(--rp-zone-muted); margin-bottom: var(--rp-space-4); }
+.pr-group { margin-bottom: var(--rp-space-6); }
+.pr-group__head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--rp-space-3);
+  margin-bottom: var(--rp-space-3); padding-bottom: var(--rp-space-2);
+  border-bottom: 1px solid var(--rp-zone-border);
+}
+.pr-group__title { margin: 0; font-size: var(--rp-fs-md); }
+.pr-group__meta { font-size: var(--rp-fs-xs); color: var(--rp-zone-muted); }
+.pr-group--locked { opacity: 0.55; }
+.pr-today__done { margin: var(--rp-space-3) 0 0; font-weight: 700; color: var(--rp-zone-accent); }

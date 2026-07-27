@@ -10,8 +10,9 @@
 //
 // Отметка «выполнил» и свидетельство «Аллах ответил» — запрос автора
 // 2026-07-26; сервер переносит уже поставленный флаг в общую ленту.
-import { t } from "./i18n.js?v=23";
-import { markAssignmentDone, unmarkAssignmentDone } from "../../integration/firestore.js?v=22";
+import { t } from "./i18n.js?v=24";
+import { markAssignmentDone, unmarkAssignmentDone } from "../../integration/firestore.js?v=23";
+import { openAssignment } from "./assignment-runner.js?v=1";
 
 const ICONS = { reflection: "\u{1F4DD}", practice: "\u{1F3CB}", daily: "\u{1F4C5}" };
 
@@ -34,10 +35,15 @@ const answerAsked = new Set();
  *   opts.progress  — объект прогресса; правится на месте, чтобы не
  *                    перечитывать профиль после каждого нажатия
  *   opts.heading   — текст заголовка над списком (необязательно)
+ *   opts.preview   — режим просмотра: кнопки видны, но не работают.
+ *                    Нужен админу: у него нет ученической записи, запись
+ *                    прогресса упала бы на правилах, — но при полностью
+ *                    скрытых кнопках карточка выглядит сломанной, и автор
+ *                    не видит того, что видит ученик (правка 2026-07-27).
  */
 export function renderAssignments(container, items, opts = {}) {
   if (!container || !items || !items.length) return;
-  const { uid = null, moduleId = null, progress = {}, heading = "" } = opts;
+  const { uid = null, moduleId = null, progress = {}, heading = "", preview = false } = opts;
 
   const mp = progress?.[moduleId] || {};
   const doneSet = new Set(mp.doneAssignments || []);
@@ -49,11 +55,10 @@ export function renderAssignments(container, items, opts = {}) {
       done: doneSet.has(a.id),
       answered: ansSet.has(a.id),
       asked: answerAsked.has(a.id),
-      interactive: !!uid,
+      interactive: !!uid || preview,
+      preview,
     })).join("")}</div>`;
   container.hidden = false;
-
-  if (!uid || !moduleId) return;
 
   // Один обработчик на контейнер. Флаг нужен потому, что функция
   // перерисовывает себя после каждого нажатия, а innerHTML не снимает
@@ -63,6 +68,23 @@ export function renderAssignments(container, items, opts = {}) {
   container.dataset.wired = "1";
 
   container.addEventListener("click", async (e) => {
+    // «Провести упражнение» работает и без входа: гость и админ должны
+    // видеть, из чего упражнение состоит. Сохранять окно тогда просто
+    // ничего не будет — оно об этом само пишет.
+    const run = e.target.closest("[data-run]");
+    if (run) {
+      const a = items.find((x) => x.id === run.dataset.run);
+      if (a) openAssignment(a, {
+        uid: preview ? null : uid,
+        moduleId: moduleId ?? a.moduleId,
+        progress,
+        onChange: () => renderAssignments(container, items, opts),
+      });
+      return;
+    }
+
+    if (!uid || !moduleId || preview) return;
+
     const btn = e.target.closest("[data-done], [data-undo], [data-answered], [data-wait]");
     if (!btn) return;
     const { done, undo, answered, wait } = btn.dataset;
@@ -112,7 +134,7 @@ function cardHtml(a, st) {
       <h3 class="assignment-card__title">${esc(a.title)}</h3>
       <p class="assignment-card__desc">${esc(a.description)}</p>
       ${checkHtml(a)}
-      ${st.interactive ? footHtml(a, st) : ""}
+      ${footHtml(a, st)}
     </div>`;
 }
 
@@ -132,15 +154,21 @@ function footHtml(a, st) {
   // отметки о выполнении: у размышления такого вопроса нет, а до
   // выполнения он бессмыслен. Свидетельство ставит сам ученик — сервер за
   // него этого не решает.
-  const askAnswer = a.type === "practice" && st.done && !st.answered && !st.asked;
+  const askAnswer = !st.preview && a.type === "practice" && st.done && !st.answered && !st.asked;
+  // В режиме просмотра кнопки видны, но выключены: иначе нажатие молча
+  // падало бы на правилах Firestore, и было бы не понять, отметилось или
+  // нет.
+  const off = st.preview ? " disabled" : "";
   return `
     <div class="assignment-card__foot">
-      ${st.done
+      <button type="button" class="btn btn-primary btn-sm" data-run="${esc(a.id)}">${esc(t("runner.open"))}</button>
+      ${!st.interactive ? "" : st.done
         ? `<span class="assignment-card__badge">✓ ${esc(t("assign.isDone"))}</span>
-           <button type="button" class="assignment-card__undo" data-undo="${esc(a.id)}">${esc(t("assign.undo"))}</button>`
-        : `<button type="button" class="btn btn-ghost btn-sm" data-done="${esc(a.id)}">${esc(t("assign.markDone"))}</button>`}
+           <button type="button" class="assignment-card__undo" data-undo="${esc(a.id)}"${off}>${esc(t("assign.undo"))}</button>`
+        : `<button type="button" class="btn btn-ghost btn-sm" data-done="${esc(a.id)}"${off}>${esc(t("assign.markDone"))}</button>`}
       ${st.answered ? `<span class="assignment-card__answered">${esc(t("assign.answeredDone"))}</span>` : ""}
     </div>
+    ${st.preview ? `<p class="assignment-card__preview">${esc(t("runner.previewNote"))}</p>` : ""}
     ${askAnswer ? `
       <div class="assignment-card__ask">
         <p class="assignment-card__ask-q">${esc(t("assign.answeredQ"))}</p>
