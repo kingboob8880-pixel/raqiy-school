@@ -206,7 +206,9 @@ p { margin: 0 0 var(--rp-space-4); }
    двумя почти одинаковыми тёмными точками — выбрать тему на глаз было
    нельзя. Теперь видно и фон, и то, чем тема красит кнопки. */
 .theme-switcher__btn[data-theme="emerald"] { background: linear-gradient(135deg, #1a3225 48%, #c09330 52%); }
-.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #f3ead3 48%, #2f6a4a 52%); }
+/* Образец светлой темы: белая половина, а не кремовая — иначе на глаз
+   она неотличима от «Изумруда» в мелком кружке переключателя. */
+.theme-switcher__btn[data-theme="pattern"] { background: linear-gradient(135deg, #ffffff 48%, #1c5aa0 52%); }
 .theme-switcher__btn[data-theme="split"] { background: linear-gradient(135deg, #252a31 48%, #c09330 52%); }
 
 /* ---------- Кнопки ---------- */
@@ -1278,7 +1280,9 @@ main.container { padding-block: var(--rp-space-6); }
 .book-hero__cover {
   position: relative; z-index: 1; flex: none; align-self: center;
   width: 9rem; border-radius: var(--rp-radius-md);
-  border: 3px solid var(--rp-color-parchment-50);
+  /* Рамка обложки — цвет поверхности темы, а не кремовый parchment: на
+     белой карточке светлой темы кремовая рамка выглядела подтёком. */
+  border: 3px solid var(--rp-zone-surface, var(--rp-color-parchment-50));
   outline: 1px solid var(--rp-learn-border);
   box-shadow: var(--rp-shadow-pop);
   transform: rotate(-2deg);

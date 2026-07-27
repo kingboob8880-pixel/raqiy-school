@@ -53,6 +53,23 @@
   --rp-color-parchment-200: #f3ead3;
   --rp-color-parchment-300: #e6e0d3;
   --rp-color-parchment-400: #d3c6ab;
+
+  /* Холодная светлая палитра — тема «Свет» (замена «Пергамента», решение
+     автора 2026-07-27: «пусть светлая тема будет светлой — белым или
+     светло-синим, но приятным»). Песочный холст читался как бежевый, а не
+     как светлый: белого в нём не было вовсе. Здесь белые поверхности и
+     холодный, чуть голубой холст — светлее и спокойнее. */
+  --rp-color-sky-50: #ffffff;
+  --rp-color-sky-100: #f5f8fd;
+  --rp-color-sky-200: #eaf1fa;
+  --rp-color-sky-300: #eef3fa;   /* холст */
+  --rp-color-sky-400: #d8e3f2;   /* линии на холсте */
+  --rp-color-blue-600: #2a6cb8;  /* верх градиента кнопки, белый на нём 5.3:1 */
+  --rp-color-blue-700: #1c5aa0;  /* акцент, белый на нём 7.0:1 */
+  --rp-color-blue-800: #164a85;  /* нажатие/ховер, белый 8.9:1 */
+  --rp-color-blue-900: #16304f;  /* тёмная панель аята */
+  --rp-color-slate-700: #4a5a70; /* приглушённый текст, 7.0:1 на белом */
+  --rp-color-slate-900: #0f1b2a; /* основной текст, 17.4:1 на белом */
   --rp-color-ink-900: #1e1a11;
   --rp-color-ink-700: #3a3021;
   --rp-color-sand-500: #8a7c5a;
@@ -279,89 +296,102 @@
 [data-zone] { --rp-zone-muted: color-mix(in srgb, var(--rp-zone-text) 68%, transparent); }
 
 /* ============================================================
-   ТЕМА «ПЕРГАМЕНТ» — светлый холст макета.
+   ТЕМА «СВЕТ» — белые поверхности на холодном светлом холсте.
 
-   Это те самые цвета, которыми в макете нарисовано всё ВОКРУГ экранов:
-   тёплый песочный фон #e6e0d3, заголовки #1e1a11, пояснения #5c5138 и
-   #8a7c5a, зелёная пилюля #2f6a4a, золотые ссылки #c09330.
+   Что было. «Пергамент»: песочный холст #e6e0d3, кремовые карточки
+   #faf6ec, зелёный акцент. Формально это светлая тема, на глаз — бежевая:
+   белого в ней не было ни пятна, и рядом с двумя тёмными темами она
+   читалась как «третья тёмная, только выцветшая». Автор так и сказал
+   (2026-07-27): «пусть светлая тема будет светлой — белым или
+   светло-синим, но приятным».
 
-   Акцент здесь ЗЕЛЁНЫЙ, а не золотой, и это расчёт, а не вкус: белый
-   текст на золоте #c09330 даёт 2.6:1 — провал AA даже для крупного
-   текста, кнопка была бы нечитаемой. Белый на зелёном #2f6a4a — 5.9:1.
-   Золото на светлой теме остаётся, но только линиями и мелкими деталями,
-   как и в макете. ============================================ */
+   Что стало. Карточки — чистый белый, холст — очень светлый холодный
+   голубой #eef3fa. Голубого ровно столько, чтобы белые карточки на нём
+   читались как приподнятые: сплошной белый фон под белыми карточками
+   стёр бы всю раскладку страницы.
+
+   Акцент СИНИЙ, а не зелёный, и это следствие, а не смена вкуса.
+   Зелёный #2f6a4a на холодном холсте выглядит грязноватым — рядом с
+   голубым он уходит в болотный. Синий #1c5aa0 даёт с белым 7.0:1 и
+   спокойно живёт с холстом одного с ним семейства.
+
+   Зелёный из палитры школы никуда не делся: он остался цветом статуса
+   «сдано» и первого уровня модулей, где он значит «получилось», а не
+   «фирменный цвет».
+   ============================================ */
 html[data-site-theme="pattern"] {
-  --rp-learn-bg: var(--rp-color-parchment-300) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%238f6a22' stroke-opacity='0.13' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
-  --rp-learn-surface: var(--rp-color-parchment-50);
-  --rp-learn-surface-raised: var(--rp-color-parchment-200);
-  --rp-learn-border: rgba(43, 36, 23, 0.14);
-  --rp-learn-border-strong: rgba(43, 36, 23, 0.26);
-  --rp-learn-text: var(--rp-color-ink-900);           /* 15.1:1 на surface */
-  --rp-learn-text-muted: var(--rp-color-sand-600);    /* 6.8:1 на surface */
-  --rp-learn-accent: var(--rp-color-green-700);       /* белый на нём 5.9:1 */
-  --rp-learn-accent-strong: var(--rp-color-green-800);
-  /* #3d8560 из макета не подошёл: белый текст на нём даёт 4.45:1 — на
-     волосок ниже порога AA, а это ВЕРХНИЙ конец градиента кнопки, то есть
-     половина каждой кнопки светлой темы была бы нечитаемой. #377b58 — тот
-     же тон на пару процентов темнее, 5.08:1, градиент по-прежнему виден. */
-  --rp-learn-accent-alt: #377b58;
+  /* Ромбы холста — на светлой теме почти незаметные (0.07 против 0.13 у
+     пергамента). На белёсом фоне тот же узор в ту же силу превращается в
+     рябь, а не в фактуру. */
+  --rp-learn-bg: var(--rp-color-sky-300) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%232a6cb8' stroke-opacity='0.07' stroke-width='1'%3E%3Cpath d='M32 4 L60 32 L32 60 L4 32 Z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+  --rp-learn-surface: var(--rp-color-sky-50);          /* чистый белый */
+  --rp-learn-surface-raised: var(--rp-color-sky-100);
+  --rp-learn-border: rgba(22, 48, 79, 0.13);
+  --rp-learn-border-strong: rgba(22, 48, 79, 0.26);
+  --rp-learn-text: var(--rp-color-slate-900);          /* 17.4:1 на surface */
+  --rp-learn-text-muted: var(--rp-color-slate-700);    /* 7.0:1 на surface */
+  --rp-learn-accent: var(--rp-color-blue-700);         /* белый на нём 7.0:1 */
+  --rp-learn-accent-strong: var(--rp-color-blue-800);
+  /* Верхний конец градиента кнопки. Светлее #2a6cb8 брать нельзя: белый
+     текст уходит под порог AA, а это половина площади каждой кнопки. */
+  --rp-learn-accent-alt: var(--rp-color-blue-600);     /* белый 5.3:1 */
   --rp-learn-accent-contrast: #ffffff;
-  --rp-learn-icon-bg: rgba(47, 106, 74, 0.1);
-  --rp-learn-icon-text: var(--rp-color-green-800);
-  --rp-learn-badge-bg: rgba(47, 106, 74, 0.12);
-  --rp-learn-badge-text: var(--rp-color-green-700);   /* 5.5:1 на surface */
-  --rp-learn-badge-border: rgba(47, 106, 74, 0.3);
-  /* Тёмно-зелёная панель на светлом холсте — тот же приём, что в макете:
-     все экраны там стоят тёмными прямоугольниками на песочном фоне. */
-  --rp-ayah-card-bg: var(--rp-color-emerald-800);
-  --rp-ayah-card-text: var(--rp-color-parchment-50);
+  --rp-learn-icon-bg: rgba(28, 90, 160, 0.09);
+  --rp-learn-icon-text: var(--rp-color-blue-800);
+  --rp-learn-badge-bg: rgba(28, 90, 160, 0.1);
+  --rp-learn-badge-text: #175293;                      /* 7.9:1 на surface */
+  --rp-learn-badge-border: rgba(28, 90, 160, 0.28);
+  /* Тёмная панель с аятом. Раньше изумрудная — на холодном холсте она
+     выбивалась единственным тёплым пятном. Здесь глубокий синий того же
+     семейства, что и акцент, а золото на нём остаётся: это цвет школы. */
+  --rp-ayah-card-bg: var(--rp-color-blue-900);
+  --rp-ayah-card-text: var(--rp-color-sky-100);
   --rp-ayah-card-accent: var(--rp-color-gold-200);
   --rp-hero-panel-gradient:
-    radial-gradient(60% 80% at 88% 0%, rgba(47, 106, 74, 0.08), transparent 60%),
-    radial-gradient(130% 70% at 50% -10%, var(--rp-color-parchment-50), var(--rp-color-parchment-200) 65%);
-  --rp-hero-panel-text: var(--rp-color-ink-900);
-  --rp-hero-panel-accent: var(--rp-color-green-700);
-  --rp-hero-brand-mark: var(--rp-color-green-700);
-  --rp-surface-accent: #e9f1eb;   /* зеленоватый оттенок пергамента */
+    radial-gradient(60% 80% at 88% 0%, rgba(28, 90, 160, 0.07), transparent 60%),
+    radial-gradient(130% 70% at 50% -10%, #ffffff, var(--rp-color-sky-200) 70%);
+  --rp-hero-panel-text: var(--rp-color-slate-900);
+  --rp-hero-panel-accent: var(--rp-color-blue-700);
+  --rp-hero-brand-mark: var(--rp-color-blue-700);
+  --rp-surface-accent: var(--rp-color-sky-200);
 
-  /* Тени на светлой теме — тёплые, а не зелёные: холодная тень на песочном
-     фоне выглядит грязным пятном. */
-  --rp-shadow-card: 0 8px 26px rgba(43, 36, 23, 0.12);
-  --rp-shadow-pop: 0 20px 46px rgba(43, 36, 23, 0.2);
-  --rp-shadow-panel: 0 26px 60px rgba(43, 36, 23, 0.22);
+  /* Тени — холодные и мягкие. Тёплая тень из «Пергамента» на голубом
+     холсте желтит и выглядит грязью. */
+  --rp-shadow-card: 0 8px 24px rgba(22, 48, 79, 0.09);
+  --rp-shadow-pop: 0 20px 44px rgba(22, 48, 79, 0.16);
+  --rp-shadow-panel: 0 26px 58px rgba(22, 48, 79, 0.18);
 
-  --rp-status-success: var(--rp-color-green-700);
-  --rp-status-warn: #8f6119;   /* 5.0:1 на surface; #9a6a1e давал 4.37 */
-  --rp-status-danger: #a33a2e;
-  --rp-status-danger-bg: rgba(163, 58, 46, 0.1);
+  /* Статусы. Зелёный здесь остаётся: «сдано» должно быть зелёным в любой
+     теме, иначе успех и обычная ссылка станут одного цвета. */
+  --rp-status-success: #1a6b45;   /* 6.5:1 на белом */
+  --rp-status-warn: #8a5a12;      /* 5.9:1 */
+  --rp-status-danger: #a3342b;    /* 6.8:1 */
+  --rp-status-danger-bg: rgba(163, 52, 43, 0.09);
 
-  /* Уровни на светлом: тёмные тона вместо светлых. Мятный #6dbf8f на
-     пергаменте даёт 1.9:1 — как полоса он ещё виден, но как цвет номера
-     модуля уже нечитаем. Здесь взяты те же оттенки, что и остальные
-     акценты светлой темы: зелёный 5.9:1, золотой 5.0:1, терракота 5.4:1
-     на поверхности карточки. */
-  --rp-level-1: var(--rp-color-green-700);
-  --rp-level-2: #8f6119;
-  --rp-level-3: #a3522e;
+  /* Уровни: зелёный — синий не берём, он занят акцентом и номер модуля
+     стал бы неотличим от ссылки. */
+  --rp-level-1: #1a6b45;
+  --rp-level-2: #8a5a12;
+  --rp-level-3: #9c4a2c;
 
   --rp-student-bg: var(--rp-learn-bg);
-  --rp-student-surface: var(--rp-color-parchment-50);
-  --rp-student-surface-raised: var(--rp-color-parchment-200);
-  --rp-student-border: rgba(43, 36, 23, 0.14);
-  --rp-student-text: var(--rp-color-ink-900);
-  --rp-student-accent: var(--rp-color-green-700);
-  --rp-student-accent-strong: var(--rp-color-green-800);
-  --rp-student-accent-alt: #377b58;
+  --rp-student-surface: var(--rp-color-sky-50);
+  --rp-student-surface-raised: var(--rp-color-sky-100);
+  --rp-student-border: rgba(22, 48, 79, 0.13);
+  --rp-student-text: var(--rp-color-slate-900);
+  --rp-student-accent: var(--rp-color-blue-700);
+  --rp-student-accent-strong: var(--rp-color-blue-800);
+  --rp-student-accent-alt: var(--rp-color-blue-600);
   --rp-student-accent-contrast: #ffffff;
 
-  --rp-admin-bg: #e8e4da;
+  --rp-admin-bg: var(--rp-color-sky-200);
   --rp-admin-surface: #ffffff;
-  --rp-admin-surface-raised: var(--rp-color-parchment-100);
-  --rp-admin-border: rgba(43, 36, 23, 0.14);
-  --rp-admin-text: var(--rp-color-ink-900);
-  --rp-admin-accent: var(--rp-color-green-700);
-  --rp-admin-accent-strong: var(--rp-color-green-800);
-  --rp-admin-accent-alt: #377b58;
+  --rp-admin-surface-raised: var(--rp-color-sky-100);
+  --rp-admin-border: rgba(22, 48, 79, 0.13);
+  --rp-admin-text: var(--rp-color-slate-900);
+  --rp-admin-accent: var(--rp-color-blue-700);
+  --rp-admin-accent-strong: var(--rp-color-blue-800);
+  --rp-admin-accent-alt: var(--rp-color-blue-600);
   --rp-admin-accent-contrast: #ffffff;
 }
 
