@@ -24,8 +24,8 @@
 // 3. Показываем по одной записи и меняем их по кругу, а не выводим список.
 //    Список из сорока чужих успехов давит вместо того, чтобы подбадривать,
 //    и оттесняет вниз то, ради чего ученик открыл кабинет.
-import { t, getLang } from "./i18n.js?v=25";
-import { watchFeed } from "../../integration/firestore.js?v=23";
+import { t, getLang } from "./i18n.js?v=26";
+import { watchFeed } from "../../integration/firestore.js?v=24";
 
 const ROTATE_MS = 7000;
 

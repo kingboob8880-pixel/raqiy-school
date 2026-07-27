@@ -10,10 +10,10 @@
 //
 // Отметка «выполнил» и свидетельство «Аллах ответил» — запрос автора
 // 2026-07-26; сервер переносит уже поставленный флаг в общую ленту.
-import { t } from "./i18n.js?v=25";
-import { markAssignmentDone, unmarkAssignmentDone } from "../../integration/firestore.js?v=23";
+import { t } from "./i18n.js?v=26";
+import { markAssignmentDone, unmarkAssignmentDone } from "../../integration/firestore.js?v=24";
 import { openAssignment } from "./assignment-runner.js?v=1";
-import { assignmentGate } from "./assignments-gate.js?v=1";
+import { assignmentGate } from "./assignments-gate.js?v=2";
 import { withBase } from "./base-path.js?v=6";
 
 const ICONS = { reflection: "\u{1F4DD}", practice: "\u{1F3CB}", daily: "\u{1F4C5}" };
@@ -45,7 +45,7 @@ const answerAsked = new Set();
  */
 export function renderAssignments(container, items, opts = {}) {
   if (!container || !items || !items.length) return;
-  const { uid = null, moduleId = null, progress = {}, heading = "", preview = false, currentBook = null } = opts;
+  const { uid = null, moduleId = null, progress = {}, heading = "", preview = false, currentBook = null, full = false } = opts;
 
   const mp = progress?.[moduleId] || {};
   const doneSet = new Set(mp.doneAssignments || []);
@@ -62,7 +62,7 @@ export function renderAssignments(container, items, opts = {}) {
       currentBook,
       // Замок считаем на карточку, а не на список: в одном модуле часть
       // книг сдана, часть нет.
-      gate: assignmentGate(a, progress, { moduleId, preview }),
+      gate: assignmentGate(a, progress, { moduleId, preview, full }),
     })).join("")}</div>`;
   container.hidden = false;
 

@@ -311,9 +311,9 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=30";
-    import { MODULES, isModuleUnlocked } from "../js/modules-data.js?v=35";
+    import { MODULES, isModuleUnlocked } from "../js/modules-data.js?v=36";
     import { statusBadgeHtml } from "../js/markdown-loader.js?v=34";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=25";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=26";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
     import { initCommunityFeed, stopCommunityFeed } from "../js/community-feed.js?v=7";
@@ -363,10 +363,12 @@
     let currentUser = null;
     let currentProgress = null;
     let currentIsAdmin = false;
+    // Доступ, выданный автором вручную (поле fullAccess, 2026-07-27).
+    let currentFullAccess = false;
     let activeLevel = "all";
 
     function isUnlocked(m) {
-      return !currentUser || currentIsAdmin || isModuleUnlocked(m.id, currentProgress);
+      return !currentUser || currentIsAdmin || isModuleUnlocked(m.id, currentProgress, currentFullAccess);
     }
     function isDone(m) {
       return currentProgress?.[m.id]?.status === "done";
@@ -704,6 +706,7 @@
       if (!user) {
         currentProgress = null;
         currentIsAdmin = false;
+        currentFullAccess = false;
         // Гостю ленту не показываем: правила Firestore пускают в неё только
         // вошедших, и подписка всё равно упала бы на правах.
         stopCommunityFeed();
@@ -711,6 +714,7 @@
         const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
         currentProgress = profile?.progress || {};
         currentIsAdmin = admin;
+        currentFullAccess = !!profile?.fullAccess;
         initCommunityFeed(document.getElementById("community-feed"), user.uid);
       }
       renderList(document.getElementById("module-search").value);

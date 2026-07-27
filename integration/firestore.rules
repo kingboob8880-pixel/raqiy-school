@@ -35,9 +35,19 @@ service cloud.firestore {
     match /students/{uid} {
       allow create: if isOwner(uid);
       allow read: if isOwner(uid) || isAdmin();
-      // Ученик правит свой профиль/прогресс, но не поле paid — это переключает
-      // только админ вручную (project.md §18).
-      allow update: if (isOwner(uid) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['paid']))
+      // Ученик правит свой профиль/прогресс, но не поля выданных прав —
+      // их переключает только админ вручную (project.md §18).
+      //
+      // Список расширен 2026-07-27 вместе с fullAccess. Раньше здесь стоял
+      // один 'paid', а certificateGranted и rukyaProAccess ученик мог
+      // выставить себе сам обычным обновлением своего же документа —
+      // выдать себе сертификат и доступ к программе. Ставим все четыре
+      // разом: поле, которое выдаёт права, ученику писать нечего.
+      allow update: if (isOwner(uid)
+                        && !request.resource.data.diff(resource.data).affectedKeys()
+                             .hasAny(['paid', 'fullAccess', 'fullAccessAt',
+                                      'certificateGranted', 'certificateGrantedAt',
+                                      'rukyaProAccess']))
                     || isAdmin();
       allow delete: if isAdmin();
 
@@ -123,9 +133,15 @@ service cloud.firestore {
     match /content/{docId} {
       // Архив — исключение из общего правила "оплатил → читает всё": даже
       // paid == true не даёт доступа к этому docId, только isAdmin().
+      // fullAccess — доступ, выданный автором вручную (кнопка «Всё
+      // открыто» в кабинете админа, 2026-07-27). Читает так же, как
+      // оплативший: иначе «доступ ко всем модулям» означал бы
+      // одиннадцать страниц с урезанными отрывками. Архив им тоже не
+      // открывается — исключение выше действует для всех, кроме админа.
       allow read: if isAdmin()
                   || (!isArchiveDoc(docId) && isSignedIn()
-                      && get(/databases/$(database)/documents/students/$(request.auth.uid)).data.paid == true);
+                      && (get(/databases/$(database)/documents/students/$(request.auth.uid)).data.paid == true
+                          || get(/databases/$(database)/documents/students/$(request.auth.uid)).data.fullAccess == true));
       allow write: if false;
     }
   }

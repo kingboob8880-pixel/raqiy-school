@@ -18,13 +18,13 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=30";
-    import { t, getLang, moduleTitle } from "../js/i18n.js?v=25";
-    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=35";
+    import { t, getLang, moduleTitle } from "../js/i18n.js?v=26";
+    import { getModule, QUIZ_PASS_THRESHOLD, MODULES, bookKey } from "../js/modules-data.js?v=36";
     import { QUIZZES } from "../js/quiz-data.js?v=8";
     import { loadExamDoc } from "../js/exam-loader.js?v=9";
     import { assignmentsForBook } from "../js/assignments-data.js?v=4";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
-    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=23";
+    import { recordQuizResult, recordBookQuizResult } from "../../integration/firestore.js?v=24";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
@@ -402,7 +402,7 @@
       try {
         const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
         currentStudentName = profile?.name || "";
-        unlocked = admin || !!profile?.paid;
+        unlocked = admin || !!profile?.fullAccess || !!profile?.paid;
       } catch (err) {
         console.warn(err);
         root.innerHTML = `

@@ -185,10 +185,10 @@
 
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=30";
-    import { t, getLang, moduleTitle, localLevel } from "../js/i18n.js?v=25";
+    import { t, getLang, moduleTitle, localLevel } from "../js/i18n.js?v=26";
     import { watchAuth, getStudentProfile, logout } from "../../integration/auth.js?v=11";
-    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage, editMessage, deleteMessage } from "../../integration/firestore.js?v=23";
-    import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress, computeAchievements } from "../js/modules-data.js?v=35";
+    import { computeOverallProgress, computeAverageScore, computeStreak, daysSince, watchMessages, markThreadRead, sendMessage, sendMediaMessage, editMessage, deleteMessage } from "../../integration/firestore.js?v=24";
+    import { MODULES, bookKey, findNextLesson, computeLevelBadges, computeModuleProgress, computeAchievements } from "../js/modules-data.js?v=36";
     import { withBase } from "../js/base-path.js?v=6";
     import { renderMessages, wireChatForm, scrollToBottom, wireVoicePlayers, wireMessageActions } from "../js/chat-ui.js?v=12";
     import { initCommunityFeed } from "../js/community-feed.js?v=7";
@@ -277,7 +277,8 @@
       bookGrid.innerHTML = MODULES.map((m) => {
         const moduleProgress = profile?.progress?.[m.id];
         const done = moduleProgress?.status === "done";
-        const locked = !profile?.paid;
+        // fullAccess — доступ, выданный автором вручную (2026-07-27).
+        const locked = !profile?.paid && !profile?.fullAccess;
         const stateLabel = done ? t("dash.passed") : moduleProgress?.status === "in_progress" ? t("dash.inProgressSt") : t("dash.notStartedSt");
         const thumb = m.cover ? withBase(m.cover.replace(/\.jpg$/, "-thumb.jpg")) : null;
         const staleDays = done ? daysSincePassed(moduleProgress?.passedAt) : null;
@@ -351,7 +352,10 @@
       const avg = computeAverageScore(profile?.progress);
       document.getElementById("stat-score").textContent = avg === null ? "—" : avg + "%";
       document.getElementById("stat-streak").textContent = computeStreak(profile?.progress?.activityDates);
-      document.getElementById("stat-status").textContent = profile?.paid ? t("dash.paid") : t("dash.trial");
+      // Выданный вручную доступ — своя подпись, а не «Оплачено»: оплаты не
+      // было, и путать эти два состояния в кабинете нельзя.
+      document.getElementById("stat-status").textContent =
+        profile?.paid ? t("dash.paid") : profile?.fullAccess ? t("dash.fullAccess") : t("dash.trial");
 
       document.getElementById("badge-row").innerHTML = computeLevelBadges(profile?.progress).map((b) => `
         <span class="level-badge ${b.complete ? "level-badge--complete" : ""}">${b.complete ? "🏅" : "⏳"} ${b.level} ${b.doneCount}/${b.total}</span>
@@ -484,7 +488,7 @@
         document.getElementById("rukya-pro-section").hidden = false;
       }
 
-      if (!profile?.paid) {
+      if (!profile?.paid && !profile?.fullAccess) {
         document.getElementById("unpaid-notice").hidden = false;
       }
 

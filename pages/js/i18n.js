@@ -641,6 +641,21 @@ const S = {
   "assign.openCount":    { ru: "открыто", en: "unlocked", uz: "ochiq" },
   "quiz.toPractice":     { ru: "К упражнению →", en: "To the exercise →", uz: "Mashqqa →" },
 
+  // ── Доступ, выданный автором вручную (запрос автора 2026-07-27) ──
+  // Поле fullAccess в профиле ученика. Отдельно от paid намеренно: оплата —
+  // факт о деньгах, по ней считается статистика; выданный доступ — решение
+  // автора. Смешаешь их — и ответа на «сколько человек реально оплатили»
+  // больше не будет никогда.
+  "admin.fullCol":       { ru: "Всё открыто", en: "Full access", uz: "Hammasi ochiq" },
+  "admin.filterFull":    { ru: "Всё открыто", en: "Full access", uz: "Hammasi ochiq" },
+  "admin.grantFull":     { ru: "Открыть весь курс", en: "Grant full access", uz: "Butun kursni ochish" },
+  "admin.revokeFull":    { ru: "Закрыть полный доступ", en: "Revoke full access", uz: "To'liq kirishni yopish" },
+  "admin.confirmFull":   { ru: "Открыть все модули, упражнения и полный текст книг без оплаты —", en: "Open all modules, exercises and full book texts without payment —", uz: "Barcha modullar, mashqlar va kitob matnlarini to'lovsiz ochish —" },
+  "admin.confirmRevokeFull": { ru: "Закрыть полный доступ? Останется только то, что ученик прошёл сам —", en: "Revoke full access? Only what the student passed on their own will remain —", uz: "To'liq kirishni yopasizmi? Faqat o'zi o'tgani qoladi —" },
+  "admin.fullGranted":   { ru: "Полный доступ открыт", en: "Full access granted", uz: "To'liq kirish ochildi" },
+  "admin.fullRevoked":   { ru: "Полный доступ закрыт", en: "Full access revoked", uz: "To'liq kirish yopildi" },
+  "dash.fullAccess":     { ru: "Полный доступ", en: "Full access", uz: "To'liq kirish" },
+
   // ── Окно упражнения (решение автора 2026-07-27) ──
   // Карточка описывала упражнение, но провести его было негде: человек
   // закрывал вкладку и делал это где-то у себя, без порядка, без счёта и

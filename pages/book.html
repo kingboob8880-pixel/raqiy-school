@@ -117,15 +117,15 @@
   <script type="module">
     import { renderHeader, renderFooter, showToast } from "./js/layout.js?v=30";
     import { loadMarkdownDoc, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids } from "./js/markdown-loader.js?v=34";
-    import { t, getLang, moduleTitle } from "./js/i18n.js?v=25";
+    import { t, getLang, moduleTitle } from "./js/i18n.js?v=26";
     import { printBarHtml, wirePrintBar } from "./js/print-doc.js?v=8";
     import { setupReadingPosition } from "./js/reading-position.js?v=8";
-    import { bookKey, MODULES, isModuleUnlocked } from "./js/modules-data.js?v=35";
+    import { bookKey, MODULES, isModuleUnlocked } from "./js/modules-data.js?v=36";
     import { assignmentsForBook, moduleOfAssignment } from "./js/assignments-data.js?v=4";
-    import { renderAssignments } from "./js/assignments-ui.js?v=3";
+    import { renderAssignments } from "./js/assignments-ui.js?v=4";
     import { withBase } from "./js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../integration/auth.js?v=11";
-    import { getFullBookContent, saveUnderstanding, saveBookmark, removeBookmark, getBookmarks } from "../integration/firestore.js?v=23";
+    import { getFullBookContent, saveUnderstanding, saveBookmark, removeBookmark, getBookmarks } from "../integration/firestore.js?v=24";
 
     renderHeader("learn");
     renderFooter();
@@ -228,7 +228,10 @@
             }
             const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
             // Module lock check — students cannot access lessons in locked modules
-            if (owningModule && !admin && !isModuleUnlocked(owningModule.id, profile?.progress)) {
+            // fullAccess — доступ, выданный автором вручную (кнопка «Всё открыто»
+            // в кабинете админа, 2026-07-27): снимает и порядок модулей, и пейвол.
+            const fullAccess = !!profile?.fullAccess;
+            if (owningModule && !admin && !isModuleUnlocked(owningModule.id, profile?.progress, fullAccess)) {
               root.innerHTML = `
                 <div style="text-align:center; padding: var(--rp-space-6);">
                   <p style="font-size:2rem;">🔒</p>
@@ -238,7 +241,7 @@
                 </div>`;
               return;
             }
-            const unlocked = admin || !!profile?.paid;
+            const unlocked = admin || fullAccess || !!profile?.paid;
             if (bodyEl && !unlocked) applyPaywall(bodyEl, doc.meta);
             // Самопроверка — любому вошедшему, вне зависимости от оплаты
             // (setupSelfCheck — общая с modules/module.html, js/markdown-loader.js).
@@ -303,6 +306,7 @@
                   // На странице самой книги ссылка «Открыть книгу» в замке
                   // вела бы на эту же страницу — не показываем её.
                   currentBook: docPath,
+                  full: fullAccess,
                   // См. module.html: админу кнопки показываем выключенными,
                   // а не прячем — иначе выглядит как поломка.
                   preview: admin,

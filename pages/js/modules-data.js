@@ -204,9 +204,15 @@ export function getModule(id) {
   return MODULES.find((m) => m.id === Number(id));
 }
 
-/** Check if a module is unlocked for a student. Module 1 is always unlocked.
- * Module N (N>1) requires module N-1 quiz to be passed (status==="done"). */
-export function isModuleUnlocked(moduleId, progress) {
+/** Открыт ли модуль ученику. Первый открыт всегда, модуль N — после
+ * сданного теста модуля N−1.
+ *
+ * full — доступ, выданный автором вручную (поле fullAccess в профиле,
+ * кнопка «Всё открыто» в кабинете админа, 2026-07-27). Снимает порядок
+ * целиком: открыты все модули сразу. Параметр третий и необязательный,
+ * чтобы старые вызовы с двумя аргументами работали как прежде. */
+export function isModuleUnlocked(moduleId, progress, full = false) {
+  if (full) return true;
   if (moduleId <= 1) return true;
   return progress?.[moduleId - 1]?.status === "done";
 }

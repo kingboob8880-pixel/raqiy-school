@@ -20,7 +20,7 @@
 //   3. у книги нет экзамена. Сейчас таких нет ни одной, но появится
 //      новый урок без теста — упражнение к нему должно открыться, а не
 //      остаться запертым навсегда с невыполнимым условием.
-import { MODULES, bookKey, isModuleUnlocked } from "./modules-data.js?v=35";
+import { MODULES, bookKey, isModuleUnlocked } from "./modules-data.js?v=36";
 
 /** Урок по пути к книге — вместе с модулем, которому принадлежит. */
 function lessonByDoc(docPath) {
@@ -40,9 +40,13 @@ function lessonByDoc(docPath) {
  *
  * progress — объект прогресса ученика. Для админа и в режиме просмотра
  * замок не считаем вовсе: он смотрит курс, а не проходит его.
+ *
+ * opts.full — доступ, выданный автором вручную (поле fullAccess, кнопка
+ * «Всё открыто» в кабинете админа, 2026-07-27). Снимает замки целиком:
+ * и порядок модулей, и требование сданного экзамена.
  */
 export function assignmentGate(a, progress, opts = {}) {
-  if (opts.preview) return { open: true };
+  if (opts.preview || opts.full) return { open: true };
 
   const moduleId = a.moduleId ?? opts.moduleId ?? null;
   if (moduleId && !isModuleUnlocked(moduleId, progress)) {

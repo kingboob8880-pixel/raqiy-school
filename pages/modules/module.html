@@ -31,16 +31,16 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=30";
-    import { getModule, bookKey, isModuleUnlocked } from "../js/modules-data.js?v=35";
+    import { getModule, bookKey, isModuleUnlocked } from "../js/modules-data.js?v=36";
     import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal } from "../js/markdown-loader.js?v=34";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=25";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=26";
     import { printBarHtml, wirePrintBar } from "../js/print-doc.js?v=8";
     import { setupReadingPosition } from "../js/reading-position.js?v=8";
     import { ASSIGNMENTS } from "../js/assignments-data.js?v=4";
-    import { renderAssignments } from "../js/assignments-ui.js?v=3";
+    import { renderAssignments } from "../js/assignments-ui.js?v=4";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=11";
-    import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=23";
+    import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=24";
 
     renderHeader("learn");
     renderFooter();
@@ -191,7 +191,9 @@
           }
           const [profile, admin] = await Promise.all([getStudentProfile(user.uid), isAdmin(user.uid)]);
           // Module lock check — students cannot access module N+1 until module N quiz is passed
-          if (!admin && !isModuleUnlocked(mod.id, profile?.progress)) {
+          // fullAccess — доступ, выданный автором вручную (2026-07-27).
+          const fullAccess = !!profile?.fullAccess;
+          if (!admin && !isModuleUnlocked(mod.id, profile?.progress, fullAccess)) {
             root.innerHTML = `
               <div class="card" style="text-align:center; padding: var(--rp-space-6);">
                 <p style="font-size:2rem;">🔒</p>
@@ -201,7 +203,7 @@
               </div>`;
             return;
           }
-          const unlocked = admin || !!profile?.paid;
+          const unlocked = admin || fullAccess || !!profile?.paid;
           if (bodyEl && !unlocked) applyPaywall(bodyEl, doc.meta);
           // Самопроверка — та же общая функция, что на book.html (js/markdown-loader.js).
           const noteRoot = document.getElementById("module-note");
@@ -253,6 +255,7 @@
                 // недоступна, но кнопки видны — иначе карточка выглядит
                 // сломанной (правка 2026-07-27, замечание автора).
                 preview: admin,
+                full: fullAccess,
               },
             );
             // Печать/PDF — только при полном доступе: печатать урезанный
