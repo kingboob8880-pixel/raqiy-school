@@ -116,7 +116,7 @@ student.init({ tg, db, CHAT, logger });
  * внутри которого оно создаётся, — иначе из-за него не ушло бы и
  * сообщение в Telegram.
  */
-async function notifyStudent(uid, { type, title, body, link }) {
+async function notifyStudent(uid, { type, title, body, link, skipTelegram }) {
   try {
     await db.collection("students").doc(uid).collection("notifications").add({
       type,
@@ -128,6 +128,37 @@ async function notifyStudent(uid, { type, title, body, link }) {
     });
   } catch (e) {
     logger.error("notifyStudent", uid, type, e);
+  }
+
+  // ⚠️ ТО ЖЕ САМОЕ — В TELEGRAM, если ученик к нему привязан.
+  //
+  // Запись выше кладётся в students/{uid}/notifications, и её показывает
+  // колокольчик В ШАПКЕ САЙТА. Для ученика, который записался через бота и
+  // сайт не открывает вовсе (запрос автора 2026-07-27), это означало вот
+  // что: он оплатил, автор нажал «подтвердить» — и человек об этом не
+  // узнал. Сидел бы с вводными отрывками при открытом курсе.
+  // skipTelegram — когда сообщение уже отправлено ботом напрямую. Иначе
+  // ученик получал бы его дважды: один раз полным текстом от бота, второй
+  // раз обрезанным превью отсюда.
+  if (skipTelegram) return;
+
+  try {
+    const snap = await db.doc(`students/${uid}`).get();
+    const chatId = snap.exists ? snap.data().tgChatId : null;
+    if (!chatId) return;
+
+    const rows = [[{ text: "Открыть меню", callback_data: "m" }]];
+    if (type === "paid") rows.unshift([{ text: "📖 К модулям", callback_data: "mods" }]);
+    if (type === "message") rows.unshift([{ text: "💬 Ответить", callback_data: "ask" }]);
+
+    await tg("sendMessage", {
+      chat_id: chatId,
+      text: `<b>${title}</b>${body ? "\n\n" + body : ""}`,
+      parse_mode: "HTML",
+      reply_markup: { inline_keyboard: rows },
+    });
+  } catch (e) {
+    logger.error("notifyStudent telegram", uid, type, e);
   }
 }
 
@@ -228,11 +259,19 @@ exports.onChatMessage = functions.runWith({ secrets: SECRETS }).firestore
         title: "Сообщение от наставника",
         body: preview,
         link: "/pages/dashboard/student.html",
+        // Ответ, написанный реплаем в Telegram, бот уже доставил ученику
+        // целиком. Колокольчик на сайте всё равно ставим — а второе
+        // сообщение в Telegram с обрезанным превью не шлём.
+        skipTelegram: msg.via === "telegram",
       });
       return;
     }
 
     if (msg.from !== "student") return;
+    // Вопрос, заданный через бота, автору уже отправлен — причём с пометкой
+    // #uid, по которой работает ответ реплаем. Второе сообщение отсюда было
+    // бы дублем без этой пометки.
+    if (msg.via === "telegram") return;
     const studentDoc = await db.doc(`students/${uid}`).get();
     const name = studentDoc.exists ? (studentDoc.data().name || uid) : uid;
     let preview = msg.text || `(${msg.type || "медиа"})`;

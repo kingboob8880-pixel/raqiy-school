@@ -668,6 +668,10 @@ async function mentorReply(msg) {
   if (!exists.exists) return false;
   await deps.db.collection(`students/${uid}/messages`).add({
     from: "admin", text: msg.text, createdAt: new Date(), read: false,
+    // Пометка нужна триггеру onChatMessage: он по ней понимает, что в
+    // Telegram сообщение уже ушло, и не отправляет его вторым обрезанным
+    // превью.
+    via: "telegram",
   });
   const link = await deps.db.collection("tgUsers").where("uid", "==", uid).limit(1).get();
   if (!link.empty) {
