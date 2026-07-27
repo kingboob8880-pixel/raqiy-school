@@ -29,7 +29,7 @@ export const MODULES = [
       // Стоит сразу после «Волевого акта»: там дана анатомия намерения, а
       // здесь — готовые формулировки по случаям, собранные по тому же
       // каркасу. Раньше ученик закрывал книгу и придумывал формулировку сам.
-      { title: "Шаблоны намерения — готовые формулировки для каждого случая", doc: "/content/reference/niyat.md", exam: "/content/exams/module-1-niyat.md" },
+      { title: "Шаблоны намерения — короткие формулы для каждого случая", doc: "/content/reference/niyat.md", exam: "/content/exams/module-1-niyat.md" },
     ],
     intro_video: "/assets/video/rukya-intro.mp4",
   },
