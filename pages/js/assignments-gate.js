@@ -20,7 +20,7 @@
 //   3. у книги нет экзамена. Сейчас таких нет ни одной, но появится
 //      новый урок без теста — упражнение к нему должно открыться, а не
 //      остаться запертым навсегда с невыполнимым условием.
-import { MODULES, bookKey, isModuleUnlocked } from "./modules-data.js?v=40";
+import { MODULES, bookKey, isModuleUnlocked } from "./modules-data.js?v=41";
 
 /** Урок по пути к книге — вместе с модулем, которому принадлежит. */
 function lessonByDoc(docPath) {

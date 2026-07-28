@@ -1007,7 +1007,6 @@ const LESSON_TITLES = {
   // Module 9
   "/content/module-9/granitsy-very-i-zastupnichestvo.md": { en: "Boundaries of Faith — Uniqueness of Truth and Intercession", uz: "Imon chegaralari — haqiqat yagonaligi va shafoat masalasi" },
   "/content/module-9/sut-istiny.md":     { en: "What Is Truth — Analysis with Evidences from Quran and Sunnah", uz: "Haqiqat nima — Qur'on va Sunna dalillari bilan tahlil" },
-  "/content/module-9/voprosy-mogil.md":  { en: "Questions of Requests at the Grave — Classification of Appeals to the Deceased", uz: "Qabr oldida so'rash masalalari — vafot etganlarga murojaat tasnifi" },
   "/content/module-9/voprosy-zastup.md": { en: "Questions of Intercession — Analysis at the Prophet's ﷺ Grave", uz: "Shafoat masalalari — Payg'ambar ﷺ qabri oldidagi tahlil" },
   // Module 10
   "/content/module-10/raznitsa-praktik-vs-teoretik.md": { en: "Difference Between Practitioner and Theorist in Ruqyah", uz: "Ruqyada amaliyotchi va nazariyotchi o'rtasidagi farq" },

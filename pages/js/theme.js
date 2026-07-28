@@ -8,7 +8,7 @@ import { withBase } from "./base-path.js?v=6";
 // по-русски (аудит 2026-07-27): человек переключал язык, шапка менялась,
 // а заголовок, лид и ОБЕ главные кнопки — «Читать бесплатные отрывки» и
 // «Купить курс» — оставались русскими. Выглядело как поломка.
-import { t } from "./i18n.js?v=35";
+import { t } from "./i18n.js?v=36";
 const STORAGE_KEY = "raqiy-site-theme";
 const DEFAULT_THEME = "emerald";
 

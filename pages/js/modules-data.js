@@ -29,9 +29,15 @@ export const MODULES = [
       //
       // Модули не перенумерованы намеренно: у тех, кто уже учится, прогресс
       // записан по номерам, и сдвиг превратил бы пройденное в чужое.
+      // ⚠️ ПЕРВАЯ КНИГА КУРСА (решение автора 2026-07-28): «пусть будет
+      // основа про поклонение и про то, какое место это занимает в
+      // заклинании». Написана специально: разбор акыды на сайте был, а
+      // ответа на вопрос «почему рукья вообще работает и от Кого» — не было
+      // нигде. Она же связывает единобожие с якыном и намерением, которые
+      // идут следом.
+      { title: "Поклонение — кому ты поклоняешься и какое место это занимает в заклинании", doc: "/content/module-1/poklonenie.md", exam: "/content/exams/module-1-poklonenie.md" },
       { title: "Что есть истина — разбор с доказательствами из Корана и Сунны", doc: "/content/module-9/sut-istiny.md", exam: "/content/exams/module-9-sut-istiny.md" },
       { title: "Границы веры — единственность Истины и вопрос заступничества", doc: "/content/module-9/granitsy-very-i-zastupnichestvo.md", exam: "/content/exams/module-9-granitsy-very-i-zastupnichestvo.md" },
-      { title: "Вопросы просьб у могилы — классификация обращений к умершим", doc: "/content/module-9/voprosy-mogil.md", exam: "/content/exams/module-9-voprosy-mogil.md" },
       { title: "Вопросы заступничества — разбор у могилы Пророка ﷺ", doc: "/content/module-9/voprosy-zastup.md", exam: "/content/exams/module-9-voprosy-zastup.md" },
       { title: "Метод уединения с таухидом — визуализация через имена Аллаха", doc: "/content/module-1/metod-taukhid.md", exam: "/content/exams/module-1-metod-taukhid.md" },
       // Дальше — то, что стоит НА этом основании: убеждённость, мольба, намерение.

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-07-28T15:19:44.375Z",
+ "generatedAt": "2026-07-28T15:30:01.495Z",
  "note": "Сгенерировано scripts/build-course-data.mjs — руками не править.",
  "passThreshold": 0.7,
  "modules": [
@@ -9,6 +9,12 @@
    "level": "Начальный",
    "doc": "/content/module-1/index.md",
    "lessons": [
+    {
+     "title": "Поклонение — кому ты поклоняешься и какое место это занимает в заклинании",
+     "doc": "/content/module-1/poklonenie.md",
+     "exam": "/content/exams/module-1-poklonenie.md",
+     "key": "_content_module-1_poklonenie_md"
+    },
     {
      "title": "Что есть истина — разбор с доказательствами из Корана и Сунны",
      "doc": "/content/module-9/sut-istiny.md",
@@ -20,12 +26,6 @@
      "doc": "/content/module-9/granitsy-very-i-zastupnichestvo.md",
      "exam": "/content/exams/module-9-granitsy-very-i-zastupnichestvo.md",
      "key": "_content_module-9_granitsy-very-i-zastupnichestvo_md"
-    },
-    {
-     "title": "Вопросы просьб у могилы — классификация обращений к умершим",
-     "doc": "/content/module-9/voprosy-mogil.md",
-     "exam": "/content/exams/module-9-voprosy-mogil.md",
-     "key": "_content_module-9_voprosy-mogil_md"
     },
     {
      "title": "Вопросы заступничества — разбор у могилы Пророка ﷺ",
@@ -431,8 +431,8 @@
   "1": [
    {
     "id": "m1-0",
-    "book": "/content/module-9/sut-istiny.md",
-    "bookKey": "_content_module-9_sut-istiny_md",
+    "book": "/content/module-1/poklonenie.md",
+    "bookKey": "_content_module-1_poklonenie_md",
     "title": "Свидетельство своими словами",
     "description": "Напишите своими словами, что означает «нет никого достойного поклонения, кроме Аллаха» и что из этого следует лично для вас как для того, кто собирается лечить людей. Без цитат — так, как объяснили бы человеку, который спросил вас впервые.",
     "check": "В тексте есть ответ на вопрос «от Кого сила», и он дан без единого заимствованного термина.",
@@ -460,24 +460,6 @@
      "Напишите, где проходит граница между дозволенным обращением и обращением, выводящим из веры.",
      "Уберите каждый термин, который остался без пояснения.",
      "Сократите до половины страницы."
-    ],
-    "days": 0,
-    "intent": null,
-    "counter": null
-   },
-   {
-    "id": "m9-3",
-    "book": "/content/module-9/voprosy-mogil.md",
-    "bookKey": "_content_module-9_voprosy-mogil_md",
-    "title": "Классификация обращений",
-    "description": "Составьте таблицу обращений к умершим: вид обращения → дозволено или нет → довод. Минимум восемь строк.",
-    "check": "По таблице вы разбираете новый пример, которого в уроке не было.",
-    "type": "reflection",
-    "duration": "30 мин",
-    "steps": [
-     "Составьте таблицу: вид обращения → дозволено или нет → довод.",
-     "Заполните не менее восьми строк.",
-     "Разберите по таблице новый пример, которого в уроке не было."
     ],
     "days": 0,
     "intent": null,
