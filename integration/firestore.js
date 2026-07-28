@@ -633,3 +633,93 @@ export async function getBookmarks(uid, bookId) {
   const snap = await getDoc(docRef);
   return snap.data()?.bookmarks?.[bookId] || [];
 }
+
+// ---------------------------------------------------------------------------
+// СУПЕРВИЗИЯ ГЛАЗАМИ НАСТАВНИКА (запрос автора 2026-07-28: «и как же я
+// должен проверять?»).
+//
+// Что было. Разборы можно было проверять только в Telegram: страница
+// супервизии показывала автору одну строчку «разборы приходят вам в
+// Telegram» и больше ничего. То есть самая содержательная работа курса —
+// чтение девяти полей чужого случая и написание заключения — делалась с
+// телефона, в чате, без возможности видеть текст целиком и сравнивать с
+// предыдущими разборами того же ученика.
+//
+// Здесь то же самое для сайта. Логика вердикта повторяет функции бота
+// (functions/tg-admin.js#applyVerdict) до мелочей: тот же пересчёт по
+// факту, те же поля, тот же статус.
+// ---------------------------------------------------------------------------
+
+/** Очередь разборов на проверке — по всем ученикам.
+ *
+ *  Обходим учеников по одному, а не запросом collectionGroup, намеренно:
+ *  запрос по группе коллекций требует отдельного индекса с областью
+ *  «группа», а такие индексы Firestore сам не создаёт — первый же вызов у
+ *  автора упал бы с ошибкой и ссылкой «создайте индекс». Школа небольшая,
+ *  цена обхода — несколько лишних чтений.
+ */
+export async function listPendingCases() {
+  const students = await listStudents();
+  const out = [];
+  await Promise.all(students.map(async (s) => {
+    try {
+      const snap = await getDocs(query(
+        collection(db, "students", s.uid, "cases"),
+        where("status", "==", "submitted"),
+      ));
+      for (const d of snap.docs) {
+        out.push({ uid: s.uid, name: s.name || s.email || s.uid, id: d.id, ...d.data() });
+      }
+    } catch (e) { console.warn("listPendingCases", s.uid, e); }
+  }));
+  // Первым — тот, кто ждёт дольше всех.
+  return out.sort((a, b) => (a.submittedAt?.toMillis?.() || 0) - (b.submittedAt?.toMillis?.() || 0));
+}
+
+/** Все разборы одного ученика — чтобы наставник видел предыдущие. */
+export async function listStudentCases(uid) {
+  const snap = await getDocs(query(collection(db, "students", uid, "cases"), orderBy("n", "asc")));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/** Заключение наставника: принять или вернуть на доработку.
+ *
+ *  ⚠️ Число принятых ПЕРЕСЧИТЫВАЕТСЯ ЗАПРОСОМ, а не увеличивается на
+ *  единицу. Иначе повторная выдача вердикта по одному и тому же разбору
+ *  засчитала бы его дважды — и ученик получил бы допуск к практике за два
+ *  случая вместо трёх.
+ *
+ *  via: "site" — метка для триггера уведомлений: сообщение ученику шлёт
+ *  сервер, но только для вердиктов с сайта. Вердикты из бота бот отправляет
+ *  сам, и без этой метки ученик получал бы их дважды.
+ */
+export async function setCaseVerdict(uid, caseId, accept, text, reviewerUid) {
+  const ref = doc(db, "students", uid, "cases", caseId);
+  await updateDoc(ref, {
+    status: accept ? "accepted" : "returned",
+    verdict: { text, at: new Date(), via: "site" },
+    reviewedAt: serverTimestamp(),
+    reviewedBy: reviewerUid || null,
+  });
+
+  if (!accept) return { accepted: null };
+
+  const done = await getDocs(query(
+    collection(db, "students", uid, "cases"),
+    where("status", "==", "accepted"),
+  ));
+  const accepted = done.size;
+  await updateDoc(doc(db, "students", uid), {
+    supervision: {
+      accepted,
+      status: accepted >= CASES_REQUIRED_COUNT ? "passed" : "in_review",
+      updatedAt: serverTimestamp(),
+    },
+  });
+  return { accepted };
+}
+
+// Порог продублирован числом намеренно: integration/ не импортирует из
+// pages/, иначе клиентские хелперы начнут зависеть от страниц. Значение
+// одно на проект — pages/js/case-form.js, CASES_REQUIRED.
+const CASES_REQUIRED_COUNT = 3;

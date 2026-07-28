@@ -6,7 +6,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%23b0842c%27/%3E%3Ctext x=%2732%27 y=%2745%27 font-size=%2734%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27serif%27%3E%D8%B4%3C/text%3E%3C/svg%3E">
 <title>Супервизия — Онлайн-школа рукии</title>
 <link rel="stylesheet" href="../../design/tokens.css?v=24">
-<link rel="stylesheet" href="../../design/base.css?v=75">
+<link rel="stylesheet" href="../../design/base.css?v=76">
 </head>
 <body data-zone="learn">
   <noscript><p style="text-align:center;padding:2rem;">Для работы сайта необходим JavaScript.</p></noscript>
@@ -37,11 +37,12 @@
 
   <script type="module">
     import { renderHeader, renderFooter, showToast , showLoadError} from "../js/layout.js?v=35";
-    import { t, getLang } from "../js/i18n.js?v=34";
+    import { t, getLang } from "../js/i18n.js?v=35";
     import { MODULES } from "../js/modules-data.js?v=39";
     import { CASE_FIELDS, CASES_REQUIRED, CASE_STATUS, missingFields } from "../js/case-form.js?v=1";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=12";
-    import { watchCases, createCase, saveCaseDraft, submitCase } from "../../integration/firestore.js?v=27";
+    import { watchCases, createCase, saveCaseDraft, submitCase,
+             listPendingCases, listStudentCases, setCaseVerdict } from "../../integration/firestore.js?v=28";
     import { withBase } from "../js/base-path.js?v=6";
 
     renderHeader("learn");
@@ -52,6 +53,7 @@
 
     let uid = null, profile = null, cases = [], unwatch = null;
     let editing = null;   // { id, fields }
+    let adminUid = null;  // наставник: если задан — страница работает как панель проверки
 
     function esc(s) {
       return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -260,6 +262,166 @@
       }
     });
 
+    // ─────────────────────────────────────────────────────────────────
+    // ПАНЕЛЬ НАСТАВНИКА
+    // ─────────────────────────────────────────────────────────────────
+
+    function fmtDate(ts) {
+      const d = ts?.toDate ? ts.toDate() : (ts instanceof Date ? ts : null);
+      return d ? d.toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+    }
+
+    /** Очередь разборов на проверке. Первым — тот, кто ждёт дольше всех:
+     *  человек прислал разбор и ждёт ответа, и очередь по дате подачи —
+     *  единственный честный порядок. */
+    async function renderQueue() {
+      const state = document.getElementById("sv-state");
+      const list = document.getElementById("sv-list");
+      const form = document.getElementById("sv-form");
+      form.hidden = true; form.innerHTML = "";
+      state.classList.remove("skeleton-loading");
+      state.innerHTML = `<p class="form-note">${t("sv.queueLoading")}</p>`;
+
+      let pending;
+      try {
+        pending = await listPendingCases();
+      } catch (err) {
+        console.warn("supervision: очередь не загрузилась", err);
+        showLoadError(state);
+        return;
+      }
+
+      state.innerHTML = pending.length
+        ? `<h2 class="eyebrow eyebrow--muted">${t("sv.queue")} — ${pending.length}</h2>`
+        : `<div class="empty-state"><p>${t("sv.queueEmpty")}</p>
+             <p class="form-note">${t("sv.queueEmptyNote")}</p></div>`;
+
+      list.innerHTML = pending.map((c) => `
+        <button type="button" class="card sv-queue-item" data-open="${esc(c.uid)}|${esc(c.id)}">
+          <span class="sv-queue-item__name">${esc(c.name)}</span>
+          <span class="sv-queue-item__meta">${t("sv.caseN")} ${esc(String(c.n ?? "?"))} · ${esc(fmtDate(c.submittedAt))}</span>
+        </button>`).join("");
+    }
+
+    /** Один разбор целиком: девять полей, предыдущие случаи того же ученика
+     *  и поле заключения. Предыдущие показываем свёрнутыми намеренно —
+     *  наставнику важно видеть, растёт ли человек, но не тонуть в тексте. */
+    async function renderCase(studentUid, caseId) {
+      const state = document.getElementById("sv-state");
+      const list = document.getElementById("sv-list");
+      const form = document.getElementById("sv-form");
+      list.innerHTML = "";
+      state.innerHTML = `<button type="button" class="btn btn-ghost btn-sm" id="sv-back">‹ ${t("sv.queue")}</button>`;
+      form.hidden = false;
+      form.innerHTML = `<p class="form-note">${t("sv.queueLoading")}</p>`;
+
+      let all, current, student;
+      try {
+        [all, student] = await Promise.all([
+          listStudentCases(studentUid),
+          getStudentProfile(studentUid),
+        ]);
+        current = all.find((c) => c.id === caseId);
+      } catch (err) {
+        console.warn("supervision: разбор не загрузился", err);
+        showLoadError(form);
+        return;
+      }
+      if (!current) { form.innerHTML = `<p class="field-error">${t("sv.caseGone")}</p>`; return; }
+
+      const accepted = all.filter((c) => c.status === "accepted").length;
+      const others = all.filter((c) => c.id !== caseId && c.fields);
+
+      form.innerHTML = `
+        <article class="card">
+          <header class="sv-review__head">
+            <h2 style="margin:0;">${esc(student?.name || student?.email || studentUid)}</h2>
+            <p class="form-note" style="margin:0;">
+              ${t("sv.caseN")} ${esc(String(current.n ?? "?"))} · ${t("sv.acceptedSoFar")}: ${accepted} ${t("sv.of")} ${CASES_REQUIRED}
+              ${current.submittedAt ? ` · ${esc(fmtDate(current.submittedAt))}` : ""}
+            </p>
+          </header>
+
+          ${CASE_FIELDS.map((f) => `
+            <section class="sv-review__field">
+              <h3 class="sv-review__label">${esc(f.title)}</h3>
+              <p class="sv-review__text">${esc(current.fields?.[f.key] || "—")}</p>
+            </section>`).join("")}
+
+          ${others.length ? `
+            <details class="sv-review__prev">
+              <summary>${t("sv.prevCases")} — ${others.length}</summary>
+              ${others.map((c) => `
+                <div class="sv-review__prev-item">
+                  <p class="form-note"><b>${t("sv.caseN")} ${esc(String(c.n ?? "?"))}</b> · ${esc((CASE_STATUS[c.status] || {}).label || c.status)}</p>
+                  ${c.verdict?.text ? `<p class="sv-review__text">${esc(c.verdict.text)}</p>` : ""}
+                </div>`).join("")}
+            </details>` : ""}
+
+          <div class="sv-review__verdict">
+            <label for="sv-verdict"><b>${t("sv.verdictLabel")}</b></label>
+            <p class="form-note">${t("sv.verdictHint")}</p>
+            <textarea id="sv-verdict" rows="6" placeholder="${esc(t("sv.verdictPlaceholder"))}"></textarea>
+            <p class="field-error" id="sv-verdict-error" hidden></p>
+            <div class="hero-actions" style="margin-top: var(--rp-space-3);">
+              <button type="button" class="btn btn-primary" id="sv-accept">${t("sv.accept")}</button>
+              <button type="button" class="btn btn-outline" id="sv-return">${t("sv.return")}</button>
+            </div>
+          </div>
+        </article>`;
+
+      // Черновик заключения переживает случайное закрытие вкладки — как и
+      // черновик ученика. Заключение пишется дольше, чем кажется.
+      const dkey = `raqiy-verdict-${studentUid}-${caseId}`;
+      const ta = document.getElementById("sv-verdict");
+      try { ta.value = localStorage.getItem(dkey) || ""; } catch {}
+      ta.addEventListener("input", () => { try { localStorage.setItem(dkey, ta.value); } catch {} });
+
+      const decide = async (accept, btn) => {
+        const text = ta.value.trim();
+        const err = document.getElementById("sv-verdict-error");
+        // ⚠️ Заключение обязательно и при «принято». «Принято» без единого
+        // слова наставника — это не супервизия, а кнопка; слова автора здесь
+        // и есть то, за что ученик платит.
+        if (text.length < 20) {
+          err.hidden = false;
+          err.textContent = t("sv.verdictRequired");
+          ta.focus();
+          return;
+        }
+        err.hidden = true;
+        const both = [document.getElementById("sv-accept"), document.getElementById("sv-return")];
+        both.forEach((b) => { b.disabled = true; });
+        try {
+          const res = await setCaseVerdict(studentUid, caseId, accept, text, adminUid);
+          try { localStorage.removeItem(dkey); } catch {}
+          showToast(accept
+            ? (res.accepted >= CASES_REQUIRED ? t("sv.acceptedPassed") : t("sv.acceptedOk"))
+            : t("sv.returnedOk"));
+          await renderQueue();
+        } catch (e) {
+          console.warn("supervision: вердикт не сохранился", e);
+          err.hidden = false;
+          err.textContent = t("sv.saveFailed");
+          both.forEach((b) => { b.disabled = false; });
+        }
+      };
+
+      document.getElementById("sv-accept").addEventListener("click", (e) => decide(true, e.currentTarget));
+      document.getElementById("sv-return").addEventListener("click", (e) => decide(false, e.currentTarget));
+    }
+
+    // Один обработчик на страницу: очередь перерисовывается целиком.
+    document.addEventListener("click", (e) => {
+      if (!adminUid) return;
+      if (e.target.closest("#sv-back")) { renderQueue(); return; }
+      const open = e.target.closest("[data-open]");
+      if (open) {
+        const [u, id] = open.dataset.open.split("|");
+        renderCase(u, id);
+      }
+    });
+
     watchAuth(async (user) => {
       if (!user) {
         document.getElementById("sv-state").innerHTML = `<p>${t("sv.needLogin")}</p>`;
@@ -267,9 +429,17 @@
       }
       uid = user.uid;
       if (await isAdmin(user.uid)) {
-        document.getElementById("sv-state").classList.remove("skeleton-loading");
-        document.getElementById("sv-state").innerHTML =
-          `<p class="form-note">${t("sv.adminNote")}</p>`;
+        // ⚠️ РАНЬШЕ ЗДЕСЬ БЫЛА ОДНА СТРОЧКА «разборы приходят вам в Telegram»
+        // (замечание автора 2026-07-28: «и как же я должен проверять?»).
+        // Самая содержательная работа курса — прочитать девять полей чужого
+        // случая и написать заключение — делалась только с телефона, в чате,
+        // без возможности видеть текст целиком и сравнить с предыдущими
+        // разборами того же ученика. Теперь то же самое есть и здесь.
+        adminUid = user.uid;
+        // Подзаголовок страницы написан для ученика («разберите случаи своей
+        // практики») — наставнику он не подходит.
+        document.getElementById("sv-lead").textContent = t("sv.adminLead");
+        await renderQueue();
         return;
       }
       try {

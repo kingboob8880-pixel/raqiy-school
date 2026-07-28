@@ -16,8 +16,8 @@
 //     Для каждого сообщения в чате плашку не показываем: при живой
 //     переписке она выскакивала бы поверх текста каждые полминуты.
 import { withBase } from "./base-path.js?v=6";
-import { t, getLang } from "./i18n.js?v=34";
-import { watchNotifications, markNotificationRead, markAllNotificationsRead } from "../../integration/firestore.js?v=27";
+import { t, getLang } from "./i18n.js?v=35";
+import { watchNotifications, markNotificationRead, markAllNotificationsRead } from "../../integration/firestore.js?v=28";
 
 const ICONS = {
   message: "💬",

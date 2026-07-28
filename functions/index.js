@@ -548,6 +548,57 @@ async function buildFeedEntries(uid, before, after, pB, pA) {
   }
 }
 
+/** Заключение наставника, выставленное НА САЙТЕ, — ученику.
+ *
+ * Запрос автора 2026-07-28: проверять разборы можно теперь и на сайте, а не
+ * только в боте. Бот, выставляя вердикт, сам пишет ученику; сайт этого не
+ * может — правила Firestore запрещают клиенту создавать уведомления, и
+ * правильно делают: иначе ученик подделал бы себе «принято».
+ *
+ * Поэтому уведомление шлёт сервер, но ТОЛЬКО для вердиктов с сайта:
+ * verdict.via === "site". Без этой проверки ученик получал бы два
+ * сообщения на каждый вердикт из бота — одно от бота, одно отсюда.
+ *
+ * Заключение уходит целиком, а не превью: слова наставника здесь и есть
+ * то, за что ученик платит.
+ */
+exports.onCaseVerdict = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
+  .document("students/{uid}/cases/{caseId}")
+  .onUpdate(async (change, ctx) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const { uid } = ctx.params;
+
+    if (after.verdict?.via !== "site") return null;
+    if (before.status === after.status && before.verdict?.text === after.verdict?.text) return null;
+    if (!["accepted", "returned"].includes(after.status)) return null;
+
+    const accepted = after.status === "accepted";
+    const title = accepted ? `Случай ${after.n} принят` : `Случай ${after.n} возвращён на доработку`;
+
+    await notifyStudent(uid, {
+      type: "supervision",
+      title,
+      body: after.verdict?.text || "",
+      link: "/pages/supervision/index.html",
+    });
+
+    // Допуск к практике — отдельным сообщением: это не рядовое событие.
+    if (accepted) {
+      const st = await db.doc(`students/${uid}`).get();
+      const n = st.data()?.supervision?.accepted || 0;
+      if (n >= COURSE_CASES_REQUIRED) {
+        await notifyStudent(uid, {
+          type: "supervision",
+          title: "Вы допущены к практике",
+          body: `Принято разборов: ${n} из ${COURSE_CASES_REQUIRED}. Наставник подтвердил вашу работу с живыми случаями.`,
+          link: "/pages/certificate/index.html",
+        });
+      }
+    }
+    return null;
+  });
+
 // ─────────────────────────────────────────────────
 // WEBHOOK (кнопки + ответы + команды)
 // ─────────────────────────────────────────────────

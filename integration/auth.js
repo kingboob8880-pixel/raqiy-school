@@ -14,7 +14,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/fi
 import { auth, db } from "./firebase-init.js?v=2";
 // Сообщения об ошибках входа берутся из общего словаря — чтобы они были
 // на языке, который человек выбрал в шапке.
-import { t } from "../pages/js/i18n.js?v=34";
+import { t } from "../pages/js/i18n.js?v=35";
 
 /** «Запомнить меня» — вход сохраняется между запусками браузера, пока
  *  человек сам не нажмёт «Выйти» (запрос автора, 2026-07-25: приходилось
