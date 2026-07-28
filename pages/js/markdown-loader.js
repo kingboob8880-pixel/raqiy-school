@@ -4,7 +4,7 @@
 // странице отдельным <script> из CDN — см. pages/book.html/module.html).
 
 import { withBase } from "./base-path.js?v=6";
-import { MODULES } from "./modules-data.js?v=38";
+import { MODULES } from "./modules-data.js?v=39";
 import { getLang, localizedDocPath, t } from "./i18n.js?v=34";
 
 /** Экранирует HTML-спецсимволы — защита от XSS при вставке front-matter

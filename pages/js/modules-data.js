@@ -23,6 +23,13 @@ export const MODULES = [
       { title: "Фундаментальное состояние целителя — собранность, дыхание, фокус", doc: "/content/module-1/fundamentalnoe.md", exam: "/content/exams/module-1-fundamentalnoe.md" },
       { title: "Басира — духовное зрение сердцем", doc: "/content/module-1/basira.md", exam: "/content/exams/module-1-basira.md" },
       { title: "Эхсан и черпание силы от Аллаха", doc: "/content/module-1/ehsan-i-sila.md", exam: "/content/exams/module-1-ehsan-i-sila.md" },
+      // «Учебник по намерениям» стоит ПЕРЕД «Волевым актом» намеренно
+      // (книга автора, добавлена 2026-07-28). Он даёт карту: какие бывают
+      // намерения, на каких ярусах лежат и какое на что ставится. «Волевой
+      // акт» после него отвечает на следующий вопрос — как это намерение
+      // удержать и натренировать. В обратном порядке ученик учился удерживать
+      // раньше, чем узнавал, что именно.
+      { title: "Учебник по намерениям — виды, ярусы и выработка убеждённости", doc: "/content/module-1/namereniya.md", exam: "/content/exams/module-1-namereniya.md" },
       { title: "Волевой акт — искусство удержания намерения в сердце", doc: "/content/module-1/volevoy-akt.md", exam: "/content/exams/module-1-volevoy-akt.md" },
       // Справочник шаблонов намерения (запрос автора 2026-07-27: «в модулях
       // и упражнениях говорится о намерении, но о каком — не написано»).
