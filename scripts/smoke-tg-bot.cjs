@@ -261,15 +261,26 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
     await bot.onCallback(cbq(`ea:${correct}`));
   }
   const s1 = store.get("students/UID1");
-  const bookKey = "_content_module-1_yakyn_md";
+  // ⚠️ Ключ книги берём ИЗ ДАННЫХ КУРСА, а не вписываем строкой. Раньше здесь
+  // стояло "_content_module-1_yakyn_md" — то есть тест знал наизусть, какая
+  // книга у Модуля 1 первая. Стоило поставить единобожие в начало модуля
+  // (2026-07-28), и три проверки упали, хотя бот работал правильно.
+  const bookKey = require(path.join(ROOT, "functions", "course-data.json"))
+    .modules[0].lessons[0].doc.replace(/[/.]/g, "_");
   check("экзамен сдан и записан в прогресс", s1.progress?.books?.[bookKey]?.status === "done",
     JSON.stringify(s1.progress?.books || {}).slice(0, 200));
   check("итог показан ученику", /Экзамен сдан/.test(lastText()));
 
   // 8. Замок упражнения снят сданным экзаменом.
   reset();
-  await bot.onCallback(cbq("t:m1-1"));
-  check("упражнение открылось после экзамена", /НАМЕРЕНИЕ/.test(lastText()) && !/🔒/.test(lastText()));
+  // Упражнение ищем по книге первого урока, а не по жёсткому "m1-1":
+  // порядок уроков в модуле меняется, и тест не должен знать его наизусть.
+  const firstDoc = require(path.join(ROOT, "functions", "course-data.json")).modules[0].lessons[0].doc;
+  const firstTask = (require(path.join(ROOT, "functions", "course-data.json")).assignments["1"] || [])
+    .find((a) => a.book === firstDoc);
+  await bot.onCallback(cbq(`t:${firstTask.id}`));
+  check("упражнение открылось после экзамена", /НАМЕРЕНИЕ/.test(lastText()) && !/🔒/.test(lastText()),
+    "упражнение: " + (firstTask && firstTask.id));
   check("намерение показано", /Ради Аллаха/.test(lastText()));
   reset();
   await bot.onCallback(cbq("t:m2-1"));

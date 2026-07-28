@@ -16,10 +16,28 @@ export const MODULES = [
     doc: "/content/module-1/index.md",
     cover: "/assets/images/covers/volevoy-akt.jpg",
     lessons: [
+      // ⚠️ ЕДИНОБОЖИЕ — ПЕРВОЕ, ЧТО ЧИТАЕТ УЧЕНИК (решение автора 2026-07-28:
+      // «заклинание следует начать с основ, а это вопрос, кому ты
+      // поклоняешься: от Того ты и черпаешь силы»).
+      //
+      // Эти четыре книги стояли в Модуле 9 — продвинутый уровень, почти
+      // конец курса. То есть человек год лечил людей и только потом
+      // разбирался, где проходит граница между обращением к Аллаху и
+      // ширком. Порядок был перевёрнут: якын — это убеждённость В АЛЛАХЕ,
+      // и она не может стоять раньше знания о том, Кто Он и в чём Его
+      // единственность.
+      //
+      // Модули не перенумерованы намеренно: у тех, кто уже учится, прогресс
+      // записан по номерам, и сдвиг превратил бы пройденное в чужое.
+      { title: "Что есть истина — разбор с доказательствами из Корана и Сунны", doc: "/content/module-9/sut-istiny.md", exam: "/content/exams/module-9-sut-istiny.md" },
+      { title: "Границы веры — единственность Истины и вопрос заступничества", doc: "/content/module-9/granitsy-very-i-zastupnichestvo.md", exam: "/content/exams/module-9-granitsy-very-i-zastupnichestvo.md" },
+      { title: "Вопросы просьб у могилы — классификация обращений к умершим", doc: "/content/module-9/voprosy-mogil.md", exam: "/content/exams/module-9-voprosy-mogil.md" },
+      { title: "Вопросы заступничества — разбор у могилы Пророка ﷺ", doc: "/content/module-9/voprosy-zastup.md", exam: "/content/exams/module-9-voprosy-zastup.md" },
+      { title: "Метод уединения с таухидом — визуализация через имена Аллаха", doc: "/content/module-1/metod-taukhid.md", exam: "/content/exams/module-1-metod-taukhid.md" },
+      // Дальше — то, что стоит НА этом основании: убеждённость, мольба, намерение.
       { title: "Учебник якына — убеждённости", doc: "/content/module-1/yakyn.md", exam: "/content/exams/module-1-yakyn.md" },
       { title: "Мольба заклинателя", doc: "/content/module-1/molba-zaklinatelya.md", exam: "/content/exams/module-1-molba-zaklinatelya.md" },
       { title: "Теоретик и практик — как правильно формулировать мольбу", doc: "/content/module-1/teoretik-i-praktik.md", exam: "/content/exams/module-1-teoretik-i-praktik.md" },
-      { title: "Метод уединения с таухидом — визуализация через имена Аллаха", doc: "/content/module-1/metod-taukhid.md", exam: "/content/exams/module-1-metod-taukhid.md" },
       { title: "Фундаментальное состояние целителя — собранность, дыхание, фокус", doc: "/content/module-1/fundamentalnoe.md", exam: "/content/exams/module-1-fundamentalnoe.md" },
       { title: "Басира — духовное зрение сердцем", doc: "/content/module-1/basira.md", exam: "/content/exams/module-1-basira.md" },
       { title: "Эхсан и черпание силы от Аллаха", doc: "/content/module-1/ehsan-i-sila.md", exam: "/content/exams/module-1-ehsan-i-sila.md" },
@@ -185,10 +203,10 @@ export const MODULES = [
     doc: "/content/module-9/index.md",
     cover: "/assets/images/covers/istinnoe-vs-lozhnoe.jpg",
     lessons: [
-      { title: "Границы веры — единственность Истины и вопрос заступничества", doc: "/content/module-9/granitsy-very-i-zastupnichestvo.md", exam: "/content/exams/module-9-granitsy-very-i-zastupnichestvo.md" },
-      { title: "Что есть истина — разбор с доказательствами из Корана и Сунны", doc: "/content/module-9/sut-istiny.md", exam: "/content/exams/module-9-sut-istiny.md" },
-      { title: "Вопросы просьб у могилы — классификация обращений к умершим", doc: "/content/module-9/voprosy-mogil.md", exam: "/content/exams/module-9-voprosy-mogil.md" },
-      { title: "Вопросы заступничества — разбор у могилы Пророка ﷺ", doc: "/content/module-9/voprosy-zastup.md", exam: "/content/exams/module-9-voprosy-zastup.md" },
+      // Четыре книги о единобожии переехали отсюда в Модуль 1 — см. пояснение
+      // там же. Здесь остаётся прикладная часть: как отличить рукью от
+      // практик, которые выдают себя за неё.
+      { title: "Чужой язык — энергетика, биополе и «Космос» глазами ракыя", doc: "/content/module-9/chuzhoy-yazyk.md", exam: "/content/exams/module-9-chuzhoy-yazyk.md" },
     ],
   },
   {
