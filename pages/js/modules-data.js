@@ -79,6 +79,12 @@ export const MODULES = [
     cover: "/assets/images/covers/zaklinanie-organy-koldovstvo.jpg",
     lessons: [
       { title: "Дозволенность заклинания — где проходит граница", doc: "/content/module-2/dozvolennost-zaklinaniya.md", exam: "/content/exams/module-2-dozvolennost-zaklinaniya.md" },
+      // Книга автора «Исцеляю Кораном» (2026-07-28) разделена надвое по
+      // смыслу, а не по объёму: довод и границы — здесь, рядом с
+      // «Дозволенностью заклинания», потому что это ответ на тот же вопрос
+      // «что делает рукью дозволенной». Применение по случаям — Модуль 5,
+      // где стоят остальные книги с формулами по видам поражения.
+      { title: "Исцеляю Кораном — довод, границы и правильное понимание", doc: "/content/module-2/istselyayu-koranom.md", exam: "/content/exams/module-2-istselyayu-koranom.md" },
       { title: "Что такое заклинание — пять качеств истинного заклинателя", doc: "/content/module-2/chto-takoe-zaklinanie.md", exam: "/content/exams/module-2-chto-takoe-zaklinanie.md" },
       { title: "Я заклинаю", doc: "/content/module-2/ya-zaklinayu.md", exam: "/content/exams/module-2-ya-zaklinayu.md" },
       { title: "Общее понятие заклинания — метод «Влияние Волей»", doc: "/content/module-2/obshchee-ponyatie-zaklinanie.md", exam: "/content/exams/module-2-obshchee-ponyatie-zaklinanie.md" },
@@ -147,6 +153,9 @@ export const MODULES = [
       { title: "Рукья для укрепления супружества — 10 дуа", doc: "/content/module-5/dua-strasti.md", exam: "/content/exams/module-5-dua-strasti.md" },
       { title: "Руководство по убиранию чёрных линий", doc: "/content/module-5/ubiranie-liniy.md", exam: "/content/exams/module-5-ubiranie-liniy.md" },
       { title: "Метод избавления от джиннов — трёхступенчатый подход", doc: "/content/module-5/metod-izbavleniya.md", exam: "/content/exams/module-5-metod-izbavleniya.md" },
+      // Вторая половина «Исцеляю Кораном» — формулы по видам поражения.
+      // Первая половина (довод и границы) стоит в Модуле 2.
+      { title: "Исцеляю Кораном на практике — формулы по видам поражения", doc: "/content/module-5/istselyayu-koranom-praktika.md", exam: "/content/exams/module-5-istselyayu-koranom-praktika.md" },
     ],
   },
   {
