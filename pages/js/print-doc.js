@@ -110,6 +110,18 @@ export async function downloadPdf(root, fileName, btn) {
       scale: 1.5,
       useCORS: true,
       backgroundColor: "#ffffff",
+      // ⚠️ Без этой строки в «быстром скачивании» пропадал арабский текст
+      // (та же природа, что у печати: см. .reveal в @media print,
+      // design/base.css). staggerReveal() держит цитаты, блоки дуа и карточки
+      // аятов под opacity: 0 до момента, когда их доскроллили, а html2canvas
+      // снимает СТРАНИЦУ ЦЕЛИКОМ — невидимые блоки попадали в снимок пустыми.
+      // Правило .reveal в @media print здесь не работает: снимок делается по
+      // экранным стилям. Снимаем блокировку в клоне документа (onclone) —
+      // единственное место, где это можно сделать, не трогая живую страницу:
+      // на ней анимация появления остаётся как была.
+      onclone: (doc) => {
+        doc.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
+      },
     });
     const imgData = canvas.toDataURL("image/jpeg", 0.85);
     const { jsPDF } = window.jspdf;
