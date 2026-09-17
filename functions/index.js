@@ -894,7 +894,7 @@ async function handleMessage(msg) {
  * ученикам, которые не заходили 3+ дня. Бот пишет админу список таких учеников
  * с кнопкой «Написать» для каждого. Запуск: каждый день в 10:00 UTC+3. */
 exports.dailyReminders = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
-  .schedule("0 7 * * *")       // 07:00 UTC = 10:00 Москва
+  .schedule("0 10 * * *")      // 10:00 в timeZone ниже (не UTC)
   .timeZone("Europe/Moscow")
   .onRun(async () => {
     await sweepFeed(db, logger);
@@ -963,7 +963,7 @@ exports.dailyReminders = functions.region(REGION).runWith({ secrets: SECRETS }).
  *
  *  Время — 8:00 по Москве: раньше утренних азкаров смысла нет. */
 exports.studentDailyPractice = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
-  .schedule("0 5 * * *")       // 05:00 UTC = 08:00 Москва
+  .schedule("0 8 * * *")       // 08:00 в timeZone ниже (не UTC)
   .timeZone("Europe/Moscow")
   .onRun(async () => {
     const links = await db.collection("tgUsers").get();
@@ -994,3 +994,62 @@ exports.studentDailyPractice = functions.region(REGION).runWith({ secrets: SECRE
     logger.info(`studentDailyPractice: напоминаний отправлено ${sent}`);
     return null;
   });
+
+// ─────────────────────────────────────────────────
+// PAY BOT (@pay_rukya_bot) — приём сообщений об оплате
+// ─────────────────────────────────────────────────
+//
+// Отдельный бот от учебного @ruyka_school_bot. Ученик пишет сюда после
+// оплаты; бот отвечает инструкцией и пересылает текст наставнику.
+// Токен когда-то лежал в открытом .env и был скомпрометирован (в описание
+// бота вписали спам) — после смены токена вебхук нужно вешать заново.
+//
+// Регион us-central1 — тот же, где уже живёт telegramWebhook (учебный).
+// Константа REGION выше целится в asia-southeast1 (миграция к базе), но
+// pay-бот не должен ждать этой миграции: иначе адрес вебхука «прыгает».
+const PAY_BOT = () => process.env.TG_PAY_BOT_TOKEN;
+const { handlePaymentMessage } = require("./pay-bot");
+
+async function payTg(method, body) {
+  const token = PAY_BOT();
+  if (!token) throw new Error("Payment bot token is not configured");
+  // Не выводим URL/исключение fetch: URL содержит секретный токен.
+  let r;
+  try {
+    r = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15000),
+    });
+  } catch {
+    throw new Error("Payment Telegram transport failed");
+  }
+  const data = await r.json();
+  if (!r.ok || !data.ok) throw new Error(`Payment Telegram request failed (${data.error_code || r.status})`);
+  return data;
+}
+
+exports.payTelegramWebhook = onRequest(
+  {
+    region: "us-central1",
+    secrets: ["TG_PAY_BOT_TOKEN", "TG_CHAT_ID", "TG_WEBHOOK_SECRET"],
+  },
+  async (req, res) => {
+    if (!HOOK_SECRET || req.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) {
+      logger.warn("pay webhook: неверный секрет");
+      res.sendStatus(401);
+      return;
+    }
+
+    try {
+      await handlePaymentMessage(req.body?.message, { chat: CHAT, send: payTg });
+    } catch (e) {
+      logger.error("pay webhook", e.message);
+      // Не подтверждаем потерянную доставку: Telegram сможет повторить запрос.
+      res.sendStatus(503);
+      return;
+    }
+    res.sendStatus(200);
+  },
+);

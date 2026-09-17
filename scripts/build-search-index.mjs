@@ -54,6 +54,9 @@ function extractHeadings(md) {
       .replace(/\*(.*?)\*/g, "$1")
       .replace(/`(.*?)`/g, "$1")
       .replace(/\[(.*?)\]\([^)]*\)/g, "$1")
+      // В авторских заголовках встречаются <span lang="ar">…</span>.
+      // Индекс хранит текст, иначе поиск показывает буквальные HTML-теги.
+      .replace(/<\/?[a-z][^>]*>/gi, "")
       .trim();
     if (text) out.push({ level: m[1].length, text });
   }

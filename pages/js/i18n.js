@@ -263,6 +263,8 @@ const S = {
   "quiz.sec":          { ru: "сек", en: "sec", uz: "son" },
   "quiz.saveRetry":    { ru: "Сохранить результат ещё раз", en: "Save the result again", uz: "Natijani qayta saqlash" },
   "quiz.saving":       { ru: "Сохраняем…", en: "Saving…", uz: "Saqlanmoqda…" },
+  "quiz.saveOk":       { ru: "Результат сохранён", en: "Result saved", uz: "Natija saqlandi" },
+
   "quiz.saveFailed":   { ru: "Не удалось сохранить результат. Попробуйте ещё раз позже.", en: "Could not save result. Try again later.", uz: "Natijani saqlash imkoni bo'lmadi. Keyinroq qayta urinib ko'ring." },
   "quiz.notLoggedIn":  { ru: "Вы не вошли — результат не сохранён.", en: "You're not signed in — result not saved.", uz: "Siz tizimga kirmadingiz — natija saqlanmadi." },
   "quiz.backModule":   { ru: "Вернуться к модулю", en: "Back to module", uz: "Modulga qaytish" },
