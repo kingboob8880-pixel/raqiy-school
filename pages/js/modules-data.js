@@ -250,7 +250,7 @@ export const MODULES = [
     level: "Продвинутый",
     status: "author",
     doc: "/content/module-12/index.md",
-    cover: "/assets/images/covers/prodvinutoe-zaklinanie.jpg",
+    cover: "/assets/images/covers/Gemini_Generated_Image_rvbggorvbggorvbg.jpg",
     // Модуль собран из трилогии автора «Прямой путь — Заклинание верой»
     // (решение автора, 2026-09-17): три книги лежали по разным модулям —
     // первая в основании курса, вторая в основах заклинания, третья в
