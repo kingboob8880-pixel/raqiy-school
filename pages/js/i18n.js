@@ -433,7 +433,7 @@ const S = {
   "landing.who.3.badge": { ru: "Продвинутый", en: "Advanced", uz: "Yuqori" },
   "landing.who.3.title": { ru: "Готовитесь принимать пациентов", en: "Preparing to see patients", uz: "Bemorlarni qabul qilishga tayyorlanmoqdasiz" },
   "landing.who.3.text":  { ru: "Изгнание духовных сущностей, разбор реальных обезличенных кейсов под супервизией наставника и финальный практикум в системе RUKYA Pro — с этого уровня выпускник несёт ответственность за приём настоящих пациентов.", en: "Expulsion of spiritual entities, analysis of real anonymized cases under mentor supervision, and final practicum in RUKYA Pro — from this level, graduates are responsible for real patient care.", uz: "Ruhiy mavjudotlarni haydash, ustoz nazorati ostida haqiqiy anonim holatlarni tahlil qilish va RUKYA Pro da yakuniy amaliyot — shu darajadan boshlab bitiruvchi haqiqiy bemorlarni qabul qilish uchun javobgardir." },
-  "landing.who.3.modules": { ru: "Модули 7–11", en: "Modules 7–11", uz: "Modullar 7–11" },
+  "landing.who.3.modules": { ru: "Модули 7–12", en: "Modules 7–12", uz: "Modullar 7–12" },
   "landing.how.title":  { ru: "Как проходит обучение", en: "How the course works", uz: "O'quv jarayoni qanday" },
   "landing.how.1.title": { ru: "Регистрация", en: "Registration", uz: "Ro'yxatdan o'tish" },
   "landing.how.1.text":  { ru: "Бесплатно, за минуту — email и пароль.", en: "Free, in a minute — email and password.", uz: "Bepul, bir daqiqada — email va parol." },
