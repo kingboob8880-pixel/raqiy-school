@@ -105,6 +105,19 @@ export async function downloadPdf(root, fileName, btn) {
     if (!window.html2canvas) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
     if (!window.jspdf) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js");
 
+    // Арабский текст может быть ещё не отрисован в момент клика: браузер
+    // загружает шрифты лениво, а html2canvas снимает уже готовый bitmap.
+    // Ждём шрифты и картинки, иначе в PDF появляются пустые квадраты,
+    // fallback-шрифт или съехавшие размеры строк.
+    if (document.fonts?.ready) await document.fonts.ready;
+    await Promise.all(Array.from(root.querySelectorAll("img")).map((img) => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.addEventListener("load", resolve, { once: true });
+        img.addEventListener("error", resolve, { once: true });
+      });
+    }));
+
     // Печатаем по белому: на тёмной теме снимок вышел бы тёмным листом.
     const canvas = await window.html2canvas(root, {
       scale: 1.5,
@@ -121,9 +134,14 @@ export async function downloadPdf(root, fileName, btn) {
       // на ней анимация появления остаётся как была.
       onclone: (doc) => {
         doc.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
+        doc.querySelectorAll("[dir=\"rtl\"], .arabic, .doc-body__arabic").forEach((el) => {
+          el.style.direction = "rtl";
+          el.style.unicodeBidi = "plaintext";
+          el.style.textAlign = "right";
+          el.style.fontFamily = "'Noto Naskh Arabic', 'Amiri', 'Scheherazade New', serif";
+        });
       },
     });
-    const imgData = canvas.toDataURL("image/jpeg", 0.85);
     const { jsPDF } = window.jspdf;
 
     // Раньше здесь создавалась ОДНА страница высотой во весь урок
@@ -132,19 +150,25 @@ export async function downloadPdf(root, fileName, btn) {
     const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const A4_W = 210, A4_H = 297, MARGIN = 10;
     const imgW = A4_W - MARGIN * 2;
-    const imgH = (canvas.height * imgW) / canvas.width;
     const pageH = A4_H - MARGIN * 2;
-    let remaining = imgH;
-    let offset = 0;
-    while (remaining > 0) {
-      if (offset > 0) pdf.addPage();
-      pdf.addImage(imgData, "JPEG", MARGIN, MARGIN - offset, imgW, imgH);
-      // Белые поля сверху/снизу, чтобы срез не заезжал на край листа
-      pdf.setFillColor(255, 255, 255);
-      pdf.rect(0, 0, A4_W, MARGIN, "F");
-      pdf.rect(0, A4_H - MARGIN, A4_W, MARGIN, "F");
-      remaining -= pageH;
-      offset += pageH;
+    const pxPerMm = canvas.width / imgW;
+    const pagePixels = Math.max(1, Math.floor(pageH * pxPerMm));
+    const pageCount = Math.ceil(canvas.height / pagePixels);
+
+    // Каждый лист получает собственный bitmap. Старый вариант добавлял одну
+    // многометровую картинку со смещением: PDF-библиотеки по-разному
+    // обрабатывали такой объект, поэтому содержимое съезжало между листами.
+    for (let page = 0; page < pageCount; page += 1) {
+      if (page > 0) pdf.addPage();
+      const sourceY = page * pagePixels;
+      const sliceHeight = Math.min(pagePixels, canvas.height - sourceY);
+      const slice = document.createElement("canvas");
+      slice.width = canvas.width;
+      slice.height = sliceHeight;
+      slice.getContext("2d").drawImage(canvas, 0, sourceY, canvas.width, sliceHeight, 0, 0, slice.width, slice.height);
+      const sliceData = slice.toDataURL("image/png");
+      const sliceH = (slice.height / pxPerMm);
+      pdf.addImage(sliceData, "PNG", MARGIN, MARGIN, imgW, sliceH);
     }
     const safe = String(fileName || "урок").replace(/[^\wа-яА-ЯёЁ \-]/g, "").trim() || "урок";
     pdf.save(`${safe}.pdf`);
