@@ -1,6 +1,6 @@
 ---
 title: "Экзамен: Прямой путь — подготовка и целостная практика"
-book: "/content/module-8/podgotovka-pryamoy-put.md"
+book: "/content/module-12/podgotovka-pryamoy-put.md"
 status: author
 ---
 

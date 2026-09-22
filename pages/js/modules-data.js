@@ -54,7 +54,6 @@ export const MODULES = [
       // удержать и натренировать. В обратном порядке ученик учился удерживать
       // раньше, чем узнавал, что именно.
       { title: "Учебник по намерениям — виды, ярусы и выработка убеждённости", doc: "/content/module-1/namereniya.md", exam: "/content/exams/module-1-namereniya.md" },
-      { title: "Прямой путь — вера и намерение", doc: "/content/module-1/pryamoy-put.md", exam: "/content/exams/module-1-pryamoy-put.md", status: "author" },
       { title: "Волевой акт — искусство удержания намерения в сердце", doc: "/content/module-1/volevoy-akt.md", exam: "/content/exams/module-1-volevoy-akt.md" },
       // Справочник шаблонов намерения (запрос автора 2026-07-27: «в модулях
       // и упражнениях говорится о намерении, но о каком — не написано»).
@@ -97,7 +96,6 @@ export const MODULES = [
       { title: "Речь с болезнью — полная методология сеанса рукьи", doc: "/content/module-2/rech-s-boleznyu.md", exam: "/content/exams/module-2-rech-s-boleznyu.md" },
       { title: "Убирание грязи — диагностика и заклинание недугов души", doc: "/content/module-2/ubiranie-gryazi.md", exam: "/content/exams/module-2-ubiranie-gryazi.md" },
       { title: "Классификация недугов (Справочник)", doc: "/content/reference/classification.md", exam: "/content/exams/reference-classification.md" },
-      { title: "Пути влияния — понятие и мольбы", doc: "/content/module-2/puti-vliyaniya.md", exam: "/content/exams/module-2-puti-vliyaniya.md", status: "author" },
     ],
   },
   {
@@ -208,9 +206,8 @@ export const MODULES = [
       // Тема модуля («что отличает сильного от начинающего — не формулы, а
       // состояние») ровно об этом.
       //
-      // Опирается на три предыдущих урока; далее — подготовка «Прямого пути».
+      // Стоит ПОСЛЕДНИМ уроком модуля: он опирается на три предыдущих.
       { title: "Исцеление за секунды — доктрина мгновенного воздействия", doc: "/content/module-8/istselenie-za-sekundy.md", exam: "/content/exams/module-8-istselenie-za-sekundy.md" },
-      { title: "Прямой путь — подготовка и целостная практика", doc: "/content/module-8/podgotovka-pryamoy-put.md", exam: "/content/exams/module-8-podgotovka-pryamoy-put.md", status: "author" },
     ],
   },
   {
@@ -246,6 +243,28 @@ export const MODULES = [
     doc: "/content/module-11/index.md",
     cover: "/assets/images/covers/rukya-pro.jpg",
     lessons: [],
+  },
+  {
+    id: 12,
+    title: "Профессионал",
+    level: "Продвинутый",
+    status: "author",
+    doc: "/content/module-12/index.md",
+    cover: "/assets/images/covers/prodvinutoe-zaklinanie.jpg",
+    // Модуль собран из трилогии автора «Прямой путь — Заклинание верой»
+    // (решение автора, 2026-09-17): три книги лежали по разным модулям —
+    // первая в основании курса, вторая в основах заклинания, третья в
+    // мастерстве. Автор свёл их в один финальный модуль, чтобы путь
+    // ученика стал короче и понятнее.
+    //
+    // Номер 12, а не вставка посередине: прогресс учеников записан по
+    // номерам модулей, и сдвиг превратил бы пройденное в чужое.
+    lessons: [
+      { title: "Прямой путь — вера и намерение", doc: "/content/module-12/pryamoy-put.md", exam: "/content/exams/module-12-pryamoy-put.md" },
+      { title: "Пути влияния — понятие и мольбы", doc: "/content/module-12/puti-vliyaniya.md", exam: "/content/exams/module-12-puti-vliyaniya.md" },
+      { title: "Прямой путь — подготовка и целостная практика", doc: "/content/module-12/podgotovka-pryamoy-put.md", exam: "/content/exams/module-12-podgotovka-pryamoy-put.md" },
+      { title: "Сводка «Прямого пути» (Ресурс)", doc: "/content/reference/pryamoy-put-svodka.md", exam: "/content/exams/module-12-pryamoy-put-svodka.md" },
+    ],
   },
 ];
 
@@ -372,7 +391,7 @@ export function computeAchievements(progress, activityDates) {
     },
     {
       id: "halfway", icon: "🏔️", title: "Половина пути",
-      description: "Пройти 6 модулей из 11",
+      description: "Пройти 6 модулей из 12",
       earned: doneModules >= 6, progress: Math.min(doneModules, 6), goal: 6,
     },
     {
@@ -389,8 +408,8 @@ export function computeAchievements(progress, activityDates) {
     },
     {
       id: "graduate", icon: "🎓", title: "Выпускник",
-      description: "Завершить все 11 модулей курса",
-      earned: doneModules === 11, progress: doneModules, goal: 11,
+      description: "Завершить все 12 модулей курса",
+      earned: doneModules === 12, progress: doneModules, goal: 12,
     },
   ];
 }

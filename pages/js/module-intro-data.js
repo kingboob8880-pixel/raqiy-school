@@ -381,6 +381,36 @@ export const MODULE_INTRO = {
       uz: "Odamlarni xotira va chetdagi qaydlar bilan emas, tizimli qabul qila olasan.",
     },
   },
+
+  12: {
+    hook: {
+      ru: "Продвинутое собрано в одно место. Дальше важен не объём знаний, а порядок: что делать до встречи, что при человеке и чего не обещать.",
+      en: "The advanced material is gathered in one place. From here what matters is order: what to do before the meeting, what to do with the person present, and what never to promise.",
+      uz: "Ilg'or material bir joyga to'plandi. Bundan keyin bilim hajmi emas, tartib muhim: uchrashuvdan oldin nima qilinadi, odam oldida nima qilinadi va nimaga va'da bermaslik kerak.",
+    },
+    learn: {
+      ru: [
+        "Трилогию «Прямой путь» целиком: вера и намерение, пути влияния, подготовка и целостная практика",
+        "Четыре элемента намерения и три направления — в связке с уже пройденным",
+        "Сводку-шпаргалку для повторения перед сеансом",
+      ],
+      en: [
+        "The whole Direct Path trilogy: faith and intention, paths of influence, preparation and coherent practice",
+        "The four elements of intention and the three directions — tied to what was already learned",
+        "A summary cheat-sheet for revision before a session",
+      ],
+      uz: [
+        "«To'g'ri yo'l» trilogiyasini to'liq: imon va niyat, ta'sir yo'llari, tayyorgarlik va yaxlit amaliyot",
+        "Niyatning to'rt elementi va uch yo'nalishi — allaqachon o'rganganlar bilan bog'liq holda",
+        "Seansdan oldin takrorlash uchun qisqa shpargalka",
+      ],
+    },
+    after: {
+      ru: "Ты сможешь объяснить порядок своих действий и назвать границы словами, а не только чувствовать их.",
+      en: "You will be able to explain the order of your actions and name the boundaries in words, not merely feel them.",
+      uz: "Amallaring tartibini tushuntira olasan va chegaralarni so'z bilan ayta olasan, faqat his qilmasdan.",
+    },
+  },
 };
 
 /** Текст модуля на текущем языке. Русский — источник: если перевода нет,

@@ -27,7 +27,12 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
  *  для браузера и тянет за собой i18n. Разбираем регулярками, источник правды
  *  всё равно один. */
 async function readModules() {
-  const src = await readFile(join(ROOT, "pages/js/modules-data.js"), "utf8");
+  // Нормализуем CRLF→LF: в рабочей копии на Windows файл выкладывается с \r\n
+  // (git хранит LF по .gitattributes, но отдаёт CRLF), а разбор ниже завязан
+  // на \n. Без этого split не находил ни одного модуля и индекс собирался
+  // пустым — при том что build-course-data.mjs работал, ведь import() не
+  // зависит от окончаний строк. Ловилось только на Windows.
+  const src = (await readFile(join(ROOT, "pages/js/modules-data.js"), "utf8")).replace(/\r\n/g, "\n");
   const chunks = src.split(/\n {2}\{\n {4}id: /).slice(1);
   const mods = [];
   for (const chunk of chunks) {

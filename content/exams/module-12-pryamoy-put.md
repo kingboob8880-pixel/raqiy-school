@@ -1,6 +1,6 @@
 ---
 title: "Экзамен: Прямой путь — вера и намерение"
-book: "/content/module-1/pryamoy-put.md"
+book: "/content/module-12/pryamoy-put.md"
 status: author
 ---
 

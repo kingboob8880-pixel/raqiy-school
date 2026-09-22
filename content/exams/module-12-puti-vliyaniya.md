@@ -1,6 +1,6 @@
 ---
 title: "Экзамен: Пути влияния — понятие и мольбы"
-book: "/content/module-2/puti-vliyaniya.md"
+book: "/content/module-12/puti-vliyaniya.md"
 status: author
 ---
 
