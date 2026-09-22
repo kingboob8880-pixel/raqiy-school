@@ -47,7 +47,7 @@
     ],
     "rewrites": [],
     "predeploy": [
-      "node \"$RESOURCE_DIR/scripts/build-site.mjs\""
+      "node scripts/build-site.mjs"
     ]
   },
   "firestore": {
