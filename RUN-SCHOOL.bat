@@ -28,7 +28,7 @@ if not exist "functions\local-server.js" (
 )
 
 if not exist "functions\node_modules" (
-  echo Installing dependencies (one time)...
+  echo Installing dependencies, one time only...
   pushd functions
   call npm install
   popd
@@ -36,8 +36,19 @@ if not exist "functions\node_modules" (
 
 :loop
 node functions\local-server.js
+if errorlevel 1 (
+  echo.
+  echo Runtime exited with code %errorlevel%. Restarting in 5 seconds...
+  echo Press Ctrl+C now to stop for real, or close the window.
+  timeout /t 5 /nobreak >nul
+  goto loop
+)
+rem Exit code 0 = stopped on purpose: Ctrl+C, or another instance already
+rem runs (hidden autostart). Restarting either one would be wrong.
+rem "RUN-SCHOOL.bat silent" = launched hidden from Startup folder: no pause,
+rem no orphaned hidden cmd window waiting for a keypress.
+if /i "%~1"=="silent" exit /b 0
 echo.
-echo Runtime exited with code %errorlevel%. Restarting in 5 seconds...
-echo Press Ctrl+C now to stop for real, or close the window.
-timeout /t 5 /nobreak >nul
-goto loop
+echo Runtime stopped normally. If the hidden autostart runner is alive,
+echo the school keeps working - this window is not needed.
+pause

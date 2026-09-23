@@ -75,10 +75,21 @@ if (!BOT_TOKEN) {
 // ─── 3. Экземпляр-лок: порт занят — значит раннер уже работает ─────────────
 const LOCK_PORT = 8791;
 const lock = http.createServer((_req, res) => res.end("ruqya-local-server"));
-lock.on("error", (e) => {
+lock.on("error", async (e) => {
   if (e.code === "EADDRINUSE") {
-    console.error("Локальный раннер уже запущен в другом окне. Не надо двух.");
-    process.exit(1);
+    // Выход с кодом 0 — «не надо поднимать заново»: это не поломка,
+    // раннер уже работает (например, скрытый из Автозагрузки, пока автор
+    // запустил ещё и RUN-SCHOOL.bat). Цикл перезапуска в .bat на код 0
+    // останавливается, и два окна не воюют за порты и за один Telegram.
+    let ours = false;
+    try {
+      const r = await fetch(`http://127.0.0.1:${LOCK_PORT}/`, { signal: AbortSignal.timeout(2000) });
+      ours = (await r.text()) === "ruqya-local-server";
+    } catch {}
+    console.error(ours
+      ? "Локальный раннер уже работает в другом окне — этот экземпляр закрывается."
+      : `Порт ${LOCK_PORT} занят чужой программой: раннер не может гарантировать единственный экземпляр.`);
+    process.exit(ours ? 0 : 1);
   }
   throw e;
 });
