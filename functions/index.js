@@ -17,7 +17,8 @@ const db = getFirestore();
 // Всего модулей в программе — нужно, чтобы отличить «сдал все» от «сдал все,
 // которые вообще открывал». Без этого ученик с одним пройденным модулем
 // формально проходил проверку «все со статусом done».
-const TOTAL_MODULES = 11;
+// 12 с 2026-09-23 — вместе с перестановкой продвинутого блока (было 11).
+const TOTAL_MODULES = 12;
 
 // Токен бота и chat_id берутся из настроек функций, а НЕ из кода.
 //
@@ -125,6 +126,29 @@ student.init({ tg, db, CHAT, logger });
 // компьютера ровно тогда, когда автор открывал бота с телефона.
 const admin = require("./tg-admin");
 admin.init({ tg, db, CHAT, logger });
+
+// ─────────────────────────────────────────────────
+// ЛОКАЛЬНЫЙ РАННЕР (functions/local-server.js)
+// ─────────────────────────────────────────────────
+// firebase-cli считает функциями только экспорты со служебной метадатой
+// __trigger, поэтому обычный объект ниже в облако не попытается задеплоить.
+// Через него локальный раннер вызывает ровно те же тела триггеров,
+// что и облако — без второго дублирующего файла логики.
+//
+// Блок стоит здесь, а не в конце файла: scripts/pay-bot.test.cjs вырезает
+// из index.js хвост, начиная с объявления PAY_BOT (ищет его через indexOf
+// по исходнику — поэтому даже в комментарии ниже этой строки то же самое
+// литеральное сочетание быть не должно), и исполняет хвост в vm без
+// module — любой module.exports после среза ронял бы тест.
+// Именованные функции-тела триггеров подняты hoisting'ом, так что ссылки
+// на них отсюда работают, хотя объявлены они ниже.
+module.exports.__local = {
+  db, tg, CHAT, logger,
+  onStudentCreated, onMessageAdded, onStudentChanged, onCaseChanged,
+  routeTelegramUpdate, handlePayUpdate,
+  runDailyReminders, runStudentDailyPractice,
+  student, admin,
+};
 
 /** Уведомление УЧЕНИКУ на сайте (запрос автора, 2026-07-25).
  *
@@ -276,78 +300,75 @@ function moduleEntries(progress) {
 // УВЕДОМЛЕНИЯ (Gen 1 Firestore triggers)
 // ─────────────────────────────────────────────────
 
-/** Новый ученик */
+/** Новый ученик — тело триггера как обычная функция: его вызывает и
+ * облачный экспорт ниже, и локальный раннер functions/local-server.js. */
+async function onStudentCreated(uid, data) {
+  await tg("sendMessage", {
+    chat_id: CHAT,
+    text: `📋 <b>Новый ученик</b>\n${data.name || "—"}\n${data.email || "—"}`,
+    parse_mode: "HTML",
+    reply_markup: { inline_keyboard: [
+      [{ text: "✅ Подтвердить оплату", callback_data: `pay:${uid}` }],
+      [{ text: "💬 Написать", callback_data: `reply:${uid}` }],
+      [{ text: "📋 Подробнее", callback_data: `info:${uid}` }],
+    ]},
+  });
+}
+
 exports.onNewStudent = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
   .document("students/{uid}")
-  .onCreate(async (snap, ctx) => {
-    const data = snap.data();
-    const uid = ctx.params.uid;
-    await tg("sendMessage", {
-      chat_id: CHAT,
-      text: `📋 <b>Новый ученик</b>\n${data.name || "—"}\n${data.email || "—"}`,
-      parse_mode: "HTML",
-      reply_markup: { inline_keyboard: [
-        [{ text: "✅ Подтвердить оплату", callback_data: `pay:${uid}` }],
-        [{ text: "💬 Написать", callback_data: `reply:${uid}` }],
-        [{ text: "📋 Подробнее", callback_data: `info:${uid}` }],
-      ]},
-    });
-  });
+  .onCreate(async (snap, ctx) => onStudentCreated(ctx.params.uid, snap.data()));
 
-/** Сообщение от ученика */
+/** Сообщение от ученика (или наставника) — тело триггера. */
+async function onMessageAdded(uid, msg) {
+  // Сообщение ОТ НАСТАВНИКА — уведомляем ученика на сайте. Раньше этот
+  // триггер выходил сразу же на первой строке, и ответ наставника ученик
+  // обнаруживал, только зайдя в кабинет.
+  if (msg.from === "admin") {
+    const kind = { voice: "🎤 Голосовое сообщение", video: "📹 Видеосообщение", file: "📎 Файл" };
+    let preview = msg.text || kind[msg.type] || "Новое сообщение";
+    if (preview.length > 140) preview = preview.slice(0, 140) + "…";
+    await notifyStudent(uid, {
+      type: "message",
+      title: "Сообщение от наставника",
+      body: preview,
+      link: "/pages/dashboard/student.html",
+      // Ответ, написанный реплаем в Telegram, бот уже доставил ученику
+      // целиком. Колокольчик на сайте всё равно ставим — а второе
+      // сообщение в Telegram с обрезанным превью не шлём.
+      skipTelegram: msg.via === "telegram",
+    });
+    return;
+  }
+
+  if (msg.from !== "student") return;
+  // Вопрос, заданный через бота, автору уже отправлен — причём с пометкой
+  // #uid, по которой работает ответ реплаем. Второе сообщение отсюда было
+  // бы дублем без этой пометки.
+  if (msg.via === "telegram") return;
+  const studentDoc = await db.doc(`students/${uid}`).get();
+  const name = studentDoc.exists ? (studentDoc.data().name || uid) : uid;
+  let preview = msg.text || `(${msg.type || "медиа"})`;
+  if (preview.length > 120) preview = preview.slice(0, 120) + "…";
+  await tg("sendMessage", {
+    chat_id: CHAT,
+    text: `💬 <b>Сообщение от ${name}</b>\n${preview}`,
+    parse_mode: "HTML",
+    reply_markup: { inline_keyboard: [
+      [{ text: "💬 Ответить", callback_data: `reply:${uid}` }],
+      [{ text: "📋 Подробнее", callback_data: `info:${uid}` }],
+    ]},
+  });
+}
+
 exports.onChatMessage = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
   .document("students/{uid}/messages/{msgId}")
-  .onCreate(async (snap, ctx) => {
-    const msg = snap.data();
-    const uid = ctx.params.uid;
+  .onCreate(async (snap, ctx) => onMessageAdded(ctx.params.uid, snap.data()));
 
-    // Сообщение ОТ НАСТАВНИКА — уведомляем ученика на сайте. Раньше этот
-    // триггер выходил сразу же на первой строке, и ответ наставника ученик
-    // обнаруживал, только зайдя в кабинет.
-    if (msg.from === "admin") {
-      const kind = { voice: "🎤 Голосовое сообщение", video: "📹 Видеосообщение", file: "📎 Файл" };
-      let preview = msg.text || kind[msg.type] || "Новое сообщение";
-      if (preview.length > 140) preview = preview.slice(0, 140) + "…";
-      await notifyStudent(uid, {
-        type: "message",
-        title: "Сообщение от наставника",
-        body: preview,
-        link: "/pages/dashboard/student.html",
-        // Ответ, написанный реплаем в Telegram, бот уже доставил ученику
-        // целиком. Колокольчик на сайте всё равно ставим — а второе
-        // сообщение в Telegram с обрезанным превью не шлём.
-        skipTelegram: msg.via === "telegram",
-      });
-      return;
-    }
-
-    if (msg.from !== "student") return;
-    // Вопрос, заданный через бота, автору уже отправлен — причём с пометкой
-    // #uid, по которой работает ответ реплаем. Второе сообщение отсюда было
-    // бы дублем без этой пометки.
-    if (msg.via === "telegram") return;
-    const studentDoc = await db.doc(`students/${uid}`).get();
-    const name = studentDoc.exists ? (studentDoc.data().name || uid) : uid;
-    let preview = msg.text || `(${msg.type || "медиа"})`;
-    if (preview.length > 120) preview = preview.slice(0, 120) + "…";
-    await tg("sendMessage", {
-      chat_id: CHAT,
-      text: `💬 <b>Сообщение от ${name}</b>\n${preview}`,
-      parse_mode: "HTML",
-      reply_markup: { inline_keyboard: [
-        [{ text: "💬 Ответить", callback_data: `reply:${uid}` }],
-        [{ text: "📋 Подробнее", callback_data: `info:${uid}` }],
-      ]},
-    });
-  });
-
-/** Прогресс ученика */
-exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
-  .document("students/{uid}")
-  .onUpdate(async (change, ctx) => {
-    const before = change.before.data();
-    const after = change.after.data();
-    const uid = ctx.params.uid;
+/** Прогресс ученика — тело триггера. */
+async function onStudentChanged(uid, change) {
+  const before = change.before.data();
+  const after = change.after.data();
 
     // ── Отвязка Telegram ───────────────────────────────────────────────
     //
@@ -402,7 +423,7 @@ exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).fire
       await notifyStudent(uid, {
         type: "paid",
         title: "Открыт полный доступ к курсу",
-        body: "Все 11 модулей и экзамены теперь доступны целиком. Продолжайте с того места, где остановились.",
+        body: `Все ${TOTAL_MODULES} модулей и экзамены теперь доступны целиком. Продолжайте с того места, где остановились.`,
         link: "/pages/modules/index.html",
       });
     }
@@ -472,7 +493,11 @@ exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).fire
       parse_mode: "HTML",
       reply_markup: { inline_keyboard: buttons },
     });
-  });
+}
+
+exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
+  .document("students/{uid}")
+  .onUpdate(async (change, ctx) => onStudentChanged(ctx.params.uid, change));
 
 /** Что именно попадает в ленту.
  *
@@ -562,12 +587,9 @@ async function buildFeedEntries(uid, before, after, pB, pA) {
  * Заключение уходит целиком, а не превью: слова наставника здесь и есть
  * то, за что ученик платит.
  */
-exports.onCaseVerdict = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
-  .document("students/{uid}/cases/{caseId}")
-  .onUpdate(async (change, ctx) => {
-    const before = change.before.data();
-    const after = change.after.data();
-    const { uid } = ctx.params;
+async function onCaseChanged(uid, change) {
+  const before = change.before.data();
+  const after = change.after.data();
 
     if (after.verdict?.via !== "site") return null;
     if (before.status === after.status && before.verdict?.text === after.verdict?.text) return null;
@@ -596,32 +618,22 @@ exports.onCaseVerdict = functions.region(REGION).runWith({ secrets: SECRETS }).f
         });
       }
     }
-    return null;
-  });
+  return null;
+}
+
+exports.onCaseVerdict = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
+  .document("students/{uid}/cases/{caseId}")
+  .onUpdate(async (change, ctx) => onCaseChanged(ctx.params.uid, change));
 
 // ─────────────────────────────────────────────────
 // WEBHOOK (кнопки + ответы + команды)
 // ─────────────────────────────────────────────────
 
-exports.telegramWebhook = onRequest({ region: REGION, secrets: SECRETS }, async (req, res) => {
-  // Проверка секрета — до любой работы с телом запроса.
-  // ⚠️ НЕТ СЕКРЕТА — НЕ РАБОТАЕМ. Раньше здесь стояло `if (HOOK_SECRET && …)`:
-  // при пустом секрете проверка просто пропускалась, и функция принимала
-  // POST от кого угодно. Адрес функции публичный, а дальше по коду админ
-  // определяется по chat.id из тела запроса — то есть по полю, которое
-  // отправитель заполняет сам. Подделав одно сообщение, посторонний мог бы
-  // подтвердить себе оплату, выдать сертификат, привязать чужой аккаунт к
-  // своему Telegram или удалить ученика.
-  //
-  // Отсутствие секрета — это поломка настройки, а не повод работать без
-  // защиты: пусть бот молчит, пока секрет не задан.
-  if (!HOOK_SECRET || req.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) {
-    logger.warn("webhook: неверный секрет");
-    res.sendStatus(401);
-    return;
-  }
-
-  const u = req.body;
+/** Маршрутизация одного апдейта Telegram. Вынесено из вебхука: облачный
+ * вход вызывает её после проверки секрета, локальный раннер — сразу из
+ * лонг-поллинга (там апдейты приходят напрямую от Telegram, подделать их
+ * нельзя, поэтому секрет и не нужен). */
+async function routeTelegramUpdate(u) {
   try {
     if (u.callback_query) {
       const from = String(u.callback_query.message?.chat?.id);
@@ -662,6 +674,26 @@ exports.telegramWebhook = onRequest({ region: REGION, secrets: SECRETS }, async 
   } catch (e) {
     logger.error("webhook", e);
   }
+}
+
+exports.telegramWebhook = onRequest({ region: REGION, secrets: SECRETS }, async (req, res) => {
+  // Проверка секрета — до любой работы с телом запроса.
+  // ⚠️ НЕТ СЕКРЕТА — НЕ РАБОТАЕМ. Раньше здесь стояло `if (HOOK_SECRET && …)`:
+  // при пустом секрете проверка просто пропускалась, и функция принимала
+  // POST от кого угодно. Адрес функции публичный, а дальше по коду админ
+  // определяется по chat.id из тела запроса — то есть по полю, которое
+  // отправитель заполняет сам. Подделав одно сообщение, посторонний мог бы
+  // подтвердить себе оплату, выдать сертификат, привязать чужой аккаунт к
+  // своему Telegram или удалить ученика.
+  //
+  // Отсутствие секрета — это поломка настройки, а не повод работать без
+  // защиты: пусть бот молчит, пока секрет не задан.
+  if (!HOOK_SECRET || req.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) {
+    logger.warn("webhook: неверный секрет");
+    res.sendStatus(401);
+    return;
+  }
+  await routeTelegramUpdate(req.body);
   res.sendStatus(200);
 });
 
@@ -755,7 +787,7 @@ async function handleCallback(cb) {
         `📋 <b>${s.name || "—"}</b>`,
         `Email: ${s.email || "—"}`,
         `Оплата: ${s.paid ? "✅ да" : "❌ нет"}`,
-        `Модулей: ${done}/11`,
+        `Модулей: ${done}/${TOTAL_MODULES}`,
         `Средний балл: ${avg}%`,
         `Сертификат: ${s.certificateGranted ? "✅ да" : "❌ нет"}`,
         `Последний визит: ${lastSeen}`,
@@ -845,7 +877,7 @@ async function handleMessage(msg) {
         .length;
       await tg("sendMessage", {
         chat_id: CHAT,
-        text: `${s.paid ? "✅" : "⬜"} <b>${s.name || "—"}</b> · ${s.email || ""} · ${done}/11`,
+        text: `${s.paid ? "✅" : "⬜"} <b>${s.name || "—"}</b> · ${s.email || ""} · ${done}/${TOTAL_MODULES}`,
         parse_mode: "HTML",
         reply_markup: { inline_keyboard: [[{ text: "📋 Подробнее", callback_data: `info:${s.uid}` }]] },
       });
@@ -893,11 +925,8 @@ async function handleMessage(msg) {
 /** Ежедневная проверка неактивных учеников — отправляет напоминание в Telegram
  * ученикам, которые не заходили 3+ дня. Бот пишет админу список таких учеников
  * с кнопкой «Написать» для каждого. Запуск: каждый день в 10:00 UTC+3. */
-exports.dailyReminders = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
-  .schedule("0 10 * * *")      // 10:00 в timeZone ниже (не UTC)
-  .timeZone("Europe/Moscow")
-  .onRun(async () => {
-    await sweepFeed(db, logger);
+async function runDailyReminders() {
+  await sweepFeed(db, logger);
 
     const snaps = await db.collection("students").where("paid", "==", true).get();
     if (snaps.empty) return null;
@@ -948,9 +977,13 @@ exports.dailyReminders = functions.region(REGION).runWith({ secrets: SECRETS }).
       });
     }
 
-    logger.info(`dailyReminders: ${inactive.length} неактивных`);
-    return null;
-  });
+  logger.info(`dailyReminders: ${inactive.length} неактивных`);
+}
+
+exports.dailyReminders = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
+  .schedule("0 10 * * *")      // 10:00 в timeZone ниже (не UTC)
+  .timeZone("Europe/Moscow")
+  .onRun(() => runDailyReminders());
 
 /** Утреннее напоминание УЧЕНИКАМ в Telegram (запрос автора 2026-07-27,
  *  вместе с учебным ботом).
@@ -962,11 +995,8 @@ exports.dailyReminders = functions.region(REGION).runWith({ secrets: SECRETS }).
  *  есть что не потерять: он ведёт серию, и сегодня она ещё не отмечена.
  *
  *  Время — 8:00 по Москве: раньше утренних азкаров смысла нет. */
-exports.studentDailyPractice = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
-  .schedule("0 8 * * *")       // 08:00 в timeZone ниже (не UTC)
-  .timeZone("Europe/Moscow")
-  .onRun(async () => {
-    const links = await db.collection("tgUsers").get();
+async function runStudentDailyPractice() {
+  const links = await db.collection("tgUsers").get();
     if (links.empty) return null;
 
     let sent = 0;
@@ -991,9 +1021,13 @@ exports.studentDailyPractice = functions.region(REGION).runWith({ secrets: SECRE
         logger.warn("studentDailyPractice", link.id, e);
       }
     }
-    logger.info(`studentDailyPractice: напоминаний отправлено ${sent}`);
-    return null;
-  });
+  logger.info(`studentDailyPractice: напоминаний отправлено ${sent}`);
+}
+
+exports.studentDailyPractice = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
+  .schedule("0 8 * * *")       // 08:00 в timeZone ниже (не UTC)
+  .timeZone("Europe/Moscow")
+  .onRun(() => runStudentDailyPractice());
 
 // ─────────────────────────────────────────────────
 // PAY BOT (@pay_rukya_bot) — приём сообщений об оплате
@@ -1030,6 +1064,12 @@ async function payTg(method, body) {
   return data;
 }
 
+/** Один апдейт pay-бота: пересылка сообщения об оплате наставнику.
+ * Вынесено из вебхука для локального раннера (лонг-поллинг). */
+async function handlePayUpdate(message) {
+  await handlePaymentMessage(message, { chat: CHAT, send: payTg });
+}
+
 exports.payTelegramWebhook = onRequest(
   {
     region: "us-central1",
@@ -1043,7 +1083,7 @@ exports.payTelegramWebhook = onRequest(
     }
 
     try {
-      await handlePaymentMessage(req.body?.message, { chat: CHAT, send: payTg });
+      await handlePayUpdate(req.body?.message);
     } catch (e) {
       logger.error("pay webhook", e.message);
       // Не подтверждаем потерянную доставку: Telegram сможет повторить запрос.

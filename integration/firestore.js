@@ -338,7 +338,8 @@ export function daysSince(timestamp) {
   return Math.floor(ms / (1000 * 60 * 60 * 24));
 }
 
-const TOTAL_MODULES = 11;
+// 12 с 2026-09-23 — вместе с перестановкой продвинутого блока (было 11).
+const TOTAL_MODULES = 12;
 
 export function computeOverallProgress(progress) {
   if (!progress) return 0;

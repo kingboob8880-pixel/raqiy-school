@@ -786,3 +786,36 @@ front matter и источников; обновление `pages/js/modules-dat
 >   Gemini…jpg в корне (дублирует assets/images/covers/). Push и
 >   firebase deploy — действия автора.
 
+## Сеанс 15 (2026-09-23) — локальный раннер вместо Google Cloud Functions
+
+> — Причина: деплой --only functions упал на Secret Manager 403 (нужен Blaze-
+> биллинг), включить биллинг на Google Cloud не получилось. Решение автора:
+> «компьютер включён постоянно — пусть всё работает с него».
+
+> — functions/index.js отрефакторен: тела триггеров/вебхуков/расписаний
+> вынесены в обычные функции (onStudentCreated, onMessageAdded,
+> onStudentChanged, onCaseChanged, routeTelegramUpdate, handlePayUpdate,
+> runDailyReminders, runStudentDailyPractice) — облачные экспорты вызывают
+> их же, дублей логики нет. Наружу отдан module.exports.__local; блок
+> поставлен В НАЧАЛО файла (после admin.init): pay-bot.test.cjs вырезает
+> хвост от объявления PAY_BOT через indexOf по исходнику и исполняет его в
+> vm без module — любой module.exports ниже ронял тест (поймано сразу).
+> Попутно: TOTAL_MODULES 11→12 (и в integration/firestore.js — клиентский
+> процент прогресса), «/11» в панелях бота → через константу.
+
+> — functions/local-server.js (новый): Telegram-боты на лонг-поллинге
+> (getUpdates, вебхуки снимаются при старте), триггеры Firestore через
+> onSnapshot (students, collectionGroup messages/cases; первый снимок —
+> baseline молча, иначе каждая перезапуска засыпала бы автора уведомлениями),
+> расписания 10:00/08:00 Москва таймером. Порт-лок 8791 от второго
+> экземпляра. Секреты из .env.local, ключ админски ищется в корне.
+
+> — RUN-SCHOOL.bat (корень): запуск двойным щелчком, автоперезапуск упавшего
+> процесса через 5 с. ASCII без BOM (урок 2026-07-27). START-BOT.bat остаётся
+> как облачный путь на будущее.
+
+> — Проверки: 24/24 теста, smoke 17+20/0, боевой прогон 30 с: @ruyka_school_bot
+> подключился, три слушателя навешаны, ошибок нет. Хостинг передеплоен
+> (firestore.js едет в public/). GitHub push — за автором или следующим
+> сеансом.
+
