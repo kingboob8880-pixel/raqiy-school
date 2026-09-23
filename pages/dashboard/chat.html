@@ -78,17 +78,17 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=35";
-    import { t, getLang } from "../js/i18n.js?v=37";
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=36";
+    import { t, getLang } from "../js/i18n.js?v=38";
     import { watchAuth, isAdmin } from "../../integration/auth.js?v=12";
     import {
       listStudents, sendMessage, sendMediaMessage, watchMessages, markThreadRead,
       watchThreadSummary, editMessage, deleteMessage, computeOverallProgress,
-    } from "../../integration/firestore.js?v=28";
+    } from "../../integration/firestore.js?v=29";
     import {
       renderMessages, wireChatForm, scrollToBottom, wireVoicePlayers,
       wireMessageActions, mediaBarHtml, wireScrollDown,
-    } from "../js/chat-ui.js?v=13";
+    } from "../js/chat-ui.js?v=14";
 
     renderHeader("admin");
     renderFooter();
