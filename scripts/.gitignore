@@ -5,3 +5,5 @@ node_modules/
 *firebase-adminsdk*.json
 # Бэкапы прогресса учеников (email + progress) — личные данные, не в git
 progress-backup-*.json
+
+tmp-*
