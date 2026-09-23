@@ -73,7 +73,9 @@ if (!BOT_TOKEN) {
 }
 
 // ─── 3. Экземпляр-лок: порт занят — значит раннер уже работает ─────────────
-const LOCK_PORT = 8791;
+// RUKYA_LOCK_PORT — только для тестов, чтобы поднять второй экземпляр,
+// не воюя с рабочим (в проде всегда дефолт).
+const LOCK_PORT = Number(process.env.RUKYA_LOCK_PORT) || 8791;
 const lock = http.createServer((_req, res) => res.end("ruqya-local-server"));
 lock.on("error", async (e) => {
   if (e.code === "EADDRINUSE") {
