@@ -3,3 +3,5 @@ node_modules/
 # даже случайно положенный сюда для удобства запуска (integration/README.md §7).
 *serviceAccount*.json
 *firebase-adminsdk*.json
+# Бэкапы прогресса учеников (email + progress) — личные данные, не в git
+progress-backup-*.json

@@ -12,11 +12,11 @@
 // Правила текста, которые здесь соблюдаются:
 //
 //   • Никаких обещаний результата. «Ты сможешь» — про умение, а не про
-//     гарантию исцеления: Модуль 10, §2 прямо запрещает заявления вида
+//     гарантию исцеления: Модуль 11, §2 прямо запрещает заявления вида
 //     «я точно вылечу это». Настрой не должен противоречить собственной
 //     этике курса.
 //   • Никакого «ты станешь сильным лекарем». Сила не в ученике — он
-//     причина, а не источник (Модуль 10, §3). Поэтому текст говорит о том,
+//     причина, а не источник (Модуль 11, §3). Поэтому текст говорит о том,
 //     чему модуль учит, а не о том, кем ученик сделается.
 //   • Каждый пункт «чему учит» опирается на реальный урок модуля из
 //     modules-data.js, а не сочинён для красоты. Ученик, открыв модуль,
@@ -229,7 +229,7 @@ export const MODULE_INTRO = {
     },
   },
 
-  7: {
+  8: {
     hook: {
       ru: "Иногда чтение встречает сопротивление. Значит, там кто-то есть — и с этим нужно уметь работать.",
       en: "Sometimes the recitation meets resistance. That means someone is there — and you must know how to work with it.",
@@ -259,7 +259,7 @@ export const MODULE_INTRO = {
     },
   },
 
-  8: {
+  9: {
     hook: {
       ru: "Сильного от начинающего отличают не формулы. Формулы у них одни и те же.",
       en: "It is not formulas that separate the strong from the beginner. Their formulas are the same.",
@@ -289,7 +289,7 @@ export const MODULE_INTRO = {
     },
   },
 
-  9: {
+  10: {
     hook: {
       ru: "Рано или поздно тебе принесут чужой язык — «энергетика», «биополе», «Космос как источник». Нужно уметь ответить, а не отмахнуться.",
       en: "Sooner or later someone will bring you a foreign vocabulary — \"energy\", \"biofield\", \"the Cosmos as a source\". You must be able to answer, not wave it away.",
@@ -322,7 +322,7 @@ export const MODULE_INTRO = {
     },
   },
 
-  10: {
+  11: {
     hook: {
       ru: "Лекарь и мучитель — два образа. Со стороны они делают одно и то же.",
       en: "The healer and the tormentor are two figures. From outside they do the same thing.",
@@ -352,7 +352,7 @@ export const MODULE_INTRO = {
     },
   },
 
-  11: {
+  12: {
     hook: {
       ru: "Всё изученное встречается с живым пациентом. Дальше нужна не память, а система.",
       en: "Everything you have learned meets a living patient. From here you need not memory but a system.",
@@ -382,7 +382,7 @@ export const MODULE_INTRO = {
     },
   },
 
-  12: {
+  7: {
     hook: {
       ru: "Продвинутое собрано в одно место. Дальше важен не объём знаний, а порядок: что делать до встречи, что при человеке и чего не обещать.",
       en: "The advanced material is gathered in one place. From here what matters is order: what to do before the meeting, what to do with the person present, and what never to promise.",

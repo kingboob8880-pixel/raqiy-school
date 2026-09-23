@@ -1,8 +1,10 @@
 // node --test scripts/trilogy-course.test.cjs
 //
-// Точная проверка Модуля 12 «Профессионал»: три книги трилогии «Прямой путь»
-// переехали в один финальный модуль, курсу добавлены ресурсы (сводка,
-// флеш-карточки, глоссарий), а счётчики модулей переведены с 11 на 12.
+// Точная проверка Модуля 7 «Профессионал» (файлы живут в content/module-12/ —
+// пути не менялись, перестановка 2026-09-23): три книги трилогии «Прямой путь»
+// переехали в один модуль, открывающий продвинутый уровень, курсу добавлены
+// ресурсы (сводка, флеш-карточки, глоссарий), а счётчики модулей переведены
+// с 11 на 12.
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
@@ -27,14 +29,14 @@ const EXAMS = [
   "content/exams/module-12-pryamoy-put-svodka.md",
 ];
 
-test("книги трилогии собраны в Модуле 12 и корректны", () => {
+test("книги трилогии собраны в Модуле 7 (папка module-12) и корректны", () => {
   for (const f of [...LESSONS, ...EXAMS]) {
     assert.ok(fs.existsSync(path.join(ROOT, f)), "нет файла: " + f);
     const t = read(f);
     assert.ok(!t.includes("\uFFFD"), "повреждённые символы: " + f);
     assert.match(t, /^---\r?\n/, "нет front-matter: " + f);
   }
-  assert.ok(has(read("content/module-12/index.md"), "Профессионал"), "в оглавлении Модуля 12 нет названия");
+  assert.ok(has(read("content/module-12/index.md"), "Профессионал"), "в оглавлении Модуля-Профессионала нет названия");
   for (const f of LESSONS.slice(0, 3)) {
     assert.match(read(f), /^module: 12$/m, "номер модуля не 12: " + f);
   }
@@ -56,10 +58,10 @@ test("реестр модулей: 12 модулей и трилогия ров�
   const { MODULES, computeAchievements } = await import(pathToFileURL(path.join(ROOT, "pages/js/modules-data.js")).href);
   assert.equal(MODULES.length, 12);
   assert.deepEqual(MODULES.map((m) => m.id), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-  const m12 = MODULES.find((m) => m.id === 12);
-  assert.equal(m12.title, "Профессионал");
-  assert.equal(m12.lessons.length, 4);
-  for (const l of m12.lessons) {
+  const m7 = MODULES.find((m) => m.id === 7);
+  assert.equal(m7.title, "Профессионал");
+  assert.equal(m7.lessons.length, 4);
+  for (const l of m7.lessons) {
     assert.ok(l.doc.startsWith("/content/"), "путь урока: " + l.doc);
     assert.ok(l.exam && l.exam.startsWith("/content/exams/"), "экзамен урока: " + l.doc);
     assert.ok(fs.existsSync(path.join(ROOT, l.doc.replace(/^\//, ""))), "нет файла урока: " + l.doc);
@@ -67,27 +69,27 @@ test("реестр модулей: 12 модулей и трилогия ров�
   }
   let occurrences = 0;
   for (const m of MODULES) for (const l of m.lessons) if (l.doc.includes("pryamoy-put") || l.doc.includes("puti-vliyaniya")) occurrences += 1;
-  assert.equal(occurrences - 1, 3, "книги трилогии должны встречаться только в Модуле 12 и сводке");
+  assert.equal(occurrences - 1, 3, "книги трилогии должны встречаться только в Модуле-Профессионале и сводке");
 
   const grad = computeAchievements({}, []).find((a) => a.id === "graduate");
   assert.equal(grad.goal, 12);
   assert.ok(grad.description.includes("12"));
 });
 
-test("задания и тесты Модуля 12 на месте", async () => {
+test("задания и тесты Модуля 7 «Профессионал» на месте", async () => {
   const { ASSIGNMENTS } = await import(pathToFileURL(path.join(ROOT, "pages/js/assignments-data.js")).href);
-  assert.equal(ASSIGNMENTS[12].length, 4);
+  assert.equal(ASSIGNMENTS[7].length, 4);
   const { MODULES } = await import(pathToFileURL(path.join(ROOT, "pages/js/modules-data.js")).href);
-  const docs = MODULES.find((m) => m.id === 12).lessons.map((l) => l.doc);
-  for (const a of ASSIGNMENTS[12]) assert.ok(docs.includes(a.book), "задание вне Модуля 12: " + a.id);
+  const docs = MODULES.find((m) => m.id === 7).lessons.map((l) => l.doc);
+  for (const a of ASSIGNMENTS[7]) assert.ok(docs.includes(a.book), "задание вне Модуля-Профессионала: " + a.id);
   for (const id of ["m1-pryamoy-put", "m2-puti-vliyaniya", "m8-podgotovka-pryamoy-put"]) {
     const stray = Object.values(ASSIGNMENTS).flat().some((a) => a.id === id);
     assert.ok(!stray, "осталось старое задание: " + id);
   }
 
   const { QUIZZES } = await import(pathToFileURL(path.join(ROOT, "pages/js/quiz-data.js")).href);
-  assert.equal(QUIZZES[12].length, 8);
-  for (const q of QUIZZES[12]) {
+  assert.equal(QUIZZES[7].length, 8);
+  for (const q of QUIZZES[7]) {
     assert.equal(q.options.length, 4);
     assert.ok(q.correct >= 0 && q.correct < 4);
   }
@@ -96,7 +98,7 @@ test("задания и тесты Модуля 12 на месте", async () =>
   }
 });
 
-test("ресурсы: сводка, флеш-карточки и глоссарий несут Модуль 12", () => {
+test("ресурсы: сводка, флеш-карточки и глоссарий несут Модуль 7 «Профессионал»", () => {
   const svodka = read("content/reference/pryamoy-put-svodka.md");
   for (const s of ["Четыре элемента", "Сабиль", "Обещай усилие"]) assert.ok(has(svodka, s), "в сводке нет: " + s);
 
@@ -104,10 +106,10 @@ test("ресурсы: сводка, флеш-карточки и глоссар�
   assert.ok(has(flash, "i <= 12"), "выбор колоды не расширен до 12");
   assert.ok(!has(flash, "i <= 11"), "осталось ограничение на 11 модулей");
   assert.ok(!has(flash, "всех 11 модулей"), "устаревшая карточка про 11 модулей");
-  assert.equal((flash.match(/\{ m:12,/g) || []).length, 10, "карточек Модуля 12 должно быть 10");
+  assert.equal((flash.match(/\{ m:7,/g) || []).length, 10, "карточек Модуля 7 должно быть 10");
 
   const gloss = read("pages/glossary/index.html");
-  assert.equal((gloss.match(/modules: \[12\]/g) || []).length, 3, "терминов Модуля 12 должно быть 3");
+  assert.equal((gloss.match(/modules: \[7\]/g) || []).length, 3, "терминов Модуля 7 должно быть 3");
   for (const s of ["Сабиль", "аль-Фаттах", "Формула «Прямого пути»"]) assert.ok(has(gloss, s), "в глоссарии нет: " + s);
 });
 
@@ -120,17 +122,17 @@ test("счётчики модулей переведены на 12", () => {
   for (const f of ["pages/index.html", "pages/about.html"]) {
     assert.ok(!has(read(f), "11 модул"), "осталось «11 модул»: " + f);
   }
-  assert.ok(has(read("pages/js/module-intro-data.js"), "  12: {"), "нет intro для Модуля 12");
+  assert.ok(has(read("pages/js/module-intro-data.js"), "  7: {"), "нет intro для Модуля 7 «Профессионал»");
 });
 
-test("сгенерированные индексы содержат Модуль 12", () => {
+test("сгенерированные индексы содержат уроки трилогии (module-12)", () => {
   const si = read("content/search-index.json");
   const cd = read("functions/course-data.json");
   for (const f of LESSONS) {
     assert.ok(has(si, f), "search-index без " + f);
     assert.ok(has(cd, f), "course-data без " + f);
   }
-  assert.ok(has(cd, "Профессионал"), "course-data без Модуля 12");
+  assert.ok(has(cd, "Профессионал"), "course-data без Модуля «Профессионал»");
   assert.ok(!has(cd, "module-1/pryamoy-put.md"), "course-data всё ещё знает старый путь");
 });
 
@@ -148,11 +150,11 @@ test("все экзамены курса валидны: 6 вопросов и �
   assert.ok(checked >= 60, "проверено экзаменов: " + checked);
 });
 
-test("сборка public содержит Модуль 12 и актуальный поиск", () => {
+test("сборка public содержит файлы модуля «Профессионал» (module-12) и актуальный поиск", () => {
   for (const f of [...LESSONS, ...EXAMS]) {
     assert.ok(fs.existsSync(path.join(ROOT, "public", f)), "нет в public: " + f);
   }
-  assert.ok(fs.existsSync(path.join(ROOT, "public/content/module-12/index.md")), "нет оглавления Модуля 12 в public");
+  assert.ok(fs.existsSync(path.join(ROOT, "public/content/module-12/index.md")), "нет оглавления модуля «Профессионал» в public");
   const built = JSON.parse(read("public/content/search-index.json"));
   const source = JSON.parse(read("content/search-index.json"));
   assert.deepEqual(built, source, "search-index в public разошёлся с исходным");
