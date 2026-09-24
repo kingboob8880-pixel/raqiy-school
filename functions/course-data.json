@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-24T09:41:37.224Z",
+ "generatedAt": "2026-09-24T11:17:09.472Z",
  "note": "Сгенерировано scripts/build-course-data.mjs — руками не править.",
  "passThreshold": 0.7,
  "modules": [
@@ -606,6 +606,12 @@
      "doc": "/content/reference/praktika-passport.md",
      "exam": "/content/exams/module-11-praktika-passport.md",
      "key": "_content_reference_praktika-passport_md"
+    },
+    {
+     "title": "Защита и конфиденциальность данных пациента в RUKYA Pro",
+     "doc": "/content/module-11/zashchita-dannykh-patsienta.md",
+     "exam": "/content/exams/module-11-zashchita-dannykh-patsienta.md",
+     "key": "_content_module-11_zashchita-dannykh-patsienta_md"
     },
     {
      "title": "Специальные протоколы приёма — восемь специальных приложений",

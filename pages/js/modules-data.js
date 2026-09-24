@@ -303,6 +303,7 @@ export const MODULES = [
     // привязанный к действующей форме супервизии (3 принятых случая).
     lessons: [
       { title: "Паспорт практики — ступени допуска лекаря-ракийи", doc: "/content/reference/praktika-passport.md", exam: "/content/exams/module-11-praktika-passport.md" },
+      { title: "Защита и конфиденциальность данных пациента в RUKYA Pro", doc: "/content/module-11/zashchita-dannykh-patsienta.md", exam: "/content/exams/module-11-zashchita-dannykh-patsienta.md" },
       { title: "Специальные протоколы приёма — восемь специальных приложений", doc: "/content/module-11/specialnye-protokoly-priyoma.md", exam: "/content/exams/module-11-specialnye-protokoly-priyoma.md" },
       { title: "Финальный практикум-симуляция: один случай от Part 0 до защиты", doc: "/content/module-11/praktikum-simulyatsiya.md", exam: "/content/exams/module-11-praktikum-simulyatsiya.md" },
       { title: "Защита двух случаев — итоговый экзамен Модуля 12", doc: "/content/module-11/zashchita-dvukh-sluchaev.md", exam: "/content/exams/module-11-zashchita-dvukh-sluchaev.md" },
