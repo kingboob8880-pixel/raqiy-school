@@ -198,7 +198,7 @@ export const MODULES = [
     id: 7,
     title: "Профессионал",
     level: "Продвинутый",
-    status: "author",
+    status: "certified",
     doc: "/content/module-12/index.md",
     cover: "/assets/images/covers/Gemini_Generated_Image_rvbggorvbggorvbg.jpg",
     // Модуль собран из трилогии автора «Прямой путь — Заклинание верой»
@@ -222,7 +222,7 @@ export const MODULES = [
     id: 8,
     title: "Изгнание духовных сущностей",
     level: "Продвинутый",
-    status: "author",
+    status: "certified",
     doc: "/content/module-7/index.md",
     cover: "/assets/images/covers/ubivanie-dzhinnov.jpg",
     lessons: [
@@ -240,7 +240,7 @@ export const MODULES = [
     id: 9,
     title: "Продвинутый Мастер",
     level: "Продвинутый",
-    status: "author",
+    status: "certified",
     doc: "/content/module-8/index.md",
     cover: "/assets/images/covers/prodvinutyy-master.jpg",
     lessons: [
@@ -294,7 +294,7 @@ export const MODULES = [
     id: 12,
     title: "Работа в системе RUKYA Pro",
     level: "Продвинутый",
-    status: "author",
+    status: "certified",
     doc: "/content/module-11/index.md",
     cover: "/assets/images/covers/rukya-pro.jpg",
     // Волна 8: курс выпускал знающего, но не считавшего часы. Паспорт
