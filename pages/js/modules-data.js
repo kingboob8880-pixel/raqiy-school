@@ -6,13 +6,11 @@ export const MODULES = [
     id: 1,
     title: "Основа основ",
     level: "Начальный",
-    // status: "author" (было "certified") — урок «Учебник якына» существенно
-    // расширен 2026-07-20 (сорокадневная программа, 16 упражнений вместо
-    // сжатого пересказа), сам урок понижен до черновика; честно отражаем
-    // это и на бейдже модуля на "Пути ученика", а не только на странице
-    // самого урока — иначе список модулей показывал бы модуль как
-    // "подтверждено шейхом" при том, что треть его уроков ждёт подтверждения.
-    status: "author",
+    // Статус: certified с 2026-09-25 — состав уроков подтверждён решением
+    // автора курса. Исторически (2026-07-20) модуль понижался до черновика,
+    // когда «Учебник якына» существенно расширили (сорокадневная программа,
+    // 16 упражнений); после вычитки оговорка «ещё дорабатывается» снята.
+    status: "certified",
     doc: "/content/module-1/index.md",
     cover: "/assets/images/covers/volevoy-akt.jpg",
     lessons: [
@@ -78,13 +76,10 @@ export const MODULES = [
     id: 2,
     title: "Основы заклинания",
     level: "Начальный",
-    // status: "author" (было "certified") — добавлен новый урок
-    // "Продвинутое заклинание — метод «Аллязи»" (перенос авторского
-    // материала ruqyah-advanced44.html по решению автора курса,
-    // 2026-07-21) — тот же принцип, что и с Модулем 1 (2026-07-20):
-    // модуль с материально изменившимся составом уроков понижается до
-    // черновика, пока шейх не подтвердит заново.
-    status: "author",
+    // Статус: certified с 2026-09-25 — подтверждён решением автора курса.
+    // Модуль понижался до черновика (2026-07-21), когда добавили урок
+    // «Продвинутое заклинание — метод «Аллязи»»; оговорка о доработке снята.
+    status: "certified",
     doc: "/content/module-2/index.md",
     cover: "/assets/images/covers/zaklinanie-organy-koldovstvo.jpg",
     lessons: [
@@ -114,7 +109,7 @@ export const MODULES = [
     id: 3,
     title: "Основы применения",
     level: "Начальный",
-    status: "author",
+    status: "certified",
     doc: "/content/module-3/index.md",
     cover: "/assets/images/covers/organy-tela.jpg",
     lessons: [
@@ -128,7 +123,7 @@ export const MODULES = [
     id: 4,
     title: "Диагностика — протокол безопасности",
     level: "Средний",
-    status: "author",
+    status: "certified",
     doc: "/content/module-4/index.md",
     cover: "/assets/images/covers/diagnostika.jpg",
     lessons: [
@@ -143,7 +138,7 @@ export const MODULES = [
     id: 5,
     title: "Направленное применение",
     level: "Средний",
-    status: "author",
+    status: "certified",
     doc: "/content/module-5/index.md",
     cover: "/assets/images/covers/napravlennoe-primenenie.jpg",
     lessons: [
