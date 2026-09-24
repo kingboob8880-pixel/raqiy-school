@@ -285,6 +285,8 @@ export const MODULES = [
     doc: "/content/module-10/index.md",
     cover: "/assets/images/covers/istinnyy-rakiy.jpg",
     lessons: [
+      { title: "Лже-ракый: запреты и ошибки, недопустимые в практике рукьи", doc: "/content/module-10/oshibki-i-zaprety-lzherakii.md", exam: "/content/exams/module-10-oshibki-i-zaprety.md" },
+      { title: "Образ истинного раки — знание, такъва, ихляс, присутствие сердца, рахма, таваду'", doc: "/content/module-10/obraz-istinnogo-rakii.md", exam: "/content/exams/module-10-obraz-istinnogo-rakii.md" },
       { title: "Разница между практиком и теоретиком в рукье", doc: "/content/module-10/raznitsa-praktik-vs-teoretik.md", exam: "/content/exams/module-10-raznitsa-praktik-vs-teoretik.md" },
     ],
   },
