@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-25T02:50:28.948Z",
+ "generatedAt": "2026-09-25T05:02:51.596Z",
  "note": "Сгенерировано scripts/build-course-data.mjs — руками не править.",
  "passThreshold": 0.7,
  "modules": [
@@ -528,6 +528,12 @@
      "doc": "/content/module-8/desyat-kriteriev.md",
      "exam": "/content/exams/module-8-desyat-kriteriev.md",
      "key": "_content_module-8_desyat-kriteriev_md"
+    },
+    {
+     "title": "Банк программ лечения — 10 эталонов сборки",
+     "doc": "/content/module-8/bank-programm-lecheniya.md",
+     "exam": "/content/exams/module-8-bank-programm-lecheniya.md",
+     "key": "_content_module-8_bank-programm-lecheniya_md"
     },
     {
      "title": "Исцеление за секунды — часть 1: доктрина, плотность, почему мгновенно",

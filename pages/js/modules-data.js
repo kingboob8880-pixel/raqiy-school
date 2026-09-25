@@ -243,6 +243,11 @@ export const MODULES = [
       { title: "Заклинание действием — продвинутые формулы", doc: "/content/module-8/prodvinutye-formuly.md", exam: "/content/exams/module-8-prodvinutye-formuly.md" },
       { title: "Комбинированные формулы и уровни мастерства", doc: "/content/module-8/kombo-i-urovni.md", exam: "/content/exams/module-8-kombo-i-urovni.md" },
       { title: "Программа по 10 критериям — карта и логика", doc: "/content/module-8/desyat-kriteriev.md", exam: "/content/exams/module-8-desyat-kriteriev.md" },
+      // Учебный банк собран по решению автора курса (2026-09-25) из его же
+      // авторской методики (основной 7-дневный метод): эталоны — готовые
+      // программы сборки «диагноз → программа». Ставится ПОСЛЕ урока
+      // о 10 критериях: банк применяет их архитектуру, а не заменяет её.
+      { title: "Банк программ лечения — 10 эталонов сборки", doc: "/content/module-8/bank-programm-lecheniya.md", exam: "/content/exams/module-8-bank-programm-lecheniya.md" },
       // Авторский учебник «Исцеление за секунды» (2026-07-27). Поставлен в
       // Модуль 9, а не в Модуль 1, где лежит якын: книга не учит
       // убеждённости с нуля, а сводит воедино уже пройденное — восемь
