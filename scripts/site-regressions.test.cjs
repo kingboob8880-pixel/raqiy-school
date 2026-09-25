@@ -53,3 +53,67 @@ test("поисковые заголовки не содержат HTML, араб
   const headings = ctx.extractHeadings('## Заголовок <span lang="ar">الله</span>');
   assert.equal(headings[0].text, "Заголовок الله");
 });
+
+// ── Целостность реестра и контента (страж после аудита 2026-09-25) ──
+// Эти проверки превращают разовый аудит в постоянный guard: они ловят
+// осиротевшие файлы, битые ссылки, латинские буквы-опечатки в кириллице,
+// ссылки реестра в несуществующие файлы и дубли заголовков уроков.
+const ROOT = path.join(__dirname, "..");
+const walkMd = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+  const p = path.join(dir, e.name);
+  return e.isDirectory() ? walkMd(p) : p.endsWith(".md") ? [p] : [];
+});
+const toRel = (p) => "/" + path.relative(ROOT, p).split(path.sep).join("/");
+const registrySrc = read("pages/js/modules-data.js");
+const grabAll = (re) => { const a = []; let m; while ((m = re.exec(registrySrc))) a.push(m[1]); return a; };
+const grabSet = (re) => [...new Set(grabAll(re))];
+const docPaths = grabSet(/doc:\s*"(\/[^"]+)"/g);
+const examPaths = grabSet(/exam:\s*"(\/[^"]+)"/g);
+const coverPaths = grabSet(/cover:\s*"(\/[^"]+)"/g);
+const videoPaths = grabSet(/intro_video:\s*"(\/[^"]+)"/g);
+const existsPath = (p) => fs.existsSync(path.join(ROOT, p.replace(/^\//, "").replace(/\//g, path.sep)));
+const contentMds = () => walkMd(path.join(ROOT, "content"));
+
+test("реестр: каждый путь doc/exam/cover/intro_video ведёт к существующему файлу", () => {
+  const missing = [...docPaths, ...examPaths, ...coverPaths, ...videoPaths].filter((p) => !existsPath(p));
+  assert.deepEqual(missing, [], "ссылки в несуществующие файлы: " + missing.join(", "));
+});
+
+test("контент: нет осиротевших .md, не связанных ни одним модулем", () => {
+  const referenced = new Set([...docPaths, ...examPaths]);
+  const orphans = contentMds().map(toRel).filter((p) => !referenced.has(p));
+  assert.deepEqual(orphans, [], "файлы вне реестра: " + orphans.join(", "));
+});
+
+test("орфография: в кириллических словах уроков нет латинских букв-опечаток", () => {
+  const re = /[\u0400-\u04FF][A-Za-z][\u0400-\u04FF]/;
+  const hits = [];
+  for (const f of contentMds()) {
+    fs.readFileSync(f, "utf8").split(/\r?\n/).forEach((ln, i) => { if (re.test(ln)) hits.push(`${toRel(f)}:${i + 1}`); });
+  }
+  assert.deepEqual(hits, [], "латиница внутри кириллического слова: " + hits.join(", "));
+});
+
+test("контент: внутренние ссылки ведут на существующие файлы", () => {
+  const linkRe = /\]\((\/?[^\s)#]+)(?:#[^)]*)?\)/g;
+  const broken = [];
+  for (const f of contentMds()) {
+    const text = fs.readFileSync(f, "utf8");
+    let m;
+    while ((m = linkRe.exec(text))) {
+      const target = m[1];
+      if (target === "" || /^https?:/.test(target)) continue;
+      const local = target.startsWith("/")
+        ? path.join(ROOT, target.replace(/^\//, "").replace(/\//g, path.sep))
+        : path.join(path.dirname(f), target.replace(/\//g, path.sep));
+      if (!fs.existsSync(local)) broken.push(`${toRel(f)} -> ${target}`);
+    }
+  }
+  assert.deepEqual(broken, [], "битые внутренние ссылки: " + broken.join(", "));
+});
+
+test("реестр: заголовки уроков и модулей уникальны", () => {
+  const seen = new Set(), dup = new Set();
+  for (const t of grabAll(/title:\s*"([^"]+)"/g)) { if (seen.has(t)) dup.add(t); seen.add(t); }
+  assert.deepEqual([...dup], [], "повторяющиеся заголовки: " + [...dup].join(" | "));
+});
