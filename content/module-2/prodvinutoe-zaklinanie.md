@@ -199,6 +199,7 @@ status: certified
 
 <div class="ayah-card">
   <div class="ayah-card__arabic">وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ</div>
+  <div class="ayah-card__translit">Ва иза маридту фа-Хува йашфини</div>
   <div class="ayah-card__translation">«А когда я заболею — Он исцеляет меня»</div>
   <div class="ayah-card__source">Сура аш-Шуара, 26:80</div>
 </div>
