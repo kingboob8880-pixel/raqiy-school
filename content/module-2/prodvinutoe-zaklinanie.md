@@ -102,6 +102,7 @@ status: certified
 
 <div class="ayah-card">
   <div class="ayah-card__arabic">بِسْمِ اللهِ + الَّذِي [атрибут] + أَرْقِي لِـ[действие] مِنْ [недуг]</div>
+  <div class="ayah-card__translit">Бисмилляхи + аль-лязи [атрибут] + арки ли-[действие] мин [недуг]</div>
   <div class="ayah-card__translation">Три элемента в одном заклинании: основание через атрибут → активное действие → защита от недуга</div>
 </div>
 
