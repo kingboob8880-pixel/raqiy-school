@@ -195,6 +195,7 @@ status: certified
 
 <div class="ayah-card">
   <div class="ayah-card__arabic">وَاللَّهُ هُوَ الشَّافِي الْمُعَافِي</div>
+  <div class="ayah-card__translit">Ва-Ллаху Хува-ш-Шафи аль-Муафи</div>
   <div class="ayah-card__translation">«А Аллах — Он есть Исцеляющий, Дающий здоровье»</div>
 </div>
 
