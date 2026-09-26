@@ -296,6 +296,19 @@ function moduleEntries(progress) {
   );
 }
 
+/** Пройдены ли ВСЕ модули программы, а не только те, что ученик открывал.
+ *  Без проверки количества человек с одним-двумя сданными модулями формально
+ *  проходил бы «все со статусом done» — [].every() истинно на пустом списке,
+ *  а фильтр оставляет только те модули, что вообще есть в прогрессе. Отсюда и
+ *  TOTAL_MODULES (см. комментарий при его объявлении). Одна реализация на оба
+ *  места — выпуск в ленту и предложение сертификата админу: раньше они
+ *  считали по-разному, и кнопка «выдать сертификат» могла предложиться при
+ *  неполном прохождении курса. */
+function progressShowsGraduation(progress) {
+  const mods = moduleEntries(progress).filter(([, v]) => v.status);
+  return mods.length >= TOTAL_MODULES && mods.every(([, v]) => v.status === "done");
+}
+
 // ─────────────────────────────────────────────────
 // УВЕДОМЛЕНИЯ (Gen 1 Firestore triggers)
 // ─────────────────────────────────────────────────
@@ -471,9 +484,7 @@ async function onStudentChanged(uid, change) {
 
     const name = after.name || uid;
     const buttons = [[{ text: "💬 Написать", callback_data: `reply:${uid}` }]];
-    const allDone = Object.entries(pA)
-      .filter(([k, v]) => k !== "activityDates" && k !== "books" && typeof v === "object" && v?.status)
-      .every(([, v]) => v.status === "done");
+    const allDone = progressShowsGraduation(pA);
     // Кнопку «выдать сертификат» предлагаем только тогда, когда пройдено
     // и то и другое: модули и супервизия (решение автора 2026-07-27).
     // Раньше она появлялась за одни тесты — то есть за прочитанное, а не
@@ -548,11 +559,7 @@ async function buildFeedEntries(uid, before, after, pB, pA) {
   // Выпуск: все модули со статусом "done". Сравниваем с состоянием ДО, иначе
   // каждое следующее сохранение профиля выпускника переписывало бы запись и
   // поднимало её в ленте наверх заново.
-  const allDone = (p) => {
-    const mods = moduleEntries(p).filter(([, v]) => v.status);
-    return mods.length >= TOTAL_MODULES && mods.every(([, v]) => v.status === "done");
-  };
-  if (allDone(pA) && !allDone(pB)) {
+  if (progressShowsGraduation(pA) && !progressShowsGraduation(pB)) {
     await pushFeed(uid, "graduate", "all", { firstName: name });
   }
 

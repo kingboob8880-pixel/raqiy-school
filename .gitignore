@@ -26,6 +26,9 @@ result.json
 /assets/downloads/
 *.exe
 
+# Кеш деплоя Firebase Hosting — перегенерируется на каждом predeploy, в git не нужен.
+.firebase/
+
 # ⚠️ Ключи Firebase — заполняются вручную, не должны попасть в публичную историю
 # коммитов до перехода на приватный репозиторий с ограниченным доступом.
 integration/firebase-config.local.js

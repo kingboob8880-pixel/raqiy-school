@@ -210,6 +210,12 @@ export const MODULES = [
       { title: "Прямой путь — вера и намерение", doc: "/content/module-12/pryamoy-put.md", exam: "/content/exams/module-12-pryamoy-put.md" },
       { title: "Пути влияния — понятие и мольбы", doc: "/content/module-12/puti-vliyaniya.md", exam: "/content/exams/module-12-puti-vliyaniya.md" },
       { title: "Прямой путь — подготовка и целостная практика", doc: "/content/module-12/podgotovka-pryamoy-put.md", exam: "/content/exams/module-12-podgotovka-pryamoy-put.md" },
+      // Две книги того же ряда добавлены по решению автора (2026-09-26):
+      // «Заряд» — практическое продолжение трилогии (чем наполнить путь),
+      // «Разрыв путей» — полный протокол против колдовства. Сводка-ресурс
+      // остаётся последней: она покрывает трилогию.
+      { title: "Духовный заряд Кораном — мольбы о корнях души", doc: "/content/module-12/zaryad-koranom.md", exam: "/content/exams/module-12-zaryad-koranom.md" },
+      { title: "Разрыв путей колдовства — метод полного отсечения и изгнания", doc: "/content/module-12/razriv-putej-koldovstva.md", exam: "/content/exams/module-12-razriv-putej-koldovstva.md" },
       { title: "Сводка «Прямого пути» (Ресурс)", doc: "/content/reference/pryamoy-put-svodka.md", exam: "/content/exams/module-12-pryamoy-put-svodka.md" },
     ],
   },

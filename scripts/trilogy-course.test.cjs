@@ -60,7 +60,7 @@ test("реестр модулей: 12 модулей и трилогия ров�
   assert.deepEqual(MODULES.map((m) => m.id), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
   const m7 = MODULES.find((m) => m.id === 7);
   assert.equal(m7.title, "Профессионал");
-  assert.equal(m7.lessons.length, 4);
+  assert.equal(m7.lessons.length, 6, "трилогия + заряд + разрыв + сводка");
   for (const l of m7.lessons) {
     assert.ok(l.doc.startsWith("/content/"), "путь урока: " + l.doc);
     assert.ok(l.exam && l.exam.startsWith("/content/exams/"), "экзамен урока: " + l.doc);
@@ -78,17 +78,18 @@ test("реестр модулей: 12 модулей и трилогия ров�
 
 test("задания и тесты Модуля 7 «Профессионал» на месте", async () => {
   const { ASSIGNMENTS } = await import(pathToFileURL(path.join(ROOT, "pages/js/assignments-data.js")).href);
-  assert.equal(ASSIGNMENTS[7].length, 4);
+  assert.equal(ASSIGNMENTS[7].length, 6, "упражнение есть у каждой книги модуля, включая сводку");
   const { MODULES } = await import(pathToFileURL(path.join(ROOT, "pages/js/modules-data.js")).href);
   const docs = MODULES.find((m) => m.id === 7).lessons.map((l) => l.doc);
   for (const a of ASSIGNMENTS[7]) assert.ok(docs.includes(a.book), "задание вне Модуля-Профессионала: " + a.id);
+  for (const d of docs) assert.ok(ASSIGNMENTS[7].some((a) => a.book === d), "у книги нет упражнения: " + d);
   for (const id of ["m1-pryamoy-put", "m2-puti-vliyaniya", "m8-podgotovka-pryamoy-put"]) {
     const stray = Object.values(ASSIGNMENTS).flat().some((a) => a.id === id);
     assert.ok(!stray, "осталось старое задание: " + id);
   }
 
   const { QUIZZES } = await import(pathToFileURL(path.join(ROOT, "pages/js/quiz-data.js")).href);
-  assert.equal(QUIZZES[7].length, 8);
+  assert.equal(QUIZZES[7].length, 12, "трилогия (6) + сводка (2) + заряд (2) + разрыв (2)");
   for (const q of QUIZZES[7]) {
     assert.equal(q.options.length, 4);
     assert.ok(q.correct >= 0 && q.correct < 4);

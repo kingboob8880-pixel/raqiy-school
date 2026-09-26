@@ -391,16 +391,19 @@ export const MODULE_INTRO = {
     learn: {
       ru: [
         "Трилогию «Прямой путь» целиком: вера и намерение, пути влияния, подготовка и целостная практика",
+        "Две книги продолжения: духовный заряд Кораном через мольбы о корнях души и полный протокол разрыва путей колдовства",
         "Четыре элемента намерения и три направления — в связке с уже пройденным",
         "Сводку-шпаргалку для повторения перед сеансом",
       ],
       en: [
         "The whole Direct Path trilogy: faith and intention, paths of influence, preparation and coherent practice",
+        "Two companion books: charging the spirit with the Qur'an through the soul-root supplications, and the full protocol for severing the paths of sorcery",
         "The four elements of intention and the three directions — tied to what was already learned",
         "A summary cheat-sheet for revision before a session",
       ],
       uz: [
         "«To'g'ri yo'l» trilogiyasini to'liq: imon va niyat, ta'sir yo'llari, tayyorgarlik va yaxlit amaliyot",
+        "Ikki davom kitobi: qalb tublariga duo orqali Qur'on bilan ruhiy quvvat olish va jodugarlik yo'llarini uzishning to'liq protokoli",
         "Niyatning to'rt elementi va uch yo'nalishi — allaqachon o'rganganlar bilan bog'liq holda",
         "Seansdan oldin takrorlash uchun qisqa shpargalka",
       ],
