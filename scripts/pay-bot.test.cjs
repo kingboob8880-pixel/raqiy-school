@@ -76,7 +76,10 @@ function webhook(response) {
     exports: {}, process: { env: { TG_PAY_BOT_TOKEN: "test-only" } },
     require: id => { assert.equal(id, "./pay-bot"); return { handlePaymentMessage }; },
     HOOK_SECRET: "test-secret", CHAT: "999", AbortSignal,
-    logger: { warn() {}, error() {} }, onRequest: (_options, handler) => handler,
+    logger: { warn() {}, error() {} },
+    // Хвост index.js с 2026-09-26 объявляет вебхук через v1-стиль:
+    // functions.region(...).https.onRequest(handler) — имитируем цепочку.
+    functions: { region: () => ({ https: { onRequest: (handler) => handler } }) },
     fetch: async (url, options) => {
       const method = url.slice(url.lastIndexOf("/") + 1);
       calls.push({ method, body: JSON.parse(options.body) });

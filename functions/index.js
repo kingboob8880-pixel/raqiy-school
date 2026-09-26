@@ -6,7 +6,6 @@
 // not a function", 2026-07-26).
 const functions = require("firebase-functions/v1");
 const { sweepFeed } = require("./feed-sweep");
-const { onRequest } = require("firebase-functions/v2/https");
 const { initializeApp } = require("firebase-admin/app");
 const { getFirestore, FieldValue } = require("firebase-admin/firestore");
 const logger = require("firebase-functions/logger");
@@ -27,15 +26,14 @@ const TOTAL_MODULES = 12;
 // 2026-07-25). С ним посторонний может читать всё, что приходит боту, и
 // писать от его имени.
 //
-// КАК ЗАДАТЬ (один раз, из папки functions/):
-//   firebase functions:secrets:set TG_BOT_TOKEN
-//   firebase functions:secrets:set TG_CHAT_ID
-// и затем задеплоить:  firebase deploy --only functions
-//
-// Для локального запуска эмулятора положите значения в functions/.env
-// (файл уже закрыт в .gitignore):
+// КАК ЗАДАТЬ (правка 2026-09-26: без Secret Manager):
+// Secret Manager требует включённого биллинга (Blaze), а проект живёт на
+// бесплатном тарифе, поэтому значения лежат только в functions/.env
+// (файл закрыт в .gitignore) — Firebase CLI подхватывает его при деплое
+// и заполняет process.env в работающих функциях:
 //   TG_BOT_TOKEN=…
 //   TG_CHAT_ID=…
+// Тот же файл читают локальный запуск и эмулятор.
 const BOT = process.env.TG_BOT_TOKEN;
 const CHAT = process.env.TG_CHAT_ID;
 
@@ -44,23 +42,23 @@ const CHAT = process.env.TG_CHAT_ID;
 // Пока бот отвечал только автору, вреда от этого было немного. Теперь через
 // него идут данные учеников, поэтому Telegram просит проставлять секрет в
 // заголовке, а мы его проверяем.
-//   firebase functions:secrets:set TG_WEBHOOK_SECRET
+//   TG_WEBHOOK_SECRET=… в functions/.env
 // и тем же значением задать вебхук:
 //   https://api.telegram.org/bot<ТОКЕН>/setWebhook?url=<URL>&secret_token=<СЕКРЕТ>
 const HOOK_SECRET = process.env.TG_WEBHOOK_SECRET;
 
-// ⚠️ СЕКРЕТЫ НУЖНО ОБЪЯВЛЯТЬ У КАЖДОЙ ФУНКЦИИ.
+// РАНЬШЕ ЗНАЧЕНИЯ ОБЪЯВЛЯЛИСЬ КАК СЕКРЕТЫ У КАЖДОЙ ФУНКЦИИ (2026-07-27),
+// но объявление { secrets: [...] } на деплое идёт в Secret Manager за
+// валидацией версий, а тот требует включённый биллинг: без него деплой
+// падает с 403, даже не начав загрузку (проверено 2026-09-26). Поэтому
+// все функции читают process.env, который CLI заполняет из functions/​.env.
+// Компромисс: в облаке значения лежат как обычные переменные окружения
+// (видны в консоли), а не в хранилище секретов. При включённом биллинге
+// можно вернуть { secrets: [...] } без изменений в теле функций — они
+// всегда читали process.env.
 //
-// Само по себе `firebase functions:secrets:set` кладёт значение в Secret
-// Manager, но НЕ подставляет его в process.env. Функция получает секрет
-// только если он перечислен в её объявлении: у первого поколения — через
-// .runWith({ secrets: [...] }), у второго — опцией { secrets: [...] }.
-//
-// Без этого process.env.TG_BOT_TOKEN остаётся пустым, tg() тихо
-// пропускает отправку (см. проверку выше), и всё выглядит так, будто
-// «бот задеплоился, но молчит» — без единой ошибки в логах.
-// Найдено 2026-07-27 при подготовке инструкции по запуску.
-const SECRETS = ["TG_BOT_TOKEN", "TG_CHAT_ID", "TG_WEBHOOK_SECRET"];
+// Если значения не заданы, tg() тихо пропускает отправку (см. проверку
+// выше), и школа продолжает работать без уведомлений.
 
 // РЕГИОН — ТОТ ЖЕ, ГДЕ БАЗА (правка 2026-07-27).
 //
@@ -92,8 +90,8 @@ if (!BOT || !CHAT) {
   // задан». Автор читал это как поломку, хотя всё было в порядке.
   logger.warn(
     "TG_BOT_TOKEN / TG_CHAT_ID сейчас не видны. Во время деплоя это нормально: " +
-    "секреты подставляются только в работающую функцию. Если это лог живого " +
-    "вызова — задайте: firebase functions:secrets:set TG_BOT_TOKEN",
+    "process.env заполняется из functions/.env только в работающей функции. " +
+    "Если это лог живого вызова — проверьте functions/.env: TG_BOT_TOKEN=…",
   );
 }
 
@@ -328,7 +326,7 @@ async function onStudentCreated(uid, data) {
   });
 }
 
-exports.onNewStudent = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
+exports.onNewStudent = functions.region(REGION).runWith({ memory: "256MB" }).firestore
   .document("students/{uid}")
   .onCreate(async (snap, ctx) => onStudentCreated(ctx.params.uid, snap.data()));
 
@@ -374,7 +372,7 @@ async function onMessageAdded(uid, msg) {
   });
 }
 
-exports.onChatMessage = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
+exports.onChatMessage = functions.region(REGION).runWith({ memory: "256MB" }).firestore
   .document("students/{uid}/messages/{msgId}")
   .onCreate(async (snap, ctx) => onMessageAdded(ctx.params.uid, snap.data()));
 
@@ -506,7 +504,7 @@ async function onStudentChanged(uid, change) {
     });
 }
 
-exports.onProgress = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
+exports.onProgress = functions.region(REGION).runWith({ memory: "256MB" }).firestore
   .document("students/{uid}")
   .onUpdate(async (change, ctx) => onStudentChanged(ctx.params.uid, change));
 
@@ -628,7 +626,7 @@ async function onCaseChanged(uid, change) {
   return null;
 }
 
-exports.onCaseVerdict = functions.region(REGION).runWith({ secrets: SECRETS }).firestore
+exports.onCaseVerdict = functions.region(REGION).runWith({ memory: "256MB" }).firestore
   .document("students/{uid}/cases/{caseId}")
   .onUpdate(async (change, ctx) => onCaseChanged(ctx.params.uid, change));
 
@@ -683,7 +681,7 @@ async function routeTelegramUpdate(u) {
   }
 }
 
-exports.telegramWebhook = onRequest({ region: REGION, secrets: SECRETS }, async (req, res) => {
+exports.telegramWebhook = functions.region(REGION).https.onRequest(async (req, res) => {
   // Проверка секрета — до любой работы с телом запроса.
   // ⚠️ НЕТ СЕКРЕТА — НЕ РАБОТАЕМ. Раньше здесь стояло `if (HOOK_SECRET && …)`:
   // при пустом секрете проверка просто пропускалась, и функция принимала
@@ -987,7 +985,7 @@ async function runDailyReminders() {
   logger.info(`dailyReminders: ${inactive.length} неактивных`);
 }
 
-exports.dailyReminders = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
+exports.dailyReminders = functions.region(REGION).runWith({ memory: "256MB" }).pubsub
   .schedule("0 10 * * *")      // 10:00 в timeZone ниже (не UTC)
   .timeZone("Europe/Moscow")
   .onRun(() => runDailyReminders());
@@ -1031,7 +1029,7 @@ async function runStudentDailyPractice() {
   logger.info(`studentDailyPractice: напоминаний отправлено ${sent}`);
 }
 
-exports.studentDailyPractice = functions.region(REGION).runWith({ secrets: SECRETS }).pubsub
+exports.studentDailyPractice = functions.region(REGION).runWith({ memory: "256MB" }).pubsub
   .schedule("0 8 * * *")       // 08:00 в timeZone ниже (не UTC)
   .timeZone("Europe/Moscow")
   .onRun(() => runStudentDailyPractice());
@@ -1077,11 +1075,7 @@ async function handlePayUpdate(message) {
   await handlePaymentMessage(message, { chat: CHAT, send: payTg });
 }
 
-exports.payTelegramWebhook = onRequest(
-  {
-    region: "us-central1",
-    secrets: ["TG_PAY_BOT_TOKEN", "TG_CHAT_ID", "TG_WEBHOOK_SECRET"],
-  },
+exports.payTelegramWebhook = functions.region("us-central1").https.onRequest(
   async (req, res) => {
     if (!HOOK_SECRET || req.get("X-Telegram-Bot-Api-Secret-Token") !== HOOK_SECRET) {
       logger.warn("pay webhook: неверный секрет");
