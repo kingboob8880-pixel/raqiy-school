@@ -79,9 +79,14 @@
   <div id="site-footer"></div>
 
   <script type="module">
-    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=36";
-    import { t, getLang } from "../js/i18n.js?v=38";
-    import { watchAuth, isAdmin, logout } from "../../integration/auth.js?v=12";
+    import { renderHeader, renderFooter, showToast } from "../js/layout.js?v=42";
+    import { t, getLang } from "../js/i18n.js?v=39";
+    import { watchAuth, isAdmin, logout, friendlyAuthError } from "../../integration/auth.js?v=15";
+    // Сброс пароля ученику — тем же механизмом, что «Забыли пароль?» на
+    // экране входа (Firebase Auth присылает ссылку сам; посмотреть старый
+    // пароль нельзя ни ученику, ни админу — в облаке лежит только хэш).
+    import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { auth } from "../../integration/firebase-init.js?v=2";
     // Сам чат живёт на отдельной странице chat.html — здесь остались только
     // счётчики непрочитанных для значка 💬 в строке ученика.
     import {
@@ -146,6 +151,7 @@
           </td>
           <td>
             <div class="row-actions">
+              <button type="button" class="student-resetpw" data-uid="${s.uid}" data-email="${escapeHtml(s.email || "")}" title="${t("admin.resetPw")}" aria-label="${t("admin.resetPw")}">🔑</button>
               <a class="thread-toggle" href="chat.html?uid=${encodeURIComponent(s.uid)}" title="${t("chat.openThread")}" aria-label="${t("chat.openThread")}">💬${badgeHtml}</a>
               <button type="button" class="student-delete is-danger" data-uid="${s.uid}" data-name="${nameAttr}" title="${t("admin.deleteStudent")}" aria-label="${t("admin.deleteStudent")}">🗑</button>
             </div>
@@ -232,6 +238,31 @@
           await setRukyaProAccess(btn.dataset.uid, newVal);
           await refreshStudents();
           showToast(newVal ? "Доступ к Rukya Pro открыт" : "Доступ к Rukya Pro закрыт");
+        });
+      });
+
+      // 🔑 Сброс пароля по просьбе ученика (запрос автора, 2026-09-27):
+      // забыли пароль — админ жмёт кнопку, Firebase шлёт человеку письмо
+      // со ссылкой на новый пароль. Старый пароль не «всплывает» — его
+      // невозможно показать: Auth хранит только хэш.
+      // ⚠️ Если в проекте включена защита от перечисления email (включена
+      // по умолчанию в новых проектах), Firebase отвечает успехом и на
+      // несуществующий адрес — письмо просто не придёт. Поэтому если
+      // ученица говорит «ничего не пришло» — сверьте email в строке.
+      body.querySelectorAll(".student-resetpw").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const email = btn.dataset.email;
+          if (!email || email === "—") { showToast(t("admin.resetPwNoEmail")); return; }
+          if (!confirm(`${t("admin.confirmResetPw")} ${email}?`)) return;
+          btn.disabled = true;
+          try {
+            await sendPasswordResetEmail(auth, email);
+            showToast(`${t("auth.resetSent")} ${email}`);
+          } catch (err) {
+            showToast(err?.code === "auth/user-not-found" ? t("admin.resetPwNoUser") : friendlyAuthError(err));
+          } finally {
+            btn.disabled = false;
+          }
         });
       });
 
