@@ -149,6 +149,14 @@ export const MODULES = [
       // status: "author" в front matter файла и предупреждение в начале урока).
       { title: "Хитаб аль-Исаба — часть 1: метод, органы, ключи воздействия", doc: "/content/module-5/hitab-al-isaba.md", exam: "/content/exams/module-5-hitab-al-isaba.md" },
       { title: "Хитаб аль-Исаба — часть 2: протокол полного сеанса, сводные таблицы, предостережения", doc: "/content/module-5/hitab-al-isaba-2-protokol-seansa.md", exam: "/content/exams/module-5-hitab-2.md" },
+      // Полное руководство на 66 страниц (2026-10-23): части, которых не было
+      // в первоначальной методичке на 20 страниц — адресат и диагностика,
+      // тринадцать шагов, язык формул и приложения.
+      { title: "Хитаб аль-Исаба — часть 3: три адресата, правило трёх и четыре двери диагностики", doc: "/content/module-5/hitab-al-isaba-3-adresat-i-diagnostika.md", exam: "/content/exams/module-5-hitab-3.md" },
+      { title: "Хитаб аль-Исаба — часть 4: тринадцать шагов полного чтения и тахриж", doc: "/content/module-5/hitab-al-isaba-4-13-shagov-i-tahrizh.md", exam: "/content/exams/module-5-hitab-4.md" },
+      { title: "Хитаб аль-Исаба — часть 5: пятичастная формула, конструктор и статус текстов", doc: "/content/module-5/hitab-al-isaba-5-formula-i-konstruktor.md", exam: "/content/exams/module-5-hitab-5.md" },
+      { title: "Библиотека формул Хитаб аль-Исаба (Справочник)", doc: "/content/reference/hitab-biblioteka-formul.md", exam: "/content/exams/reference-hitab-formuly.md" },
+      { title: "Приложения Хитаб аль-Исаба — глоссарий, программа 10 дней, дневник (Справочник)", doc: "/content/reference/hitab-prilozheniya.md", exam: "/content/exams/reference-hitab-prilozheniya.md" },
       // Книга №9 (Продвинутый Мастер) перенесена в Модуль 9 целиком.
       // Книга №12 — трёхуровневый метод по органам и видам колдовства.
       { title: "Учебник по чтению заклинаний на органы по видам колдовства", doc: "/content/module-5/zaklinaniya-na-organy.md", exam: "/content/exams/module-5-zaklinaniya-na-organy.md" },
@@ -187,6 +195,7 @@ export const MODULES = [
       { title: "Дуа личной защиты от джиннов и шайтанов", doc: "/content/module-6/dua-zashchity-ot-dzhinnov-i-shaytanov.md", exam: "/content/exams/module-6-dua-zashchity-ot-dzhinnov-i-shaytanov.md" },
       { title: "Арсенал против колдовства, сглаза и зависти", doc: "/content/module-6/arsenal-protiv-koldovstva.md", exam: "/content/exams/module-6-arsenal-protiv-koldovstva.md" },
       { title: "Открытие духовных замков", doc: "/content/module-6/otkrytie-dukhovnykh-zamkov.md", exam: "/content/exams/module-6-otkrytie-dukhovnykh-zamkov.md" },
+      { title: "Защита дома и целителя: состояние, порядок, пространство", doc: "/content/module-6/zashchita-doma-i-celitelya.md", exam: "/content/exams/module-6-zashchita-doma.md" },
     ],
   },
   {
@@ -294,6 +303,7 @@ export const MODULES = [
       { title: "Лже-ракый: запреты и ошибки, недопустимые в практике рукьи", doc: "/content/module-10/oshibki-i-zaprety-lzherakii.md", exam: "/content/exams/module-10-oshibki-i-zaprety.md" },
       { title: "Образ истинного раки — знание, такъва, ихляс, присутствие сердца, рахма, таваду'", doc: "/content/module-10/obraz-istinnogo-rakii.md", exam: "/content/exams/module-10-obraz-istinnogo-rakii.md" },
       { title: "Разница между практиком и теоретиком в рукье", doc: "/content/module-10/raznitsa-praktik-vs-teoretik.md", exam: "/content/exams/module-10-raznitsa-praktik-vs-teoretik.md" },
+      { title: "Внутренний саботаж: восемь ошибок, которые обесценивают сеанс", doc: "/content/module-10/vnutrenniy-sabotazh.md", exam: "/content/exams/module-10-vnutrenniy-sabotazh.md" },
     ],
   },
   {
@@ -311,6 +321,12 @@ export const MODULES = [
       { title: "Паспорт практики — ступени допуска лекаря-ракийи", doc: "/content/reference/praktika-passport.md", exam: "/content/exams/module-11-praktika-passport.md" },
       { title: "Защита и конфиденциальность данных пациента в RUKYA Pro", doc: "/content/module-11/zashchita-dannykh-patsienta.md", exam: "/content/exams/module-11-zashchita-dannykh-patsienta.md" },
       { title: "Специальные протоколы приёма — восемь специальных приложений", doc: "/content/module-11/specialnye-protokoly-priyoma.md", exam: "/content/exams/module-11-specialnye-protokoly-priyoma.md" },
+      // Практическая часть руководства Хитаб Исаба (2026-10-23): точный проход,
+      // профили случаев с окнами проверки, дистанционный формат и особые случаи.
+      { title: "Один точный проход: протокол 25 минут и четыре маркера", doc: "/content/module-11/protokol-odnogo-chteniya.md", exam: "/content/exams/module-11-protokol-odnogo-chteniya.md" },
+      { title: "Профили случая A/B/C, три окна проверки и карточка случая", doc: "/content/module-11/profili-sluchaev-i-okna-proverki.md", exam: "/content/exams/module-11-profili-sluchaev.md" },
+      { title: "Дистанционный сеанс и самоисцеление: те же требования, другой адрес", doc: "/content/module-11/distancionnyy-seans-i-samoiscelenie.md", exam: "/content/exams/module-11-distancionnyy-seans.md" },
+      { title: "Особые состояния: истихваз, рабт, родовое, колдовство смерти и дом", doc: "/content/module-11/osobye-sostoyaniya.md", exam: "/content/exams/module-11-osobye-sostoyaniya.md" },
       { title: "Финальный практикум-симуляция: один случай от Part 0 до защиты", doc: "/content/module-11/praktikum-simulyatsiya.md", exam: "/content/exams/module-11-praktikum-simulyatsiya.md" },
       { title: "Защита двух случаев — итоговый экзамен Модуля 12", doc: "/content/module-11/zashchita-dvukh-sluchaev.md", exam: "/content/exams/module-11-zashchita-dvukh-sluchaev.md" },
     ],

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-09-29T15:30:13.191Z",
+ "generatedAt": "2026-10-23T01:29:53.861Z",
  "note": "Сгенерировано scripts/build-course-data.mjs — руками не править.",
  "passThreshold": 0.7,
  "modules": [
@@ -300,6 +300,36 @@
      "key": "_content_module-5_hitab-al-isaba-2-protokol-seansa_md"
     },
     {
+     "title": "Хитаб аль-Исаба — часть 3: три адресата, правило трёх и четыре двери диагностики",
+     "doc": "/content/module-5/hitab-al-isaba-3-adresat-i-diagnostika.md",
+     "exam": "/content/exams/module-5-hitab-3.md",
+     "key": "_content_module-5_hitab-al-isaba-3-adresat-i-diagnostika_md"
+    },
+    {
+     "title": "Хитаб аль-Исаба — часть 4: тринадцать шагов полного чтения и тахриж",
+     "doc": "/content/module-5/hitab-al-isaba-4-13-shagov-i-tahrizh.md",
+     "exam": "/content/exams/module-5-hitab-4.md",
+     "key": "_content_module-5_hitab-al-isaba-4-13-shagov-i-tahrizh_md"
+    },
+    {
+     "title": "Хитаб аль-Исаба — часть 5: пятичастная формула, конструктор и статус текстов",
+     "doc": "/content/module-5/hitab-al-isaba-5-formula-i-konstruktor.md",
+     "exam": "/content/exams/module-5-hitab-5.md",
+     "key": "_content_module-5_hitab-al-isaba-5-formula-i-konstruktor_md"
+    },
+    {
+     "title": "Библиотека формул Хитаб аль-Исаба (Справочник)",
+     "doc": "/content/reference/hitab-biblioteka-formul.md",
+     "exam": "/content/exams/reference-hitab-formuly.md",
+     "key": "_content_reference_hitab-biblioteka-formul_md"
+    },
+    {
+     "title": "Приложения Хитаб аль-Исаба — глоссарий, программа 10 дней, дневник (Справочник)",
+     "doc": "/content/reference/hitab-prilozheniya.md",
+     "exam": "/content/exams/reference-hitab-prilozheniya.md",
+     "key": "_content_reference_hitab-prilozheniya_md"
+    },
+    {
      "title": "Учебник по чтению заклинаний на органы по видам колдовства",
      "doc": "/content/module-5/zaklinaniya-na-organy.md",
      "exam": "/content/exams/module-5-zaklinaniya-na-organy.md",
@@ -432,6 +462,12 @@
      "doc": "/content/module-6/otkrytie-dukhovnykh-zamkov.md",
      "exam": "/content/exams/module-6-otkrytie-dukhovnykh-zamkov.md",
      "key": "_content_module-6_otkrytie-dukhovnykh-zamkov_md"
+    },
+    {
+     "title": "Защита дома и целителя: состояние, порядок, пространство",
+     "doc": "/content/module-6/zashchita-doma-i-celitelya.md",
+     "exam": "/content/exams/module-6-zashchita-doma.md",
+     "key": "_content_module-6_zashchita-doma-i-celitelya_md"
     }
    ]
   },
@@ -610,6 +646,12 @@
      "doc": "/content/module-10/raznitsa-praktik-vs-teoretik.md",
      "exam": "/content/exams/module-10-raznitsa-praktik-vs-teoretik.md",
      "key": "_content_module-10_raznitsa-praktik-vs-teoretik_md"
+    },
+    {
+     "title": "Внутренний саботаж: восемь ошибок, которые обесценивают сеанс",
+     "doc": "/content/module-10/vnutrenniy-sabotazh.md",
+     "exam": "/content/exams/module-10-vnutrenniy-sabotazh.md",
+     "key": "_content_module-10_vnutrenniy-sabotazh_md"
     }
    ]
   },
@@ -636,6 +678,30 @@
      "doc": "/content/module-11/specialnye-protokoly-priyoma.md",
      "exam": "/content/exams/module-11-specialnye-protokoly-priyoma.md",
      "key": "_content_module-11_specialnye-protokoly-priyoma_md"
+    },
+    {
+     "title": "Один точный проход: протокол 25 минут и четыре маркера",
+     "doc": "/content/module-11/protokol-odnogo-chteniya.md",
+     "exam": "/content/exams/module-11-protokol-odnogo-chteniya.md",
+     "key": "_content_module-11_protokol-odnogo-chteniya_md"
+    },
+    {
+     "title": "Профили случая A/B/C, три окна проверки и карточка случая",
+     "doc": "/content/module-11/profili-sluchaev-i-okna-proverki.md",
+     "exam": "/content/exams/module-11-profili-sluchaev.md",
+     "key": "_content_module-11_profili-sluchaev-i-okna-proverki_md"
+    },
+    {
+     "title": "Дистанционный сеанс и самоисцеление: те же требования, другой адрес",
+     "doc": "/content/module-11/distancionnyy-seans-i-samoiscelenie.md",
+     "exam": "/content/exams/module-11-distancionnyy-seans.md",
+     "key": "_content_module-11_distancionnyy-seans-i-samoiscelenie_md"
+    },
+    {
+     "title": "Особые состояния: истихваз, рабт, родовое, колдовство смерти и дом",
+     "doc": "/content/module-11/osobye-sostoyaniya.md",
+     "exam": "/content/exams/module-11-osobye-sostoyaniya.md",
+     "key": "_content_module-11_osobye-sostoyaniya_md"
     },
     {
      "title": "Финальный практикум-симуляция: один случай от Part 0 до защиты",
