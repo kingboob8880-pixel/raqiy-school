@@ -174,7 +174,7 @@
       if (filter === "unpaid") return !s.paid;
       if (filter === "full") return !!s.fullAccess;
       if (filter === "silent") { const d = daysSince(s.lastSeenAt); return d !== null && d > 14; }
-      return true;
+      return true; 
     }
 
     function renderTable() {
