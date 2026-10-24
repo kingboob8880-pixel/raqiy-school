@@ -69,6 +69,10 @@ export const MODULES = [
       // здесь — готовые формулировки по случаям, собранные по тому же
       // каркасу. Раньше ученик закрывал книгу и придумывал формулировку сам.
       { title: "Шаблоны намерения — короткие формулы для каждого случая", doc: "/content/reference/niyat.md", exam: "/content/exams/module-1-niyat.md" },
+      // Шкала усиления души — рабочая карта автора (книга 2-го изд., гл. 13–14;
+      // отдельная статья 2026). Стоит последней: ученик уже прошёл вход, якын,
+      // намерение и волевой акт — теперь видит всю карту и своё место на ней.
+      { title: "Шкала усиления души — восемь ступеней и восемнадцать путей", doc: "/content/module-1/shkala-usileniya-dushi.md", exam: "/content/exams/module-1-shkala.md" },
     ],
     intro_video: "/assets/video/rukya-intro.mp4",
   },
@@ -180,6 +184,9 @@ export const MODULES = [
       // Вторая половина «Исцеляю Кораном» — формулы по видам поражения.
       // Первая половина (довод и границы) стоит в Модуле 2.
       { title: "Исцеляю Кораном на практике — формулы по видам поражения", doc: "/content/module-5/istselyayu-koranom-praktika.md", exam: "/content/exams/module-5-istselyayu-koranom-praktika.md" },
+      // Корень влияния (часть VIII книги 2-го изд.) — философское основание
+      // метода: четыре уровня, три намерения, восемь вопросов и границы.
+      { title: "Корень влияния — четыре уровня, три намерения и границы метода", doc: "/content/module-5/koren-vliyaniya.md", exam: "/content/exams/module-5-koren-vliyaniya.md" },
     ],
   },
   {
@@ -196,6 +203,9 @@ export const MODULES = [
       { title: "Арсенал против колдовства, сглаза и зависти", doc: "/content/module-6/arsenal-protiv-koldovstva.md", exam: "/content/exams/module-6-arsenal-protiv-koldovstva.md" },
       { title: "Открытие духовных замков", doc: "/content/module-6/otkrytie-dukhovnykh-zamkov.md", exam: "/content/exams/module-6-otkrytie-dukhovnykh-zamkov.md" },
       { title: "Защита дома и целителя: состояние, порядок, пространство", doc: "/content/module-6/zashchita-doma-i-celitelya.md", exam: "/content/exams/module-6-zashchita-doma.md" },
+      // Три уровня защиты и четыре слоя (книга 2-го изд., гл. 30). Авторская
+      // систематизация; формулы помечены как рабочие дуа, не хадисы.
+      { title: "Три уровня защиты и четыре слоя — порядок, который держит результат", doc: "/content/module-6/tre-urovnya-zashchity.md", exam: "/content/exams/module-6-tri-urovnya-zashchity.md" },
     ],
   },
   {

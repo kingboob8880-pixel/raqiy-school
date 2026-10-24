@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-23T01:29:53.861Z",
+ "generatedAt": "2026-10-24T23:33:39.212Z",
  "note": "Сгенерировано scripts/build-course-data.mjs — руками не править.",
  "passThreshold": 0.7,
  "modules": [
@@ -116,6 +116,12 @@
      "doc": "/content/reference/niyat.md",
      "exam": "/content/exams/module-1-niyat.md",
      "key": "_content_reference_niyat_md"
+    },
+    {
+     "title": "Шкала усиления души — восемь ступеней и восемнадцать путей",
+     "doc": "/content/module-1/shkala-usileniya-dushi.md",
+     "exam": "/content/exams/module-1-shkala.md",
+     "key": "_content_module-1_shkala-usileniya-dushi_md"
     }
    ]
   },
@@ -424,6 +430,12 @@
      "doc": "/content/module-5/istselyayu-koranom-praktika.md",
      "exam": "/content/exams/module-5-istselyayu-koranom-praktika.md",
      "key": "_content_module-5_istselyayu-koranom-praktika_md"
+    },
+    {
+     "title": "Корень влияния — четыре уровня, три намерения и границы метода",
+     "doc": "/content/module-5/koren-vliyaniya.md",
+     "exam": "/content/exams/module-5-koren-vliyaniya.md",
+     "key": "_content_module-5_koren-vliyaniya_md"
     }
    ]
   },
@@ -468,6 +480,12 @@
      "doc": "/content/module-6/zashchita-doma-i-celitelya.md",
      "exam": "/content/exams/module-6-zashchita-doma.md",
      "key": "_content_module-6_zashchita-doma-i-celitelya_md"
+    },
+    {
+     "title": "Три уровня защиты и четыре слоя — порядок, который держит результат",
+     "doc": "/content/module-6/tre-urovnya-zashchity.md",
+     "exam": "/content/exams/module-6-tri-urovnya-zashchity.md",
+     "key": "_content_module-6_tre-urovnya-zashchity_md"
     }
    ]
   },
