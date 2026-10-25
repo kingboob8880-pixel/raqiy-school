@@ -1227,7 +1227,7 @@ main{counter-reset:partno}
 section#teacher .part:not(.pt-row){break-before:auto!important; page-break-before:auto!important}
 section:not(#how):not(#teacher) .part:not(.pt-row){counter-increment:partno}
 .part:not(.pt-row)::before{
-  content:counter(partno,upper-roman);
+  content:counter(partno,decimal);
   position:static!important; inset:auto!important;
   display:block!important; width:19mm; height:19mm; margin:0 0 7mm!important;
   border:.6pt solid #c8a76a!important; border-radius:50%;
@@ -1528,7 +1528,7 @@ footer .colophon-sign{
 section#p5 p,section#p7 p{line-height:1.40!important; margin-bottom:2.1mm!important}
 section#p5 .box,section#p7 .box{padding:2.6mm 4.2mm!important; margin:2.7mm 0!important}
 section#p5 h4,section#p7 h4{margin:3.8mm 0 1.4mm!important}
-/* часть IX — одна глава и восемь карточек: чуть плотнее сетка,
+/* часть 9 — одна глава и восемь карточек: чуть плотнее сетка,
    чтобы выноска «О границах метода» уместилась на той же странице */
 section#p7 .grid{gap:1.2mm!important; margin:1.6mm 0!important}
 section#p7 .card{padding:1.5mm 2.4mm!important}
@@ -1549,6 +1549,90 @@ h2::after,h3::after{display:none!important}
 .layout{display:block!important; max-width:none!important}
 main{padding:0!important; max-width:none!important}
 .wrap{max-width:none!important; margin:0!important}
+}
+</style>
+<style id="book-look">
+@media screen{
+  /* ——— заголовок в стиле книги ——— */
+  .hero{
+    display:grid; grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);
+    gap:clamp(24px,4.2vw,56px); align-items:center;
+    margin:0 -40px 46px; padding:clamp(28px,4vw,48px) clamp(20px,4vw,48px) clamp(38px,4.8vw,58px);
+    background:
+      radial-gradient(46% 44% at 32% 40%, rgba(14,74,47,.10), rgba(14,74,47,0) 70%),
+      radial-gradient(circle at 86% 16%, rgba(201,164,105,.18), transparent 44%),
+      var(--bg);
+    color:var(--ink); border-bottom:1px solid var(--line);
+    border-radius:0; box-shadow:none;
+  }
+  .hero::before{display:none}
+  .hero::after{display:none}
+  .hero-visual{position:relative; min-width:0; display:flex; align-items:center; justify-content:center}
+  .hero-glow{position:absolute; left:50%; top:52%; translate:-50% -50%; width:min(500px,92%); aspect-ratio:1; border-radius:50%;
+    background:radial-gradient(50% 50% at 50% 50%, rgba(200,167,106,.30), rgba(200,167,106,0) 68%); pointer-events:none}
+  .hero-book{position:relative; z-index:2; width:min(360px,82%); transform:perspective(1400px) rotateY(5deg) rotateX(1deg); transition:transform .45s ease}
+  .hero-book:hover{transform:perspective(1400px) rotateY(0) rotateX(0)}
+  .hero-book-cover{display:block; width:100%; height:auto; border-radius:3px;
+    box-shadow:0 38px 70px -28px rgba(20,40,26,.55), 0 12px 26px rgba(20,40,26,.18), 0 0 0 1px rgba(166,124,61,.18)}
+  .hero-book-shadow{position:absolute; left:50%; bottom:2%; translate:-50% 0; width:min(300px,68%); height:24px; border-radius:50%;
+    background:radial-gradient(50% 50% at 50% 50%, rgba(10,50,33,.35), rgba(10,50,33,0) 70%); filter:blur(8px); z-index:1}
+  .hero-copy{position:relative; min-width:0; display:flex; flex-direction:column; align-items:flex-start}
+  .hero .eyebrow{color:var(--gold); font-size:.7rem; letter-spacing:.24em; margin:0 0 14px}
+  .hero h1{font-family:var(--display); color:var(--green); font-size:clamp(2.4rem,3.8vw,3.4rem); line-height:.98; max-width:none;
+    text-shadow:none; margin:0 0 4px; letter-spacing:-.018em}
+  .hero h1 span{display:block; font-size:.5em; font-weight:500; color:var(--ink); letter-spacing:.01em; line-height:1.2; margin-top:.38em; max-width:22ch}
+  .hero .arbig{color:var(--gold); font-size:clamp(1.7rem,3vw,2.4rem); line-height:1.5; margin:2px 0 4px}
+  .hero .hero-sub{color:var(--muted); font-size:clamp(1.05rem,1.5vw,1.3rem); font-style:italic; letter-spacing:.04em; margin:0 0 14px}
+  .hero .hero-author{color:var(--green); font-family:var(--sans); font-size:.75rem; letter-spacing:.18em; text-transform:uppercase; margin:0 0 4px}
+  .hero .hero-mentor{color:var(--gold); font-family:var(--sans); font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; margin:0 0 18px}
+  .hero p.lead{color:var(--muted); font-size:1.06rem; line-height:1.66; max-width:52ch; margin:0 0 22px}
+  .hero .badges{gap:8px; margin-bottom:22px}
+  .hero .badge{background:var(--panel); border-color:var(--line-2); color:var(--green)}
+  .hero .badge:hover{background:var(--gold-3); border-color:var(--gold)}
+  .hero .hint{color:var(--muted); font-size:.78rem; margin:0}
+  .hero .hint kbd{background:var(--panel); border-color:var(--line-2); color:var(--ink)}
+
+  /* ——— акценты книги: зелёный вместо коричневого ——— */
+  h2,h3,.chapter > h3,.card h4{color:var(--green)}
+  .part{border-top-color:var(--line-2)}
+  .part .kicker,.chapter > h3 .num,.hanchor{color:var(--gold)}
+  .formula .ar{color:var(--green)}
+  thead th{background:var(--gold-3); color:var(--green)}
+  tbody tr:nth-child(even){background:var(--panel-2)}
+  tbody tr:hover{background:var(--gold-3)}
+  .card:hover{box-shadow:var(--shadow); border-color:var(--line-2)}
+  .acc-btn .stepn{background:var(--gold-3); color:var(--gold)}
+  .brand b{color:var(--green)}
+  .sidebar h4{color:var(--green-2)}
+
+  /* тёмная тема под палитру книги */
+  html[data-theme="dark"] .hero{
+    background:
+      radial-gradient(46% 44% at 32% 40%, rgba(143,201,165,.08), rgba(143,201,165,0) 70%),
+      radial-gradient(circle at 86% 16%, rgba(200,167,106,.12), transparent 44%),
+      var(--bg);
+    color:var(--ink); box-shadow:none;
+  }
+  html[data-theme="dark"] .hero h1,
+  html[data-theme="dark"] h2,
+  html[data-theme="dark"] h3,
+  html[data-theme="dark"] .card h4{color:var(--green)}
+  html[data-theme="dark"] .formula .ar{color:var(--green)}
+  html[data-theme="dark"] thead th{background:var(--gold-3); color:var(--green)}
+  html[data-theme="dark"] tbody tr:nth-child(even){background:var(--panel-2)}
+  html[data-theme="dark"] tbody tr:hover{background:var(--gold-3)}
+  html[data-theme="dark"] .acc-btn .stepn{background:var(--gold-3)}
+}
+@media screen and (max-width:860px){
+  .hero{grid-template-columns:1fr; gap:26px; padding:24px 18px 38px; text-align:center}
+  .hero-visual{order:-1}
+  .hero-copy{align-items:center; text-align:center}
+  .hero h1{max-width:none}
+  .hero-book{width:min(300px,78vw); transform:none}
+  .hero .badges{justify-content:center}
+}
+@media print{
+  .hero-visual{display:none!important}
 }
 </style>
 </head>
@@ -1586,32 +1670,32 @@ main{padding:0!important; max-width:none!important}
     </div>
     <nav id="toc">
       <a href="#how"><span class="n">00</span> Как пользоваться</a>
-      <a href="#p1"><span class="n">I</span> Основание метода</a>
+      <a href="#p1"><span class="n">1</span> Основание метода</a>
       <a href="#c1"><span class="n">01</span> Что такое хитаб исаба</a>
       <a href="#c2"><span class="n">02</span> Отличие от обычной рукъи</a>
       <a href="#c3"><span class="n">03</span> Три адресата обращения</a>
       <a href="#c4"><span class="n">04</span> Основание и условия</a>
       <a href="#c5"><span class="n">05</span> Границы и красные флаги</a>
       <div class="sep"></div>
-      <a href="#p2"><span class="n">II</span> Подготовка</a>
+      <a href="#p2"><span class="n">2</span> Подготовка</a>
       <a href="#c6"><span class="n">06</span> Нийя и ирада</a>
       <a href="#c7"><span class="n">07</span> Тахара и место</a>
       <a href="#c8"><span class="n">08</span> Якын: вход за минуты</a>
       <a href="#c9"><span class="n">09</span> Сердечное чтение</a>
       <a href="#c10"><span class="n">10</span> Состояние целителя</a>
       <div class="sep"></div>
-      <a href="#p3"><span class="n">III</span> Диагностика</a>
+      <a href="#p3"><span class="n">3</span> Диагностика</a>
       <a href="#c11"><span class="n">11</span> Карта тела: семь зон</a>
       <a href="#c12"><span class="n">12</span> Вопросы, двери, проверки</a>
       <a href="#c13"><span class="n">13</span> Виды поражения</a>
       <div class="sep"></div>
-      <a href="#p3b"><span class="n">IV</span> Ступени</a>
+      <a href="#p3b"><span class="n">4</span> Ступени</a>
       <a href="#c14"><span class="n">14</span> Девять ступеней</a>
       <a href="#c15"><span class="n">15</span> Тринадцать шагов</a>
       <a href="#c16"><span class="n">16</span> Тахриж</a>
       <a href="#c17"><span class="n">17</span> Сводка схем</a>
       <div class="sep"></div>
-      <a href="#p3c"><span class="n">V</span> Органы</a>
+      <a href="#p3c"><span class="n">5</span> Органы</a>
       <a href="#c18"><span class="n">18</span> Ноги</a>
       <a href="#c19"><span class="n">19</span> Матка</a>
       <a href="#c20"><span class="n">20</span> Живот</a>
@@ -1621,14 +1705,14 @@ main{padding:0!important; max-width:none!important}
       <a href="#c24"><span class="n">24</span> Голова</a>
       <a href="#c25"><span class="n">25</span> Вода и масла</a>
       <div class="sep"></div>
-      <a href="#p4"><span class="n">VI</span> Формулы</a>
+      <a href="#p4"><span class="n">6</span> Формулы</a>
       <a href="#c26"><span class="n">26</span> Пятичастная формула</a>
       <a href="#c27"><span class="n">27</span> Конструктор</a>
       <a href="#c28"><span class="n">28</span> Библиотека формул</a>
       <a href="#c29"><span class="n">29</span> Статус текстов</a>
       <a href="#c30"><span class="n">30</span> Рукия слов</a>
       <div class="sep"></div>
-      <a href="#p5"><span class="n">VII</span> Практика</a>
+      <a href="#p5"><span class="n">7</span> Практика</a>
       <a href="#c31"><span class="n">31</span> Протокол сеанса</a>
       <a href="#c32"><span class="n">32</span> Дистанционно</a>
       <a href="#c33"><span class="n">33</span> Самоисцеление</a>
@@ -1636,22 +1720,22 @@ main{padding:0!important; max-width:none!important}
       <a href="#c35"><span class="n">35</span> Защита целителя и дома</a>
       <a href="#c36"><span class="n">36</span> Программа пациенту</a>
       <div class="sep"></div>
-      <a href="#p6"><span class="n">VIII</span> Особые случаи</a>
+      <a href="#p6"><span class="n">8</span> Особые случаи</a>
       <a href="#c37"><span class="n">37</span> Состояния и дом</a>
-      <a href="#p7"><span class="n">IX</span> Безопасность</a>
+      <a href="#p7"><span class="n">9</span> Безопасность</a>
       <a href="#c38"><span class="n">38</span> Границы и кризис</a>
-      <a href="#p7b"><span class="n">X</span> Мастерский уровень</a>
+      <a href="#p7b"><span class="n">10</span> Мастерский уровень</a>
       <a href="#c39"><span class="n">39</span> Три столпа</a>
       <a href="#c40"><span class="n">40</span> Резервуар и выстрел</a>
       <a href="#c41"><span class="n">41</span> Распорядок и ключи</a>
       <div class="sep"></div>
-      <a href="#p9"><span class="n">XI</span> Разборы случаев</a>
+      <a href="#p9"><span class="n">11</span> Разборы случаев</a>
       <a href="#c42"><span class="n">42</span> Случай за одно чтение</a>
       <a href="#c43"><span class="n">43</span> Протокол 25 минут</a>
       <a href="#c44"><span class="n">44</span> После результата</a>
       <a href="#c45"><span class="n">45</span> Долгий сеанс</a>
       <a href="#c46"><span class="n">46</span> Приступ, глаза, фон, курс</a>
-      <a href="#p7b"><span class="n">XII</span> Корень влияния</a>
+      <a href="#p7b"><span class="n">12</span> Корень влияния</a>
       <a href="#c47"><span class="n">47</span> Корень влияния: четыре уровня</a>
       <a href="#c48"><span class="n">48</span> Три постоянных намерения</a>
       <a href="#c49"><span class="n">49</span> Десять опор сердца</a>
@@ -1659,7 +1743,7 @@ main{padding:0!important; max-width:none!important}
       <a href="#c51"><span class="n">51</span> Сжатие и восемь вопросов</a>
       <a href="#c52"><span class="n">52</span> Границы: что я запрещаю</a>
       <div class="sep"></div>
-      <a href="#p8"><span class="n">XIII</span> Приложения</a>
+      <a href="#p8"><span class="n">13</span> Приложения</a>
     </nav>
     <div class="sep"></div>
     <p class="meta">Моё руководство: мои посты, мои уроки и практика. В духовных недугах я — и диагност, и врач.</p>
@@ -1671,7 +1755,7 @@ main{padding:0!important; max-width:none!important}
     <!-- обложка печатного издания: видна только в PDF/на печати -->
     <section class="book-cover" aria-label="Обложка">
       <img class="bc-emblem" src="images/cover/medallion-gold.png" alt="Золотой медальон">
-      <p class="bc-kicker">Лекарь Абу Мухаммад</p>
+      <p class="bc-kicker">Составитель: лекарь Абу Мухаммад</p>
       <h1 class="bc-title">Хитаб Исаба</h1>
       <p class="bc-sub2">искусство точечного заклинания</p>
       <div class="bc-rule"><i></i></div>
@@ -1683,22 +1767,31 @@ main{padding:0!important; max-width:none!important}
     </section>
 <!-- BOOK-COVER:END -->
     <section class="hero" id="top">
-      <p class="eyebrow">Моё практическое руководство · от диагностики до печати</p>
-      <h1>Хитаб Исаба:<br>искусство точечного заклинания</h1>
-      <p class="arbig">خطاب الإصابة</p>
-      <p class="hero-sub">обращённая речь</p>
-      <p class="hero-author">Абу Мухаммад · лекарь</p>
-      <p class="hero-mentor">По урокам и советам шейха Абдурраззака аль-Азхари</p>
-      <p class="lead">Я не читаю «в воздух». Я направляю слово Аллаха точно в поражённое место: к конкретному органу, к конкретному недугу, с волей, намерением и убеждённостью.</p>
-      <div class="badges">
-        <span class="badge">9 ступеней + 13 шагов</span>
-        <span class="badge">7 зон тела</span>
-        <span class="badge">20+ формул</span>
-        <span class="badge">10 упражнений</span>
-        <span class="badge">Диагностика</span>
-        <span class="badge">Разбор: 1 сеанс</span>
+      <div class="hero-visual" aria-hidden="true">
+        <span class="hero-glow"></span>
+        <div class="hero-book">
+          <img class="hero-book-cover" src="Xitab.jpg" alt="Обложка: Хитаб Исаба">
+        </div>
+        <span class="hero-book-shadow"></span>
       </div>
-      <p class="hint">Совет: откройте оглавление <kbd>☰</kbd>, включите печать <kbd>⎙</kbd> для версии на бумаге. Прогресс чек-листов сохраняется в браузере.</p>
+      <div class="hero-copy">
+        <p class="eyebrow">Моё практическое руководство · от диагностики до печати</p>
+        <h1>Хитаб Исаба<span>искусство точечного заклинания</span></h1>
+        <p class="arbig">خطاب الإصابة</p>
+        <p class="hero-sub">обращённая речь</p>
+        <p class="hero-author">Абу Мухаммад · лекарь</p>
+        <p class="hero-mentor">По урокам и советам шейха Абдурраззака аль-Азхари</p>
+        <p class="lead">Я не читаю «в воздух». Я направляю слово Аллаха точно в поражённое место: к конкретному органу, к конкретному недугу, с волей, намерением и убеждённостью.</p>
+        <div class="badges">
+          <span class="badge">9 ступеней + 13 шагов</span>
+          <span class="badge">7 зон тела</span>
+          <span class="badge">20+ формул</span>
+          <span class="badge">10 упражнений</span>
+          <span class="badge">Диагностика</span>
+          <span class="badge">Разбор: 1 сеанс</span>
+        </div>
+        <p class="hint">Совет: откройте оглавление <kbd>☰</kbd>, включите печать <kbd>⎙</kbd> для версии на бумаге. Прогресс чек-листов сохраняется в браузере.</p>
+      </div>
     </section>
 
     <section class="print-toc" id="print-toc">
@@ -1708,28 +1801,28 @@ main{padding:0!important; max-width:none!important}
 
         <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Об учителе</span><span class="pt-dots"></span><span class="pt-pg" data-key="teacher">4</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Введение · Как пользоваться этим руководством</span><span class="pt-dots"></span><span class="pt-pg" data-key="p0">6</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть I · Основание метода</span><span class="pt-dots"></span><span class="pt-pg" data-key="p1">7</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 1 · Основание метода</span><span class="pt-dots"></span><span class="pt-pg" data-key="p1">7</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>01</b>Что такое хитаб исаба</span><span class="pt-dots"></span><span class="pt-pg" data-key="c1">7</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>02</b>Чем метод отличается от обычной рукъи</span><span class="pt-dots"></span><span class="pt-pg" data-key="c2">8</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>03</b>Три адресата обращения</span><span class="pt-dots"></span><span class="pt-pg" data-key="c3">8</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>04</b>Основание и условия</span><span class="pt-dots"></span><span class="pt-pg" data-key="c4">8</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>05</b>Границы и красные флаги</span><span class="pt-dots"></span><span class="pt-pg" data-key="c5">9</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть II · Подготовка практикующего</span><span class="pt-dots"></span><span class="pt-pg" data-key="p2">11</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 2 · Подготовка практикующего</span><span class="pt-dots"></span><span class="pt-pg" data-key="p2">11</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>06</b>Нийя и ирада: вход в метод</span><span class="pt-dots"></span><span class="pt-pg" data-key="c6">11</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>07</b>Тахара и место</span><span class="pt-dots"></span><span class="pt-pg" data-key="c7">12</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>08</b>Якын: вход за минуты</span><span class="pt-dots"></span><span class="pt-pg" data-key="c8">12</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>09</b>Сердечное чтение: как накопить силу</span><span class="pt-dots"></span><span class="pt-pg" data-key="c9">14</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>10</b>Состояние целителя: тело, дыхание, внимание</span><span class="pt-dots"></span><span class="pt-pg" data-key="c10">15</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть III · Диагностика: что и где лечить</span><span class="pt-dots"></span><span class="pt-pg" data-key="p3">17</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 3 · Диагностика: что и где лечить</span><span class="pt-dots"></span><span class="pt-pg" data-key="p3">17</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>11</b>Карта тела: семь зон</span><span class="pt-dots"></span><span class="pt-pg" data-key="c11">17</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>12</b>Вопросы, проверки, реакции</span><span class="pt-dots"></span><span class="pt-pg" data-key="c12">18</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>13</b>Виды поражения и их подписи</span><span class="pt-dots"></span><span class="pt-pg" data-key="c13">22</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть IV · Ступени: полный цикл</span><span class="pt-dots"></span><span class="pt-pg" data-key="p4">23</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 4 · Ступени: полный цикл</span><span class="pt-dots"></span><span class="pt-pg" data-key="p4">23</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>14</b>Девять ступеней: универсальный цикл</span><span class="pt-dots"></span><span class="pt-pg" data-key="c14">23</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>15</b>Тринадцать шагов полного чтения</span><span class="pt-dots"></span><span class="pt-pg" data-key="c15">28</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>16</b>Тахриж: открытый рот и признаки выхода</span><span class="pt-dots"></span><span class="pt-pg" data-key="c16">29</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>17</b>Сводка: как схемы соотносятся</span><span class="pt-dots"></span><span class="pt-pg" data-key="c17">30</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть V · Органы: протоколы по зонам</span><span class="pt-dots"></span><span class="pt-pg" data-key="p5">31</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 5 · Органы: протоколы по зонам</span><span class="pt-dots"></span><span class="pt-pg" data-key="p5">31</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>18</b>Ноги: стопы, колени, бёдра</span><span class="pt-dots"></span><span class="pt-pg" data-key="c18">31</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>19</b>Матка и интимные места</span><span class="pt-dots"></span><span class="pt-pg" data-key="c19">32</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>20</b>Живот: желудок и кишечник</span><span class="pt-dots"></span><span class="pt-pg" data-key="c20">33</span></div></td></tr>
@@ -1738,41 +1831,41 @@ main{padding:0!important; max-width:none!important}
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>23</b>Спина</span><span class="pt-dots"></span><span class="pt-pg" data-key="c23">35</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>24</b>Голова</span><span class="pt-dots"></span><span class="pt-pg" data-key="c24">35</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>25</b>Вода и масла</span><span class="pt-dots"></span><span class="pt-pg" data-key="c25">36</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть VI · Формулы: язык метода</span><span class="pt-dots"></span><span class="pt-pg" data-key="p6">39</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 6 · Формулы: язык метода</span><span class="pt-dots"></span><span class="pt-pg" data-key="p6">39</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>26</b>Пятичастная формула</span><span class="pt-dots"></span><span class="pt-pg" data-key="c26">39</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>27</b>Конструктор: собрать формулу под свой случай</span><span class="pt-dots"></span><span class="pt-pg" data-key="c27">40</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>28</b>Библиотека формул</span><span class="pt-dots"></span><span class="pt-pg" data-key="c28">40</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>29</b>Статус текстов и правила безопасности</span><span class="pt-dots"></span><span class="pt-pg" data-key="c29">45</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>30</b>Рукия слов: обращение по имени</span><span class="pt-dots"></span><span class="pt-pg" data-key="c30">45</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть VII · Практика</span><span class="pt-dots"></span><span class="pt-pg" data-key="p7">47</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 7 · Практика</span><span class="pt-dots"></span><span class="pt-pg" data-key="p7">47</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>31</b>Протокол сеанса</span><span class="pt-dots"></span><span class="pt-pg" data-key="c31">47</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>32</b>Дистанционный сеанс</span><span class="pt-dots"></span><span class="pt-pg" data-key="c32">48</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>33</b>Самоисцеление</span><span class="pt-dots"></span><span class="pt-pg" data-key="c33">49</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>34</b>Ошибки и внутренний саботаж</span><span class="pt-dots"></span><span class="pt-pg" data-key="c34">49</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>35</b>Защита целителя и дома</span><span class="pt-dots"></span><span class="pt-pg" data-key="c35">50</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>36</b>Программа после сеанса</span><span class="pt-dots"></span><span class="pt-pg" data-key="c36">52</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть VIII · Особые случаи и пространство</span><span class="pt-dots"></span><span class="pt-pg" data-key="p8">54</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 8 · Особые случаи и пространство</span><span class="pt-dots"></span><span class="pt-pg" data-key="p8">54</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>37</b>Особые состояния и дом</span><span class="pt-dots"></span><span class="pt-pg" data-key="c37">54</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть IX · Безопасность и этика</span><span class="pt-dots"></span><span class="pt-pg" data-key="p9">55</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 9 · Безопасность и этика</span><span class="pt-dots"></span><span class="pt-pg" data-key="p9">55</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>38</b>Границы и кризис</span><span class="pt-dots"></span><span class="pt-pg" data-key="c38">55</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть X · Мастерский уровень</span><span class="pt-dots"></span><span class="pt-pg" data-key="p10">56</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 10 · Мастерский уровень</span><span class="pt-dots"></span><span class="pt-pg" data-key="p10">56</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>39</b>Три столпа и пять элементов намерения</span><span class="pt-dots"></span><span class="pt-pg" data-key="c39">56</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>40</b>Сердечный резервуар и выстрел</span><span class="pt-dots"></span><span class="pt-pg" data-key="c40">57</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>41</b>Распорядок и внутренние ключи</span><span class="pt-dots"></span><span class="pt-pg" data-key="c41">58</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть XI · Разборы случаев и результат</span><span class="pt-dots"></span><span class="pt-pg" data-key="p11">60</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 11 · Разборы случаев и результат</span><span class="pt-dots"></span><span class="pt-pg" data-key="p11">60</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>42</b>Случай: исцеление за одно чтение</span><span class="pt-dots"></span><span class="pt-pg" data-key="c42">60</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>43</b>Протокол одного чтения: 25 минут</span><span class="pt-dots"></span><span class="pt-pg" data-key="c43">63</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>44</b>После мгновенного результата: 72 часа, 7 дней, 21 день</span><span class="pt-dots"></span><span class="pt-pg" data-key="c44">65</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>45</b>Случай: длинный сеанс и несколько линий</span><span class="pt-dots"></span><span class="pt-pg" data-key="c45">67</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>46</b>Ещё четыре отзыва: приступ, глаза, фон, курс</span><span class="pt-dots"></span><span class="pt-pg" data-key="c46">69</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть XII · Корень влияния</span><span class="pt-dots"></span><span class="pt-pg" data-key="p7b">73</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 12 · Корень влияния</span><span class="pt-dots"></span><span class="pt-pg" data-key="p7b">73</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>47</b>Корень влияния: четыре уровня</span><span class="pt-dots"></span><span class="pt-pg" data-key="c47">73</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>48</b>Три постоянных намерения</span><span class="pt-dots"></span><span class="pt-pg" data-key="c48">74</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>49</b>Десять опор сердца</span><span class="pt-dots"></span><span class="pt-pg" data-key="c49">74</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>50</b>Близость и ответ</span><span class="pt-dots"></span><span class="pt-pg" data-key="c50">75</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>51</b>Сжатие и восемь вопросов</span><span class="pt-dots"></span><span class="pt-pg" data-key="c51">76</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b>52</b>Границы: что я запрещаю</span><span class="pt-dots"></span><span class="pt-pg" data-key="c52">78</span></div></td></tr>
-        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть XIII · Приложения</span><span class="pt-dots"></span><span class="pt-pg" data-key="p8">79</span></div></td></tr>
+        <tr><td class="pt-cell"><div class="pt-row part"><span class="pt-title">Часть 13 · Приложения</span><span class="pt-dots"></span><span class="pt-pg" data-key="p8">79</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b class="wide">Приложение A</b>Глоссарий</span><span class="pt-dots"></span><span class="pt-pg" data-key="ch46">79</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b class="wide">Приложение B</b>Программа на 10 дней</span><span class="pt-dots"></span><span class="pt-pg" data-key="ch48">79</span></div></td></tr>
         <tr><td class="pt-cell"><div class="pt-row"><span class="pt-title"><b class="wide">Приложение C</b>Дневник практики</span><span class="pt-dots"></span><span class="pt-pg" data-key="ch49">80</span></div></td></tr>
@@ -1850,12 +1943,12 @@ main{padding:0!important; max-width:none!important}
           <h2>Как пользоваться этим руководством</h2>
         </div>
 
-        <p class="lead2">Я построил это руководство как маршрут: смысл и границы → подготовка и состояние целителя → диагностика → ступени → органы → формулы → практика → корень влияния. Не перескакивайте через часть II: без намерения и убеждённости метод превращается в механическое чтение — а это его главная ошибка. Часть XII отвечает на вопрос «на чём держится заклинание»: без неё остальные части остаются техникой без основания.</p>
+        <p class="lead2">Я построил это руководство как маршрут: смысл и границы → подготовка и состояние целителя → диагностика → ступени → органы → формулы → практика → корень влияния. Не перескакивайте через часть 2: без намерения и убеждённости метод превращается в механическое чтение — а это его главная ошибка. Часть 12 отвечает на вопрос «на чём держится заклинание»: без неё остальные части остаются техникой без основания.</p>
 
         <div class="grid three">
           <div class="card"><span class="k">Маршрут A</span><h4>Новичок · 10 дней</h4><p>Читайте по одному разделу в день, выполняйте упражнения и заполняйте чек-листы. На десятый день — полный протокол на себе.</p></div>
-          <div class="card"><span class="k">Маршрут B</span><h4>Практикующий</h4><p>Части III–VII как справочник: диагностика, ступени, органы, конструктор формул, протокол сеанса. Часть I — для сверки границ.</p></div>
-          <div class="card"><span class="k">Маршрут C</span><h4>Преподаватель</h4><p>Части I, IX, XI — каркас занятия. Упражнения и чек-листы печатаются отдельно.</p></div>
+          <div class="card"><span class="k">Маршрут B</span><h4>Практикующий</h4><p>Части 3-7 как справочник: диагностика, ступени, органы, конструктор формул, протокол сеанса. Часть 1 — для сверки границ.</p></div>
+          <div class="card"><span class="k">Маршрут C</span><h4>Преподаватель</h4><p>Части 1, 9, 11 — каркас занятия. Упражнения и чек-листы печатаются отдельно.</p></div>
         </div>
 
         <h4>Условные обозначения</h4>
@@ -1871,7 +1964,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p1">
         <div class="part">
-          <p class="kicker">Часть I</p>
+          <p class="kicker">Часть 1</p>
           <h2>Основание метода</h2>
         </div>
 
@@ -2005,7 +2098,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p2">
         <div class="part">
-          <p class="kicker">Часть II</p>
+          <p class="kicker">Часть 2</p>
           <h2>Подготовка практикующего</h2>
         </div>
 
@@ -2211,7 +2304,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p3">
         <div class="part">
-          <p class="kicker">Часть III</p>
+          <p class="kicker">Часть 3</p>
           <h2>Диагностика: что и где лечить</h2>
         </div>
 
@@ -2472,7 +2565,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p3b">
         <div class="part">
-          <p class="kicker">Часть IV</p>
+          <p class="kicker">Часть 4</p>
           <h2>Ступени: полный цикл</h2>
         </div>
 
@@ -2735,11 +2828,11 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p3c">
         <div class="part">
-          <p class="kicker">Часть V</p>
+          <p class="kicker">Часть 5</p>
           <h2>Органы: протоколы по зонам</h2>
         </div>
 
-        <p class="lead2">В каждой главе — три вещи: что ищем, какие тексты читаем, как выглядит порядок. Это рабочая карта, а не замена полному протоколу из части IV.</p>
+        <p class="lead2">В каждой главе — три вещи: что ищем, какие тексты читаем, как выглядит порядок. Это рабочая карта, а не замена полному протоколу из части 4.</p>
 
         <div class="chapter" id="c18">
           <h3><span class="num">Глава 18</span>Ноги: стопы, колени, бёдра</h3>
@@ -3002,7 +3095,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p4">
         <div class="part">
-          <p class="kicker">Часть VI</p>
+          <p class="kicker">Часть 6</p>
           <h2>Формулы: язык метода</h2>
         </div>
 
@@ -3287,7 +3380,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p5">
         <div class="part">
-          <p class="kicker">Часть VII</p>
+          <p class="kicker">Часть 7</p>
           <h2>Практика</h2>
         </div>
 
@@ -3499,7 +3592,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p6">
         <div class="part">
-          <p class="kicker">Часть VIII</p>
+          <p class="kicker">Часть 8</p>
           <h2>Особые случаи и пространство</h2>
         </div>
 
@@ -3553,7 +3646,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p7">
         <div class="part">
-          <p class="kicker">Часть IX</p>
+          <p class="kicker">Часть 9</p>
           <h2>Безопасность и этика</h2>
         </div>
 
@@ -3584,7 +3677,7 @@ main{padding:0!important; max-width:none!important}
 
       <section id="p10">
         <div class="part">
-          <p class="kicker">Часть X</p>
+          <p class="kicker">Часть 10</p>
           <h2>Мастерский уровень</h2>
         </div>
 
@@ -3733,7 +3826,7 @@ main{padding:0!important; max-width:none!important}
 
             <section id="p9">
         <div class="part">
-          <p class="kicker">Часть XI</p>
+          <p class="kicker">Часть 11</p>
           <h2>Разборы случаев и результат</h2>
         </div>
 
@@ -3872,7 +3965,7 @@ main{padding:0!important; max-width:none!important}
         <div class="chapter" id="c43">
           <h3><span class="num">Глава 43</span>Протокол одного чтения: 25 минут</h3>
 
-          <p>Этот протокол — не замена полному сеансу из части IV, а <strong>быстрый точный проход</strong> для A₁. A₂ идёт тем же проходом, но с проверкой 7 и 21 дня. Если профиль B или C — переходите к полному протоколу и главе 45.</p>
+          <p>Этот протокол — не замена полному сеансу из части 4, а <strong>быстрый точный проход</strong> для A₁. A₂ идёт тем же проходом, но с проверкой 7 и 21 дня. Если профиль B или C — переходите к полному протоколу и главе 45.</p>
 
           <ul class="timeline">
             <li><span class="t">0–3 минуты</span><b>Вход</b><p>Вуду, тишина, истиаза. Нийя по пяти элементам: кто, что, где, чем, ради чего.</p></li>
@@ -4261,7 +4354,7 @@ main{padding:0!important; max-width:none!important}
 
 <section id="p12">
         <div class="part">
-          <p class="kicker">Часть XII</p>
+          <p class="kicker">Часть 12</p>
           <h2>Корень влияния</h2>
           <p>Эти главы — не о новых формулах. Они о корне, без которого формулы остаются звуком. Формула — тело заклинания. Сердце — его корень. Аллах — его Источник.</p>
         </div>
@@ -4456,7 +4549,7 @@ main{padding:0!important; max-width:none!important}
 
 <section id="p8">
         <div class="part">
-          <p class="kicker">Часть XIII</p>
+          <p class="kicker">Часть 13</p>
           <h2>Приложения</h2>
         </div>
 
@@ -4493,10 +4586,10 @@ main{padding:0!important; max-width:none!important}
           <div class="tablewrap"><table>
             <thead><tr><th>День</th><th>Что читать</th><th>Что выполнить</th><th>Результат</th></tr></thead>
             <tbody>
-              <tr><td class="num">1</td><td>Части I–II</td><td>нийя, чек-лист подготовки</td><td>сформулирован адресат</td></tr>
+              <tr><td class="num">1</td><td>Части 1-2</td><td>нийя, чек-лист подготовки</td><td>сформулирован адресат</td></tr>
               <tr><td class="num">2</td><td>Главы 03–05</td><td>проверка границ и красных флагов</td><td>понято, что метод не делает</td></tr>
               <tr><td class="num">3</td><td>Глава 10</td><td>Столб Земли, дыхание, сканирование</td><td>рабочая поза и настрой</td></tr>
-              <tr><td class="num">4</td><td>Часть III</td><td>карта одного случая, правило трёх</td><td>диагноз без обвинений</td></tr>
+              <tr><td class="num">4</td><td>Часть 3</td><td>карта одного случая, правило трёх</td><td>диагноз без обвинений</td></tr>
               <tr><td class="num">5</td><td>Глава 14</td><td>девять ступеней на одной зоне</td><td>порядок без запинки</td></tr>
               <tr><td class="num">6</td><td>Глава 15</td><td>сухой прогон 13 шагов</td><td>понимание полного сеанса</td></tr>
               <tr><td class="num">7</td><td>Главы 18–24</td><td>две зоны: формулы и порядок</td><td>карта двух органов</td></tr>
