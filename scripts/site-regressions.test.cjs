@@ -4,6 +4,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
+const { pathToFileURL } = require("node:url");
 const read = f => fs.readFileSync(path.join(__dirname, "..", f), "utf8");
 
 for (const failure of ["network", "http"]) {
@@ -116,4 +117,51 @@ test("реестр: заголовки уроков и модулей уника
   const seen = new Set(), dup = new Set();
   for (const t of grabAll(/title:\s*"([^"]+)"/g)) { if (seen.has(t)) dup.add(t); seen.add(t); }
   assert.deepEqual([...dup], [], "повторяющиеся заголовки: " + [...dup].join(" | "));
+});
+
+test("zaxab: у каждой книги есть экзамен и задание, новые источники учтены ровно один раз", async () => {
+  const { MODULES } = await import(pathToFileURL(path.join(ROOT, "pages/js/modules-data.js")).href);
+  const { ASSIGNMENTS } = await import(pathToFileURL(path.join(ROOT, "pages/js/assignments-data.js")).href);
+  const sourceMap = JSON.parse(read("content/course-source-map.json"));
+  const assignments = Object.values(ASSIGNMENTS).flat();
+  const lessons = MODULES.flatMap((m) => m.lessons);
+  assert.equal(MODULES.length, 12);
+  assert.equal(lessons.length, 116);
+  assert.equal(sourceMap.newSources.length, 10);
+  for (const m of MODULES) {
+    assert.deepEqual([...sourceMap.modules.find((x) => x.id === m.id).lessons], m.lessons.map((l) => l.doc), `source-map модуля ${m.id}`);
+  }
+  for (const l of lessons) {
+    assert.ok(l.exam && existsPath(l.exam), `нет экзамена: ${l.doc}`);
+    assert.ok(assignments.some((a) => a.book === l.doc), `нет задания: ${l.doc}`);
+  }
+  for (const n of sourceMap.newSources) {
+    assert.equal(lessons.filter((l) => l.doc === n.doc).length, 1, `новый источник не в одном модуле: ${n.doc}`);
+    const exam = read(n.exam.slice(1));
+    const questions = (exam.match(/^\d+\./gm) || []).length;
+    assert.equal(questions, 6, `новый экзамен не из 6 вопросов: ${n.exam}`);
+    assert.equal((exam.match(/^- \[x\]/gm) || []).length, questions, `число [x]: ${n.exam}`);
+    assert.ok((exam.match(/^- \[ \]/gm) || []).length >= questions * 3, `мало дистракторов: ${n.exam}`);
+    const lesson = read(n.doc.slice(1));
+    assert.ok(/\*\*Цель урока\.\*\*[^\n]+\n\n/.test(lesson), `нет пустой строки после цели: ${n.doc}`);
+    assert.ok(!/^>\s*[^\n]*[\u0600-\u06FF]/m.test(lesson), `арабский текст остался в blockquote: ${n.doc}`);
+  }
+});
+
+test("zaxab: итоговый тест каждого модуля представляет каждую книгу", async () => {
+  const { MODULES } = await import(pathToFileURL(path.join(ROOT, "pages/js/modules-data.js")).href);
+  const { QUIZZES } = await import(pathToFileURL(path.join(ROOT, "pages/js/quiz-data.js")).href);
+  for (const m of MODULES) {
+    const moduleQuestions = new Set(QUIZZES[m.id].map((q) => q.q));
+    for (const l of m.lessons) {
+      const exam = read(l.exam.slice(1));
+      const questions = [...exam.matchAll(/^\d+\.\s+(.+)$/gm)].map((x) => x[1]);
+      assert.ok(questions.some((q) => moduleQuestions.has(q)), `книга не представлена в тесте ${m.id}: ${l.doc}`);
+    }
+  }
+});
+
+test("zaxab: опубликованные Markdown-файлы не превышают 500 строк", () => {
+  const oversized = contentMds().filter((f) => fs.readFileSync(f, "utf8").split(/\r?\n/).length > 500).map(toRel);
+  assert.deepEqual(oversized, [], "файлы свыше 500 строк: " + oversized.join(" | "));
 });

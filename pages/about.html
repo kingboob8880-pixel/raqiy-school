@@ -260,7 +260,7 @@
     letter-spacing: 0.05em; color: var(--rp-learn-text-muted);
     margin: 0 0 var(--rp-space-2);
   }
-  /* Список уроков ограничен по высоте и скроллится: у Модуля 5 их 12, без
+  /* Список уроков ограничен по высоте и скроллится: в больших модулях их 16, без
      ограничения модалка вылезала бы за экран на телефоне. */
   .book-modal__lessons {
     list-style: none; padding: 0; margin: 0;
@@ -455,8 +455,8 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "./js/layout.js?v=42";
-    import { t, getLang, moduleTitle, localLevel, lessonTitle } from "./js/i18n.js?v=39";
-    import { MODULES } from "./js/modules-data.js?v=52";
+    import { t, getLang, moduleTitle, localLevel, lessonTitle } from "./js/i18n.js?v=40";
+    import { MODULES } from "./js/modules-data.js?v=53";
     import { withBase } from "./js/base-path.js?v=6";
     renderHeader("learn");
     renderFooter();
@@ -469,7 +469,7 @@
     // ключ i18n "about.books.N" на модуль.
     /** Русское склонение: 1 урок / 2–4 урока / 0 и 5–20 уроков, с учётом
      *  сотен и десятков. Наивное `n < 5 ? "урока" : "уроков"` давало бы
-     *  «0 урока» у Модуля 11, где отдельных уроков-книг нет вовсе. */
+     *  «0 урока», если у будущего навигационного модуля нет отдельных книг. */
     function lessonWord(n) {
       const mod100 = n % 100;
       const mod10 = n % 10;
@@ -481,8 +481,8 @@
 
     function bookCardHtml(m) {
       const n = m.lessons.length;
-      // У Модуля 11 отдельных уроков нет — он сам целиком практикум,
-      // поэтому «0 уроков» не пишем вовсе, только уровень.
+      // Для навигационного модуля без отдельных книг «0 уроков» не пишем,
+      // показываем только уровень.
       const countHtml = n
         ? `<span aria-hidden="true">·</span><span>${n} ${lessonWord(n)}</span>`
         : "";

@@ -1,0 +1,279 @@
+{
+  "revision": "zaxab-2026-10",
+  "modules": [
+    {
+      "id": 1,
+      "title": "Основание, дозволенность и допуск",
+      "lessons": [
+        "/content/module-1/vhodnyy-cenz-chteniya.md",
+        "/content/module-1/poklonenie.md",
+        "/content/module-9/sut-istiny.md",
+        "/content/module-9/granitsy-very-i-zastupnichestvo.md",
+        "/content/module-9/voprosy-zastup.md",
+        "/content/module-1/metod-taukhid.md",
+        "/content/module-1/ehsan-i-sila.md",
+        "/content/module-2/dozvolennost-zaklinaniya.md",
+        "/content/module-2/istselyayu-koranom.md"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Подготовка лекаря",
+      "lessons": [
+        "/content/module-1/yakyn.md",
+        "/content/module-1/molba-zaklinatelya.md",
+        "/content/module-1/teoretik-i-praktik.md",
+        "/content/module-1/fundamentalnoe.md",
+        "/content/module-1/basira.md",
+        "/content/module-1/namereniya.md",
+        "/content/module-1/volevoy-akt.md",
+        "/content/module-1/volevoy-akt-2-zaryazhenie-posledovatelnost.md",
+        "/content/module-1/volevoy-akt-3-trenirovki-razrushiteli-urovni.md",
+        "/content/module-1/volevoy-akt-4-sovety-molby-spisok.md",
+        "/content/reference/niyat.md",
+        "/content/module-1/shkala-usileniya-dushi.md",
+        "/content/module-12/pryamoy-put.md",
+        "/content/module-12/puti-vliyaniya.md",
+        "/content/module-12/podgotovka-pryamoy-put.md",
+        "/content/reference/pryamoy-put-svodka.md"
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Коран, дуа и язык формул",
+      "lessons": [
+        "/content/module-2/chto-takoe-zaklinanie.md",
+        "/content/module-2/ya-zaklinayu.md",
+        "/content/module-2/obshchee-ponyatie-zaklinanie.md",
+        "/content/module-2/vidy-zaklinaniy.md",
+        "/content/module-2/vidy-zaklinaniy-2-proiznoshenie-poryadok.md",
+        "/content/module-2/prodvinutoe-zaklinanie.md",
+        "/content/module-2/instrumenty-zaklinatelya.md",
+        "/content/module-2/rech-s-boleznyu.md",
+        "/content/module-2/ubiranie-gryazi.md",
+        "/content/reference/classification.md",
+        "/content/reference/allyazi-atributy.md",
+        "/content/reference/organs.md",
+        "/content/module-5/prodvinutoe-zaklinanie-posobie.md",
+        "/content/module-5/prodvinutoe-zaklinanie-posobie-2-deystvie-kombo.md"
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Диагностика и безопасность приёма",
+      "lessons": [
+        "/content/module-3/vliyanie-emots.md",
+        "/content/module-3/krasota.md",
+        "/content/module-3/tablitsa-strasti.md",
+        "/content/module-4/diagnostika.md",
+        "/content/module-4/zagryazneniya.md",
+        "/content/module-4/zazhimy.md",
+        "/content/module-4/bank-casey.md",
+        "/content/module-4/aktivizatsiya-vs-ugroza.md",
+        "/content/module-11/profili-sluchaev-i-okna-proverki.md"
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Хитаб Исаба: полный цикл",
+      "lessons": [
+        "/content/module-5/hitab-al-isaba.md",
+        "/content/module-5/hitab-al-isaba-2-protokol-seansa.md",
+        "/content/module-5/hitab-al-isaba-3-adresat-i-diagnostika.md",
+        "/content/module-5/hitab-al-isaba-4-13-shagov-i-tahrizh.md",
+        "/content/module-5/hitab-al-isaba-5-formula-i-konstruktor.md"
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Хитаб Исаба: зоны и сеанс",
+      "lessons": [
+        "/content/module-5/ochishchenie-razuma.md",
+        "/content/module-5/zaklinaniya-na-organy.md",
+        "/content/reference/zaklinaniya-na-organy-katalog-1.md",
+        "/content/reference/zaklinaniya-na-organy-katalog-2.md",
+        "/content/reference/zaklinaniya-na-organy-katalog-3.md",
+        "/content/reference/hitab-biblioteka-formul.md",
+        "/content/reference/hitab-prilozheniya.md",
+        "/content/module-11/protokol-odnogo-chteniya.md",
+        "/content/module-11/distancionnyy-seans-i-samoiscelenie.md"
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Очищение, защита и закрепление",
+      "lessons": [
+        "/content/reference/azkar.md",
+        "/content/module-6/dua-o-sokrytii.md",
+        "/content/module-6/dua-zashchity-ot-dzhinnov-i-shaytanov.md",
+        "/content/module-6/arsenal-protiv-koldovstva.md",
+        "/content/module-6/otkrytie-dukhovnykh-zamkov.md",
+        "/content/module-6/zashchita-doma-i-celitelya.md",
+        "/content/module-6/tre-urovnya-zashchity.md",
+        "/content/module-12/zaryad-koranom.md",
+        "/content/module-12/razriv-putej-koldovstva.md",
+        "/content/module-5/protiv-istoshcheniya.md",
+        "/content/module-5/lecheniya-sglaz.md",
+        "/content/module-5/sikhr-sglaz-posobie.md",
+        "/content/module-5/rukiya-sikhr.md",
+        "/content/module-5/ubiranie-liniy.md",
+        "/content/module-5/istselyayu-koranom-praktika.md",
+        "/content/module-7/new-method-annulirovanie.md"
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Программа по 10 критериям",
+      "lessons": [
+        "/content/module-8/desyat-kriteriev.md",
+        "/content/module-8/bank-programm-lecheniya.md",
+        "/content/module-11/specialnye-protokoly-priyoma.md"
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Родовые и семейные поражения",
+      "lessons": [
+        "/content/module-5/dua-strasti.md",
+        "/content/module-11/osobye-sostoyaniya.md",
+        "/content/module-9/nasledstvennaya-bolezn-1.md",
+        "/content/module-9/nasledstvennaya-bolezn-2.md",
+        "/content/module-9/nasledstvennaya-bolezn-3.md",
+        "/content/module-9/rodovye-zabolevaniya-1.md",
+        "/content/module-9/rodovye-zabolevaniya-2.md"
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Кашф и тяжелейшие случаи",
+      "lessons": [
+        "/content/module-7/zaklinaniya-na-ubiystvo-dzhinnov.md",
+        "/content/module-7/unichtozhenie-dzhinnov-posobie.md",
+        "/content/module-7/unichtozhenie-dzhinnov-posobie-2-protokoly.md",
+        "/content/module-7/unichtozhenie-dzhinnov-posobie-3-printsipy.md",
+        "/content/module-5/metod-izbavleniya.md",
+        "/content/module-10/kashf-raskrytie-1.md",
+        "/content/module-10/kashf-raskrytie-2.md",
+        "/content/module-10/tyazheleyshie-sluchai-1.md",
+        "/content/module-10/tyazheleyshie-sluchai-2.md"
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Профессиональный приём и мастерство",
+      "lessons": [
+        "/content/module-8/fundament-mastera.md",
+        "/content/module-8/prodvinutye-formuly.md",
+        "/content/module-8/kombo-i-urovni.md",
+        "/content/module-8/istselenie-za-sekundy.md",
+        "/content/module-8/istselenie-za-sekundy-2-vragi-i-mgnovennost.md",
+        "/content/module-8/istselenie-za-sekundy-3-polny-cikl-formuly.md",
+        "/content/module-8/istselenie-za-sekundy-4-gotovnost-granicy.md",
+        "/content/module-5/sravnenie-silnogo-so-slabym.md",
+        "/content/module-5/sravnenie-2-volya-svyaz-specifikaciya-vyvody.md",
+        "/content/module-5/koren-vliyaniya.md",
+        "/content/module-9/chuzhoy-yazyk.md",
+        "/content/module-10/oshibki-i-zaprety-lzherakii.md",
+        "/content/module-10/obraz-istinnogo-rakii.md",
+        "/content/module-10/raznitsa-praktik-vs-teoretik.md",
+        "/content/module-10/vnutrenniy-sabotazh.md",
+        "/content/module-11/zashchita-dannykh-patsienta.md"
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Супервизия и аттестация",
+      "lessons": [
+        "/content/reference/praktika-passport.md",
+        "/content/module-11/praktikum-simulyatsiya.md",
+        "/content/module-11/zashchita-dvukh-sluchaev.md"
+      ]
+    }
+  ],
+  "newSources": [
+    {
+      "title": "Слушание и чтение Корана с намерением аннулирования",
+      "source": "Метод «Слушание/чтение Корана с намерением аннулирования» (Абу Мухаммад, финальный текст zaxab).",
+      "doc": "/content/module-7/new-method-annulirovanie.md",
+      "exam": "/content/exams/module-7-new-method-annulirovanie.md",
+      "module": 7
+    },
+    {
+      "title": "Наследственная болезнь — определение, признаки и механизм",
+      "source": "«Наследственная болезнь», полный русский перевод, главы 1–3.",
+      "doc": "/content/module-9/nasledstvennaya-bolezn-1.md",
+      "exam": "/content/exams/module-9-nasledstvennaya-bolezn-1.md",
+      "module": 9
+    },
+    {
+      "title": "Наследственная болезнь — наблюдение, способности и формы",
+      "source": "«Наследственная болезнь», полный русский перевод, главы 4–9.",
+      "doc": "/content/module-9/nasledstvennaya-bolezn-2.md",
+      "exam": "/content/exams/module-9-nasledstvennaya-bolezn-2.md",
+      "module": 9
+    },
+    {
+      "title": "Наследственная болезнь — лечение и программа источника",
+      "source": "«Наследственная болезнь», полный русский перевод, главы 10–16.",
+      "doc": "/content/module-9/nasledstvennaya-bolezn-3.md",
+      "exam": "/content/exams/module-9-nasledstvennaya-bolezn-3.md",
+      "module": 9
+    },
+    {
+      "title": "Родовые духовные заболевания — виды и механизмы",
+      "source": "«Родовые духовные заболевания», разделы 1–5.",
+      "doc": "/content/module-9/rodovye-zabolevaniya-1.md",
+      "exam": "/content/exams/module-9-rodovye-zabolevaniya-1.md",
+      "module": 9
+    },
+    {
+      "title": "Родовые духовные заболевания — диагностика и лечение",
+      "source": "«Родовые духовные заболевания», разделы 6–11.",
+      "doc": "/content/module-9/rodovye-zabolevaniya-2.md",
+      "exam": "/content/exams/module-9-rodovye-zabolevaniya-2.md",
+      "module": 9
+    },
+    {
+      "title": "Кашф и визуальная рукъя — описание источника",
+      "source": "«Кашф — духовное раскрытие и ясновидение в контексте рукъйи», разделы 1–5.",
+      "doc": "/content/module-10/kashf-raskrytie-1.md",
+      "exam": "/content/exams/module-10-kashf-raskrytie-1.md",
+      "module": 10
+    },
+    {
+      "title": "Кашф — галлюцинации, сны и границы",
+      "source": "«Кашф — духовное раскрытие и ясновидение в контексте рукъйи», разделы 6–13.",
+      "doc": "/content/module-10/kashf-raskrytie-2.md",
+      "exam": "/content/exams/module-10-kashf-raskrytie-2.md",
+      "module": 10
+    },
+    {
+      "title": "Тяжелейшие случаи — категории и протоколы источника",
+      "source": "«Тяжелейшие и трудноизлечимые случаи в практике рукъйи», разделы 1–5.",
+      "doc": "/content/module-10/tyazheleyshie-sluchai-1.md",
+      "exam": "/content/exams/module-10-tyazheleyshie-sluchai-1.md",
+      "module": 10
+    },
+    {
+      "title": "Тяжелейшие случаи — риски и индивидуальный разбор",
+      "source": "«Тяжелейшие и трудноизлечимые случаи в практике рукъйи», разделы 6–14.",
+      "doc": "/content/module-10/tyazheleyshie-sluchai-2.md",
+      "exam": "/content/exams/module-10-tyazheleyshie-sluchai-2.md",
+      "module": 10
+    }
+  ],
+  "legacyIndexTargets": {
+    "1": 1,
+    "2": 3,
+    "3": 4,
+    "4": 4,
+    "5": 5,
+    "6": 7,
+    "7": 10,
+    "8": 11,
+    "9": 11,
+    "10": 11,
+    "11": 11,
+    "12": 2
+  }
+}

@@ -31,13 +31,13 @@
 
   <script type="module">
     import { renderHeader, renderFooter } from "../js/layout.js?v=42";
-    import { getModule, bookKey, isModuleUnlocked } from "../js/modules-data.js?v=52";
-    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal, renderMarkdown } from "../js/markdown-loader.js?v=38";
-    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=39";
+    import { getModule, bookKey, isModuleUnlocked } from "../js/modules-data.js?v=53";
+    import { loadMarkdownDoc, statusBadgeHtml, renderDocInto, applyPaywall, applyRegisterWall, setupSelfCheck, enhanceDuaBlocks, enhanceContentLinks, addReadingAids, staggerReveal, renderMarkdown } from "../js/markdown-loader.js?v=39";
+    import { t, getLang, moduleTitle, lessonTitle, localLevel } from "../js/i18n.js?v=40";
     import { printBarHtml, wirePrintBar } from "../js/print-doc.js?v=13";
     import { setupReadingPosition } from "../js/reading-position.js?v=11";
-    import { ASSIGNMENTS } from "../js/assignments-data.js?v=12";
-    import { renderAssignments } from "../js/assignments-ui.js?v=9";
+    import { ASSIGNMENTS } from "../js/assignments-data.js?v=13";
+    import { renderAssignments } from "../js/assignments-ui.js?v=10";
     import { withBase } from "../js/base-path.js?v=6";
     import { watchAuth, getStudentProfile, isAdmin } from "../../integration/auth.js?v=15";
     import { getFullBookContent, saveUnderstanding } from "../../integration/firestore.js?v=29";
@@ -102,7 +102,7 @@
     // справедливо заметил, что это надоедает: напоминание, которое человек
     // видит одиннадцатый раз подряд, перестаёт быть напоминанием — глаз
     // проскакивает его, не читая, и с ним заодно проскакивает всё, что стоит
-    // рядом. Первый модуль — «Основа основ», там убеждённость и куётся;
+    // рядом. Первый модуль — основание и допуск, второй — подготовка лекаря;
     // именно там хадису и место.
     //
     // На остальных модулях остаётся только строка про сам модуль: она у

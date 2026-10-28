@@ -279,9 +279,11 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
   const firstTask = (require(path.join(ROOT, "functions", "course-data.json")).assignments["1"] || [])
     .find((a) => a.book === firstDoc);
   await bot.onCallback(cbq(`t:${firstTask.id}`));
-  check("упражнение открылось после экзамена", /НАМЕРЕНИЕ/.test(lastText()) && !/🔒/.test(lastText()),
+  check("упражнение открылось после экзамена", lastText().includes(firstTask.title) && !/🔒/.test(lastText()),
     "упражнение: " + (firstTask && firstTask.id));
-  check("намерение показано", /Ради Аллаха/.test(lastText()));
+  const counterModule = Object.entries(require(path.join(ROOT, "functions", "course-data.json")).assignments)
+    .find(([, items]) => items.some((a) => a.id === "m1-8"))?.[0];
+  check("m1-8 найден в новой структуре заданий", !!counterModule);
   reset();
   await bot.onCallback(cbq("t:m2-1"));
   check("упражнение другой книги закрыто", /🔒/.test(lastText()));
@@ -291,25 +293,26 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
   reset();
   await bot.onCallback(cbq("tc:m1-8"));   // экзамен этой книги не сдан
   check("закрытое упражнение не принимает нажатий",
-    store.get("students/UID1").progress?.["1"]?.log === undefined);
+    store.get("students/UID1").progress?.[counterModule]?.log === undefined);
 
   // 10. Выданный автором полный доступ снимает замки — и счётчик работает.
   store.get("students/UID1").fullAccess = true;
   reset();
   await bot.onCallback(cbq("t:m1-8"));   // у него есть счётчик и дни
   check("fullAccess открыл упражнение", !/🔒/.test(lastText()))
+  check("намерение m1-8 показано", /Ради Аллаха/.test(lastText()));
   reset();
   await bot.onCallback(cbq("tc:m1-8"));
   await bot.onCallback(cbq("tc:m1-8"));
-  const log = store.get("students/UID1").progress?.["1"]?.log?.["m1-8"] || {};
+  const log = store.get("students/UID1").progress?.[counterModule]?.log?.["m1-8"] || {};
   check("счётчик вырос до 2", log.count === 2, JSON.stringify(log));
   reset();
   await bot.onCallback(cbq("td:m1-8"));
-  const log2 = store.get("students/UID1").progress["1"].log["m1-8"];
+  const log2 = store.get("students/UID1").progress[counterModule].log["m1-8"];
   check("день отмечен", (log2.days || []).length === 1, JSON.stringify(log2.days));
   reset();
   await bot.onCallback(cbq("td:m1-8"));
-  check("повторное нажатие снимает день", (store.get("students/UID1").progress["1"].log["m1-8"].days || []).length === 0);
+  check("повторное нажатие снимает день", (store.get("students/UID1").progress[counterModule].log["m1-8"].days || []).length === 0);
 
   // 10. Наблюдение — ждём текст и записываем.
   reset();
@@ -317,7 +320,7 @@ const cbq = (data) => ({ id: "cb", data, message: { chat: { id: CHAT_ID } } });
   check("бот ждёт наблюдение", /Напишите наблюдение/.test(lastText()));
   reset();
   await bot.onMessage(msg("Внимание держалось всё чтение."));
-  const notes = store.get("students/UID1").progress["1"].log["m1-8"].notes || [];
+  const notes = store.get("students/UID1").progress[counterModule].log["m1-8"].notes || [];
   check("наблюдение записано", notes.length === 1 && /Внимание держалось/.test(notes[0].text));
 
   // 11. Вопрос наставнику уходит и автору, и в переписку.

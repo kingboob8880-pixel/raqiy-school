@@ -176,3 +176,41 @@ test("K2) код страниц: смешанное письмо только в
   }
   assert.deepEqual(hits, [], "подозрение на опечатку раскладки в коде: " + hits.join(", "));
 });
+
+test("Z1) миграция zaxab-2026 сохраняет книги и архивирует только модульные статусы", async () => {
+  const { planMigration, COURSE_REVISION } = await import("./migrate-progress-course-2026.mjs");
+  const student = {
+    fullAccess: true,
+    progress: {
+      1: { status: "done", quizScore: 1 },
+      7: { status: "done", quizScore: 0.9 },
+      12: { status: "in_progress", quizScore: 0.5 },
+      books: { _content_module_1_yakyn_md: { status: "done" } },
+      activityDates: ["2026-10-01"],
+    },
+  };
+  const before = JSON.stringify(student);
+  const plan = planMigration(student, "2026-10-29T00:00:00.000Z");
+  assert.equal(plan.skip, false);
+  assert.equal(plan.books, 1);
+  assert.deepEqual([...plan.reset], ["1", "7", "12"]);
+  assert.deepEqual([...plan.deletePaths], ["progress.1", "progress.7", "progress.12"]);
+  assert.equal(plan.update.courseRevision, COURSE_REVISION);
+  assert.deepEqual({ ...plan.update.legacyCourseProgress2026.modules }, { 1: student.progress[1], 7: student.progress[7], 12: student.progress[12] });
+  assert.equal(plan.update.fullAccess, undefined);
+  assert.equal(plan.update.activityDates, undefined);
+  assert.equal(JSON.stringify(student), before, "чистая функция не должна менять исходный документ");
+});
+
+test("Z2) миграция идемпотентна и корректно обрабатывает нового студента", async () => {
+  const { planMigration, COURSE_REVISION } = await import("./migrate-progress-course-2026.mjs");
+  const fresh = planMigration({ progress: {} });
+  assert.equal(fresh.skip, false);
+  assert.deepEqual([...fresh.reset], []);
+  assert.deepEqual({ ...fresh.update.legacyCourseProgress2026.modules }, {});
+  const migrated = { courseRevision: COURSE_REVISION, progress: { books: { b: { status: "done" } } } };
+  const repeated = planMigration(migrated);
+  assert.equal(repeated.skip, true);
+  assert.equal(repeated.update, null);
+  assert.equal(repeated.books, 1);
+});

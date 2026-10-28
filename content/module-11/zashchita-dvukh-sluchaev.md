@@ -119,7 +119,7 @@ status: author
 [паспорт практики](/content/reference/praktika-passport.md); восемь компонентов —
 [Модуль 5](/content/module-5/sravnenie-silnogo-so-slabym.md); канон частей
 разбора RUKYA Pro — [Модуль 12](/content/module-11/index.md); этика и красные
-линии — [Модуль 11](/content/module-10/index.md).
+линии — [Модуль 11](/content/module-11/index.md).
 
 ---
 

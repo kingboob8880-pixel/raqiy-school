@@ -22,7 +22,7 @@
  *     прибиты к точной версии в адресе.
  */
 
-const VERSION = "v2";   // бампится при правке sw.js — старые кеши чистятся в activate
+const VERSION = "v3";   // бампится при правке sw.js — старые кеши чистятся в activate
 const SHELL_CACHE = `rp-shell-${VERSION}`;
 const RUNTIME_CACHE = `rp-runtime-${VERSION}`;
 

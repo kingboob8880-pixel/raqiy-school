@@ -38,9 +38,8 @@ function extractFn(source, name) {
 
 function loadGraduationHelpers() {
   const source = read("functions/index.js");
-  const m = source.match(/const TOTAL_MODULES\s*=\s*(\d+)/);
-  assert.ok(m, "TOTAL_MODULES должен быть объявлен");
-  const TOTAL = Number(m[1]);
+  const TOTAL = JSON.parse(read("functions/course-data.json")).modules.length;
+  assert.ok(TOTAL > 0, "TOTAL_MODULES вычисляется из course-data.json");
   const code =
     `const TOTAL_MODULES = ${TOTAL};\n` +
     extractFn(source, "moduleEntries") + "\n" +

@@ -1,11 +1,11 @@
 {
- "generatedAt": "2026-10-24T23:33:39.212Z",
+ "generatedAt": "2026-10-28T21:10:08.075Z",
  "note": "Сгенерировано scripts/build-course-data.mjs — руками не править.",
  "passThreshold": 0.7,
  "modules": [
   {
    "id": 1,
-   "title": "Основа основ",
+   "title": "Основание, дозволенность и допуск",
    "level": "Начальный",
    "doc": "/content/module-1/index.md",
    "lessons": [
@@ -46,6 +46,32 @@
      "key": "_content_module-1_metod-taukhid_md"
     },
     {
+     "title": "Эхсан и черпание силы от Аллаха",
+     "doc": "/content/module-1/ehsan-i-sila.md",
+     "exam": "/content/exams/module-1-ehsan-i-sila.md",
+     "key": "_content_module-1_ehsan-i-sila_md"
+    },
+    {
+     "title": "Дозволенность заклинания — где проходит граница",
+     "doc": "/content/module-2/dozvolennost-zaklinaniya.md",
+     "exam": "/content/exams/module-2-dozvolennost-zaklinaniya.md",
+     "key": "_content_module-2_dozvolennost-zaklinaniya_md"
+    },
+    {
+     "title": "Исцеляю Кораном — довод, границы и правильное понимание",
+     "doc": "/content/module-2/istselyayu-koranom.md",
+     "exam": "/content/exams/module-2-istselyayu-koranom.md",
+     "key": "_content_module-2_istselyayu-koranom_md"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Подготовка лекаря",
+   "level": "Начальный",
+   "doc": "/content/module-2/index.md",
+   "lessons": [
+    {
      "title": "Учебник якына — убеждённости",
      "doc": "/content/module-1/yakyn.md",
      "exam": "/content/exams/module-1-yakyn.md",
@@ -74,12 +100,6 @@
      "doc": "/content/module-1/basira.md",
      "exam": "/content/exams/module-1-basira.md",
      "key": "_content_module-1_basira_md"
-    },
-    {
-     "title": "Эхсан и черпание силы от Аллаха",
-     "doc": "/content/module-1/ehsan-i-sila.md",
-     "exam": "/content/exams/module-1-ehsan-i-sila.md",
-     "key": "_content_module-1_ehsan-i-sila_md"
     },
     {
      "title": "Учебник по намерениям — виды, ярусы и выработка убеждённости",
@@ -122,27 +142,39 @@
      "doc": "/content/module-1/shkala-usileniya-dushi.md",
      "exam": "/content/exams/module-1-shkala.md",
      "key": "_content_module-1_shkala-usileniya-dushi_md"
+    },
+    {
+     "title": "Прямой путь — вера и намерение",
+     "doc": "/content/module-12/pryamoy-put.md",
+     "exam": "/content/exams/module-12-pryamoy-put.md",
+     "key": "_content_module-12_pryamoy-put_md"
+    },
+    {
+     "title": "Пути влияния — понятие и мольбы",
+     "doc": "/content/module-12/puti-vliyaniya.md",
+     "exam": "/content/exams/module-12-puti-vliyaniya.md",
+     "key": "_content_module-12_puti-vliyaniya_md"
+    },
+    {
+     "title": "Прямой путь — подготовка и целостная практика",
+     "doc": "/content/module-12/podgotovka-pryamoy-put.md",
+     "exam": "/content/exams/module-12-podgotovka-pryamoy-put.md",
+     "key": "_content_module-12_podgotovka-pryamoy-put_md"
+    },
+    {
+     "title": "Сводка «Прямого пути» (Ресурс)",
+     "doc": "/content/reference/pryamoy-put-svodka.md",
+     "exam": "/content/exams/module-12-pryamoy-put-svodka.md",
+     "key": "_content_reference_pryamoy-put-svodka_md"
     }
    ]
   },
   {
-   "id": 2,
-   "title": "Основы заклинания",
+   "id": 3,
+   "title": "Коран, дуа и язык формул",
    "level": "Начальный",
-   "doc": "/content/module-2/index.md",
+   "doc": "/content/module-3/index.md",
    "lessons": [
-    {
-     "title": "Дозволенность заклинания — где проходит граница",
-     "doc": "/content/module-2/dozvolennost-zaklinaniya.md",
-     "exam": "/content/exams/module-2-dozvolennost-zaklinaniya.md",
-     "key": "_content_module-2_dozvolennost-zaklinaniya_md"
-    },
-    {
-     "title": "Исцеляю Кораном — довод, границы и правильное понимание",
-     "doc": "/content/module-2/istselyayu-koranom.md",
-     "exam": "/content/exams/module-2-istselyayu-koranom.md",
-     "key": "_content_module-2_istselyayu-koranom_md"
-    },
     {
      "title": "Что такое заклинание — пять качеств истинного заклинателя",
      "doc": "/content/module-2/chto-takoe-zaklinanie.md",
@@ -208,21 +240,33 @@
      "doc": "/content/reference/allyazi-atributy.md",
      "exam": "/content/exams/reference-allyazi-atributy.md",
      "key": "_content_reference_allyazi-atributy_md"
-    }
-   ]
-  },
-  {
-   "id": 3,
-   "title": "Основы применения",
-   "level": "Начальный",
-   "doc": "/content/module-3/index.md",
-   "lessons": [
+    },
     {
      "title": "Словарь органов тела (Справочник)",
      "doc": "/content/reference/organs.md",
      "exam": "/content/exams/reference-organs.md",
      "key": "_content_reference_organs_md"
     },
+    {
+     "title": "Пособие по продвинутому заклинанию — часть 1: атрибуты из аятов",
+     "doc": "/content/module-5/prodvinutoe-zaklinanie-posobie.md",
+     "exam": "/content/exams/module-5-prodvinutoe-zaklinanie-posobie.md",
+     "key": "_content_module-5_prodvinutoe-zaklinanie-posobie_md"
+    },
+    {
+     "title": "Пособие по продвинутому заклинанию — часть 2: заклинание на действие, комбинированные формулы, сводная таблица",
+     "doc": "/content/module-5/prodvinutoe-zaklinanie-posobie-2-deystvie-kombo.md",
+     "exam": "/content/exams/module-5-posobie-2.md",
+     "key": "_content_module-5_prodvinutoe-zaklinanie-posobie-2-deystvie-kombo_md"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Диагностика и безопасность приёма",
+   "level": "Средний",
+   "doc": "/content/module-4/index.md",
+   "lessons": [
     {
      "title": "30 эмоциональных загрязнений — карта тела, механизм и дуа изгнания",
      "doc": "/content/module-3/vliyanie-emots.md",
@@ -240,15 +284,7 @@
      "doc": "/content/module-3/tablitsa-strasti.md",
      "exam": "/content/exams/module-3-tablitsa-strasti.md",
      "key": "_content_module-3_tablitsa-strasti_md"
-    }
-   ]
-  },
-  {
-   "id": 4,
-   "title": "Диагностика — протокол безопасности",
-   "level": "Средний",
-   "doc": "/content/module-4/index.md",
-   "lessons": [
+    },
     {
      "title": "Диагностика недугов души — три группы корневых проблем",
      "doc": "/content/module-4/diagnostika.md",
@@ -278,21 +314,21 @@
      "doc": "/content/module-4/aktivizatsiya-vs-ugroza.md",
      "exam": "/content/exams/module-4-aktivizatsiya-vs-ugroza.md",
      "key": "_content_module-4_aktivizatsiya-vs-ugroza_md"
+    },
+    {
+     "title": "Профили случая A/B/C, три окна проверки и карточка случая",
+     "doc": "/content/module-11/profili-sluchaev-i-okna-proverki.md",
+     "exam": "/content/exams/module-11-profili-sluchaev.md",
+     "key": "_content_module-11_profili-sluchaev-i-okna-proverki_md"
     }
    ]
   },
   {
    "id": 5,
-   "title": "Направленное применение",
+   "title": "Хитаб Исаба: полный цикл",
    "level": "Средний",
    "doc": "/content/module-5/index.md",
    "lessons": [
-    {
-     "title": "Очищение разума — авторские формулы по функциям тела и психики",
-     "doc": "/content/module-5/ochishchenie-razuma.md",
-     "exam": "/content/exams/module-5-ochishchenie-razuma.md",
-     "key": "_content_module-5_ochishchenie-razuma_md"
-    },
     {
      "title": "Хитаб аль-Исаба — часть 1: метод, органы, ключи воздействия",
      "doc": "/content/module-5/hitab-al-isaba.md",
@@ -322,18 +358,20 @@
      "doc": "/content/module-5/hitab-al-isaba-5-formula-i-konstruktor.md",
      "exam": "/content/exams/module-5-hitab-5.md",
      "key": "_content_module-5_hitab-al-isaba-5-formula-i-konstruktor_md"
-    },
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Хитаб Исаба: зоны и сеанс",
+   "level": "Средний",
+   "doc": "/content/module-6/index.md",
+   "lessons": [
     {
-     "title": "Библиотека формул Хитаб аль-Исаба (Справочник)",
-     "doc": "/content/reference/hitab-biblioteka-formul.md",
-     "exam": "/content/exams/reference-hitab-formuly.md",
-     "key": "_content_reference_hitab-biblioteka-formul_md"
-    },
-    {
-     "title": "Приложения Хитаб аль-Исаба — глоссарий, программа 10 дней, дневник (Справочник)",
-     "doc": "/content/reference/hitab-prilozheniya.md",
-     "exam": "/content/exams/reference-hitab-prilozheniya.md",
-     "key": "_content_reference_hitab-prilozheniya_md"
+     "title": "Очищение разума — авторские формулы по функциям тела и психики",
+     "doc": "/content/module-5/ochishchenie-razuma.md",
+     "exam": "/content/exams/module-5-ochishchenie-razuma.md",
+     "key": "_content_module-5_ochishchenie-razuma_md"
     },
     {
      "title": "Учебник по чтению заклинаний на органы по видам колдовства",
@@ -360,90 +398,36 @@
      "key": "_content_reference_zaklinaniya-na-organy-katalog-3_md"
     },
     {
-     "title": "Пособие по продвинутому заклинанию — часть 1: атрибуты из аятов",
-     "doc": "/content/module-5/prodvinutoe-zaklinanie-posobie.md",
-     "exam": "/content/exams/module-5-prodvinutoe-zaklinanie-posobie.md",
-     "key": "_content_module-5_prodvinutoe-zaklinanie-posobie_md"
+     "title": "Библиотека формул Хитаб аль-Исаба (Справочник)",
+     "doc": "/content/reference/hitab-biblioteka-formul.md",
+     "exam": "/content/exams/reference-hitab-formuly.md",
+     "key": "_content_reference_hitab-biblioteka-formul_md"
     },
     {
-     "title": "Пособие по продвинутому заклинанию — часть 2: заклинание на действие, комбинированные формулы, сводная таблица",
-     "doc": "/content/module-5/prodvinutoe-zaklinanie-posobie-2-deystvie-kombo.md",
-     "exam": "/content/exams/module-5-posobie-2.md",
-     "key": "_content_module-5_prodvinutoe-zaklinanie-posobie-2-deystvie-kombo_md"
+     "title": "Приложения Хитаб аль-Исаба — глоссарий, программа 10 дней, дневник (Справочник)",
+     "doc": "/content/reference/hitab-prilozheniya.md",
+     "exam": "/content/exams/reference-hitab-prilozheniya.md",
+     "key": "_content_reference_hitab-prilozheniya_md"
     },
     {
-     "title": "Сравнение сильного со слабым — часть 1: намерение, визуализация, концентрация, голос, энергия",
-     "doc": "/content/module-5/sravnenie-silnogo-so-slabym.md",
-     "exam": "/content/exams/module-5-sravnenie-silnogo-so-slabym.md",
-     "key": "_content_module-5_sravnenie-silnogo-so-slabym_md"
+     "title": "Один точный проход: протокол 25 минут и четыре маркера",
+     "doc": "/content/module-11/protokol-odnogo-chteniya.md",
+     "exam": "/content/exams/module-11-protokol-odnogo-chteniya.md",
+     "key": "_content_module-11_protokol-odnogo-chteniya_md"
     },
     {
-     "title": "Сравнение сильного со слабым — часть 2: воля, связь, спецификация, выводы",
-     "doc": "/content/module-5/sravnenie-2-volya-svyaz-specifikaciya-vyvody.md",
-     "exam": "/content/exams/module-5-sravnenie-2.md",
-     "key": "_content_module-5_sravnenie-2-volya-svyaz-specifikaciya-vyvody_md"
-    },
-    {
-     "title": "Дуа против колдовства истощения — 13 формул",
-     "doc": "/content/module-5/protiv-istoshcheniya.md",
-     "exam": "/content/exams/module-5-protiv-istoshcheniya.md",
-     "key": "_content_module-5_protiv-istoshcheniya_md"
-    },
-    {
-     "title": "Лечение от сглаза водой — программа очищения",
-     "doc": "/content/module-5/lecheniya-sglaz.md",
-     "exam": "/content/exams/module-5-lecheniya-sglaz.md",
-     "key": "_content_module-5_lecheniya-sglaz_md"
-    },
-    {
-     "title": "Рукья против сихра, сглаза и зависти — подробное руководство",
-     "doc": "/content/module-5/sikhr-sglaz-posobie.md",
-     "exam": "/content/exams/module-5-sikhr-sglaz-posobie.md",
-     "key": "_content_module-5_sikhr-sglaz-posobie_md"
-    },
-    {
-     "title": "Краткая рукья от колдовства — сеанс 50–70 минут",
-     "doc": "/content/module-5/rukiya-sikhr.md",
-     "exam": "/content/exams/module-5-rukiya-sikhr.md",
-     "key": "_content_module-5_rukiya-sikhr_md"
-    },
-    {
-     "title": "Рукья для укрепления супружества — 10 дуа",
-     "doc": "/content/module-5/dua-strasti.md",
-     "exam": "/content/exams/module-5-dua-strasti.md",
-     "key": "_content_module-5_dua-strasti_md"
-    },
-    {
-     "title": "Руководство по убиранию чёрных линий",
-     "doc": "/content/module-5/ubiranie-liniy.md",
-     "exam": "/content/exams/module-5-ubiranie-liniy.md",
-     "key": "_content_module-5_ubiranie-liniy_md"
-    },
-    {
-     "title": "Метод избавления от джиннов — трёхступенчатый подход",
-     "doc": "/content/module-5/metod-izbavleniya.md",
-     "exam": "/content/exams/module-5-metod-izbavleniya.md",
-     "key": "_content_module-5_metod-izbavleniya_md"
-    },
-    {
-     "title": "Исцеляю Кораном на практике — формулы по видам поражения",
-     "doc": "/content/module-5/istselyayu-koranom-praktika.md",
-     "exam": "/content/exams/module-5-istselyayu-koranom-praktika.md",
-     "key": "_content_module-5_istselyayu-koranom-praktika_md"
-    },
-    {
-     "title": "Корень влияния — четыре уровня, три намерения и границы метода",
-     "doc": "/content/module-5/koren-vliyaniya.md",
-     "exam": "/content/exams/module-5-koren-vliyaniya.md",
-     "key": "_content_module-5_koren-vliyaniya_md"
+     "title": "Дистанционный сеанс и самоисцеление: те же требования, другой адрес",
+     "doc": "/content/module-11/distancionnyy-seans-i-samoiscelenie.md",
+     "exam": "/content/exams/module-11-distancionnyy-seans.md",
+     "key": "_content_module-11_distancionnyy-seans-i-samoiscelenie_md"
     }
    ]
   },
   {
-   "id": 6,
-   "title": "Основы защиты",
+   "id": 7,
+   "title": "Очищение, защита и закрепление",
    "level": "Средний",
-   "doc": "/content/module-6/index.md",
+   "doc": "/content/module-7/index.md",
    "lessons": [
     {
      "title": "Базовые азкары и дуа защиты (Справочник)",
@@ -486,32 +470,6 @@
      "doc": "/content/module-6/tre-urovnya-zashchity.md",
      "exam": "/content/exams/module-6-tri-urovnya-zashchity.md",
      "key": "_content_module-6_tre-urovnya-zashchity_md"
-    }
-   ]
-  },
-  {
-   "id": 7,
-   "title": "Профессионал",
-   "level": "Продвинутый",
-   "doc": "/content/module-12/index.md",
-   "lessons": [
-    {
-     "title": "Прямой путь — вера и намерение",
-     "doc": "/content/module-12/pryamoy-put.md",
-     "exam": "/content/exams/module-12-pryamoy-put.md",
-     "key": "_content_module-12_pryamoy-put_md"
-    },
-    {
-     "title": "Пути влияния — понятие и мольбы",
-     "doc": "/content/module-12/puti-vliyaniya.md",
-     "exam": "/content/exams/module-12-puti-vliyaniya.md",
-     "key": "_content_module-12_puti-vliyaniya_md"
-    },
-    {
-     "title": "Прямой путь — подготовка и целостная практика",
-     "doc": "/content/module-12/podgotovka-pryamoy-put.md",
-     "exam": "/content/exams/module-12-podgotovka-pryamoy-put.md",
-     "key": "_content_module-12_podgotovka-pryamoy-put_md"
     },
     {
      "title": "Духовный заряд Кораном — мольбы о корнях души",
@@ -526,18 +484,130 @@
      "key": "_content_module-12_razriv-putej-koldovstva_md"
     },
     {
-     "title": "Сводка «Прямого пути» (Ресурс)",
-     "doc": "/content/reference/pryamoy-put-svodka.md",
-     "exam": "/content/exams/module-12-pryamoy-put-svodka.md",
-     "key": "_content_reference_pryamoy-put-svodka_md"
+     "title": "Дуа против колдовства истощения — 13 формул",
+     "doc": "/content/module-5/protiv-istoshcheniya.md",
+     "exam": "/content/exams/module-5-protiv-istoshcheniya.md",
+     "key": "_content_module-5_protiv-istoshcheniya_md"
+    },
+    {
+     "title": "Лечение от сглаза водой — программа очищения",
+     "doc": "/content/module-5/lecheniya-sglaz.md",
+     "exam": "/content/exams/module-5-lecheniya-sglaz.md",
+     "key": "_content_module-5_lecheniya-sglaz_md"
+    },
+    {
+     "title": "Рукья против сихра, сглаза и зависти — подробное руководство",
+     "doc": "/content/module-5/sikhr-sglaz-posobie.md",
+     "exam": "/content/exams/module-5-sikhr-sglaz-posobie.md",
+     "key": "_content_module-5_sikhr-sglaz-posobie_md"
+    },
+    {
+     "title": "Краткая рукья от колдовства — сеанс 50–70 минут",
+     "doc": "/content/module-5/rukiya-sikhr.md",
+     "exam": "/content/exams/module-5-rukiya-sikhr.md",
+     "key": "_content_module-5_rukiya-sikhr_md"
+    },
+    {
+     "title": "Руководство по убиранию чёрных линий",
+     "doc": "/content/module-5/ubiranie-liniy.md",
+     "exam": "/content/exams/module-5-ubiranie-liniy.md",
+     "key": "_content_module-5_ubiranie-liniy_md"
+    },
+    {
+     "title": "Исцеляю Кораном на практике — формулы по видам поражения",
+     "doc": "/content/module-5/istselyayu-koranom-praktika.md",
+     "exam": "/content/exams/module-5-istselyayu-koranom-praktika.md",
+     "key": "_content_module-5_istselyayu-koranom-praktika_md"
+    },
+    {
+     "title": "Слушание и чтение Корана с намерением аннулирования",
+     "doc": "/content/module-7/new-method-annulirovanie.md",
+     "exam": "/content/exams/module-7-new-method-annulirovanie.md",
+     "key": "_content_module-7_new-method-annulirovanie_md"
     }
    ]
   },
   {
    "id": 8,
-   "title": "Изгнание духовных сущностей",
+   "title": "Программа по 10 критериям",
    "level": "Продвинутый",
-   "doc": "/content/module-7/index.md",
+   "doc": "/content/module-8/index.md",
+   "lessons": [
+    {
+     "title": "Программа по 10 критериям — карта и логика",
+     "doc": "/content/module-8/desyat-kriteriev.md",
+     "exam": "/content/exams/module-8-desyat-kriteriev.md",
+     "key": "_content_module-8_desyat-kriteriev_md"
+    },
+    {
+     "title": "Банк программ лечения — 10 эталонов сборки",
+     "doc": "/content/module-8/bank-programm-lecheniya.md",
+     "exam": "/content/exams/module-8-bank-programm-lecheniya.md",
+     "key": "_content_module-8_bank-programm-lecheniya_md"
+    },
+    {
+     "title": "Специальные протоколы приёма — восемь специальных приложений",
+     "doc": "/content/module-11/specialnye-protokoly-priyoma.md",
+     "exam": "/content/exams/module-11-specialnye-protokoly-priyoma.md",
+     "key": "_content_module-11_specialnye-protokoly-priyoma_md"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Родовые и семейные поражения",
+   "level": "Продвинутый",
+   "doc": "/content/module-9/index.md",
+   "lessons": [
+    {
+     "title": "Рукья для укрепления супружества — 10 дуа",
+     "doc": "/content/module-5/dua-strasti.md",
+     "exam": "/content/exams/module-5-dua-strasti.md",
+     "key": "_content_module-5_dua-strasti_md"
+    },
+    {
+     "title": "Особые состояния: истихваз, рабт, родовое, колдовство смерти и дом",
+     "doc": "/content/module-11/osobye-sostoyaniya.md",
+     "exam": "/content/exams/module-11-osobye-sostoyaniya.md",
+     "key": "_content_module-11_osobye-sostoyaniya_md"
+    },
+    {
+     "title": "Наследственная болезнь — определение, признаки и механизм",
+     "doc": "/content/module-9/nasledstvennaya-bolezn-1.md",
+     "exam": "/content/exams/module-9-nasledstvennaya-bolezn-1.md",
+     "key": "_content_module-9_nasledstvennaya-bolezn-1_md"
+    },
+    {
+     "title": "Наследственная болезнь — наблюдение, способности и формы",
+     "doc": "/content/module-9/nasledstvennaya-bolezn-2.md",
+     "exam": "/content/exams/module-9-nasledstvennaya-bolezn-2.md",
+     "key": "_content_module-9_nasledstvennaya-bolezn-2_md"
+    },
+    {
+     "title": "Наследственная болезнь — лечение и программа источника",
+     "doc": "/content/module-9/nasledstvennaya-bolezn-3.md",
+     "exam": "/content/exams/module-9-nasledstvennaya-bolezn-3.md",
+     "key": "_content_module-9_nasledstvennaya-bolezn-3_md"
+    },
+    {
+     "title": "Родовые духовные заболевания — виды и механизмы",
+     "doc": "/content/module-9/rodovye-zabolevaniya-1.md",
+     "exam": "/content/exams/module-9-rodovye-zabolevaniya-1.md",
+     "key": "_content_module-9_rodovye-zabolevaniya-1_md"
+    },
+    {
+     "title": "Родовые духовные заболевания — диагностика и лечение",
+     "doc": "/content/module-9/rodovye-zabolevaniya-2.md",
+     "exam": "/content/exams/module-9-rodovye-zabolevaniya-2.md",
+     "key": "_content_module-9_rodovye-zabolevaniya-2_md"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Кашф и тяжелейшие случаи",
+   "level": "Продвинутый",
+   "doc": "/content/module-10/index.md",
    "lessons": [
     {
      "title": "Заклинания на убийство и сжигание джиннов — четыре уровня формулы",
@@ -562,14 +632,44 @@
      "doc": "/content/module-7/unichtozhenie-dzhinnov-posobie-3-printsipy.md",
      "exam": "/content/exams/module-7-unichtozhenie-3.md",
      "key": "_content_module-7_unichtozhenie-dzhinnov-posobie-3-printsipy_md"
+    },
+    {
+     "title": "Метод избавления от джиннов — трёхступенчатый подход",
+     "doc": "/content/module-5/metod-izbavleniya.md",
+     "exam": "/content/exams/module-5-metod-izbavleniya.md",
+     "key": "_content_module-5_metod-izbavleniya_md"
+    },
+    {
+     "title": "Кашф и визуальная рукъя — описание источника",
+     "doc": "/content/module-10/kashf-raskrytie-1.md",
+     "exam": "/content/exams/module-10-kashf-raskrytie-1.md",
+     "key": "_content_module-10_kashf-raskrytie-1_md"
+    },
+    {
+     "title": "Кашф — галлюцинации, сны и границы",
+     "doc": "/content/module-10/kashf-raskrytie-2.md",
+     "exam": "/content/exams/module-10-kashf-raskrytie-2.md",
+     "key": "_content_module-10_kashf-raskrytie-2_md"
+    },
+    {
+     "title": "Тяжелейшие случаи — категории и протоколы источника",
+     "doc": "/content/module-10/tyazheleyshie-sluchai-1.md",
+     "exam": "/content/exams/module-10-tyazheleyshie-sluchai-1.md",
+     "key": "_content_module-10_tyazheleyshie-sluchai-1_md"
+    },
+    {
+     "title": "Тяжелейшие случаи — риски и индивидуальный разбор",
+     "doc": "/content/module-10/tyazheleyshie-sluchai-2.md",
+     "exam": "/content/exams/module-10-tyazheleyshie-sluchai-2.md",
+     "key": "_content_module-10_tyazheleyshie-sluchai-2_md"
     }
    ]
   },
   {
-   "id": 9,
-   "title": "Продвинутый Мастер",
+   "id": 11,
+   "title": "Профессиональный приём и мастерство",
    "level": "Продвинутый",
-   "doc": "/content/module-8/index.md",
+   "doc": "/content/module-11/index.md",
    "lessons": [
     {
      "title": "Фундамент мастера — состояние заклинателя",
@@ -588,18 +688,6 @@
      "doc": "/content/module-8/kombo-i-urovni.md",
      "exam": "/content/exams/module-8-kombo-i-urovni.md",
      "key": "_content_module-8_kombo-i-urovni_md"
-    },
-    {
-     "title": "Программа по 10 критериям — карта и логика",
-     "doc": "/content/module-8/desyat-kriteriev.md",
-     "exam": "/content/exams/module-8-desyat-kriteriev.md",
-     "key": "_content_module-8_desyat-kriteriev_md"
-    },
-    {
-     "title": "Банк программ лечения — 10 эталонов сборки",
-     "doc": "/content/module-8/bank-programm-lecheniya.md",
-     "exam": "/content/exams/module-8-bank-programm-lecheniya.md",
-     "key": "_content_module-8_bank-programm-lecheniya_md"
     },
     {
      "title": "Исцеление за секунды — часть 1: доктрина, плотность, почему мгновенно",
@@ -624,29 +712,31 @@
      "doc": "/content/module-8/istselenie-za-sekundy-4-gotovnost-granicy.md",
      "exam": "/content/exams/module-8-istselenie-4.md",
      "key": "_content_module-8_istselenie-za-sekundy-4-gotovnost-granicy_md"
-    }
-   ]
-  },
-  {
-   "id": 10,
-   "title": "Истинное vs ложное заклинание",
-   "level": "Продвинутый",
-   "doc": "/content/module-9/index.md",
-   "lessons": [
+    },
+    {
+     "title": "Сравнение сильного со слабым — часть 1: намерение, визуализация, концентрация, голос, энергия",
+     "doc": "/content/module-5/sravnenie-silnogo-so-slabym.md",
+     "exam": "/content/exams/module-5-sravnenie-silnogo-so-slabym.md",
+     "key": "_content_module-5_sravnenie-silnogo-so-slabym_md"
+    },
+    {
+     "title": "Сравнение сильного со слабым — часть 2: воля, связь, спецификация, выводы",
+     "doc": "/content/module-5/sravnenie-2-volya-svyaz-specifikaciya-vyvody.md",
+     "exam": "/content/exams/module-5-sravnenie-2.md",
+     "key": "_content_module-5_sravnenie-2-volya-svyaz-specifikaciya-vyvody_md"
+    },
+    {
+     "title": "Корень влияния — четыре уровня, три намерения и границы метода",
+     "doc": "/content/module-5/koren-vliyaniya.md",
+     "exam": "/content/exams/module-5-koren-vliyaniya.md",
+     "key": "_content_module-5_koren-vliyaniya_md"
+    },
     {
      "title": "Чужой язык — энергетика, биополе и «Космос» глазами ракыя",
      "doc": "/content/module-9/chuzhoy-yazyk.md",
      "exam": "/content/exams/module-9-chuzhoy-yazyk.md",
      "key": "_content_module-9_chuzhoy-yazyk_md"
-    }
-   ]
-  },
-  {
-   "id": 11,
-   "title": "Истинный ракый vs лжеракый",
-   "level": "Продвинутый",
-   "doc": "/content/module-10/index.md",
-   "lessons": [
+    },
     {
      "title": "Лже-ракый: запреты и ошибки, недопустимые в практике рукьи",
      "doc": "/content/module-10/oshibki-i-zaprety-lzherakii.md",
@@ -670,56 +760,26 @@
      "doc": "/content/module-10/vnutrenniy-sabotazh.md",
      "exam": "/content/exams/module-10-vnutrenniy-sabotazh.md",
      "key": "_content_module-10_vnutrenniy-sabotazh_md"
-    }
-   ]
-  },
-  {
-   "id": 12,
-   "title": "Работа в системе RUKYA Pro",
-   "level": "Продвинутый",
-   "doc": "/content/module-11/index.md",
-   "lessons": [
-    {
-     "title": "Паспорт практики — ступени допуска лекаря-ракийи",
-     "doc": "/content/reference/praktika-passport.md",
-     "exam": "/content/exams/module-11-praktika-passport.md",
-     "key": "_content_reference_praktika-passport_md"
     },
     {
      "title": "Защита и конфиденциальность данных пациента в RUKYA Pro",
      "doc": "/content/module-11/zashchita-dannykh-patsienta.md",
      "exam": "/content/exams/module-11-zashchita-dannykh-patsienta.md",
      "key": "_content_module-11_zashchita-dannykh-patsienta_md"
-    },
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Супервизия и аттестация",
+   "level": "Продвинутый",
+   "doc": "/content/module-12/index.md",
+   "lessons": [
     {
-     "title": "Специальные протоколы приёма — восемь специальных приложений",
-     "doc": "/content/module-11/specialnye-protokoly-priyoma.md",
-     "exam": "/content/exams/module-11-specialnye-protokoly-priyoma.md",
-     "key": "_content_module-11_specialnye-protokoly-priyoma_md"
-    },
-    {
-     "title": "Один точный проход: протокол 25 минут и четыре маркера",
-     "doc": "/content/module-11/protokol-odnogo-chteniya.md",
-     "exam": "/content/exams/module-11-protokol-odnogo-chteniya.md",
-     "key": "_content_module-11_protokol-odnogo-chteniya_md"
-    },
-    {
-     "title": "Профили случая A/B/C, три окна проверки и карточка случая",
-     "doc": "/content/module-11/profili-sluchaev-i-okna-proverki.md",
-     "exam": "/content/exams/module-11-profili-sluchaev.md",
-     "key": "_content_module-11_profili-sluchaev-i-okna-proverki_md"
-    },
-    {
-     "title": "Дистанционный сеанс и самоисцеление: те же требования, другой адрес",
-     "doc": "/content/module-11/distancionnyy-seans-i-samoiscelenie.md",
-     "exam": "/content/exams/module-11-distancionnyy-seans.md",
-     "key": "_content_module-11_distancionnyy-seans-i-samoiscelenie_md"
-    },
-    {
-     "title": "Особые состояния: истихваз, рабт, родовое, колдовство смерти и дом",
-     "doc": "/content/module-11/osobye-sostoyaniya.md",
-     "exam": "/content/exams/module-11-osobye-sostoyaniya.md",
-     "key": "_content_module-11_osobye-sostoyaniya_md"
+     "title": "Паспорт практики — ступени допуска лекаря-ракийи",
+     "doc": "/content/reference/praktika-passport.md",
+     "exam": "/content/exams/module-11-praktika-passport.md",
+     "key": "_content_reference_praktika-passport_md"
     },
     {
      "title": "Финальный практикум-симуляция: один случай от Part 0 до защиты",
@@ -793,6 +853,145 @@
     "counter": null
    },
    {
+    "id": "m1-4",
+    "book": "/content/module-1/metod-taukhid.md",
+    "bookKey": "_content_module-1_metod-taukhid_md",
+    "title": "Уединение с таухидом",
+    "description": "Проведите 15 минут в уединении, размышляя над именами Аллаха по методу урока — аш-Шафи, аль-Кадир, аль-Муджиб. Запишите три наблюдения о своём состоянии до и после.",
+    "check": "После размышления при слове «аш-Шафи» приходит не определение, а уверенность.",
+    "type": "practice",
+    "duration": "15 мин",
+    "steps": [
+     "Уединитесь, отложите телефон, отмерьте пятнадцать минут.",
+     "Размышляйте над аш-Шафи: что значит, что исцеление — только у Него.",
+     "Перейдите к аль-Кадир, затем к аль-Муджиб.",
+     "Запишите три наблюдения о своём состоянии до и после."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах дал мне уверенность в том, что Он аш-Шафи — ×40",
+    "counter": null
+   },
+   {
+    "id": "m1-7",
+    "book": "/content/module-1/ehsan-i-sila.md",
+    "bookKey": "_content_module-1_ehsan-i-sila_md",
+    "title": "Намаз в эхсане",
+    "description": "Совершайте один намаз в день с полным присутствием — как будто видите Аллаха. Не добавляйте намазов, работайте с уже совершаемыми.",
+    "check": "Хотя бы в одном намазе вы ни разу не вспомнили о постороннем — от такбира до саляма.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Перед такбиром остановитесь и вспомните, перед Кем встаёте.",
+     "Совершите намаз, возвращая внимание каждый раз, как оно ушло.",
+     "После саляма отметьте, были ли посторонние мысли и на каком месте."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах принял этот намаз — ×10",
+    "counter": null
+   },
+   {
+    "id": "m2-1",
+    "book": "/content/module-2/dozvolennost-zaklinaniya.md",
+    "bookKey": "_content_module-2_dozvolennost-zaklinaniya_md",
+    "title": "Границы дозволенного",
+    "description": "Выпишите условия дозволенности рукьи из урока и проверьте по ним пять практик, которые вам встречались — у знакомых, в роликах, в интернете. Что проходит, что нет и почему.",
+    "check": "По каждой из пяти есть вывод с доводом, а не «мне кажется».",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [
+     "Выпишите условия дозволенности рукьи из урока.",
+     "Вспомните пять практик, которые вам встречались — у знакомых, в роликах, в интернете.",
+     "Проверьте каждую по условиям и запишите вывод вместе с доводом."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m2-11",
+    "book": "/content/module-2/istselyayu-koranom.md",
+    "bookKey": "_content_module-2_istselyayu-koranom_md",
+    "title": "Четыре довода наизусть",
+    "description": "Выпишите по памяти четыре довода первой главы: аль-Исра 17:82, Юнус 10:57, Фуссылят 41:44 и практику Пророка ﷺ. К каждому — одной строкой, что именно он доказывает. Затем сверьтесь с книгой и допишите то, что упустили.",
+    "check": "Все четыре названы без подсказки, и к каждому есть свой вывод, а не общий пересказ.",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [
+     "Закройте книгу и выпишите четыре довода по памяти.",
+     "К каждому — одной строкой, что он доказывает.",
+     "Откройте книгу и допишите то, что упустили."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах утвердил моё сердце на Его доводе — ×10",
+    "counter": null
+   },
+   {
+    "id": "m2-12",
+    "book": "/content/module-2/istselyayu-koranom.md",
+    "bookKey": "_content_module-2_istselyayu-koranom_md",
+    "title": "Три состояния сердца",
+    "description": "Возьмите таблицу второй главы — дозволенное «исцеляю Кораном», присвоение силы себе и вера в то, что Коран действует сам по себе. К каждому состоянию придумайте по две фразы, которые человек в нём произнёс бы вслух. Затем проверьте себя: какие из шести фраз вы сами когда-нибудь говорили или думали.",
+    "check": "Шесть фраз написаны, и честно отмечено, какие из них звучали у вас.",
+    "type": "reflection",
+    "duration": "30 мин",
+    "steps": [
+     "Выпишите три состояния сердца из таблицы второй главы.",
+     "К каждому — две фразы, которые человек в нём сказал бы вслух.",
+     "Отметьте честно, какие из шести звучали у вас самих."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах очистил моё намерение от присвоения — ×10",
+    "counter": null
+   },
+   {
+    "id": "m2-13",
+    "book": "/content/module-2/istselyayu-koranom.md",
+    "bookKey": "_content_module-2_istselyayu-koranom_md",
+    "title": "Объяснить пациенту вслух",
+    "description": "Проговорите вслух, как будто перед вами человек, который спросил: «А как Коран лечит?» Уложитесь в пять-шесть предложений: Аллах Сам назвал Книгу исцелением, я не источник, моё дело — взять причину и просить Его. Повторяйте ежедневно, пока объяснение не пойдёт без запинки и без богословских терминов.",
+    "check": "Объяснение произносится слитно, своими словами, и в нём ни разу не прозвучало ни «я вылечу», ни «у меня особая сила».",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Проговорите объяснение вслух, будто перед вами пациент.",
+     "Уложитесь в пять-шесть предложений и без терминов.",
+     "Проверьте, не прозвучало ли «я вылечу» или «у меня особая сила»."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах дал мне объяснять ясно и без обещаний — ×10",
+    "counter": null
+   },
+   {
+    "id": "m1-zaxab-vhod-cenz",
+    "book": "/content/module-1/vhodnyy-cenz-chteniya.md",
+    "bookKey": "_content_module-1_vhodnyy-cenz-chteniya_md",
+    "title": "Запись результата входного ценза",
+    "description": "Выполните самопроверку чтения по уроку и запишите зону результата, конкретные ошибки и следующий шаг допуска. Проверку проходите сами; другого человека не оценивайте.",
+    "check": "Записаны зона, три наблюдаемые ошибки и следующий шаг по правилам урока; нет самостоятельного допуска к работе над другими при красной зоне.",
+    "type": "practice",
+    "duration": "30 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m1-zaxab-sut-istiny",
+    "book": "/content/module-9/sut-istiny.md",
+    "bookKey": "_content_module-9_sut-istiny_md",
+    "title": "Практический разбор: Что есть истина",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Кто назван «аль-Хакк» (Истина) в Коране? Почему Коран называется истиной (аль-хакк)? Какой аят подтверждает, что Сунна — это разъяснение истины, а не слова от себя? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "2": [
+   {
     "id": "m1-1",
     "book": "/content/module-1/yakyn.md",
     "bookKey": "_content_module-1_yakyn_md",
@@ -849,25 +1048,6 @@
     "counter": null
    },
    {
-    "id": "m1-4",
-    "book": "/content/module-1/metod-taukhid.md",
-    "bookKey": "_content_module-1_metod-taukhid_md",
-    "title": "Уединение с таухидом",
-    "description": "Проведите 15 минут в уединении, размышляя над именами Аллаха по методу урока — аш-Шафи, аль-Кадир, аль-Муджиб. Запишите три наблюдения о своём состоянии до и после.",
-    "check": "После размышления при слове «аш-Шафи» приходит не определение, а уверенность.",
-    "type": "practice",
-    "duration": "15 мин",
-    "steps": [
-     "Уединитесь, отложите телефон, отмерьте пятнадцать минут.",
-     "Размышляйте над аш-Шафи: что значит, что исцеление — только у Него.",
-     "Перейдите к аль-Кадир, затем к аль-Муджиб.",
-     "Запишите три наблюдения о своём состоянии до и после."
-    ],
-    "days": 0,
-    "intent": "Ради Аллаха, чтобы Аллах дал мне уверенность в том, что Он аш-Шафи — ×40",
-    "counter": null
-   },
-   {
     "id": "m1-5",
     "book": "/content/module-1/fundamentalnoe.md",
     "bookKey": "_content_module-1_fundamentalnoe_md",
@@ -902,24 +1082,6 @@
     ],
     "days": 7,
     "intent": "Ради Аллаха, чтобы Аллах дал мне проницательность в том, что я вижу — ×40",
-    "counter": null
-   },
-   {
-    "id": "m1-7",
-    "book": "/content/module-1/ehsan-i-sila.md",
-    "bookKey": "_content_module-1_ehsan-i-sila_md",
-    "title": "Намаз в эхсане",
-    "description": "Совершайте один намаз в день с полным присутствием — как будто видите Аллаха. Не добавляйте намазов, работайте с уже совершаемыми.",
-    "check": "Хотя бы в одном намазе вы ни разу не вспомнили о постороннем — от такбира до саляма.",
-    "type": "daily",
-    "duration": "7 дней",
-    "steps": [
-     "Перед такбиром остановитесь и вспомните, перед Кем встаёте.",
-     "Совершите намаз, возвращая внимание каждый раз, как оно ушло.",
-     "После саляма отметьте, были ли посторонние мысли и на каком месте."
-    ],
-    "days": 7,
-    "intent": "Ради Аллаха, чтобы Аллах принял этот намаз — ×10",
     "counter": null
    },
    {
@@ -1003,81 +1165,121 @@
     "days": 0,
     "intent": "Ради Аллаха, чтобы Аллах [что сделал] [кому] — ×40. Это каркас: подставь своё место и имя.",
     "counter": null
-   }
-  ],
-  "2": [
+   },
    {
-    "id": "m2-11",
-    "book": "/content/module-2/istselyayu-koranom.md",
-    "bookKey": "_content_module-2_istselyayu-koranom_md",
-    "title": "Четыре довода наизусть",
-    "description": "Выпишите по памяти четыре довода первой главы: аль-Исра 17:82, Юнус 10:57, Фуссылят 41:44 и практику Пророка ﷺ. К каждому — одной строкой, что именно он доказывает. Затем сверьтесь с книгой и допишите то, что упустили.",
-    "check": "Все четыре названы без подсказки, и к каждому есть свой вывод, а не общий пересказ.",
+    "id": "m12-1",
+    "book": "/content/module-12/pryamoy-put.md",
+    "bookKey": "_content_module-12_pryamoy-put_md",
+    "title": "Четыре элемента без домысла",
+    "description": "Письменно разберите учебную формулировку намерения по четырём элементам: действие, приписываемое Аллаху; средство в рамках таухида; место; необязательное уточнение вида. Составьте вариант без уточнения вида и объясните, почему боль не позволяет вывести диагноз.",
+    "check": "Названы четыре элемента, необязательность вида и граница диагностики; оценивается полнота записи, а не облегчение симптомов или сила веры.",
     "type": "reflection",
     "duration": "25 мин",
-    "steps": [
-     "Закройте книгу и выпишите четыре довода по памяти.",
-     "К каждому — одной строкой, что он доказывает.",
-     "Откройте книгу и допишите то, что упустили."
-    ],
-    "days": 0,
-    "intent": "Ради Аллаха, чтобы Аллах утвердил моё сердце на Его доводе — ×10",
-    "counter": null
-   },
-   {
-    "id": "m2-12",
-    "book": "/content/module-2/istselyayu-koranom.md",
-    "bookKey": "_content_module-2_istselyayu-koranom_md",
-    "title": "Три состояния сердца",
-    "description": "Возьмите таблицу второй главы — дозволенное «исцеляю Кораном», присвоение силы себе и вера в то, что Коран действует сам по себе. К каждому состоянию придумайте по две фразы, которые человек в нём произнёс бы вслух. Затем проверьте себя: какие из шести фраз вы сами когда-нибудь говорили или думали.",
-    "check": "Шесть фраз написаны, и честно отмечено, какие из них звучали у вас.",
-    "type": "reflection",
-    "duration": "30 мин",
-    "steps": [
-     "Выпишите три состояния сердца из таблицы второй главы.",
-     "К каждому — две фразы, которые человек в нём сказал бы вслух.",
-     "Отметьте честно, какие из шести звучали у вас самих."
-    ],
-    "days": 0,
-    "intent": "Ради Аллаха, чтобы Аллах очистил моё намерение от присвоения — ×10",
-    "counter": null
-   },
-   {
-    "id": "m2-13",
-    "book": "/content/module-2/istselyayu-koranom.md",
-    "bookKey": "_content_module-2_istselyayu-koranom_md",
-    "title": "Объяснить пациенту вслух",
-    "description": "Проговорите вслух, как будто перед вами человек, который спросил: «А как Коран лечит?» Уложитесь в пять-шесть предложений: Аллах Сам назвал Книгу исцелением, я не источник, моё дело — взять причину и просить Его. Повторяйте ежедневно, пока объяснение не пойдёт без запинки и без богословских терминов.",
-    "check": "Объяснение произносится слитно, своими словами, и в нём ни разу не прозвучало ни «я вылечу», ни «у меня особая сила».",
-    "type": "daily",
-    "duration": "7 дней",
-    "steps": [
-     "Проговорите объяснение вслух, будто перед вами пациент.",
-     "Уложитесь в пять-шесть предложений и без терминов.",
-     "Проверьте, не прозвучало ли «я вылечу» или «у меня особая сила»."
-    ],
-    "days": 7,
-    "intent": "Ради Аллаха, чтобы Аллах дал мне объяснять ясно и без обещаний — ×10",
-    "counter": null
-   },
-   {
-    "id": "m2-1",
-    "book": "/content/module-2/dozvolennost-zaklinaniya.md",
-    "bookKey": "_content_module-2_dozvolennost-zaklinaniya_md",
-    "title": "Границы дозволенного",
-    "description": "Выпишите условия дозволенности рукьи из урока и проверьте по ним пять практик, которые вам встречались — у знакомых, в роликах, в интернете. Что проходит, что нет и почему.",
-    "check": "По каждой из пяти есть вывод с доводом, а не «мне кажется».",
-    "type": "reflection",
-    "duration": "25 мин",
-    "steps": [
-     "Выпишите условия дозволенности рукьи из урока.",
-     "Вспомните пять практик, которые вам встречались — у знакомых, в роликах, в интернете.",
-     "Проверьте каждую по условиям и запишите вывод вместе с доводом."
-    ],
+    "steps": [],
     "days": 0,
     "intent": null,
     "counter": null
    },
+   {
+    "id": "m12-2",
+    "book": "/content/module-12/puti-vliyaniya.md",
+    "bookKey": "_content_module-12_puti-vliyaniya_md",
+    "title": "Духовный словарь и границы вывода",
+    "description": "Составьте две колонки: авторские образы «сабиль / пути влияния» и то, чего они не устанавливают об анатомии или диагнозе. Разберите одну мольбу: к Кому она обращена. Перепишите утверждение «боль доказывает вид поражения» как осторожное наблюдение без диагноза.",
+    "check": "Есть две колонки, разбор обращения к Аллаху и исправленная фраза; оценивается понимание границ, а не результат чтения.",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m12-3",
+    "book": "/content/module-12/podgotovka-pryamoy-put.md",
+    "bookKey": "_content_module-12_podgotovka-pryamoy-put_md",
+    "title": "План подготовки до встречи",
+    "description": "Напишите учебный план подготовки ДО встречи: повторение основ веры и намерения, понимание мольб, согласие и границы безопасности. Отдельно опишите, что относится к самой встрече, и поясните, почему длительность подготовки не гарантирует исцеления. Реальный сеанс для задания не нужен.",
+    "check": "Подготовка отделена от встречи, указаны границы безопасности и отсутствие гарантии результата; выполнением считается письменный план, не клинический эффект.",
+    "type": "reflection",
+    "duration": "30 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m12-4",
+    "book": "/content/reference/pryamoy-put-svodka.md",
+    "bookKey": "_content_reference_pryamoy-put-svodka_md",
+    "title": "Шпаргалка своими руками",
+    "description": "Соберите карточку-шпаргалку по сводке: четыре элемента, три направления, формулы и запретные фразы. Уместите на одну страницу, чтобы прочитать перед сеансом за минуту. Отметьте строки, которые ещё непонятны, и разберите их по книгам трилогии.",
+    "check": "Карточка умещается на страницу, включает все разделы и список разобранных строк; оценивается полнота, а не результат сеанса.",
+    "type": "reflection",
+    "duration": "30 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m2-zaxab-volevoy-akt-2-zaryazhenie-posledovatelnost",
+    "book": "/content/module-1/volevoy-akt-2-zaryazhenie-posledovatelnost.md",
+    "bookKey": "_content_module-1_volevoy-akt-2-zaryazhenie-posledovatelnost_md",
+    "title": "Практический разбор: Волевой акт",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Сколько повторений намерения в сердце рекомендуется для «заряжения» перед сеансом рукьи? Какие три ступени заряжения намерения названы в учебнике, в правильном порядке? С каких трёх ступеней начинается полная последовательность волевого акта сеанса? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m2-zaxab-volevoy-akt-3-trenirovki-razrushiteli-urovni",
+    "book": "/content/module-1/volevoy-akt-3-trenirovki-razrushiteli-urovni.md",
+    "bookKey": "_content_module-1_volevoy-akt-3-trenirovki-razrushiteli-urovni_md",
+    "title": "Практический разбор: Волевой акт",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какие шесть разрушителей намерения перечислены в уроке? Какой уровень прогресса ученика описан как «намерение и действие слились, каждое слово несёт всю силу»? Чему учит тренировка 1 — «Молчаливое повторение»? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m2-zaxab-volevoy-akt-4-sovety-molby-spisok",
+    "book": "/content/module-1/volevoy-akt-4-sovety-molby-spisok.md",
+    "bookKey": "_content_module-1_volevoy-akt-4-sovety-molby-spisok_md",
+    "title": "Практический разбор: Волевой акт",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Что рекомендуется делать, если во время рукьи намерение начинает уходить? Какую мольбу велено читать перед каждым сеансом рукьи? Что советует учебник говорить после успешного сеанса и почему? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m2-zaxab-shkala-usileniya-dushi",
+    "book": "/content/module-1/shkala-usileniya-dushi.md",
+    "bookKey": "_content_module-1_shkala-usileniya-dushi_md",
+    "title": "Практический разбор: Шкала усиления души",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Чем шкала усиления души является по замыслу автора? Какие три оси образуют шкалу? В чём правило порядка между душой и влиянием? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "3": [
    {
     "id": "m2-2",
     "book": "/content/module-2/chto-takoe-zaklinanie.md",
@@ -1247,9 +1449,7 @@
     "days": 0,
     "intent": null,
     "counter": null
-   }
-  ],
-  "3": [
+   },
    {
     "id": "m3-1",
     "book": "/content/reference/organs.md",
@@ -1268,6 +1468,69 @@
     "intent": "Ради Аллаха, чтобы Аллах научил меня называть место точно — ×10",
     "counter": null
    },
+   {
+    "id": "m5-4",
+    "book": "/content/module-5/prodvinutoe-zaklinanie-posobie.md",
+    "bookKey": "_content_module-5_prodvinutoe-zaklinanie-posobie_md",
+    "title": "Составное заклинание «Аллязи»",
+    "description": "Составьте развёрнутое заклинание методом «Аллязи» под конкретную нужду, соединив три атрибута Аллаха из разных аятов.",
+    "check": "Заклинание составлено, и для каждого атрибута назван его аят.",
+    "type": "practice",
+    "duration": "30 мин",
+    "steps": [
+     "Назовите конкретную нужду.",
+     "Найдите три атрибута Аллаха в трёх разных аятах.",
+     "Соедините их в одно развёрнутое заклинание.",
+     "Проверьте себя: для каждого атрибута назовите аят по памяти."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах [что просишь] тремя именами из этих аятов — ×40",
+    "counter": null
+   },
+   {
+    "id": "m3-zaxab-vidy-zaklinaniy-2-proiznoshenie-poryadok",
+    "book": "/content/module-2/vidy-zaklinaniy-2-proiznoshenie-poryadok.md",
+    "bookKey": "_content_module-2_vidy-zaklinaniy-2-proiznoshenie-poryadok_md",
+    "title": "Практический разбор: Виды заклинаний",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какие пять факторов определяют интенсивность (силу) заклинания? Согласно уроку, какое условие необходимо для полной силы заклинания при произнесении вслух? Пациенту стало легче от рукьи, но лекарь заметил: сам читал «витая мыслью», сердце было не здесь. По пяти факторам силы — что просело и что делать в следующем сеансе? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m3-zaxab-allyazi-atributy",
+    "book": "/content/reference/allyazi-atributy.md",
+    "bookKey": "_content_reference_allyazi-atributy_md",
+    "title": "Практический разбор: Каталог атрибутов «Аллязи» (Справочник)",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Сколько атрибутов из аятов собрано в своде каталога? Какой атрибут подбирается против закопанного и подвешенного колдовства? Какой атрибут силён против вдутого колдовства на узлах? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m3-zaxab-prodvinutoe-zaklinanie-posobie-2-deystvie-kombo",
+    "book": "/content/module-5/prodvinutoe-zaklinanie-posobie-2-deystvie-kombo.md",
+    "bookKey": "_content_module-5_prodvinutoe-zaklinanie-posobie-2-deystvie-kombo_md",
+    "title": "Практический разбор: Пособие по продвинутому заклинанию",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Чем отличается заклинание на действие (с «ли» — لِـ) от обычного заклинания (с «мин» — مِنْ)? Что такое комбинированная формула максимальной мощи? Нужно не защититься, а развязать узел сихра. Какую конструкцию выбираешь по уроку? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "4": [
    {
     "id": "m3-2",
     "book": "/content/module-3/vliyanie-emots.md",
@@ -1321,9 +1584,7 @@
     "days": 7,
     "intent": "Ради Аллаха, чтобы Аллах защитил мою [орган] от страсти — ×40",
     "counter": null
-   }
-  ],
-  "4": [
+   },
    {
     "id": "m4-1",
     "book": "/content/module-4/diagnostika.md",
@@ -1398,84 +1659,51 @@
     "days": 0,
     "intent": "Ради Аллаха, чтобы Аллах отпустил зажим в моей [место] — ×40",
     "counter": null
+   },
+   {
+    "id": "m4-zaxab-bank-casey",
+    "book": "/content/module-4/bank-casey.md",
+    "bookKey": "_content_module-4_bank-casey_md",
+    "title": "Три диагностических разбора",
+    "description": "Решите три кейса из банка: сначала запишите ответы и доводы, затем сверьте с эталоном и исправьте ошибки.",
+    "check": "Для каждого кейса названы данные, рабочий вывод и довод; есть разбор расхождения с эталоном без диагноза по одному признаку.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m4-zaxab-aktivizatsiya",
+    "book": "/content/module-4/aktivizatsiya-vs-ugroza.md",
+    "bookKey": "_content_module-4_aktivizatsiya-vs-ugroza_md",
+    "title": "Граница активизации и угрозы",
+    "description": "Разберите три ситуации из урока и запишите: признаки, решение о продолжении или остановке, точную фразу пациенту.",
+    "check": "В каждой ситуации сначала проверены стоп-признаки; при угрозе выбрана безопасная пауза, а не усиление сеанса.",
+    "type": "reflection",
+    "duration": "30 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m4-zaxab-profili",
+    "book": "/content/module-11/profili-sluchaev-i-okna-proverki.md",
+    "bookKey": "_content_module-11_profili-sluchaev-i-okna-proverki_md",
+    "title": "Профили и окна проверки",
+    "description": "Составьте три обезличенные карточки A/B/C по образцу урока и назначьте окна проверки 72 часа, 7 и 21 день.",
+    "check": "Каждый профиль обоснован данными случая; для каждого указаны три окна и критерий пересмотра, без обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
    }
   ],
   "5": [
-   {
-    "id": "m5-13",
-    "book": "/content/module-5/istselyayu-koranom-praktika.md",
-    "bookKey": "_content_module-5_istselyayu-koranom-praktika_md",
-    "title": "Заряжение «Исцеляю Кораном»",
-    "description": "Ежедневно: прочитайте один раз аят аль-Исра 17:82 для себя, затем зарядите намерение «Исцеляю Кораном — Аллах исцеляет через него» до плотности, затем прочитайте Аят аль-Курси три раза, не отпуская намерение.",
-    "check": "К концу недели плотность приходит за меньшее число повторений, чем в первый день, и вторая половина формулы не выпадает.",
-    "type": "daily",
-    "duration": "7 дней",
-    "steps": [
-     "Прочитайте аят аль-Исра 17:82 один раз — для себя, не на пациента.",
-     "Зарядите намерение «Исцеляю Кораном — Аллах исцеляет через него» до плотности.",
-     "Прочитайте Аят аль-Курси три раза, не отпуская намерение.",
-     "Запишите, за сколько повторений сегодня пришла плотность."
-    ],
-    "days": 7,
-    "intent": "Исцеляю Кораном — Аллах исцеляет через него. ×40, до плотности",
-    "counter": null
-   },
-   {
-    "id": "m5-14",
-    "book": "/content/module-5/istselyayu-koranom-praktika.md",
-    "bookKey": "_content_module-5_istselyayu-koranom-praktika_md",
-    "title": "Формула на три уровня",
-    "description": "Возьмите четыре случая — боль в органе, сглаз, наступленное колдовство, прикосновение джинна — и для каждого напишите формулу на трёх уровнях: общем, специфическом и максимально точном. В каждой должны стоять обе части: «исцеляю» и «Аллах исцеляет посредством него».",
-    "check": "Двенадцать формул написаны, и ни в одной не выпала вторая часть.",
-    "type": "reflection",
-    "duration": "40 мин",
-    "steps": [
-     "Возьмите четыре случая: боль, сглаз, колдовство, прикосновение джинна.",
-     "К каждому — формула на трёх уровнях: общий, специфический, точный.",
-     "Проверьте каждую: стоят ли обе части — «исцеляю» и «Аллах исцеляет посредством него»."
-    ],
-    "days": 0,
-    "intent": "Ради Аллаха, чтобы Аллах дал мне точность в словах — ×10",
-    "counter": null
-   },
-   {
-    "id": "m5-15",
-    "book": "/content/module-5/istselyayu-koranom-praktika.md",
-    "bookKey": "_content_module-5_istselyayu-koranom-praktika_md",
-    "title": "Полная серия на себе",
-    "description": "Проведите на себе всю серию десятой главы по звеньям: утверждение основы, заряжение, направление взгляда, общий уровень, аяты, точный уровень, мольба с доводом, печать двадцать раз, возврат к смирению. Один орган или один недуг за занятие.",
-    "check": "Все девять звеньев пройдены по порядку, ни одно не пропущено, и после печати прозвучал возврат к смирению.",
-    "type": "practice",
-    "duration": "10 дней",
-    "steps": [
-     "Первое звено: аят-основа, прибежище, бисмиллях.",
-     "Второе: заряжение до плотности.",
-     "Третье-шестое: взгляд, общий уровень, аяты семь раз, точный уровень.",
-     "Седьмое-девятое: мольба с доводом, печать двадцать раз, возврат к смирению."
-    ],
-    "days": 10,
-    "intent": "Исцеляю Кораном мою [орган] — Аллах исцеляет через него. ×40",
-    "counter": null
-   },
-   {
-    "id": "m5-1",
-    "book": "/content/module-5/ochishchenie-razuma.md",
-    "bookKey": "_content_module-5_ochishchenie-razuma_md",
-    "title": "Очищение разума",
-    "description": "Примените авторские формулы по функциям психики: выберите одну функцию — память, сон, спокойствие, решимость — и работайте с ней всю неделю.",
-    "check": "Формула произносится по памяти, состояние до и после записано.",
-    "type": "daily",
-    "duration": "7 дней",
-    "steps": [
-     "Выберите одну функцию: память, сон, спокойствие или решимость.",
-     "Запишите её состояние на сегодня.",
-     "Прочитайте формулу этой функции.",
-     "Вечером запишите изменение."
-    ],
-    "days": 7,
-    "intent": "Ради Аллаха, чтобы Аллах вернул мне [сон, память, спокойствие, решимость] — ×40",
-    "counter": null
-   },
    {
     "id": "m5-2",
     "book": "/content/module-5/hitab-al-isaba.md",
@@ -1497,6 +1725,83 @@
     "counter": null
    },
    {
+    "id": "m5-zaxab-hitab-al-isaba-2-protokol-seansa",
+    "book": "/content/module-5/hitab-al-isaba-2-protokol-seansa.md",
+    "bookKey": "_content_module-5_hitab-al-isaba-2-protokol-seansa_md",
+    "title": "Практический разбор: Хитаб аль-Исаба",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: На чём основана оценка результата сеанса по методу Хитаб аль-Исаба? В каком порядке ведётся основной цикл протокола полного сеанса? Что выполняют до начала сеанса по протоколу? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m5-zaxab-hitab-al-isaba-3-adresat-i-diagnostika",
+    "book": "/content/module-5/hitab-al-isaba-3-adresat-i-diagnostika.md",
+    "bookKey": "_content_module-5_hitab-al-isaba-3-adresat-i-diagnostika_md",
+    "title": "Практический разбор: Хитаб аль-Исаба",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Каков порядок приоритета трёх адресатов обращения в методе? Что происходит, если практикующий «разговаривает с болезнью» как с самостоятельной силой? Какие четыре условия действительности метода названы в главе? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m5-zaxab-hitab-al-isaba-4-13-shagov-i-tahrizh",
+    "book": "/content/module-5/hitab-al-isaba-4-13-shagov-i-tahrizh.md",
+    "bookKey": "_content_module-5_hitab-al-isaba-4-13-shagov-i-tahrizh_md",
+    "title": "Практический разбор: Хитаб аль-Исаба",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Сколько шагов содержит полный протокол чтения и сколько — универсальный цикл? В чём смысл «формулы удара»: почему между аятом и заклинанием не должно быть паузы? Сколько раз повторяется связка «фрагмент + формула» и когда число увеличивают? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m5-zaxab-hitab-al-isaba-5-formula-i-konstruktor",
+    "book": "/content/module-5/hitab-al-isaba-5-formula-i-konstruktor.md",
+    "bookKey": "_content_module-5_hitab-al-isaba-5-formula-i-konstruktor_md",
+    "title": "Практический разбор: Хитаб аль-Исаба",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Из каких пяти частей состоит полная формула? Что происходит, если при чтении формулы не держать в уме предмет и место? Какие шесть пунктов проверяют до чтения формулы? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "6": [
+   {
+    "id": "m5-1",
+    "book": "/content/module-5/ochishchenie-razuma.md",
+    "bookKey": "_content_module-5_ochishchenie-razuma_md",
+    "title": "Очищение разума",
+    "description": "Примените авторские формулы по функциям психики: выберите одну функцию — память, сон, спокойствие, решимость — и работайте с ней всю неделю.",
+    "check": "Формула произносится по памяти, состояние до и после записано.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Выберите одну функцию: память, сон, спокойствие или решимость.",
+     "Запишите её состояние на сегодня.",
+     "Прочитайте формулу этой функции.",
+     "Вечером запишите изменение."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах вернул мне [сон, память, спокойствие, решимость] — ×40",
+    "counter": null
+   },
+   {
     "id": "m5-3",
     "book": "/content/module-5/zaklinaniya-na-organy.md",
     "bookKey": "_content_module-5_zaklinaniya-na-organy_md",
@@ -1515,173 +1820,105 @@
     "counter": null
    },
    {
-    "id": "m5-4",
-    "book": "/content/module-5/prodvinutoe-zaklinanie-posobie.md",
-    "bookKey": "_content_module-5_prodvinutoe-zaklinanie-posobie_md",
-    "title": "Составное заклинание «Аллязи»",
-    "description": "Составьте развёрнутое заклинание методом «Аллязи» под конкретную нужду, соединив три атрибута Аллаха из разных аятов.",
-    "check": "Заклинание составлено, и для каждого атрибута назван его аят.",
-    "type": "practice",
-    "duration": "30 мин",
-    "steps": [
-     "Назовите конкретную нужду.",
-     "Найдите три атрибута Аллаха в трёх разных аятах.",
-     "Соедините их в одно развёрнутое заклинание.",
-     "Проверьте себя: для каждого атрибута назовите аят по памяти."
-    ],
-    "days": 0,
-    "intent": "Ради Аллаха, чтобы Аллах [что просишь] тремя именами из этих аятов — ×40",
-    "counter": null
-   },
-   {
-    "id": "m5-5",
-    "book": "/content/module-5/sravnenie-silnogo-so-slabym.md",
-    "bookKey": "_content_module-5_sravnenie-silnogo-so-slabym_md",
-    "title": "Разбор по восьми компонентам",
-    "description": "После каждого своего чтения оценивайте себя по восьми компонентам от 0 до 10 — по состоянию во время чтения, а не по результату. Записывайте. Через неделю найдите самый низкий.",
-    "check": "Вы называете свой слабейший компонент по имени и работаете именно над ним, а не над тем, что и так получается.",
-    "type": "daily",
-    "duration": "7 дней",
-    "steps": [
-     "Проведите чтение.",
-     "Сразу после оцените себя по восьми компонентам от 0 до 10 — по состоянию во время чтения, не по результату.",
-     "Запишите оценки.",
-     "В конце недели найдите самый низкий компонент и работайте с ним."
-    ],
-    "days": 7,
-    "intent": "Ради Аллаха, чтобы Аллах показал мне мой слабейший компонент — ×10",
-    "counter": null
-   },
-   {
-    "id": "m5-6",
-    "book": "/content/module-5/protiv-istoshcheniya.md",
-    "bookKey": "_content_module-5_protiv-istoshcheniya_md",
-    "title": "Формулы против истощения",
-    "description": "Выучите три формулы из тринадцати — те, что подходят под ваше состояние. Читайте ежедневно с удержанием намерения.",
-    "check": "Три формулы читаются наизусть, и вы объясняете, почему выбрали именно их.",
-    "type": "daily",
-    "duration": "7 дней",
-    "steps": [
-     "Прочитайте тринадцать формул и выберите три под своё состояние.",
-     "Запишите, почему именно эти.",
-     "Читайте их ежедневно, удерживая намерение."
-    ],
-    "days": 7,
-    "intent": "Ради Аллаха, чтобы Аллах восполнил мои силы — ×40",
-    "counter": null
-   },
-   {
-    "id": "m5-7",
-    "book": "/content/module-5/lecheniya-sglaz.md",
-    "bookKey": "_content_module-5_lecheniya-sglaz_md",
-    "title": "Программа очищения водой",
-    "description": "Проведите на себе полную программу лечения водой по уроку — от заклинания воды до завершения.",
-    "check": "Программа пройдена целиком, ни один шаг не пропущен и не переставлен.",
-    "type": "practice",
-    "duration": "3 дня",
-    "steps": [
-     "Заклинайте воду по уроку.",
-     "Пройдите программу по шагам, не переставляя их местами.",
-     "Завершите так, как указано, и отметьте день."
-    ],
-    "days": 3,
-    "intent": "Ради Аллаха, чтобы Аллах сделал эту воду исцелением и снял с меня сглаз — ×40",
-    "counter": null
-   },
-   {
-    "id": "m5-8",
-    "book": "/content/module-5/sikhr-sglaz-posobie.md",
-    "bookKey": "_content_module-5_sikhr-sglaz-posobie_md",
-    "title": "Различение сихра, сглаза и зависти",
-    "description": "Составьте таблицу различий: признак → сихр, сглаз или зависть. Минимум пятнадцать признаков. Затем проверьте по ней описание из опроса Модуля 4.",
-    "check": "По таблице вы отличаете три поражения, не заглядывая в урок.",
+    "id": "m6-zaxab-zaklinaniya-na-organy-katalog-1",
+    "book": "/content/reference/zaklinaniya-na-organy-katalog-1.md",
+    "bookKey": "_content_reference_zaklinaniya-na-organy-katalog-1_md",
+    "title": "Практический разбор: Каталог по видам колдовства",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Как входит наступленное колдовство (сихр аль-маршуш) в тело человека? Какой аят особенно подходит для наступленного колдовства и содержит слова «куда бы он ни пришёл»? Какой порядок чтения рекомендуется при съеденном колдовстве (сихр аль-ма'куль)? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
     "type": "reflection",
     "duration": "35 мин",
-    "steps": [
-     "Выпишите признаки сихра.",
-     "Выпишите признаки сглаза.",
-     "Выпишите признаки зависти — всего не менее пятнадцати строк.",
-     "Проверьте по таблице описание из опроса Модуля 4."
-    ],
+    "steps": [],
     "days": 0,
     "intent": null,
     "counter": null
    },
    {
-    "id": "m5-9",
-    "book": "/content/module-5/rukiya-sikhr.md",
-    "bookKey": "_content_module-5_rukiya-sikhr_md",
-    "title": "Краткий сеанс от колдовства",
-    "description": "Проведите на себе краткий сеанс по уроку, уложившись в отведённое время. Заранее распишите порядок, чтобы не выбирать по ходу.",
-    "check": "Сеанс уложился в срок, и ни разу не пришлось решать «что дальше» во время чтения.",
+    "id": "m6-zaxab-zaklinaniya-na-organy-katalog-2",
+    "book": "/content/reference/zaklinaniya-na-organy-katalog-2.md",
+    "bookKey": "_content_reference_zaklinaniya-na-organy-katalog-2_md",
+    "title": "Практический разбор: Каталог по видам колдовства",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какие основные органы поражаются при колдовстве на разлуку (сихр ат-тафрик)? Какой аят выбран основным против колдовства-приворота (сихр аль-махабба)? Каков путь поражения при колдовстве на помешательство (сихр аль-джунун)? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m6-zaxab-zaklinaniya-na-organy-katalog-3",
+    "book": "/content/reference/zaklinaniya-na-organy-katalog-3.md",
+    "bookKey": "_content_reference_zaklinaniya-na-organy-katalog-3_md",
+    "title": "Практический разбор: Каталог по видам колдовства",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Главный признак колдовства на болезнь (сихр аль-марад): Почему сглаз заклинают движением сверху вниз, от головы к стопам? Какой аят основной при прикосновении джинна (масс)? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m6-zaxab-hitab-biblioteka-formul",
+    "book": "/content/reference/hitab-biblioteka-formul.md",
+    "bookKey": "_content_reference_hitab-biblioteka-formul_md",
+    "title": "Практический разбор: Библиотека формул Хитаб аль-Исаба (Справочник)",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какие формулы библиотеки относятся к основе, а какие — к рабочим? Из каких четырёх шагов состоит разбор истихваза? Какое правило действует при навязчивых мыслях о самоубийстве? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m6-zaxab-hitab-prilozheniya",
+    "book": "/content/reference/hitab-prilozheniya.md",
+    "bookKey": "_content_reference_hitab-prilozheniya_md",
+    "title": "Практический разбор: Приложения Хитаб аль-Исаба",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Что означают термины «хитаб», «исаба», «истихваз», «рабт»? Какой маршрут предлагается новичку и что выполняется на десятый день? Как вести дневник, чтобы он работал, и почему без строки итога карточка не считается? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m6-zaxab-odno-chtenie",
+    "book": "/content/module-11/protokol-odnogo-chteniya.md",
+    "bookKey": "_content_module-11_protokol-odnogo-chteniya_md",
+    "title": "Сухой прогон одного точного прохода",
+    "description": "На одной учебной зоне выполните сухой прогон протокола 25 минут и отметьте четыре маркера без работы с пациентом.",
+    "check": "Протокол пройден по шагам, все четыре маркера записаны, нарушения и остановки разобраны.",
     "type": "practice",
-    "duration": "60 мин",
-    "steps": [
-     "Заранее распишите порядок сеанса целиком.",
-     "Засеките время.",
-     "Проведите сеанс, не выбирая по ходу, что дальше.",
-     "Отметьте, уложились ли и где сбились."
-    ],
-    "days": 0,
-    "intent": "Ради Аллаха, чтобы Аллах разрушил колдовство [вид] в [орган] у [имя] — ×70",
-    "counter": null
-   },
-   {
-    "id": "m5-10",
-    "book": "/content/module-5/dua-strasti.md",
-    "bookKey": "_content_module-5_dua-strasti_md",
-    "title": "Дуа укрепления супружества",
-    "description": "Выучите три дуа из десяти и читайте их за свою семью ежедневно, удерживая намерение на конкретной нужде.",
-    "check": "Три дуа читаются наизусть, намерение каждый раз названо конкретно.",
-    "type": "daily",
-    "duration": "10 дней",
-    "steps": [
-     "Выберите три дуа из десяти и выучите наизусть.",
-     "Перед чтением назовите нужду конкретно.",
-     "Прочитайте наизусть за свою семью."
-    ],
-    "days": 10,
-    "intent": "Ради Аллаха, чтобы Аллах вернул любовь между мной и [имя] — ×40",
-    "counter": null
-   },
-   {
-    "id": "m5-11",
-    "book": "/content/module-5/ubiranie-liniy.md",
-    "bookKey": "_content_module-5_ubiranie-liniy_md",
-    "title": "Порядок убирания линий",
-    "description": "Выпишите порядок работы по шагам и объясните, почему шаги идут именно в этом порядке и что будет, если их переставить.",
-    "check": "Порядок воспроизведён по памяти, и для каждого шага названа причина его места.",
-    "type": "reflection",
     "duration": "25 мин",
-    "steps": [
-     "Выпишите шаги работы по порядку.",
-     "Против каждого запишите, почему он стоит именно здесь.",
-     "Опишите, что произойдёт, если переставить два соседних шага."
-    ],
+    "steps": [],
     "days": 0,
     "intent": null,
     "counter": null
    },
    {
-    "id": "m5-12",
-    "book": "/content/module-5/metod-izbavleniya.md",
-    "bookKey": "_content_module-5_metod-izbavleniya_md",
-    "title": "Три ступени метода",
-    "description": "Разберите трёхступенчатый подход и составьте план сеанса для каждой ступени: что читается, сколько, при каком признаке переходить дальше.",
-    "check": "Для каждой ступени назван признак перехода, а не только содержание.",
-    "type": "reflection",
+    "id": "m6-zaxab-distancionno",
+    "book": "/content/module-11/distancionnyy-seans-i-samoiscelenie.md",
+    "bookKey": "_content_module-11_distancionnyy-seans-i-samoiscelenie_md",
+    "title": "Сухой прогон дистанционного сеанса",
+    "description": "Составьте сценарий дистанционного учебного сеанса: согласие, адрес, связь, чтение, стоп-правила и завершение. Проговорите его без пациента.",
+    "check": "Сценарий сохраняет все требования очного протокола и содержит действия при потере связи или ухудшении состояния.",
+    "type": "practice",
     "duration": "30 мин",
-    "steps": [
-     "Разберите три ступени метода.",
-     "Для каждой распишите, что читается и сколько.",
-     "Для каждой назовите признак, по которому переходят дальше."
-    ],
+    "steps": [],
     "days": 0,
     "intent": null,
     "counter": null
    }
   ],
-  "6": [
+  "7": [
    {
     "id": "m6-1",
     "book": "/content/reference/azkar.md",
@@ -1775,50 +2012,6 @@
     "days": 0,
     "intent": "Ради Аллаха, чтобы Аллах открыл этот замок — ×40",
     "counter": null
-   }
-  ],
-  "7": [
-   {
-    "id": "m12-1",
-    "book": "/content/module-12/pryamoy-put.md",
-    "bookKey": "_content_module-12_pryamoy-put_md",
-    "title": "Четыре элемента без домысла",
-    "description": "Письменно разберите учебную формулировку намерения по четырём элементам: действие, приписываемое Аллаху; средство в рамках таухида; место; необязательное уточнение вида. Составьте вариант без уточнения вида и объясните, почему боль не позволяет вывести диагноз.",
-    "check": "Названы четыре элемента, необязательность вида и граница диагностики; оценивается полнота записи, а не облегчение симптомов или сила веры.",
-    "type": "reflection",
-    "duration": "25 мин",
-    "steps": [],
-    "days": 0,
-    "intent": null,
-    "counter": null
-   },
-   {
-    "id": "m12-2",
-    "book": "/content/module-12/puti-vliyaniya.md",
-    "bookKey": "_content_module-12_puti-vliyaniya_md",
-    "title": "Духовный словарь и границы вывода",
-    "description": "Составьте две колонки: авторские образы «сабиль / пути влияния» и то, чего они не устанавливают об анатомии или диагнозе. Разберите одну мольбу: к Кому она обращена. Перепишите утверждение «боль доказывает вид поражения» как осторожное наблюдение без диагноза.",
-    "check": "Есть две колонки, разбор обращения к Аллаху и исправленная фраза; оценивается понимание границ, а не результат чтения.",
-    "type": "reflection",
-    "duration": "25 мин",
-    "steps": [],
-    "days": 0,
-    "intent": null,
-    "counter": null
-   },
-   {
-    "id": "m12-3",
-    "book": "/content/module-12/podgotovka-pryamoy-put.md",
-    "bookKey": "_content_module-12_podgotovka-pryamoy-put_md",
-    "title": "План подготовки до встречи",
-    "description": "Напишите учебный план подготовки ДО встречи: повторение основ веры и намерения, понимание мольб, согласие и границы безопасности. Отдельно опишите, что относится к самой встрече, и поясните, почему длительность подготовки не гарантирует исцеления. Реальный сеанс для задания не нужен.",
-    "check": "Подготовка отделена от встречи, указаны границы безопасности и отсутствие гарантии результата; выполнением считается письменный план, не клинический эффект.",
-    "type": "reflection",
-    "duration": "30 мин",
-    "steps": [],
-    "days": 0,
-    "intent": null,
-    "counter": null
    },
    {
     "id": "m12-5",
@@ -1849,14 +2042,190 @@
     "counter": null
    },
    {
-    "id": "m12-4",
-    "book": "/content/reference/pryamoy-put-svodka.md",
-    "bookKey": "_content_reference_pryamoy-put-svodka_md",
-    "title": "Шпаргалка своими руками",
-    "description": "Соберите карточку-шпаргалку по сводке: четыре элемента, три направления, формулы и запретные фразы. Уместите на одну страницу, чтобы прочитать перед сеансом за минуту. Отметьте строки, которые ещё непонятны, и разберите их по книгам трилогии.",
-    "check": "Карточка умещается на страницу, включает все разделы и список разобранных строк; оценивается полнота, а не результат сеанса.",
+    "id": "m5-6",
+    "book": "/content/module-5/protiv-istoshcheniya.md",
+    "bookKey": "_content_module-5_protiv-istoshcheniya_md",
+    "title": "Формулы против истощения",
+    "description": "Выучите три формулы из тринадцати — те, что подходят под ваше состояние. Читайте ежедневно с удержанием намерения.",
+    "check": "Три формулы читаются наизусть, и вы объясняете, почему выбрали именно их.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Прочитайте тринадцать формул и выберите три под своё состояние.",
+     "Запишите, почему именно эти.",
+     "Читайте их ежедневно, удерживая намерение."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах восполнил мои силы — ×40",
+    "counter": null
+   },
+   {
+    "id": "m5-7",
+    "book": "/content/module-5/lecheniya-sglaz.md",
+    "bookKey": "_content_module-5_lecheniya-sglaz_md",
+    "title": "Программа очищения водой",
+    "description": "Проведите на себе полную программу лечения водой по уроку — от заклинания воды до завершения.",
+    "check": "Программа пройдена целиком, ни один шаг не пропущен и не переставлен.",
+    "type": "practice",
+    "duration": "3 дня",
+    "steps": [
+     "Заклинайте воду по уроку.",
+     "Пройдите программу по шагам, не переставляя их местами.",
+     "Завершите так, как указано, и отметьте день."
+    ],
+    "days": 3,
+    "intent": "Ради Аллаха, чтобы Аллах сделал эту воду исцелением и снял с меня сглаз — ×40",
+    "counter": null
+   },
+   {
+    "id": "m5-8",
+    "book": "/content/module-5/sikhr-sglaz-posobie.md",
+    "bookKey": "_content_module-5_sikhr-sglaz-posobie_md",
+    "title": "Различение сихра, сглаза и зависти",
+    "description": "Составьте таблицу различий: признак → сихр, сглаз или зависть. Минимум пятнадцать признаков. Затем проверьте по ней описание из опроса Модуля 4.",
+    "check": "По таблице вы отличаете три поражения, не заглядывая в урок.",
     "type": "reflection",
-    "duration": "30 мин",
+    "duration": "35 мин",
+    "steps": [
+     "Выпишите признаки сихра.",
+     "Выпишите признаки сглаза.",
+     "Выпишите признаки зависти — всего не менее пятнадцати строк.",
+     "Проверьте по таблице описание из опроса Модуля 4."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m5-9",
+    "book": "/content/module-5/rukiya-sikhr.md",
+    "bookKey": "_content_module-5_rukiya-sikhr_md",
+    "title": "Краткий сеанс от колдовства",
+    "description": "Проведите на себе краткий сеанс по уроку, уложившись в отведённое время. Заранее распишите порядок, чтобы не выбирать по ходу.",
+    "check": "Сеанс уложился в срок, и ни разу не пришлось решать «что дальше» во время чтения.",
+    "type": "practice",
+    "duration": "60 мин",
+    "steps": [
+     "Заранее распишите порядок сеанса целиком.",
+     "Засеките время.",
+     "Проведите сеанс, не выбирая по ходу, что дальше.",
+     "Отметьте, уложились ли и где сбились."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах разрушил колдовство [вид] в [орган] у [имя] — ×70",
+    "counter": null
+   },
+   {
+    "id": "m5-11",
+    "book": "/content/module-5/ubiranie-liniy.md",
+    "bookKey": "_content_module-5_ubiranie-liniy_md",
+    "title": "Порядок убирания линий",
+    "description": "Выпишите порядок работы по шагам и объясните, почему шаги идут именно в этом порядке и что будет, если их переставить.",
+    "check": "Порядок воспроизведён по памяти, и для каждого шага названа причина его места.",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [
+     "Выпишите шаги работы по порядку.",
+     "Против каждого запишите, почему он стоит именно здесь.",
+     "Опишите, что произойдёт, если переставить два соседних шага."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m5-13",
+    "book": "/content/module-5/istselyayu-koranom-praktika.md",
+    "bookKey": "_content_module-5_istselyayu-koranom-praktika_md",
+    "title": "Заряжение «Исцеляю Кораном»",
+    "description": "Ежедневно: прочитайте один раз аят аль-Исра 17:82 для себя, затем зарядите намерение «Исцеляю Кораном — Аллах исцеляет через него» до плотности, затем прочитайте Аят аль-Курси три раза, не отпуская намерение.",
+    "check": "К концу недели плотность приходит за меньшее число повторений, чем в первый день, и вторая половина формулы не выпадает.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Прочитайте аят аль-Исра 17:82 один раз — для себя, не на пациента.",
+     "Зарядите намерение «Исцеляю Кораном — Аллах исцеляет через него» до плотности.",
+     "Прочитайте Аят аль-Курси три раза, не отпуская намерение.",
+     "Запишите, за сколько повторений сегодня пришла плотность."
+    ],
+    "days": 7,
+    "intent": "Исцеляю Кораном — Аллах исцеляет через него. ×40, до плотности",
+    "counter": null
+   },
+   {
+    "id": "m5-14",
+    "book": "/content/module-5/istselyayu-koranom-praktika.md",
+    "bookKey": "_content_module-5_istselyayu-koranom-praktika_md",
+    "title": "Формула на три уровня",
+    "description": "Возьмите четыре случая — боль в органе, сглаз, наступленное колдовство, прикосновение джинна — и для каждого напишите формулу на трёх уровнях: общем, специфическом и максимально точном. В каждой должны стоять обе части: «исцеляю» и «Аллах исцеляет посредством него».",
+    "check": "Двенадцать формул написаны, и ни в одной не выпала вторая часть.",
+    "type": "reflection",
+    "duration": "40 мин",
+    "steps": [
+     "Возьмите четыре случая: боль, сглаз, колдовство, прикосновение джинна.",
+     "К каждому — формула на трёх уровнях: общий, специфический, точный.",
+     "Проверьте каждую: стоят ли обе части — «исцеляю» и «Аллах исцеляет посредством него»."
+    ],
+    "days": 0,
+    "intent": "Ради Аллаха, чтобы Аллах дал мне точность в словах — ×10",
+    "counter": null
+   },
+   {
+    "id": "m5-15",
+    "book": "/content/module-5/istselyayu-koranom-praktika.md",
+    "bookKey": "_content_module-5_istselyayu-koranom-praktika_md",
+    "title": "Полная серия на себе",
+    "description": "Проведите на себе всю серию десятой главы по звеньям: утверждение основы, заряжение, направление взгляда, общий уровень, аяты, точный уровень, мольба с доводом, печать двадцать раз, возврат к смирению. Один орган или один недуг за занятие.",
+    "check": "Все девять звеньев пройдены по порядку, ни одно не пропущено, и после печати прозвучал возврат к смирению.",
+    "type": "practice",
+    "duration": "10 дней",
+    "steps": [
+     "Первое звено: аят-основа, прибежище, бисмиллях.",
+     "Второе: заряжение до плотности.",
+     "Третье-шестое: взгляд, общий уровень, аяты семь раз, точный уровень.",
+     "Седьмое-девятое: мольба с доводом, печать двадцать раз, возврат к смирению."
+    ],
+    "days": 10,
+    "intent": "Исцеляю Кораном мою [орган] — Аллах исцеляет через него. ×40",
+    "counter": null
+   },
+   {
+    "id": "m7-zaxab-new-method-annulirovanie",
+    "book": "/content/module-7/new-method-annulirovanie.md",
+    "bookKey": "_content_module-7_new-method-annulirovanie_md",
+    "title": "Разбор цепи без обещания результата",
+    "description": "Выпишите цепь из урока по памяти и рядом с каждым звеном запишите, как проверить его без оценки результата и без самобичевания.",
+    "check": "Все звенья записаны в исходном порядке и отдельно сформулировано, почему метод не гарантирует срок или исцеление.",
+    "type": "reflection",
+    "duration": "25 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m7-zaxab-zashchita-doma-i-celitelya",
+    "book": "/content/module-6/zashchita-doma-i-celitelya.md",
+    "bookKey": "_content_module-6_zashchita-doma-i-celitelya_md",
+    "title": "Практический разбор: Защита дома и целителя: состояние, порядок, пространство",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Из каких шести блоков состоит личный режим защиты целителя? Какие пять шагов включает защита дома пациента и в каком порядке они идут? Что читается в каждом углу комнаты и зачем нужен аят преграды? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m7-zaxab-tre-urovnya-zashchity",
+    "book": "/content/module-6/tre-urovnya-zashchity.md",
+    "bookKey": "_content_module-6_tre-urovnya-zashchity_md",
+    "title": "Практический разбор: Три уровня защиты и четыре слоя",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Каков правильный порядок защиты? Почему нельзя ставить охрану до изгнания? Чем общий уровень защиты отличается от специфического? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
     "steps": [],
     "days": 0,
     "intent": null,
@@ -1864,6 +2233,154 @@
    }
   ],
   "8": [
+   {
+    "id": "m8-zaxab-desyat",
+    "book": "/content/module-8/desyat-kriteriev.md",
+    "bookKey": "_content_module-8_desyat-kriteriev_md",
+    "title": "Программа по десяти критериям",
+    "description": "По одному обезличенному кейсу из банка заполните все десять критериев: дуа, намерение, аят и заклинание строго по материалам урока.",
+    "check": "Все десять критериев присутствуют, каждый связан с анализом, нет одиннадцатого критерия, выдуманных формул и пустых мест.",
+    "type": "reflection",
+    "duration": "50 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m8-zaxab-bank-programm",
+    "book": "/content/module-8/bank-programm-lecheniya.md",
+    "bookKey": "_content_module-8_bank-programm-lecheniya_md",
+    "title": "Проверка эталонной программы",
+    "description": "Выберите две программы из банка и проверьте их по закону прицельности и десяти критериям; запишите найденные расхождения.",
+    "check": "Для каждой программы есть вывод о полноте, таблица соответствия критериев и исправление без новых формул.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m8-zaxab-specialnye",
+    "book": "/content/module-11/specialnye-protokoly-priyoma.md",
+    "bookKey": "_content_module-11_specialnye-protokoly-priyoma_md",
+    "title": "Выбор специального протокола",
+    "description": "Разберите восемь обезличенных описаний случаев и укажите, какой специальный протокол подключается и в какие критерии он вплетается.",
+    "check": "Для каждого случая названы протокол, данные выбора и место в десяти критериях; спецпротокол не заменяет основную программу.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "9": [
+   {
+    "id": "m5-10",
+    "book": "/content/module-5/dua-strasti.md",
+    "bookKey": "_content_module-5_dua-strasti_md",
+    "title": "Дуа укрепления супружества",
+    "description": "Выучите три дуа из десяти и читайте их за свою семью ежедневно, удерживая намерение на конкретной нужде.",
+    "check": "Три дуа читаются наизусть, намерение каждый раз названо конкретно.",
+    "type": "daily",
+    "duration": "10 дней",
+    "steps": [
+     "Выберите три дуа из десяти и выучите наизусть.",
+     "Перед чтением назовите нужду конкретно.",
+     "Прочитайте наизусть за свою семью."
+    ],
+    "days": 10,
+    "intent": "Ради Аллаха, чтобы Аллах вернул любовь между мной и [имя] — ×40",
+    "counter": null
+   },
+   {
+    "id": "m9-zaxab-nasledstvennaya-bolezn-1",
+    "book": "/content/module-9/nasledstvennaya-bolezn-1.md",
+    "bookKey": "_content_module-9_nasledstvennaya-bolezn-1_md",
+    "title": "Атрибуция утверждений источника",
+    "description": "Выберите шесть утверждений из глав 1–3 и оформите две колонки: «что утверждает источник» и «что нельзя вывести как медицинский диагноз».",
+    "check": "Все шесть пар сохраняют смысл источника и не превращают симптом или семейную историю в доказанный диагноз.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m9-zaxab-nasledstvennaya-bolezn-2",
+    "book": "/content/module-9/nasledstvennaya-bolezn-2.md",
+    "bookKey": "_content_module-9_nasledstvennaya-bolezn-2_md",
+    "title": "Границы шести глав",
+    "description": "Для глав 4–9 составьте таблицу: тема главы, ключевое утверждение источника, требуемая граница курса.",
+    "check": "В таблице шесть строк; нет обвинений людей, самодиагностики или самостоятельных телесных процедур.",
+    "type": "reflection",
+    "duration": "40 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m9-zaxab-nasledstvennaya-bolezn-3",
+    "book": "/content/module-9/nasledstvennaya-bolezn-3.md",
+    "bookKey": "_content_module-9_nasledstvennaya-bolezn-3_md",
+    "title": "Программа с границами",
+    "description": "Составьте по главам 13–16 таблицу из четырёх духовных шагов источника и добавьте к ней пять ограничений безопасности курса.",
+    "check": "Четыре шага переданы без искажения; телесные процедуры не включены как действия ученика; есть правило обращения за помощью при угрозе.",
+    "type": "reflection",
+    "duration": "40 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m9-zaxab-rodovye-zabolevaniya-1",
+    "book": "/content/module-9/rodovye-zabolevaniya-1.md",
+    "bookKey": "_content_module-9_rodovye-zabolevaniya-1_md",
+    "title": "Классификация без самодиагноза",
+    "description": "Составьте карту восьми видов из раздела 2 и укажите для каждого, какие данные ещё нужны, чтобы не превратить семейное совпадение в самодиагноз.",
+    "check": "Все восемь видов названы по источнику; для каждого есть вопрос проверки и нет обвинения предков.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m9-zaxab-rodovye-zabolevaniya-2",
+    "book": "/content/module-9/rodovye-zabolevaniya-2.md",
+    "bookKey": "_content_module-9_rodovye-zabolevaniya-2_md",
+    "title": "Разбор программы источника",
+    "description": "Разделите содержание разделов 6–9 на три колонки: наблюдение, духовная практика, телесная или медицинская процедура. Для последней колонки запишите запрет самостоятельного выполнения.",
+    "check": "Все три колонки заполнены; реакции не названы доказательством диагноза; ни одна телесная процедура не назначена ученику.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m9-zaxab-osobye-sostoyaniya",
+    "book": "/content/module-11/osobye-sostoyaniya.md",
+    "bookKey": "_content_module-11_osobye-sostoyaniya_md",
+    "title": "Практический разбор: Особые состояния: истихваз, рабт, родовое, колдовство смерти и дом",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какие шесть особых случаев выделены в главе? Из каких четырёх шагов состоит разбор истихваза и в каком порядке они идут? Почему нельзя «лечить род» без запроса и обвинять умерших предков? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   }
+  ],
+  "10": [
    {
     "id": "m7-1",
     "book": "/content/module-7/zaklinaniya-na-ubiystvo-dzhinnov.md",
@@ -1918,9 +2435,111 @@
     "days": 7,
     "intent": "Ради Аллаха, чтобы Аллах показал мне, где сущность, а где моя усталость — ×40",
     "counter": null
+   },
+   {
+    "id": "m5-12",
+    "book": "/content/module-5/metod-izbavleniya.md",
+    "bookKey": "_content_module-5_metod-izbavleniya_md",
+    "title": "Три ступени метода",
+    "description": "Разберите трёхступенчатый подход и составьте план сеанса для каждой ступени: что читается, сколько, при каком признаке переходить дальше.",
+    "check": "Для каждой ступени назван признак перехода, а не только содержание.",
+    "type": "reflection",
+    "duration": "30 мин",
+    "steps": [
+     "Разберите три ступени метода.",
+     "Для каждой распишите, что читается и сколько.",
+     "Для каждой назовите признак, по которому переходят дальше."
+    ],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m10-zaxab-kashf-raskrytie-1",
+    "book": "/content/module-10/kashf-raskrytie-1.md",
+    "bookKey": "_content_module-10_kashf-raskrytie-1_md",
+    "title": "Карта допустимых выводов",
+    "description": "Составьте таблицу по разделам 1–5: наблюдение, интерпретация источника, почему вывод нельзя считать доказательством.",
+    "check": "В таблице нет имён предполагаемых виновных, диагнозов или физических действий; каждая интерпретация отмечена как позиция источника.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m10-zaxab-kashf-raskrytie-2",
+    "book": "/content/module-10/kashf-raskrytie-2.md",
+    "bookKey": "_content_module-10_kashf-raskrytie-2_md",
+    "title": "Триаж видения по границам",
+    "description": "Разберите три воображаемых сообщения о видениях: укажите вопросы безопасности, возможные медицинские причины для разбора специалистом и почему нельзя обвинять человека.",
+    "check": "В каждом разборе сначала проверены красные флаги; нет духовного диагноза по образу и нет физических воздействий.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m10-zaxab-tyazheleyshie-sluchai-1",
+    "book": "/content/module-10/tyazheleyshie-sluchai-1.md",
+    "bookKey": "_content_module-10_tyazheleyshie-sluchai-1_md",
+    "title": "Разбор тяжёлого случая без практики на человеке",
+    "description": "Выберите одну категорию из разделов 1–5 и составьте карточку: утверждение источника, красные флаги, что требует супервизии, какие действия запрещены ученику.",
+    "check": "Карточка начинается с безопасности; нет телесных процедур, обещаний результата и самостоятельного лечения.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m10-zaxab-tyazheleyshie-sluchai-2",
+    "book": "/content/module-10/tyazheleyshie-sluchai-2.md",
+    "bookKey": "_content_module-10_tyazheleyshie-sluchai-2_md",
+    "title": "Супервизионная карта сложного случая",
+    "description": "По разделам 6–13 составьте карту: причины замедления, требования к специалисту, данные для индивидуального плана, критерии остановки.",
+    "check": "В карте есть супервизия, медицинские красные флаги и отказ от универсального протокола; нет обещаний и телесных процедур.",
+    "type": "reflection",
+    "duration": "45 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m10-zaxab-unichtozhenie-dzhinnov-posobie-2-protokoly",
+    "book": "/content/module-7/unichtozhenie-dzhinnov-posobie-2-protokoly.md",
+    "bookKey": "_content_module-7_unichtozhenie-dzhinnov-posobie-2-protokoly_md",
+    "title": "Практический разбор: Изгнание джиннов",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какое обязательное условие перед уничтожением джинна? Какой далиль используется для обоснования категории «марид»? Проводя изгнание, раки требует от джинна уйти мирно; тот отказывается и остаётся. Что дозволено по правилу урока — и при каком условии? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m10-zaxab-unichtozhenie-dzhinnov-posobie-3-printsipy",
+    "book": "/content/module-7/unichtozhenie-dzhinnov-posobie-3-printsipy.md",
+    "bookKey": "_content_module-7_unichtozhenie-dzhinnov-posobie-3-printsipy_md",
+    "title": "Практический разбор: Изгнание джиннов",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Что велит правило шестое из «десяти правил раки-воина»? Какой признак из перечня «верных признаков уничтожения» отличает настоящее освобождение? Какая мольба читается завершающей после сеанса, в котором джинн уничтожен или изгнан? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
    }
   ],
-  "9": [
+  "11": [
    {
     "id": "m8-1",
     "book": "/content/module-8/fundament-mastera.md",
@@ -2030,9 +2649,26 @@
       20
      ]
     }
-   }
-  ],
-  "10": [
+   },
+   {
+    "id": "m5-5",
+    "book": "/content/module-5/sravnenie-silnogo-so-slabym.md",
+    "bookKey": "_content_module-5_sravnenie-silnogo-so-slabym_md",
+    "title": "Разбор по восьми компонентам",
+    "description": "После каждого своего чтения оценивайте себя по восьми компонентам от 0 до 10 — по состоянию во время чтения, а не по результату. Записывайте. Через неделю найдите самый низкий.",
+    "check": "Вы называете свой слабейший компонент по имени и работаете именно над ним, а не над тем, что и так получается.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "Проведите чтение.",
+     "Сразу после оцените себя по восьми компонентам от 0 до 10 — по состоянию во время чтения, не по результату.",
+     "Запишите оценки.",
+     "В конце недели найдите самый низкий компонент и работайте с ним."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах показал мне мой слабейший компонент — ×10",
+    "counter": null
+   },
    {
     "id": "m9-2",
     "book": "/content/module-9/chuzhoy-yazyk.md",
@@ -2051,9 +2687,7 @@
     "days": 0,
     "intent": "Ради Аллаха, чтобы Аллах дал мне отвечать знанием, а не раздражением — ×10",
     "counter": null
-   }
-  ],
-  "11": [
+   },
    {
     "id": "m10-1",
     "book": "/content/module-10/raznitsa-praktik-vs-teoretik.md",
@@ -2108,16 +2742,126 @@
     "days": 7,
     "intent": "Ради Аллаха, чтобы Аллах уберёг меня от присвоения того, что принадлежит Ему — ×10",
     "counter": null
-   }
-  ],
-  "12": [
+   },
+   {
+    "id": "m11-zaxab-istselenie-za-sekundy-2-vragi-i-mgnovennost",
+    "book": "/content/module-8/istselenie-za-sekundy-2-vragi-i-mgnovennost.md",
+    "bookKey": "_content_module-8_istselenie-za-sekundy-2-vragi-i-mgnovennost_md",
+    "title": "Практический разбор: Исцеление за секунды",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какой из пяти врагов якына напрямую порождается самим учением о скорости? Сколько обращений считается рабочим числом для короткого сеанса и кому оно подходит? Что означают ступени 40 → 30 → 20 → 10 → 3 → 1 → 0? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m11-zaxab-istselenie-za-sekundy-3-polny-cikl-formuly",
+    "book": "/content/module-8/istselenie-za-sekundy-3-polny-cikl-formuly.md",
+    "bookKey": "_content_module-8_istselenie-za-sekundy-3-polny-cikl-formuly_md",
+    "title": "Практический разбор: Исцеление за секунды",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Что в книге названо первым тактом рабочего цикла и почему именно так? Какой элемент намерения нельзя опускать даже в самой короткой формулировке? Что считается признаком готовности перейти от обращения к чтению? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m11-zaxab-istselenie-za-sekundy-4-gotovnost-granicy",
+    "book": "/content/module-8/istselenie-za-sekundy-4-gotovnost-granicy.md",
+    "bookKey": "_content_module-8_istselenie-za-sekundy-4-gotovnost-granicy_md",
+    "title": "Практический разбор: Исцеление за секунды",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Что должен ответить лекарь пациенту, если быстрого результата не вышло? Как в книге сформулировано правильное описание случая, когда исцеление наступило? Что делать лекарю, если пациент говорит «я не пойду к врачу, я верю только в рукью»? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m11-zaxab-sravnenie-2-volya-svyaz-specifikaciya-vyvody",
+    "book": "/content/module-5/sravnenie-2-volya-svyaz-specifikaciya-vyvody.md",
+    "bookKey": "_content_module-5_sravnenie-2-volya-svyaz-specifikaciya-vyvody_md",
+    "title": "Практический разбор: Сравнение сильного со слабым",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какая спецификация даёт 100% эффективности? Что отличает заклинателя с сильной связью с Аллахом от заклинателя со слабой связью? Сколько повторений нужно заклинателю, у которого все компоненты на максимуме? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m11-zaxab-koren-vliyaniya",
+    "book": "/content/module-5/koren-vliyaniya.md",
+    "bookKey": "_content_module-5_koren-vliyaniya_md",
+    "title": "Практический разбор: Корень влияния",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Что такое корень влияния по определению урока? Кто является Источником исцеления? Чем корень влияния отличается от корня недуга? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m11-zaxab-oshibki-i-zaprety-lzherakii",
+    "book": "/content/module-10/oshibki-i-zaprety-lzherakii.md",
+    "bookKey": "_content_module-10_oshibki-i-zaprety-lzherakii_md",
+    "title": "Практический разбор: Лже-ракый: запреты и ошибки, недопустимые в практике рукьи",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какой критерий называется простым и не оставляющим места для «своих» дополнений? Почему давать гарантию результата («через три дня всё пройдёт») недопустимо? Чьими словами является исцеление согласно уроку? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m11-zaxab-obraz-istinnogo-rakii",
+    "book": "/content/module-10/obraz-istinnogo-rakii.md",
+    "bookKey": "_content_module-10_obraz-istinnogo-rakii_md",
+    "title": "Практический разбор: Образ истинного раки",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Сколько качеств перечисляет урок в портрете истинного раки? Что такое таваккуль согласно уроку? Как грехи влияют на рукью раки? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
+   {
+    "id": "m11-zaxab-vnutrenniy-sabotazh",
+    "book": "/content/module-10/vnutrenniy-sabotazh.md",
+    "bookKey": "_content_module-10_vnutrenniy-sabotazh_md",
+    "title": "Практический разбор: Внутренний саботаж: восемь ошибок, которые обесценивают сеанс",
+    "description": "Письменно ответьте на вопросы из раздела «Проверь себя»: Какие восемь ошибок обесценивают сеанс? Почему «чтение на память, не думая куда» ломает работу и что делать при обнаружении? Чем опасна оценка результата во время чтения, а не после? Затем выберите один вопрос и покажите применение ответа на собственном примере или обезличенном учебном случае по правилам урока.",
+    "check": "Даны ответы на все три вопроса со ссылкой на разделы урока; добавлен один применимый пример без новых формул, самодиагноза и обещания результата.",
+    "type": "reflection",
+    "duration": "35 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
+    "counter": null
+   },
    {
     "id": "m11-1",
-    "book": null,
-    "bookKey": null,
+    "book": "/content/module-11/zashchita-dannykh-patsienta.md",
+    "bookKey": "_content_module-11_zashchita-dannykh-patsienta_md",
     "title": "Знакомство с RUKYA Pro",
-    "description": "Изучите интерфейс RUKYA Pro по материалам модуля. Составьте список вопросов, которые возникли о работе системы, и задайте их наставнику.",
-    "check": "Вопросы заданы наставнику и получены ответы.",
+    "description": "Изучите интерфейс RUKYA Pro по материалам модуля. Составьте список вопросов о работе системы и задайте их наставнику; отдельно отметьте правила защиты данных.",
+    "check": "Вопросы заданы наставнику и получены ответы; правила конфиденциальности записаны без передачи реальных данных пациента.",
     "type": "reflection",
     "duration": "20 мин",
     "steps": [
@@ -2128,11 +2872,31 @@
     "days": 0,
     "intent": null,
     "counter": null
+   }
+  ],
+  "12": [
+   {
+    "id": "m11-3",
+    "book": "/content/reference/praktika-passport.md",
+    "bookKey": "_content_reference_praktika-passport_md",
+    "title": "Неделя ведения записей",
+    "description": "Ведите в программе записи о каждом своём чтении: дата, цель, что читалось, состояние по восьми компонентам, наблюдения. Так формируется привычка, без которой практика через год превращается в туман.",
+    "check": "Семь дней записей подряд, и по ним видна динамика хотя бы одного компонента.",
+    "type": "daily",
+    "duration": "7 дней",
+    "steps": [
+     "После чтения сразу откройте запись.",
+     "Внесите дату, цель и что читалось.",
+     "Оцените восемь компонентов и допишите наблюдения."
+    ],
+    "days": 7,
+    "intent": "Ради Аллаха, чтобы Аллах показал мне правду о моей практике — ×10",
+    "counter": null
    },
    {
     "id": "m11-2",
-    "book": null,
-    "bookKey": null,
+    "book": "/content/module-11/praktikum-simulyatsiya.md",
+    "bookKey": "_content_module-11_praktikum-simulyatsiya_md",
     "title": "Карточка первого приёма",
     "description": "Заполните в программе карточку одного приёма целиком: жалобы, опрос, вывод, план, отметка о направлении к врачу, если оно требовалось. На себе или на близком с его согласия.",
     "check": "Карточка заполнена целиком, ни одно поле не пропущено, и вывод следует из записанного опроса.",
@@ -2149,21 +2913,17 @@
     "counter": null
    },
    {
-    "id": "m11-3",
-    "book": null,
-    "bookKey": null,
-    "title": "Неделя ведения записей",
-    "description": "Ведите в программе записи о каждом своём чтении: дата, цель, что читалось, состояние по восьми компонентам, наблюдения. Так формируется привычка, без которой практика через год превращается в туман.",
-    "check": "Семь дней записей подряд, и по ним видна динамика хотя бы одного компонента.",
-    "type": "daily",
-    "duration": "7 дней",
-    "steps": [
-     "После чтения сразу откройте запись.",
-     "Внесите дату, цель и что читалось.",
-     "Оцените восемь компонентов и допишите наблюдения."
-    ],
-    "days": 7,
-    "intent": "Ради Аллаха, чтобы Аллах показал мне правду о моей практике — ×10",
+    "id": "m12-zaxab-zashchita",
+    "book": "/content/module-11/zashchita-dvukh-sluchaev.md",
+    "bookKey": "_content_module-11_zashchita-dvukh-sluchaev_md",
+    "title": "Репетиция защиты двух случаев",
+    "description": "Подготовьте два обезличенных случая и проведите устную репетицию защиты по протоколу урока, включая чтение этического кодекса и ответы о красных флагах.",
+    "check": "Оба случая представлены полным циклом; кодекс прочитан вслух; наставнику заданы вопросы о готовности к официальной защите.",
+    "type": "practice",
+    "duration": "60 мин",
+    "steps": [],
+    "days": 0,
+    "intent": null,
     "counter": null
    }
   ]
@@ -2171,956 +2931,1486 @@
  "quizzes": {
   "1": [
    {
-    "q": "От чего зависит, откуда раки черпает силу?",
+    "q": "Какое требование к чтению курс выдвигает на вход?",
     "options": [
-     "От уровня его подготовки и числа выученных аятов",
-     "От того, кому он поклоняется: нет никого достойного поклонения, кроме Аллаха, и сила — только от Него",
-     "От силы его рук и чувствительности ладоней",
-     "От того, сколько лет он практикует"
+     "Обязательное знание всего «Джуз 'Амма» наизусть",
+     "Базовое чтение Корана; таджвид желателен, но не обязателен на старте",
+     "Степень хафиза с иджазой",
+     "Умение читать только аль-Фатиху"
     ],
     "correct": 1
    },
    {
-    "q": "Где проходит граница между дозволенным обращением и ширком?",
+    "q": "Почему книга о поклонении стоит первой, а не после приёмов заклинания?",
     "options": [
-     "В том, на каком языке произнесено обращение",
-     "В том, к кому обращена сама просьба: к Аллаху — дозволено, к творению как к обладателю силы — ширк",
-     "В том, произносится ли обращение вслух или про себя",
-     "В том, берёт ли раки плату"
+     "Потому что она короче остальных и её легче прочитать в начале",
+     "Иначе вырастет техник: человек, умеющий производить действия и не знающий, к Кому они обращены. Заклинание начинается с вопроса, кому ты поклоняешься",
+     "Потому что вероучение не связано с практикой и его проходят отдельно",
+     "Потому что так принято во всех курсах по рукье"
     ],
     "correct": 1
    },
    {
-    "q": "Почему единобожие стоит в курсе раньше учебника якына?",
+    "q": "Кто назван «аль-Хакк» (Истина) в Коране?",
     "options": [
-     "Так исторически сложилось при составлении курса",
-     "Якын — это убеждённость В АЛЛАХЕ, и она не может стоять раньше знания о том, Кто Он и в чём Его единственность",
-     "Потому что учебник якына сложнее по языку",
-     "Потому что якын не нужен начинающим"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Что сказано о том, кто повесил на себя амулет (Ахмад, 17404)?",
-    "options": [
-     "Что это дозволено, если внутри написан аят",
-     "«Кто повесил амулет — тот совершил ширк»",
-     "Что это нежелательно, но не запретно",
-     "Что это допустимо только больному"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Что означает 'ильмуль-якын?",
-    "options": [
-     "Знание умом, на основе доводов",
-     "Видение своими глазами",
-     "Полное проживание истины",
-     "Отсутствие всякого знания"
-    ],
-    "correct": 0
-   },
-   {
-    "q": "Сколько раз в день Пророк ﷺ делал истигфар (Муслим, 2702)?",
-    "options": [
-     "10",
-     "40",
-     "100",
-     "1000"
+     "Пророк Мухаммад ﷺ",
+     "Ангел Джибриль",
+     "Аллах — сура аль-Хадж, 22:62: «Это потому, что Аллах есть Истина»",
+     "Коран"
     ],
     "correct": 2
    },
    {
-    "q": "Какое из имён Аллаха переводится как «Исцеляющий»?",
+    "q": "Согласно аяту 22:62, чем является всё, к чему взывают помимо Аллаха?",
     "options": [
-     "Аль-Кадир",
-     "Аш-Шафи",
-     "Аль-Хафиз",
-     "Аль-Муджиб"
+     "Дозволенным средством, если делается с добрым намерением",
+     "Ложью (батыль) — Истина есть только Аллах",
+     "Нейтральным действием без духовных последствий",
+     "Проявлением уважения к праведникам"
     ],
     "correct": 1
    },
    {
-    "q": "Что такое «сердечное чтение»?",
+    "q": "Какие два типа заступничества (шафа'а) выделяет автор?",
     "options": [
-     "Чтение только про себя без перехода к голосу",
-     "Собирание воздействия Корана внутри и направление его к пациенту, прежде чем перейти к голосу",
-     "Личная энергетическая техника целителя, не связанная с Кораном",
-     "Один из пяти врагов якына"
+     "Большое и малое",
+     "Отвергнутое (обращение к творениям напрямую) и подтверждённое (просьба к Аллаху о заступничестве Пророка ﷺ в Судный День)",
+     "Мужское и женское",
+     "Земное и небесное"
     ],
     "correct": 1
    },
    {
-    "q": "Какой из перечисленных пунктов НЕ входит в пять «врагов якына»?",
+    "q": "Из каких трёх шагов состоит метод уединения с таухидом (таухид бит-тахайюль)?",
     "options": [
-     "Гафля (беспечность)",
-     "Поспешность",
-     "Ночной тахаджуд",
-     "Сомнение (шакк)"
+     "Чтение, размышление, запоминание",
+     "Представление качества в творениях, отрицание его совершенства у них, утверждение совершенства только для Аллаха",
+     "Дуа, зикр, намаз",
+     "Изучение имени, повторение его 100 раз, медитация"
     ],
-    "correct": 2
+    "correct": 1
    },
    {
-    "q": "Сколько частей «Мольбы заклинателя» вошло в сертифицированный курс, и на чём построена та, что о собственной слабости раки?",
+    "q": "Как Пророк ﷺ определил Эхсан в хадисе, переданном аль-Бухари (50) и Муслимом (8)?",
     "options": [
-     "6 частей; часть третья — «Ты Исцеляющий, а я причина»",
-     "9 частей; все включены целиком",
-     "4 части; о слабости речи нет вообще",
-     "6 частей; о слабости говорит часть первая"
+     "«Совершать намаз пять раз в день без пропусков»",
+     "«Поклоняться Аллаху так, как будто ты видишь Его, а если ты не видишь Его — то знай, что Он видит тебя»",
+     "«Давать садаку каждый день, даже если малую»",
+     "«Читать Коран от начала до конца каждый месяц»"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "О чём спросили сподвижники Пророка ﷺ по поводу заклинаний времён джахилии?",
+    "options": [
+     "Можно ли брать за них плату",
+     "Дозволено ли вообще их использовать после принятия Ислама",
+     "Можно ли обучать им других",
+     "Разрешено ли произносить их на арабском языке"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "На чём стоит вся эта книга?",
+    "options": [
+     "На аяте аль-Исра 17:82: «И Мы ниспосылаем из Корана то, что является исцелением и милостью для верующих»",
+     "На опыте автора и его учеников",
+     "На единогласном мнении современных раки",
+     "На хадисе о чтении аль-Фатихи над укушенным"
     ],
     "correct": 0
-   },
-   {
-    "q": "Почему части 5, 6 и 8 «Мольбы заклинателя» не вошли в сертифицированный курс?",
-    "options": [
-     "Плохо сохранился арабский текст",
-     "Риск излишнего прошения (гулювв) — команды мгновенного исцеления от себя лично",
-     "Автор их ещё не написал",
-     "Они дублируют часть 2"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Чем «сердечное чтение» из Модуля 1 принципиально отличается от техник, отклонённых в Модуле 10 как скрытый ширк?",
-    "options": [
-     "Ничем не отличается",
-     "Источник воздействия — Коран, а не «энергия» самого целителя",
-     "Оно выполняется только шёпотом",
-     "Оно не требует убеждённости (якына)"
-    ],
-    "correct": 1
    }
   ],
   "2": [
    {
-    "q": "Из какого хадиса взята формула «Бисмилляхи аркыка»?",
+    "q": "Сколько степеней познания сердцем описывает якын?",
     "options": [
-     "Аль-Бухари 5010",
-     "Муслим 2186 (рукья Джибриля)",
-     "Абу Дауд 4586",
-     "Ат-Тирмизи 3479"
+     "Две",
+     "Три",
+     "Четыре",
+     "Пять"
     ],
     "correct": 1
    },
    {
-    "q": "Сколько видов сглаза выделено в классификации Справочника?",
+    "q": "Сколько всего частей у «Мольбы заклинателя», и сколько из них полностью сертифицированы?",
     "options": [
-     "4",
-     "6",
-     "9",
-     "12"
+     "4 части, все сертифицированы",
+     "9 частей, все сертифицированы",
+     "9 частей, из них 6 сертифицированы (1–4, 7, 9), три (5, 6, 8) — черновик с примечаниями",
+     "6 частей, ни одна не сертифицирована"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "С чего, по автору, начинается правильность мольбы?",
+    "options": [
+     "С точного знания арабской грамматики",
+     "С внутреннего единобожия — отрицания иной силы и власти, кроме Аллаха",
+     "С разрешения от наставника",
+     "С определённого времени суток"
     ],
     "correct": 1
    },
    {
-    "q": "Книга «Общее понятие Заклинание» (№8) в курсе:",
+    "q": "Сколько столпов составляют фундаментальное состояние целителя согласно уроку?",
     "options": [
-     "Включена целиком, с пометкой «авторская методика, не Сунна»",
-     "Исключена целиком",
-     "Частично включена без всяких пометок",
-     "Является отдельным Модулем 9"
+     "Три столпа",
+     "Четыре столпа",
+     "Шесть столпов",
+     "Пять столпов"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что такое басира (بَصِيرَة) согласно уроку?",
+    "options": [
+     "Физическое зрение, обострённое практикой",
+     "Способность видеть джиннов невооружённым глазом",
+     "Духовное зрение — способность сердца распознавать смыслы, знаки и мудрость Аллаха",
+     "Особый дар, данный только пророкам"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Какая половина хадиса Умара разбирается в этой книге как главная и что из неё следует?",
+    "options": [
+     "Первая — «дела только по намерениям»: без намерения дело не засчитывается",
+     "Вторая — «каждому человеку лишь то, что он намеревался»: получишь именно то, что намерил, а не то, что произнёс или на что рассчитывал",
+     "Обе одинаково: хадис говорит об искренности в поклонении",
+     "Ни та ни другая — хадис приведён как довод о награде за чтение Корана"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Какой хадис является фундаментом учения о волевом акте, и почему учёные считают его «третью всей религии»?",
+    "options": [
+     "«Аллах смотрит на ваши сердца и ваши деяния» (Муслим, 2564)",
+     "«Поистине, дела — только по намерениям» (аль-Бухари, 1; Муслим, 1907) — хадис Умара ибн аль-Хаттаба",
+     "«О Переворачивающий сердца, укрепи моё сердце на Твоей религии» (ат-Тирмизи, 2140)",
+     "«Ближе всего раб к Господу в земном поклоне» (Муслим, 482)"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Сколько повторений намерения в сердце рекомендуется для «заряжения» перед сеансом рукьи?",
+    "options": [
+     "3–7 повторений",
+     "10–20 повторений",
+     "Минимум 40, оптимум 70, максимум 100 и более",
+     "33 повторения"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Какие шесть разрушителей намерения перечислены в уроке?",
+    "options": [
+     "Усталость, болезнь, голод, жажда, холод, шум",
+     "Показуха (рия), гордыня (кибр), страх (хауф), рассеянность (гафля), сомнение (шакк), спешка ('аджаля)",
+     "Грехи, ширк, бида'а, куфр, нифак, фиск",
+     "Зависть, обида, гнев, печаль, лень, скупость"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что рекомендуется делать, если во время рукьи намерение начинает уходить?",
+    "options": [
+     "Прекратить рукью и начать заново на следующий день",
+     "Читать быстрее, чтобы закончить до полной потери намерения",
+     "Остановиться на 10 секунд, вернуть намерение и продолжить",
+     "Переключиться на другую суру"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Почему формулы намерения даны на русском, а не на арабском?",
+    "options": [
+     "Потому что арабские формулировки намерения утеряны",
+     "Намерение — дело сердца и произносится внутри, без движения губ; сердце говорит на том языке, на котором думает. Арабскими остаются формулы заклинания и дуа, которые произносятся вслух",
+     "Потому что ученикам курса трудно читать по-арабски",
+     "Потому что язык намерения не имеет значения вовсе"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Чем шкала усиления души является по замыслу автора?",
+    "options": [
+     "Рангом и уровнем посвящения, который выдаётся за заслуги",
+     "Рабочей картой состояния души и дальности влияния, а не шариатской степенью",
+     "Гарантией результата при достижении седьмой ступени",
+     "Медицинской шкалой для постановки диагноза"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Каков основной акцент первой части «Прямого пути»?",
+    "options": [
+     "Увеличение длительности чтения любой ценой",
+     "Осмысленное обращение и отнесение исцеления к Аллаху вместо механического счёта повторений",
+     "Поиск самой громкой манеры чтения",
+     "Обещание одинакового результата каждому человеку"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что означает «сабиль» в словаре урока?",
+    "options": [
+     "Путь; автор использует слово в духовном объяснении",
+     "Медицинский диагноз",
+     "Название органа",
+     "Измеримая энергия"
     ],
     "correct": 0
    },
    {
-    "q": "Какой новый статус бейджа был введён специально для книги №8, отдельно от «подтверждено»/«черновик»/«архив»?",
+    "q": "Когда, согласно основному акценту третьей части, выполняется подготовка?",
     "options": [
-     "«experimental»",
-     "«author» — авторская методика, не Сунна",
-     "«pending»",
-     "«legacy»"
+     "Только после встречи",
+     "Во время срочной медицинской помощи вместо неё",
+     "До встречи, без спешки при человеке",
+     "После обещания результата"
     ],
-    "correct": 1
+    "correct": 2
    },
    {
-    "q": "Сколько уровней прогрессии («от простого к сложному») описывает метод «Влияние Волей»?",
+    "q": "Чем сводка отличается от книг трилогии?",
     "options": [
-     "Один",
-     "Два — заклинание простых вещей и заклинание себя",
-     "Четыре",
-     "Уровней нет, только формула"
+     "Это ресурс для повторения; непонятую строку нужно разбирать по самой книге",
+     "Сводка заменяет книги и читать их не нужно",
+     "Сводка содержит больше материала, чем книги",
+     "Сводка — это медицинский протокол"
     ],
-    "correct": 1
-   },
-   {
-    "q": "Сколько компонентов силы воли (ирада) выделяет автор в методе «Влияние Волей»?",
-    "options": [
-     "Два",
-     "Три — убеждённость, концентрация, направленность",
-     "Пять",
-     "Ирада не раскладывается на компоненты"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Какая техника из книги «Я заклинаю» разбирается в тексте, но НЕ входит в сертифицируемый курс?",
-    "options": [
-     "Принцип уточнения недуга",
-     "Периферическое зрение (техника направления взгляда)",
-     "Формула рукьи Джибриля",
-     "Сердечное чтение"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Что курс называет принципом уточнения (специфичности) недуга?",
-    "options": [
-     "Чтение рукьи только по-арабски, без перевода",
-     "После общей формулы называть точную причину — сглаз, вид колдовства, конкретного джинна",
-     "Уточнение диагноза через пальпацию тела пациента",
-     "Обязательное присутствие второго раки при чтении"
-    ],
-    "correct": 1
+    "correct": 0
    }
   ],
   "3": [
    {
-    "q": "Что осталось от книги №17 в сертифицируемой программе?",
+    "q": "Каковы пять качеств истинного заклинателя согласно уроку?",
     "options": [
-     "Формулы «аркы + орган»",
-     "Только словарь терминов и грамматика притяжательных суффиксов",
-     "Таблица «орган-недуг»",
-     "Ничего"
+     "Знание, терпение, мудрость, щедрость, скромность",
+     "Якын (убеждённость), Ихляс (искренность), Шаджа'а (бесстрашие), Таркиз (точность), Амаль (действие)",
+     "Иман, Ислам, Эхсан, таваккуль, сабр",
+     "Тауба, зикр, намаз, пост, садака"
     ],
     "correct": 1
    },
    {
-    "q": "Почему книга №12 исключена из курса целиком?",
+    "q": "Как звучит формула рукьи Джибриля, когда раки читает её над самим собой?",
     "options": [
-     "В ней плохое качество печати",
-     "Автор сам называет её «авторским методом», без хадисной основы, уже в предисловии",
-     "Она дублирует книгу №17",
-     "Она слишком короткая"
+     "Аркыйк",
+     "Аркыний",
+     "Аркыка",
+     "Аркыха"
     ],
     "correct": 1
    },
    {
-    "q": "Где находится полный словарь органов тела, на который ссылается Модуль 3, вместо того чтобы повторять его в самом модуле?",
+    "q": "Какой статус присвоен этому разделу в системе бейджей курса?",
     "options": [
-     "В самом модуле 3, отдельной секцией",
-     "В общем разделе «Справочник» — один на весь курс (правило дедупликации §9б)",
-     "В Модуле 5",
-     "Словаря на сайте нет, только в исходном PDF"
+     "Основано на достоверном хадисе",
+     "Черновик",
+     "Авторская методика, не Сунна",
+     "Архив"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Какой хадис из Сунны подтверждает, что сура аль-Фатиха является рукьей (заклинанием)?",
+    "options": [
+     "Хадис о ночном путешествии Пророка ﷺ",
+     "Хадис о сподвижнике, исцелившем вождя племени от укуса скорпиона чтением аль-Фатихи (аль-Бухари, 5007; Муслим, 2201)",
+     "Хадис о достоинствах суры аль-Бакара",
+     "Хадис о семи повторяемых аятах"
     ],
     "correct": 1
    },
    {
-    "q": "Чем именно является книга №12 («Учебник по чтению заклинания на органы по видам колдовства»)?",
+    "q": "Какие пять факторов определяют интенсивность (силу) заклинания?",
     "options": [
-     "Самой объёмной версией авторского формула-конструктора «Бисмилляхи аркы + орган»",
-     "Официальным учебником по арабской грамматике",
-     "Справочником по хадисам об органах тела",
-     "Продолжением Модуля 6"
+     "Громкость, скорость, длительность, количество людей, время суток",
+     "Иман (вера), якын (убеждённость), таваккуль (упование), хузур аль-кальб (присутствие сердца), точность спецификации",
+     "Знание арабского, опыт лекаря, состояние пациента, фаза луны, день недели",
+     "Омовение, чистота одежды, запах благовоний, тишина, направление на киблу"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что означает слово «аллязи» (الَّذِي), связывающее имя Аллаха с Его атрибутом?",
+    "options": [
+     "«Который»",
+     "«С именем»",
+     "«Заклинаю»",
+     "«От недуга»"
     ],
     "correct": 0
    },
    {
-    "q": "Почему Модуль 3 сознательно не заменяет книгу №12 другим набором формул «орган + недуг»?",
+    "q": "Какое правило из хадиса (Муслим, 2200) лежит в основе проверки любой практики?",
     "options": [
-     "Формулы уже даны в Модуле 2",
-     "Направленность рукьи разбирается отдельно, на признанных основаниях, в Модуле 5",
-     "Такие формулы запрещены Шариатом полностью",
-     "У автора не было времени написать замену"
+     "«Нет рукьи, кроме как от сглаза и укуса»",
+     "«Нет проблем в заклинании, если в нём нет многобожия»",
+     "«Лучшая рукья — Открывающая Книгу»",
+     "«Нет заразы и нет дурной приметы»"
     ],
     "correct": 1
    },
    {
-    "q": "На чём основан вводный текст Модуля 3, согласно его собственному примечанию о статусе?",
+    "q": "На каком хадисе основан метод «Хитаб аль-Исаба» — обращение к конкретному месту поражения?",
     "options": [
-     "На пересказе всей исходной книги №12",
-     "Только на уже сертифицированном Справочнике — написан заново, не пересказ книги",
-     "На личном опыте студентов курса",
-     "На книге №17 целиком, без изменений"
+     "«Поистине, дела — по намерениям» (аль-Бухари, 1)",
+     "«Положи руку на то место, где болит, скажи \"С именем Аллаха\" трижды, затем семь раз прибегни к могуществу Аллаха» (Муслим, 2202)",
+     "«Читайте суру аль-Бакара, ибо колдуны не смогут противостоять ей» (Муслим, 804)",
+     "«Сглаз — истина» (аль-Бухари, 5740)"
     ],
     "correct": 1
+   },
+   {
+    "q": "Что такое «грязь души» согласно уроку?",
+    "options": [
+     "Физическая нечистота тела, требующая омовения",
+     "Непрожитые, подавленные эмоции (страх, обида, гнев, вина), которые «записываются» в теле и становятся почвой для духовных поражений",
+     "Грехи, которые смываются только хаджем",
+     "Наущения шайтана, которые приходят во сне"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Сколько видов колдовства перечислено в классификации?",
+    "options": [
+     "6",
+     "9",
+     "12",
+     "15"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Сколько атрибутов из аятов собрано в своде каталога?",
+    "options": [
+     "Девять",
+     "Десять",
+     "Двенадцать",
+     "Пятнадцать"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Сколько разделов включает словарь органов тела в сертифицированной части книги?",
+    "options": [
+     "4",
+     "6",
+     "8",
+     "10"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "В чём суть метода «Аллязи» (الَّذِي) в продвинутом заклинании?",
+    "options": [
+     "Замена имени Аллаха на имя заклинателя",
+     "Введение конкретного атрибута Аллаха из Корана через связку «Который», усиливая заклинание",
+     "Чтение суры аль-Ихлас перед каждым заклинанием",
+     "Повторение слова «Аллязи» сто раз"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Чем отличается заклинание на действие (с «ли» — لِـ) от обычного заклинания (с «мин» — مِنْ)?",
+    "options": [
+     "Ничем не отличается",
+     "Заклинание на действие тише по голосу",
+     "«Мин» — заклинание «от» (защита), «ли» — заклинание «для/чтобы» (активное действие: вывести, сжечь, развязать)",
+     "«Ли» используется только для воды"
+    ],
+    "correct": 2
    }
   ],
   "4": [
    {
-    "q": "На чём никогда не строится диагностика недуга в этом курсе?",
+    "q": "Сколько эмоциональных загрязнений включено в полный перечень урока?",
     "options": [
-     "На словах самого пациента",
-     "На реакции на чтение Корана",
-     "На надавливании/пальпации тела пациента",
-     "На опроснике из 11 разделов"
+     "15 загрязнений",
+     "20 загрязнений",
+     "30 загрязнений",
+     "40 загрязнений"
     ],
     "correct": 2
    },
    {
-    "q": "Что делает раки при признаках суицидальных мыслей у пациента?",
+    "q": "Какой ключевой принцип лежит в основе влияния эмоций на внешность?",
     "options": [
-     "Игнорирует и продолжает рукью",
-     "Направляет к врачу/психиатру параллельно с духовным лечением",
-     "Откладывает направление к врачу до результата рукьи",
-     "Прекращает всякое общение с пациентом"
+     "Плохие эмоции портят ДНК человека",
+     "Непрожитые и подавленные эмоции создают хронические мышечные зажимы, нарушают гормональный баланс и метаболизм, что отражается на внешности",
+     "Эмоции влияют только на выражение лица, но не на фигуру",
+     "Только грехи портят внешность, а эмоции на неё не влияют"
     ],
     "correct": 1
    },
    {
-    "q": "Почему пальпация репродуктивных органов особенно опасна как «метод диагностики», согласно тексту модуля?",
+    "q": "Какие проявления страстей связаны с сердцем (аль-кальб) согласно уроку?",
     "options": [
-     "Это неэтично, но не более того",
-     "Боль от нажатия может иметь медицинскую причину, и выдавать её за «духовный» признак — риск замаскировать реальную патологию",
-     "Потому что это запрещено только для мужчин-раки",
-     "Потому что это долго по времени"
+     "Взгляд на запретное, восхищение мирскими соблазнами",
+     "Скрытые дурные помыслы, любовь к греху, зависть, ненависть, черствость, сомнения в вере",
+     "Сквернословие, ложь, сплетни, клевета",
+     "Прикосновение к запретному, воровство"
     ],
     "correct": 1
    },
    {
-    "q": "Сколько разделов включает опросник пациента, унаследованный от структуры RUKYA Pro?",
+    "q": "Сколько основных (корневых) недугов души выделяет урок, порождающих все остальные?",
     "options": [
-     "5",
-     "7",
-     "9",
-     "11"
-    ],
-    "correct": 3
-   },
-   {
-    "q": "Какие ТРИ состояния перечислены как «красные флаги», требующие обязательного направления к врачу?",
-    "options": [
-     "Бессонница, головная боль, усталость",
-     "Эпилепсия, психоз, суицидальные мысли/высказывания",
-     "Простуда, температура, кашель",
-     "Тревожность, грусть, апатия"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Какая книга исключена из курса целиком именно из-за практики пальпаторной диагностики (project.md §9а)?",
-    "options": [
-     "«Хитаб Исаба»",
-     "«Крепость верующего»",
-     "«Я заклинаю»",
-     "«Мольба заклинателя»"
-    ],
-    "correct": 0
-   },
-   {
-    "q": "Направление к врачу при красных флагах происходит:",
-    "options": [
-     "Вместо духовного лечения",
-     "Только после того, как рукья не помогла",
-     "Параллельно с духовным лечением, не откладывая",
-     "Только по прямой просьбе самого пациента"
+     "30 недугов",
+     "15 недугов",
+     "3–5 основных недугов",
+     "10 недугов"
     ],
     "correct": 2
+   },
+   {
+    "q": "Каковы три шага диагностического алгоритма «от жалобы к ране»?",
+    "options": [
+     "Осмотр, назначение лечения, контроль",
+     "Жалоба пациента → Определение зоны тела по карте ран → Уточнение конкретного загрязнения по таблице 30 загрязнений",
+     "Чтение Корана → наблюдение за реакцией → определение диагноза",
+     "Опрос пациента → чтение рукьи → анализ результатов"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Как работает механизм «бреши» согласно уроку?",
+    "options": [
+     "Рана ослабляет физический иммунитет, и человек болеет",
+     "Рана создаёт брешь в духовной стене → джинн входит через эту брешь → усиливает ту же эмоцию → рана растёт, брешь ширится, состояние ухудшается",
+     "Рана привлекает колдунов, которые направляют новое колдовство",
+     "Рана заставляет человека грешить, что ослабляет защиту"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что, по правилу точного отнесения, может быть объявлено установленным источником вреда?",
+    "options": [
+     "Вид недуга, похожий по одному симптому на описание из метода",
+     "Только то, о чём сказал сам пациент в своём рассказе",
+     "Автоматический вывод системы RUKYA Pro до перепроверки",
+     "Любая догадка раки, если она подтвердилась реакцией на чтение"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что доказывает сильная реакция пациента во время чтения?",
+    "options": [
+     "Диагноз и вид воздействия установлены верно",
+     "Источник вреда назван правильно",
+     "Правильность применения и направление рукьи — но не диагноз",
+     "Что курс нужно немедленно прекратить"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Чем профиль A₂ отличается от профиля C при большой давности болезни?",
+    "options": [
+     "Ничем: давность всегда означает корневой случай",
+     "При A₂ годы болезни, но один доминирующий слой и нет договора, родового, истихваза и рабта; C — это корень с договором или родовым",
+     "A₂ требует 7+ сеансов, а C закрывается за один",
+     "A₂ — это только дети, C — только взрослые"
+    ],
+    "correct": 1
    }
   ],
   "5": [
    {
-    "q": "На основе какого хадиса построена направленность чтения в Модуле 5?",
+    "q": "Что означает слово «аркыйк» (أَرْقِيكَ), произнесённое Джибрилем над Пророком ﷺ?",
     "options": [
-     "Хадис Аиши о Пророке ﷺ, читавшем аль-Му'аввизат и обтиравшем тело руками (аль-Бухари, 5735)",
-     "Хадис о джинне в мечети",
-     "Аят аль-Курси",
-     "Хадис о 40-дневной тренировке"
-    ],
-    "correct": 0
-   },
-   {
-    "q": "Как определяется место воздействия чтения?",
-    "options": [
-     "Пальпацией тела пациента",
-     "По словам самого пациента",
-     "По интуиции целителя",
-     "По таблице «орган-недуг»"
+     "«Я читаю тебе текст»",
+     "«Я совершаю над тобой рукью» — осознанный волевой акт от первого лица",
+     "«Я защищаю тебя амулетом»",
+     "«Я прошу у тебя исцеления»"
     ],
     "correct": 1
    },
    {
-    "q": "Какую книгу заменяет черновик Модуля 5, согласно его собственному описанию источника?",
+    "q": "Каков порядок лечения органов по методу Хитаб аль-Исаба?",
     "options": [
-     "№12 «Учебник по чтению заклинания на органы»",
-     "№16 «Хитаб Исаба» — исключённую из программы",
-     "№8 «Общее понятие Заклинание»",
-     "№17 «Словарь органов»"
+     "Сверху вниз — от головы к ногам",
+     "Произвольный — по ощущениям",
+     "Снизу вверх — от ног к голове",
+     "Только грудь и голова"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "На чём основана оценка результата сеанса по методу Хитаб аль-Исаба?",
+    "options": [
+     "На нажатии на тело до и после сеанса",
+     "На показаниях приборов",
+     "На словах самого пациента о самочувствии и на признаках выхода поражения (зевота, рвота, кашель)",
+     "На мнении присутствующих"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "В каком порядке ведётся основной цикл протокола полного сеанса?",
+    "options": [
+     "Сверху вниз: от головы к стопам",
+     "Снизу вверх: ноги → матка → живот → грудь → плечи и руки → спина → голова, каждый орган полным циклом",
+     "По алфавиту органов, как в сводной таблице",
+     "Только голова и живот — остальные по желанию"
     ],
     "correct": 1
    },
    {
-    "q": "С чего рекомендуется начинать сеанс направленного чтения, прежде чем сужать его до конкретного места?",
+    "q": "Каков порядок приоритета трёх адресатов обращения в методе?",
     "options": [
-     "Сразу с уточнения места боли",
-     "С общего чтения (аль-Фатиха, аят аль-Курси, три защитные суры) как «разогрева»",
-     "С опроса о финансовом положении пациента",
-     "С пальпации живота"
+     "Человек → поражение → Аллах",
+     "Аллах → поражение → человек",
+     "Поражение → Аллах → человек",
+     "Порядок не имеет значения, важна только формула"
     ],
     "correct": 1
    },
    {
-    "q": "Что говорит текст о «формуле направленности» («Бисмилляхи аркы… фи…»)?",
+    "q": "Что происходит, если практикующий «разговаривает с болезнью» как с самостоятельной силой?",
     "options": [
-     "Это отдельная сила сама по себе, работающая без Аллаха",
-     "Это способ удержать внимание сердца собранным — сила целиком у Аллаха",
-     "Это обязательный ритуал, без которого рукья недействительна",
-     "Формула должна произноситься только шёпотом"
+     "Ничего: это обычная практика метода",
+     "Метод выходит за свои границы: болезнь — творение, которому приказывают именем Аллаха, а не собеседник",
+     "Усиливается эффект, потому что появляется диалог",
+     "Снижается только громкость голоса"
     ],
     "correct": 1
    },
    {
-    "q": "Какие два признанных автора указаны как источники для дальнейшей доработки этого модуля?",
+    "q": "Сколько шагов содержит полный протокол чтения и сколько — универсальный цикл?",
     "options": [
-     "Ибн Теймия и аш-Шафии",
-     "Вахид Абду-с-Салям Бали и Ибн аль-Каййим",
-     "Аль-Бухари и Муслим (сами составители хадисов)",
-     "Ибн Кясир и ат-Табари"
+     "Девять шагов и тринадцать ступеней",
+     "Тринадцать шагов и девять ступеней",
+     "Семь шагов и семь ступеней",
+     "Тринадцать шагов и тринадцать ступеней"
     ],
     "correct": 1
    },
    {
-    "q": "Что именно раки делает с начитанной водой или маслом по этому модулю?",
+    "q": "В чём смысл «формулы удара»: почему между аятом и заклинанием не должно быть паузы?",
     "options": [
-     "Продаёт как отдельный товар",
-     "Читает Коран с намерением исцеления, затем даёт пациенту (пить/обтираться)",
-     "Использует только для омовения перед намазом",
-     "Хранит 40 дней перед использованием"
+     "Чтобы экономить время сеанса",
+     "Пауза между фрагментом аята и заклинанием — потеря силы: аят и формула читаются одной связкой",
+     "Потому что иначе пациент забудет текст",
+     "Потому что так требует считать повторения"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Из каких пяти частей состоит полная формула?",
+    "options": [
+     "Обращение, поклон, салам, дуа, печать",
+     "Обращение к Источнику, действие, предмет, содеявший, автор предмета",
+     "Вода, масло, мёд, соль, уксус",
+     "Нийя, якын, ихляс, таухид, дуа"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что происходит, если при чтении формулы не держать в уме предмет и место?",
+    "options": [
+     "Формула становится сильнее",
+     "Пропадает адресность: формула превращается в проговаривание, а не в обращение",
+     "Ничего не меняется, важен только текст",
+     "Увеличивается число повторений"
     ],
     "correct": 1
    }
   ],
   "6": [
    {
-    "q": "Какие категории защиты используются в Модуле 6?",
+    "q": "По какому принципу построены формулы этого урока?",
     "options": [
-     "Уровни аль-'Амм/аль-Хасс/аль-Ахасс",
-     "Истиаза/тахассун/тахсын",
-     "Формула-конструктор «Аркы»",
-     "10 глаголов-действий"
+     "По названию органа тела, как в словаре органов",
+     "По конкретной функции (сон, память, речь, радость и т.д.), а не по органу",
+     "По имени джинна, вызвавшего проблему",
+     "По дню недели"
     ],
     "correct": 1
    },
    {
-    "q": "Книга-источник Модуля 6 («Учебное пособие по защите») в курсе:",
+    "q": "В чём суть трёхуровневого метода заклинания?",
     "options": [
-     "Исключена",
-     "Включена целиком",
-     "Является архивным материалом",
-     "Заменена черновиком автора"
+     "Читать три разных суры подряд",
+     "Сужение от общего заклинания к конкретному виду колдовства на конкретном органе",
+     "Читать три раза один и тот же текст",
+     "Три уровня громкости голоса"
     ],
     "correct": 1
    },
    {
-    "q": "В чём разница между исти'азой и тахассуном согласно тексту?",
+    "q": "Как входит наступленное колдовство (сихр аль-маршуш) в тело человека?",
     "options": [
-     "Это два названия одного и того же",
-     "Исти'аза — движение (от зла к Аллаху), тахассун — состояние (ты уже внутри крепости)",
-     "Исти'аза для мужчин, тахассун для женщин",
-     "Тахассун применяется только к джиннам, исти'аза — только к колдовству"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Сколько условий должно присутствовать в сердце при произнесении защиты (Якын, Таваккуль и др.)?",
-    "options": [
-     "Два",
-     "Три",
-     "Четыре",
-     "Шесть"
+     "Через глаза при чтении заклинания",
+     "Через еду",
+     "Через стопы, когда человек наступает на заколдованное место, и поднимается вверх по телу",
+     "Через дыхание"
     ],
     "correct": 2
    },
    {
-    "q": "Чем тахсын отличается от тахассуна?",
+    "q": "Какие основные органы поражаются при колдовстве на разлуку (сихр ат-тафрик)?",
     "options": [
-     "Тахсын — укрепление другого человека/предмета/дома, тахассун — укрепление себя",
-     "Тахсын применяется только ночью",
-     "Это одно и то же слово с разным написанием",
-     "Тахсын — самый слабый вид защиты"
+     "Только живот",
+     "Ноги и стопы",
+     "Сердце, грудь, мозг и глаза",
+     "Только голова"
     ],
-    "correct": 0
+    "correct": 2
    },
    {
-    "q": "На каком аяте построено «золотое правило защиты» в конце модуля (Сура Юнус)?",
+    "q": "Главный признак колдовства на болезнь (сихр аль-марад):",
     "options": [
-     "На приближённых Аллаха нет страха, и не будут они печалиться — те, кто уверовал и был богобоязнен",
-     "Читайте Коран, ибо он придёт заступником",
-     "Аллах — Свет небес и земли",
-     "Скажи: Он — Аллах, Единый"
-    ],
-    "correct": 0
-   },
-   {
-    "q": "Что, согласно Главе 9, делает лекарь перед КАЖДЫМ сеансом рукьи, а не только по особым случаям?",
-    "options": [
-     "Постится весь день",
-     "Тахассун и «Бисмилляхи, таваккяльту 'аляЛлах…»",
-     "Читает весь Коран целиком",
-     "Уединяется на час в тишине"
+     "Болезнь началась после ссоры с родственниками",
+     "Медицина не находит причину — или находит, лечит, а болезнь возвращается",
+     "Болезнь приходит только ночью",
+     "Анализы показывают воспаление"
     ],
     "correct": 1
    },
    {
-    "q": "Сколько уровней защиты сведены в итоговую систему модуля (Часть V)?",
+    "q": "Какие формулы библиотеки относятся к основе, а какие — к рабочим?",
     "options": [
-     "Два",
-     "Три — постоянная, ситуативная, боевая",
-     "Пять",
-     "Один универсальный уровень"
+     "Все формулы одинаковы по статусу",
+     "Основа — Коран и достоверная Сунна; рабочие формулы — пример практики без прямого основания в Откровении",
+     "Рабочие формулы запрещены, основа — только Коран",
+     "Основа — только рабочие формулы"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что означают термины «хитаб», «исаба», «истихваз», «рабт»?",
+    "options": [
+     "Хитаб — колдовство, исаба — сглаз, истихваз — зависть, рабт — порча",
+     "Хитаб — обращение, адресная речь; исаба — поражение и попадание в цель; истихваз — захват и одержимость; рабт — узлы, сковывающие волю",
+     "Хитаб — намерение, исаба — воля, истихваз — убеждённость, рабт — упование",
+     "Это синонимы одного и того же понятия"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Чем «одно чтение» отличается от одного аята или одной фразы?",
+    "options": [
+     "Это чтение одного аята без повторений",
+     "Это один точный проход на третьем уровне — конкретная зона и вид — с выходом и проверкой",
+     "Это чтение только аль-Фатихи",
+     "Это сеанс без диагностики"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Какие четыре этапа включает дистанционный сеанс?",
+    "options": [
+     "Звонок, оплата, чтение, прощание",
+     "Связь, образ, чтение, обратная связь — требования те же, что при личном приёме",
+     "Диагноз, прогноз, курс, контроль",
+     "Осмотр, пальпация, чтение, отчёт"
     ],
     "correct": 1
    }
   ],
   "7": [
    {
-    "q": "Какие четыре элемента выделены в авторском разборе намерения «Прямого пути»?",
+    "q": "Какой аят называется самым сильным из ежедневных азкаров защиты?",
     "options": [
-     "Действие Аллаха, средство в рамках таухида, место и необязательное уточнение вида",
-     "Сила целителя, громкость, боль и обязательный диагноз",
-     "Длительность, число повторов, цена и результат",
-     "Только место боли и предполагаемая причина"
+     "Аят аль-Курси",
+     "Аят 1 суры аль-Фатиха",
+     "Последний аят суры аль-Ихлас",
+     "Аят о терпении"
     ],
     "correct": 0
    },
    {
-    "q": "Как поступить с уточнением вида, если известно только о боли?",
+    "q": "О чём именно просит раки в этой мольбе — судя по ключевому слову «стур»?",
     "options": [
-     "Определить вид по силе боли",
-     "Принять боль за доказательство духовного поражения",
-     "Не выводить диагноз из боли; оставить вид неуточнённым и не подменять медицинскую оценку",
-     "Считать отсутствие диагноза недостатком веры"
-    ],
-    "correct": 2
-   },
-   {
-    "q": "Как следует понимать «сабиль / пути влияния» в этом авторском уроке?",
-    "options": [
-     "Как доказанные анатомические каналы",
-     "Как авторский духовный словарь, не описание установленной анатомии",
-     "Как диагноз, определяемый по боли",
-     "Как замену медицинскому обследованию"
+     "О силе для нападения на врага",
+     "О том, чтобы Аллах Сам укрыл его от чужих глаз",
+     "Об оружии для физической защиты",
+     "О мгновенном уничтожении врага"
     ],
     "correct": 1
    },
    {
-    "q": "Какое утверждение сохраняет границу между мольбой и медицинским объяснением?",
+    "q": "От чьего лица построены все дуа этого урока?",
     "options": [
-     "Мольба доказывает конкретный механизм болезни",
-     "Боль подтверждает наличие описанного автором пути",
-     "Духовный образ позволяет отменить назначенное лечение",
-     "Мольба обращена к Аллаху; авторское религиозное толкование не доказывает медицинский механизм"
-    ],
-    "correct": 3
-   },
-   {
-    "q": "Где, по основному акценту третьей части, проходит подготовка?",
-    "options": [
-     "Во время встречи, в спешке при пациенте",
-     "До встречи, в уединении и тишине",
-     "Только после обещания пациенту результата",
-     "Вместо необходимой медицинской помощи"
+     "От лица раки, читающего над пациентом",
+     "От первого лица — это личная защита самого читающего",
+     "От лица имама в мечети",
+     "От лица джинна"
     ],
     "correct": 1
    },
    {
-    "q": "Что в уроке означает «одно мгновение»?",
+    "q": "Какой общий принцип лежит в основе всех дуа этого урока?",
     "options": [
-     "Гарантию исцеления за секунду",
-     "Соединение намерения, мольбы и начала чтения; таблица источника отводит чтению 1–5 минут",
-     "Обещание результата каждому пациенту",
-     "Отмену беседы и согласия пациента"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Чем сводка «Прямого пути» отличается от книг трилогии?",
-    "options": [
-     "Она заменяет книги и читать их не нужно",
-     "Это ресурс для повторения; непонятую строку разбирают по самой книге",
-     "В ней больше материала, чем в книгах",
-     "Это медицинский протокол"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Что сказано в сводке о числах повторений из третьей книги?",
-    "options": [
-     "Это медицинская дозировка",
-     "Это пример расписания автора, а не обязанность и не дозировка",
-     "Это мера веры больного",
-     "Их обязательно выполнять ровно 33 раза"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Чем является таухид сердца в состоянии заряда?",
-    "options": [
-     "Тем, что в сердце не осталось никого, кроме одного лишь Аллаха — ничто созданное не входит в него и не нарушает баланс",
-     "Отрешённостью от любых чувств и событий",
-     "Запретом просить о чём-либо земном",
-     "Знаком избранности целителя"
+     "Зло возвращается к тому, кто его совершил и направил, по воле Аллаха",
+     "Зло уничтожается силой самого произнесённого слова",
+     "Зло переходит на того, кто читает дуа",
+     "Зло невозможно вернуть, можно только терпеть"
     ],
     "correct": 0
    },
    {
-    "q": "Когда читается формула с именем аль-Фаттах по книге «Заряд»?",
+    "q": "Что означает «замок» (قُفْل) в этой авторской системе?",
     "options": [
-     "Только в пятницу и только имамом",
-     "Вместо пяти обязательных молитв",
-     "После Фаджра или перед сеансом — в открытое время; вслух над водой при готовности сердца",
-     "Только в момент кризисного состояния пациента"
+     "Отдельный вид джинна из признанной классификации",
+     "Метафору препятствия, сковывающего благословение/успех/состояние — не отдельная духовная сущность",
+     "Название конкретного вида сихра из Справочника",
+     "Категорию фикха, признанную всеми мазхабами"
     ],
-    "correct": 2
+    "correct": 1
    },
    {
-    "q": "Почему отсечение путей в протоколе «Разрыв» всегда идёт первым этапом?",
+    "q": "Из каких шести блоков состоит личный режим защиты целителя?",
     "options": [
+     "Вода, масло, мёд, соль, уксус, ладан",
+     "Ихляс и Сунна, молитвы вовремя, зикры, аль-Бакара, омовение, дуа выхода",
+     "Пост, уединение, молчание, голос, дыхание, сон",
+     "Диагноз, прогноз, курс, контроль, отчёт, оплата"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Каков правильный порядок защиты?",
+    "options": [
+     "Охрана → изгнание → чистка → закрытие дверей",
+     "Изгнание → чистка → закрытие дверей → три уровня защиты",
+     "Закрытие дверей → охрана → изгнание",
+     "Только охрана: остальное необязательно"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что такое «корни души» в словаре урока?",
+    "options": [
+     "Глубинные качества, на которых держится духовная жизнь человека",
+     "Группа медицинских диагнозов",
+     "Эмоции и случайные мысли",
+     "Название вида колдовства"
+    ],
+    "correct": 0
+   },
+   {
+    "q": "Почему отсечение путей всегда идёт первым этапом?",
+    "options": [
+     "Потому что это самая короткая сура",
      "Пока канал открыт, колдовство подпитывается извне, а изгнанный джинн возвращается по тому же пути",
-     "Потому что это самая короткая часть протокола",
-     "Чтобы сразу назвать вид поражения",
-     "Чтобы пациент услышал аят о терпении"
+     "Потому что дуа произносятся только после изгнания",
+     "Потому что узлы не существуют без каналов"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Как отличить колдовство истощения (сихр аль-иджхад) от обычной усталости?",
+    "options": [
+     "Обычная усталость длится месяцами",
+     "Обычная усталость проходит после отдыха, а колдовство истощения — нет, несмотря на нормальные анализы",
+     "Колдовство истощения проходит само через неделю",
+     "Нет никакой разницы"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Какой основной элемент используется в этой программе лечения от сглаза?",
+    "options": [
+     "Огонь",
+     "Масло",
+     "Вода — с чтением дуа над ней",
+     "Земля"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Сколько наборов рукьи (рукья-1, рукья-2, рукья-3, рукья-4) содержит часть «Формулы против колдовства»?",
+    "options": [
+     "Два",
+     "Четыре",
+     "Семь",
+     "Один"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Какова рекомендуемая продолжительность краткого сеанса рукьи от колдовства?",
+    "options": [
+     "10–15 минут",
+     "3 часа",
+     "50–70 минут",
+     "Весь день"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что такое «чёрные линии» в контексте рукьи?",
+    "options": [
+     "Видимые полосы на коже",
+     "Линии на ладони",
+     "Духовные блокировки — раны души, через которые джинн, колдовство или сглаз влияют на конкретные сферы жизни",
+     "Энергетические каналы в теле"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Как звучит сжатая рабочая формула намерения для заряжения?",
+    "options": [
+     "«Исцеляю Кораном — Аллах исцеляет через него»; ещё короче для боевого применения: «Кораном исцеляю»",
+     "«Ради Аллаха. Верую, что Коран — исцеление, как сказал о нём Аллах. Исцеляю Кораном этот орган у этого пациента, зная, что исцеляет Аллах через Своё Слово»",
+     "«Пусть Коран подействует, если будет на то воля»",
+     "«Я направляю силу Корана в поражённый орган»"
     ],
     "correct": 0
    },
    {
-    "q": "Что необходимо до начала работы по протоколу «Разрыв»?",
+    "q": "В каком порядке источник выстраивает вход в чтение?",
     "options": [
-     "Медицинский диагноз пациента",
-     "Обещание пациенту гарантированного результата",
-     "Полный список имён джиннов",
-     "Искреннее покаяние и убеждённость, что причина — Аллах; без этого сердце не в состоянии таухида"
+     "Намерение → вера → упование → вход уповающим → Коран",
+     "Коран → намерение → вера → упование",
+     "Упование → Коран → намерение → вера",
+     "Вера → результат → намерение → Коран"
     ],
-    "correct": 3
+    "correct": 0
    }
   ],
   "8": [
    {
-    "q": "Что происходит, если пациент во время сеанса задыхается или прямо просит остановиться?",
+    "q": "Сколько элементов у каждого критерия и в каком порядке?",
     "options": [
-     "Сеанс продолжается — это признак, что джинну плохо",
-     "Сеанс останавливается немедленно, без исключений",
-     "Сеанс останавливается только если это подтвердит второй раки",
-     "Решение откладывается до конца сеанса"
+     "Два: аят и заклинание",
+     "Три: дуа, аят, защита",
+     "Четыре: дуа Аллаху → намерение → аят → заклинание",
+     "Пять: дуа, ният, аят, заклинание, прикосновение"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что определяет правило приоритета по виду недуга?",
+    "options": [
+     "Какие критерии можно пропустить в лёгких случаях",
+     "Какую формулу пациент выбирает по настроению",
+     "Только порядок выполнения внутри сеанса — все 10 обязательны",
+     "Сколько сеансов назначить"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Какова базовая норма повторений и срок курса по умолчанию?",
+    "options": [
+     "×3, курс 7 дней",
+     "×7, курс 21 день",
+     "×5; фиксированный срок не назначается, ориентир — исчезновение симптомов",
+     "×40, срок назначает наставник"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что доказывает сильная реакция пациента во время чтения?",
+    "options": [
+     "Диагноз и источник установлены верно",
+     "Что недуг точно джинн, а не сглаз",
+     "Что курс нужно остановить",
+     "Правильность применения и направление рукьи — но не диагноз"
+    ],
+    "correct": 3
+   },
+   {
+    "q": "Какие три опоры должны быть в рассказе пациента, прежде чем составляется полная программа?",
+    "options": [
+     "Имя виновного, дата начала, стоимость лечения",
+     "Название болезни, результаты анализов, назначение врача",
+     "Вид недуга, место направления, канал или обстоятельство усиления",
+     "Жалоба, возраст, семейное положение"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Когда ставится финальная защита в курсе?",
+    "options": [
+     "По календарю: с последнего дня срока",
+     "В первый же день, чтобы прикрыть пациента",
+     "Только после защиты от возврата зла",
+     "Только когда чистка дала результат, а не по календарю"
+    ],
+    "correct": 3
+   },
+   {
+    "q": "Где в сеансе читается восстановительный блок из семи просьб?",
+    "options": [
+     "В самом начале, до анализа",
+     "После финальной защиты",
+     "После основного чтения и до финальной защиты",
+     "Он опционален и каждый раз в другом месте"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Как выбирается срок курса по тяжести?",
+    "options": [
+     "Всегда 40 дней, независимо от недуга",
+     "Лёгкое — 1 день, среднее — 3, тяжёлое — 10",
+     "Лёгкое — 3 дня, среднее — 7, тяжёлое/застарелое — 14",
+     "Срок назначает наставник индивидуально"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что делает специальный протокол с программой по 10 критериям?",
+    "options": [
+     "Заменяет её целиком, базовая программа не читается",
+     "Сокращает её до трёх главных критериев",
+     "Дополняет или переориентирует формулы — но не удаляет ни один критерий",
+     "Применяется только если пациент сам о нём попросил"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Симптом повторяется у бабушки, матери и дочери. Какой протокол и какой порядок?",
+    "options": [
+     "Коллективный: полный курс каждой по отдельности",
+     "Внутренней раны: упор на критерий 3",
+     "Родовой: сначала Р1 и Р2, затем основные 10",
+     "Снов: чтение перед сном каждой"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "При пищевом воздействии каков порядок применения?",
+    "options": [
+     "Основные 10 → затем вода → затем желудок",
+     "Чтение над водой → направленное чтение на желудок → основные 10",
+     "Только вода, критерии не нужны",
+     "Назначить диету, затем программу"
     ],
     "correct": 1
    },
    {
-    "q": "На каком хадисе основан раздел о сопротивлении при рукье?",
+    "q": "В коллективном лечении поражён ребёнок. Кто читает и как составляются формулы?",
     "options": [
-     "Хадис о верблюдице Пророка ﷺ",
-     "Хадис об ифрите, схваченном Пророком ﷺ (аль-Бухари 3284, Муслим 541)",
-     "Хадис о 100 именах Аллаха",
-     "Хадис о финиках 'аджва"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Вместо каких двух исключённых книг написан черновик Модуля 8?",
-    "options": [
-     "№4 и №18 — обе построены на формуле-конструкторе, №18 вдобавок учил физически удерживать пациента",
-     "№8 и №12",
-     "№16 и №17",
-     "№9 и №13"
-    ],
-    "correct": 0
-   },
-   {
-    "q": "Как модуль отвечает на вопрос «разговаривать с джинном или нет»?",
-    "options": [
-     "Категорически запрещает любое обращение",
-     "Признаёт, что учёные расходятся во мнении, и не навязывает одну сторону — но слова самого пациента не игнорируются никогда",
-     "Требует обязательного долгого диалога с джинном",
-     "Оставляет решение только наставнику по телефону"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Что модуль говорит о заранее объявленном числе сеансов или «уровне сложности» случая?",
-    "options": [
-     "Это обязательная часть протокола",
-     "Не стоит объявлять заранее — это создаёт ложные ожидания",
-     "Число сеансов всегда равно семи",
-     "Решает только сам пациент"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Чем именно опасна была исключённая книга №18, помимо формулы-конструктора?",
-    "options": [
-     "Она была написана не на арабском",
-     "Инструктировала физически удерживать пациента и игнорировать крики/мольбы как «манипуляцию духа»",
-     "Она противоречила книге №4 по содержанию",
-     "В ней не было ссылок на хадисы вообще"
+     "Назначается взрослый пациент, ребёнка лечат общим чтением над домом",
+     "Читает родитель, формулы составляются на имя ребёнка",
+     "Ребёнок читает сам под присмотром",
+     "Приём не проводится до совершеннолетия"
     ],
     "correct": 1
    }
   ],
   "9": [
    {
-    "q": "Почему Модуль 9 не называется «Уровень мастера»?",
+    "q": "Чем являются 10 формул из этого урока?",
     "options": [
-     "Это маркетинговое решение",
-     "Все три книги-кандидата исключены — «уровень мастера» там был фабрикованной иерархией",
-     "Модуль ещё не написан",
-     "Название показалось слишком длинным"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "На ком ученик проводит первые учебные сеансы?",
-    "options": [
-     "На реальных пациентах RUKYA Pro",
-     "На добровольцах/друг на друге под наблюдением наставника",
-     "Ни на ком — только теория",
-     "На животных"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Какие три книги-кандидата были исключены из-за фабрикованной иерархии «уровней аль-'Амм/аль-Хасс/аль-Ахасс»?",
-    "options": [
-     "№9, №13, №25",
-     "№4, №16, №18",
-     "№8, №12, №17",
-     "№3, №9, №13"
-    ],
-    "correct": 0
-   },
-   {
-    "q": "Почему модуль честно заявляет, что не может дать «мастерство» одним лишь текстом?",
-    "options": [
-     "Потому что тема слишком проста для текста",
-     "Письменный материал не может заменить контролируемую практику для темы такого риска",
-     "Потому что автор не успел написать текст",
-     "Мастерство не является целью курса вообще"
-    ],
-    "correct": 1
-   },
-   {
-    "q": "Что из перечисленного НЕ является частью того, из чего состоит модуль?",
-    "options": [
-     "Разбор реальных обезличенных кейсов с наставником",
-     "Учебные сеансы под наблюдением",
-     "Самостоятельный приём реальных пациентов без всякого контроля",
-     "Переход к RUKYA Pro после прохождения этапов"
+     "Колдовскими заклинаниями на привлечение любви",
+     "Амулетами для ношения",
+     "Дуа (мольбами) к Аллаху, основанными на Коране и Сунне",
+     "Рецептами народной медицины"
     ],
     "correct": 2
    },
    {
-    "q": "Что именно называется «самой неготовой частью курса» в этом модуле?",
+    "q": "Какой аят лежит в основе дуа о супружеской привязанности и милости?",
     "options": [
-     "Текст модуля не написан",
-     "Инфраструктура (банк кейсов, механизм записи, критерии допуска) ещё не выстроена",
-     "Автор ещё не согласовал концепцию",
-     "Модуль ещё не имеет номера"
+     "Аят аль-Курси (аль-Бакара, 2:255)",
+     "Сура ар-Рум, 30:21 — «Из Его знамений то, что Он сотворил для вас из вас самих супруг, чтобы вы находили в них покой, и установил между вами любовь и милость»",
+     "Сура аль-Ихлас",
+     "Сура аль-Фатиха"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Какие шесть особых случаев выделены в главе?",
+    "options": [
+     "Сглаз, зависть, сихр, масс, узел, порча",
+     "Родовое поражение, истихваз, рабт, сихр аль-маут, ПНС, порча на дом",
+     "Голова, грудь, живот, спина, плечи, ноги",
+     "Дети, взрослые, пожилые, беременные, спортсмены, студенты"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Из каких четырёх шагов состоит разбор истихваза и в каком порядке они идут?",
+    "options": [
+     "Азан, чтение, вода, печать",
+     "Расторжение договора → очищение от ширка → изгнание захватчика → принятие истинного Покровителя",
+     "Изгнание → договор → очищение → покровительство",
+     "Опрос, диагноз, чтение, отчёт"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Как полный перевод определяет наследственную болезнь?",
+    "options": [
+     "Как поражение, связываемое источником с материнской линией или клятвами предков",
+     "Как любой медицинский диагноз в семье",
+     "Как наследственную генетическую мутацию",
+     "Как состояние только во время чтения"
+    ],
+    "correct": 0
+   },
+   {
+    "q": "Какие группы признаков перечисляет глава вторая?",
+    "options": [
+     "Только физические",
+     "Визуальные, физические, психические, духовные, социальные и связанные с потомством",
+     "Только сны",
+     "Только результаты лабораторных анализов"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Чем зехри отличается от обладателя наследственной болезни в тексте источника?",
+    "options": [
+     "Источник выделяет его как отдельную категорию и предупреждает не смешивать понятия",
+     "Никак, это всегда одно и то же",
+     "Зехри — медицинский диагноз",
+     "Наследственная болезнь относится только к детям"
+    ],
+    "correct": 0
+   },
+   {
+    "q": "Как источник различает унаследованное колдовство и одержимость?",
+    "options": [
+     "По результатам анализа крови",
+     "По описанному механизму: совместное поражение матери и детей либо последующее проникновение",
+     "По одному сну",
+     "По уровню образования человека"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Какие три вида «инъекций джиннов» называет источник?",
+    "options": [
+     "Лечебные, болезненные и имеющие определённые цели",
+     "Только лечебные",
+     "Только вакцинационные",
+     "Внутривенные, внутримышечные и подкожные"
+    ],
+    "correct": 0
+   },
+   {
+    "q": "Какие четыре основных шага лечения перечислены в главе тринадцатой?",
+    "options": [
+     "Только травы и растворы",
+     "Рукья у профессионала, развязывание клятв, совместная работа с матерью и ребёнком при возможности, защита дома и души",
+     "Только кровопускание",
+     "Обвинение предков и отказ от лечения"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Какие причины родового заболевания перечислены в начале источника?",
+    "options": [
+     "Сихр на род, договоры предков, жертвоприношения и проклятия с будущими условиями",
+     "Только генетические мутации",
+     "Только питание",
+     "Только возраст"
+    ],
+    "correct": 0
+   },
+   {
+    "q": "Что источник относит к сихру препятствия?",
+    "options": [
+     "Только кожные болезни",
+     "Препятствия в пропитании, работе, браке и одержимости",
+     "Только лабораторные отклонения",
+     "Только плохие сны"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что источник называет ташхисом?",
+    "options": [
+     "Определение духовной болезни опытным ракъи, отличное от лечения",
+     "Назначение трав",
+     "Любую реакцию на чтение",
+     "Медицинский анализ"
+    ],
+    "correct": 0
+   },
+   {
+    "q": "Доказывает ли реакция на аяты конкретный диагноз по правилам курса?",
+    "options": [
+     "Да, всегда",
+     "Нет, она требует осторожного разбора и не заменяет совокупность данных",
+     "Да, если есть рвота",
+     "Да, если есть сон"
     ],
     "correct": 1
    }
   ],
   "10": [
    {
-    "q": "Как раки должен относиться к диагнозу ИИ в системе RUKYA Pro?",
+    "q": "Сколько уровней формул уничтожения джиннов описано в уроке?",
     "options": [
-     "Принимать как готовое решение без проверки",
-     "Как черновик для обязательной проверки, даже если он уже отправлен пациенту",
-     "Игнорировать полностью",
-     "Использовать только если пациент согласен"
+     "Два",
+     "Три",
+     "Четыре: уровень 1 — общий, уровень 2 — по типу джинна, уровень 3 — по органу + типу, уровень 4 — комбинированный",
+     "Один"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Какой аят является основным далилем (доказательством) дозволенности уничтожения джиннов?",
+    "options": [
+     "Аят аль-Курси",
+     "Сура Фатир, 35:6 — «Шайтан для вас — враг, так считайте же его врагом»",
+     "Сура аль-Фатиха",
+     "Сура ан-Нас"
     ],
     "correct": 1
    },
    {
-    "q": "В чём, согласно тексту, заключается сама граница между дозволенным наблюдением и ширком?",
+    "q": "Какое обязательное условие перед уничтожением джинна?",
     "options": [
-     "В том, признаёт ли человек существование ощущений тепла/тяжести вообще",
-     "В приписывании силы: эзотерик считает, что сила у него самого/у камня/у «Космоса», а не у Аллаха",
-     "В использовании арабских слов вместо иностранных",
-     "В стоимости услуг целителя"
+     "Разрешение колдуна",
+     "Согласие самого джинна",
+     "Призыв джинна к исламу и предложение выйти мирно — если отказывается, то дозволено уничтожение",
+     "Чтение суры аль-Бакара целиком"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что велит правило шестое из «десяти правил раки-воина»?",
+    "options": [
+     "Снижать голос, чтобы не пугать пациента",
+     "Не останавливаться от криков: крик джинна — это боль, не сила; чем громче кричит — тем сильнее горит",
+     "Прерывать сеанс при первом крике и перезащищаться",
+     "Отвечать джинну вопросом, почему он кричит"
     ],
     "correct": 1
    },
    {
-    "q": "Что общего у практик «кристаллы как источник силы» и ношение амулетов, согласно приведённому хадису (Ахмад, 17404)?",
+    "q": "Из скольких этапов состоит метод избавления от джинна?",
     "options": [
-     "Обе разрешены при чтении Корана над предметом",
-     "«Кто повесил амулет — тот совершил ширк»",
-     "Обе относятся к разрешённым лечебным средствам",
-     "Различий между ними текст не проводит вообще"
+     "Из одного",
+     "Из двух",
+     "Из трёх: 1) прямое ослабление, 2) аннулирование первопричин/колдовства, 3) очищение и защита от сглаза",
+     "Из пяти"
     ],
-    "correct": 1
+    "correct": 2
    },
    {
-    "q": "Как текст расценивает обращение к «третьему глазу» и попытки «видеть» прошлое/будущее?",
+    "q": "Что источник называет кашфом?",
     "options": [
-     "Как безобидную психологическую технику",
-     "Как притязание на знание сокровенного (гайба), которое принадлежит только Аллаху",
-     "Как разрешённую практику при должном намерении",
-     "Как один из признанных методов диагностики в этом курсе"
+     "Духовным видением скрытого во время рукъйи или в обычном состоянии",
+     "Лабораторным исследованием",
+     "Только обычным сном",
+     "Физическим осмотром"
     ],
-    "correct": 1
+    "correct": 0
    },
    {
-    "q": "Что говорится о «карме и кармических долгах из прошлых жизней»?",
+    "q": "Какие медицинские причины галлюцинаций перечисляет источник?",
     "options": [
-     "Это допустимая метафора для описания предопределения",
-     "Это замена кадара (Предопределения Аллаха) языческой концепцией перерождений, противоречащая акыде",
-     "Курс не даёт оценки этому понятию",
-     "Это то же самое, что таваккуль"
+     "Психические, неврологические, соматические состояния, вещества и дефицит сна",
+     "Только джиннов",
+     "Только сглаз",
+     "Только наследственность"
     ],
-    "correct": 1
+    "correct": 0
    },
    {
-    "q": "Какая техника диагностики упомянута как отдельно исключённая в самом конце книги, повторяя запрет из других материалов курса?",
+    "q": "Что источник относит к признакам тяжелейшего случая?",
     "options": [
-     "Чтение аят аль-Курси над пациентом",
-     "Упражнения на чувствительность рук (тепло/покалывание) для диагностики",
-     "Опрос пациента о симптомах",
-     "Направление к врачу при красных флагах"
+     "Длительное лечение без устойчивого результата, множественные поражения и угрозу жизни",
+     "Любую головную боль",
+     "Только один сон",
+     "Только возраст пациента"
     ],
-    "correct": 1
+    "correct": 0
    },
    {
-    "q": "На каком аяте построен вывод книги о том, кто на самом деле исцеляет?",
+    "q": "Какие причины замедления перечисляет источник?",
     "options": [
-     "«И когда я болею — Он исцеляет меня» (аш-Шуара, 26:80)",
-     "«Аллах — Свет небес и земли»",
-     "«Не приблизится к нему шайтан»",
-     "«Скажи: Он Аллах, Единый»"
+     "Недостаток опыта, прекращение практики, сопротивление семьи, накопление и другие факторы",
+     "Только недостаток повторений",
+     "Только возраст",
+     "Только отсутствие видений"
     ],
     "correct": 0
    }
   ],
   "11": [
    {
-    "q": "Что осуждает книга «Невежды» как ошибку 10?",
+    "q": "Какой аят указывает на Таухид как источник силы заклинателя?",
     "options": [
-     "Тихое чтение рукьи",
-     "Крик на пациента",
-     "Использование азкаров",
-     "Направление пациента к врачу"
+     "Аят аль-Курси",
+     "Сура аль-Хадж, 22:31 — «Кто придаёт Аллаху сотоварищей, тот словно падает с неба» — Таухид = прочный фундамент, ширк = падение",
+     "Сура аль-Фатиха",
+     "Сура аль-Ихлас"
     ],
     "correct": 1
    },
    {
-    "q": "Что запрещено истинному раки согласно Модулю 11?",
+    "q": "Чем заклинание на действие отличается от обычного заклинания?",
     "options": [
-     "Обучать пациента самостоятельности",
-     "Гарантировать результат лечения и приписывать исцеление себе",
-     "Использовать подлинные хадисы",
-     "Направлять к врачу при красных флагах"
+     "Ничем",
+     "Обычное заклинание — «от» (мин), заклинание на действие — «для/чтобы» (ли): вывести, сжечь, развязать, извлечь",
+     "Заклинание на действие тише",
+     "Заклинание на действие читается на арабском, обычное — на русском"
     ],
     "correct": 1
    },
    {
-    "q": "На каком хадисе построено обвинение самозванцев, берущихся лечить без знания?",
+    "q": "Что такое комбо-формула (цепная атака)?",
     "options": [
-     "«Сглаз — истина» (аль-Бухари 5740)",
-     "«Кто занялся лечением, не будучи известным как сведущий в нём — тот несёт ответственность» (Абу Дауд 4586)",
-     "«Взывайте к Аллаху, будучи убеждёнными» (ат-Тирмизи 3479)",
-     "«Читайте Коран» (Муслим 804)"
+     "Чтение одной формулы громко",
+     "Цепочка из нескольких действий подряд без паузы — например: развязать узлы + сжечь колдовство + извлечь + запечатать",
+     "Одна формула, повторённая 100 раз",
+     "Чтение двумя заклинателями одновременно"
     ],
     "correct": 1
    },
    {
-    "q": "Почему модуль называет разговор с джинном («как тебя зовут», «кто послал») ошибкой?",
+    "q": "Что означает утверждение «секунда — это спрессованные годы»?",
     "options": [
-     "Джинн не умеет говорить в принципе",
-     "Пророк ﷺ описал шайтана как лжеца («Садакака ва хува казуб», аль-Бухари 5010) — диагностику нельзя строить на его словах",
-     "Это отнимает слишком много времени у раки",
-     "Только потому что это невежливо"
+     "Что мгновенное исцеление доступно только через много лет ожидания",
+     "Что быстрое воздействие возможно потому, что за одной секундой стоят годы тренировки — это не обход подготовки, а её результат",
+     "Что первые годы практики результата не будет вообще",
+     "Что скорость приходит сама с возрастом"
     ],
     "correct": 1
    },
    {
-    "q": "Что модуль называет «привязыванием пациента к себе» вместо правильной цели раки?",
+    "q": "Какой из пяти врагов якына напрямую порождается самим учением о скорости?",
     "options": [
-     "Слишком быстрое завершение лечения",
-     "Создание зависимости («без меня не справишься») вместо обучения пациента заклинать себя самостоятельно",
-     "Отказ принимать оплату",
-     "Направление пациента к другому раки"
+     "Грехи",
+     "Гафля",
+     "Поспешность — ожидание мгновенного результата и разочарование при его отсутствии; тот, кто гонится за скоростью, скорости не получит",
+     "Сомнение"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что в книге названо первым тактом рабочего цикла и почему именно так?",
+    "options": [
+     "Заряжение — потому что раки наполняет себя силой",
+     "Обращение к Аллаху — потому что накапливается не сила в теле, а убеждённость в Аллахе; иное понимание уводит в скрытый ширк",
+     "Намерение — потому что без него нет адреса",
+     "Чтение — потому что с него начинается воздействие"
     ],
     "correct": 1
    },
    {
-    "q": "Какое качество раки текст называет его «щитом и силой», прямо связывая с силой самой рукьи?",
+    "q": "Что должен ответить лекарь пациенту, если быстрого результата не вышло?",
     "options": [
-     "Красноречие",
-     "Богобоязненность (таква)",
-     "Громкость голоса",
-     "Количество прочитанных книг"
+     "Что у пациента слабая вера",
+     "Что метод не подходит именно ему",
+     "Правду: причина взята и будет браться дальше, исцеление у Аллаха, пациент не виноват и положение не плохое",
+     "Что нужно заплатить за более сильный сеанс"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Сколько ключевых компонентов заклинания выделяет автор?",
+    "options": [
+     "Три",
+     "Пять",
+     "Восемь: намерение, визуализация, концентрация, голос, энергия, воля, связь с Аллахом, спецификация",
+     "Двенадцать"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Какая спецификация даёт 100% эффективности?",
+    "options": [
+     "«Помоги, Аллах» (без указания от чего)",
+     "«От колдовства»",
+     "«От колдовства в желудке»",
+     "«От съеденного колдовства на разлучение, в верхней части желудка, чтобы вышло с рвотой»"
+    ],
+    "correct": 3
+   },
+   {
+    "q": "Что такое корень влияния по определению урока?",
+    "options": [
+     "Громкость голоса и сила дыхания",
+     "Четырёхуровневый порядок: Источник, средство, корень в рабе и форма",
+     "Набор «сильных» формул, которые действуют сами",
+     "Особый дар, который передаётся от учителя к ученику"
     ],
     "correct": 1
    },
    {
-    "q": "Как модуль описывает разницу между намазом смиренного и намазом рассеянного, применяя эту же логику к чтению рукьи?",
+    "q": "Где именно проходит граница между дозволенным наблюдением и ширком?",
     "options": [
-     "Различий нет, слова одинаковы",
-     "Слова одинаковы, но один стоит перед Аллахом сердцем, а другой просто двигает телом",
-     "Смиренный читает громче",
-     "Рассеянный не завершает намаз"
+     "В том, признаёт ли человек существование ощущений тепла и тяжести вообще",
+     "В приписывании силы: эзотерик считает источником себя, камень, «Космос» или безличное поле, ракый знает, что источник всякой силы — только Аллах",
+     "В том, на каком языке названы явления — арабском или иностранном",
+     "В том, берёт ли целитель плату за работу"
     ],
     "correct": 1
    },
    {
-    "q": "Что модуль называет недопустимым в общении раки с пациентами противоположного пола?",
+    "q": "Какой критерий называется простым и не оставляющим места для «своих» дополнений?",
     "options": [
-     "Общение вообще запрещено",
-     "Уединение с женщиной без махрама — запрещено при любых обстоятельствах",
-     "Разрешено только по видеосвязи",
-     "Разрешено при свидетеле любого пола"
+     "Рукья эффективна, если читается громко",
+     "Нет проблем в рукье, если в ней нет ширка",
+     "Рукья работает, если есть амулет-защита",
+     "Рукья верна, если за неё берут большие деньги"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Сколько качеств перечисляет урок в портрете истинного раки?",
+    "options": [
+     "Три: знание, деньги, слава",
+     "Шесть: знание, такъва, ихляс, присутствие сердца, рахма, таваду'",
+     "Девять: по числу запретов",
+     "Одно: присутствие сердца"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "По каким трём измерениям автор сравнивает практика и теоретика?",
+    "options": [
+     "Возраст, опыт, образование",
+     "Глубина понимания, подход к решению, диагностика",
+     "Сила голоса, количество формул, скорость чтения",
+     "Знание арабского, знание хадисов, знание фикха"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Какие восемь ошибок обесценивают сеанс?",
+    "options": [
+     "Ошибки в арабском произношении, темпе, громкости, позе, воде, масле, времени, месте",
+     "Чтение «в никуда», нет образа, автоматизм, сомнение в процессе, нет подготовки, оценка по ходу, чтение «на всё» по одному симптому, увлечение «своими» формулами",
+     "Опоздание, дорогая оплата, лишние вопросы, отказ от воды, отказ от масла, отказ от азана, отказ от отчёта, отказ от курса",
+     "Только сомнение и спешка"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что на самом деле означает то, что RUKYA Pro работает офлайн и хранит данные локально?",
+    "options": [
+     "Что данные пациента надёжно защищены самим фактом отсутствия интернета",
+     "Что все тайны пациентов целиком лежат на одном устройстве и полностью на совести раки",
+     "Что резервные копии делать не нужно — данные никуда не уходят",
+     "Что приложение можно ставить на любой общий компьютер"
     ],
     "correct": 1
    }
   ],
   "12": [
    {
-    "q": "Как раки должен относиться к диагнозу ИИ в системе RUKYA Pro?",
+    "q": "Сколько ступеней практики в паспорте и какая из них финальная?",
     "options": [
-     "Принимать как готовое решение без проверки",
-     "Как черновик для обязательной проверки, даже если он уже отправлен пациенту",
-     "Игнорировать полностью",
-     "Использовать только если пациент согласен"
+     "Две: чтение на себе и чтение на всех желающих",
+     "Три: себя, близкие, самостоятельный приём без наставника",
+     "Четыре: себя → близкие с согласия → добровольцы под наблюдением → супервизированный приём",
+     "Пять: включая стажировку у другого раки"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что технически фиксирует допуск к самостоятельному приёму (ступень 4)?",
+    "options": [
+     "Диплом о прохождении всех тестов модулей",
+     "Три разобранных случая со статусом «принято» через форму супервизии + устная защита двух из них",
+     "Устная договорённость с наставником",
+     "100 записей в дневнике без проверки"
     ],
     "correct": 1
    },
    {
-    "q": "Кто подписывает итоговое заключение по пациенту?",
+    "q": "Что требует вход на ступень «Близкие с согласия», кроме закрытой ступени 1?",
     "options": [
-     "Сама система ИИ",
-     "Всегда сам раки, своими словами",
-     "Администратор портала",
-     "Никто — заключение не требуется"
+     "Только желание близких",
+     "Пройденный Модуль 9",
+     "Модули 1–6 пройдены; согласие каждого объяснено («учебная рукья»)",
+     "Разрешение администратора сайта"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "По каким полям ведётся запись случая — и почему порядок строгий?",
+    "options": [
+     "Свободный рассказ, как помнится",
+     "По десяти критериям программы",
+     "Девять шагов формы супервизии: сначала слова пациента, потом выводы — иначе вывод ставится до опроса",
+     "Только жалоба и результат"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Пациентка жалуется: живёт в новом доме три месяца, у неё и мужа давление в груди под утро, сын стал вялый, «будто кто-то стоит рядом», вне дома отпускает. Какой главный вид поражения по совокупности признаков?",
+    "options": [
+     "Одержимость джинном — из-за ощущения присутствия",
+     "Коллективное (домовое) воздействие — привязка к дому, похожие симптомы у троих, улучшение вне него",
+     "Только сглаз — из-за зависти соседей",
+     "Медицинская причина — к врачу, рукья не нужна"
     ],
     "correct": 1
    },
    {
-    "q": "Что делает раки в первую очередь при срабатывании детектора кризисного состояния во время сеанса?",
+    "q": "Что меняется, когда ты выставляешь приоритет критериев по виду недуга?",
     "options": [
-     "Немедленно приостанавливает сеанс рукьи, приоритет — безопасность пациента",
-     "Продолжает сеанс до конца, чтобы не пугать пациента",
-     "Сразу вызывает наставника и ждёт его решения",
-     "Прекращает всякое общение с пациентом"
-    ],
-    "correct": 0
-   },
-   {
-    "q": "Что раки обязан сделать с анкетой пациента, прежде чем полагаться на диагноз ИИ?",
-    "options": [
-     "Прочитать только итоговый диагноз",
-     "Прочитать полную анкету, а не только диагноз, и сверить его с курсом (Модули 4–11)",
-     "Передать анкету наставнику для проверки",
-     "Анкету читать не обязательно, если диагноз уже отправлен"
+     "Состав программы — часть критериев выбрасывается",
+     "Только порядок внутри сеанса; все десять критериев выполняются",
+     "Количество повторов (×5 становится ×1)",
+     "Ничего не меняется, приоритет символический"
     ],
     "correct": 1
    },
    {
-    "q": "Что делает раки при несогласии со своим диагнозом ИИ?",
+    "q": "На Part 0 (входе) взрослая пациентка в порядке, но её ребёнок «вялый третий день с температурой». Что правильно?",
     "options": [
-     "Подстраивает своё заключение под диагноз системы",
-     "Фиксирует расхождение и действует по собственному обоснованному суждению",
-     "Немедленно прекращает работу с этим пациентом",
-     "Просит пациента выбрать диагноз самостоятельно"
+     "Читать на всю семью по общему протоколу сразу",
+     "Ребёнка — сначала к врачу; рукья рядом как поддержка, а не вместо осмотра",
+     "Отказать всей семье в приёме",
+     "Игнорировать ребёнка, работать только со взрослыми"
     ],
     "correct": 1
    },
    {
-    "q": "Что символизирует требование, что заключение по пациенту не копируется из текста ИИ, а пишется раки своими словами?",
+    "q": "В рассказе всплывает, что найденный ранее носитель (свёрток на имя) уже сожжён, но связь держится. Какой шаг программы это закрывает?",
     "options": [
-     "Экономию времени системы",
-     "Что подпись означает личную проверку и ответственность лекаря перед Аллахом и пациентом",
-     "Формальное требование, не имеющее особого смысла",
-     "Требование только для новых учеников"
+     "Пропустить критерий — предмета больше нет",
+     "Вернуть вред на человека, сжёгшего носитель",
+     "Формула разрыва предполагаемой связи внутри критерия 7 или 9 — сам критерий не пропускается",
+     "Начать сеанс заново с поиска нового носителя"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Что проверяет защита двух случаев — в отличие от теста модуля?",
+    "options": [
+     "Знание арабской грамматики формул",
+     "Количество прочитанных книг курса",
+     "Умение вести приём целиком от входа до вывода и честность в разборе",
+     "Скорость произнесения аятов"
+    ],
+    "correct": 2
+   },
+   {
+    "q": "Сколько случаев и какого набора выносятся на защиту?",
+    "options": [
+     "Три любых из дневника практики",
+     "Два из трёх принятых наставником случаев, из разных корневых групп",
+     "Два самых успешных случая ступени 1",
+     "Один случай по выбору наставника"
     ],
     "correct": 1
+   },
+   {
+    "q": "Что обязательно присутствует в блоке «Граница безопасности» на защите?",
+    "options": [
+     "Обещание больше ошибаться не будет",
+     "Названные красные флаги: были/не были, как проверял, что сделал бы при каждом",
+     "Статистика выздоровлений",
+     "Пересказ Модуля 4 целиком"
+    ],
+    "correct": 1
+   },
+   {
+    "q": "Что из перечисленного — недопустимый довод при диагнозе на защите?",
+    "options": [
+     "Ссылка на конкретные ответы пациента из опроса",
+     "Ссылка на «зоны без чувства» в теле",
+     "«Мне показалось» и «система так посчитала»",
+     "Ссылка на признаки из справочника классификации"
+    ],
+    "correct": 2
    }
   ]
  },

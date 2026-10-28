@@ -24,7 +24,7 @@ let deps = null; // { tg, db, CHAT, logger }
 function init(d) { deps = d; }
 
 const PAGE = 8;              // учеников на страницу
-const TOTAL_MODULES = 11;
+const TOTAL_MODULES = COURSE.modules.length;
 const SILENT_DAYS = 7;       // после скольких дней молчания ученик в списке
 
 function esc(s) {
