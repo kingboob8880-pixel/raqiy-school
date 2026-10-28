@@ -96,7 +96,8 @@
         "/content/reference/hitab-biblioteka-formul.md",
         "/content/reference/hitab-prilozheniya.md",
         "/content/module-11/protokol-odnogo-chteniya.md",
-        "/content/module-11/distancionnyy-seans-i-samoiscelenie.md"
+        "/content/module-11/distancionnyy-seans-i-samoiscelenie.md",
+        "/content/module-6/hitab-odno-chtenie-razbor.md"
       ]
     },
     {
@@ -127,7 +128,8 @@
       "lessons": [
         "/content/module-8/desyat-kriteriev.md",
         "/content/module-8/bank-programm-lecheniya.md",
-        "/content/module-11/specialnye-protokoly-priyoma.md"
+        "/content/module-11/specialnye-protokoly-priyoma.md",
+        "/content/module-8/vtoroe-izdanie-razbor-i-kriterii.md"
       ]
     },
     {
@@ -177,7 +179,8 @@
         "/content/module-10/obraz-istinnogo-rakii.md",
         "/content/module-10/raznitsa-praktik-vs-teoretik.md",
         "/content/module-10/vnutrenniy-sabotazh.md",
-        "/content/module-11/zashchita-dannykh-patsienta.md"
+        "/content/module-11/zashchita-dannykh-patsienta.md",
+        "/content/module-11/hitab-vnutrennyaya-rabota.md"
       ]
     },
     {
@@ -186,7 +189,9 @@
       "lessons": [
         "/content/reference/praktika-passport.md",
         "/content/module-11/praktikum-simulyatsiya.md",
-        "/content/module-11/zashchita-dvukh-sluchaev.md"
+        "/content/module-11/zashchita-dvukh-sluchaev.md",
+        "/content/module-12/vtoroe-izdanie-gotovnost-priyom.md",
+        "/content/module-12/vtoroe-izdanie-superviziya-pravo.md"
       ]
     }
   ],
@@ -260,6 +265,41 @@
       "doc": "/content/module-10/tyazheleyshie-sluchai-2.md",
       "exam": "/content/exams/module-10-tyazheleyshie-sluchai-2.md",
       "module": 10
+    },
+    {
+      "title": "Хитаб Исаба: три столпа, пять элементов и сердечный резервуар",
+      "source": "Учебник «Хитаб Исаба», главы 39–41: три столпа, пять элементов намерения, сердечный резервуар и внутренние ключи.",
+      "doc": "/content/module-11/hitab-vnutrennyaya-rabota.md",
+      "exam": "/content/exams/module-11-hitab-vnutrennyaya-rabota.md",
+      "module": 11
+    },
+    {
+      "title": "Хитаб Исаба: исходный разбор одного чтения и маркеры 4/4",
+      "source": "Учебник «Хитаб Исаба», главы 42–44: исходный случай, протокол 25 минут и проверка 72 часа / 7 / 21 день.",
+      "doc": "/content/module-6/hitab-odno-chtenie-razbor.md",
+      "exam": "/content/exams/module-6-hitab-odno-chtenie-razbor.md",
+      "module": 6
+    },
+    {
+      "title": "Второе издание: исходный разбор, 10 критериев и учёт результата",
+      "source": "«Аллах — твоё спасение. Книга профессионального лечения», 2-е издание, приложения 7–10.",
+      "doc": "/content/module-8/vtoroe-izdanie-razbor-i-kriterii.md",
+      "exam": "/content/exams/module-8-vtoroe-izdanie-razbor-i-kriterii.md",
+      "module": 8
+    },
+    {
+      "title": "Второе издание: готовность, приём и ведение случая",
+      "source": "«Аллах — твоё спасение. Книга профессионального лечения», 2-е издание, приложения 1–3.",
+      "doc": "/content/module-12/vtoroe-izdanie-gotovnost-priyom.md",
+      "exam": "/content/exams/module-12-vtoroe-izdanie-gotovnost-priyom.md",
+      "module": 12
+    },
+    {
+      "title": "Второе издание: супервизия, право и школа лекаря",
+      "source": "«Аллах — твоё спасение. Книга профессионального лечения», 2-е издание, приложения 4–6.",
+      "doc": "/content/module-12/vtoroe-izdanie-superviziya-pravo.md",
+      "exam": "/content/exams/module-12-vtoroe-izdanie-superviziya-pravo.md",
+      "module": 12
     }
   ],
   "legacyIndexTargets": {

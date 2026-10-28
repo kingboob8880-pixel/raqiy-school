@@ -30,6 +30,8 @@ status: certified
 15. **[Внутренний саботаж: восемь ошибок, которые обесценивают сеанс](/content/module-10/vnutrenniy-sabotazh.md)**
 16. **[Защита и конфиденциальность данных пациента в RUKYA Pro](/content/module-11/zashchita-dannykh-patsienta.md)**
 
+17. **[Хитаб Исаба: три столпа, пять элементов и сердечный резервуар](/content/module-11/hitab-vnutrennyaya-rabota.md)**
+
 ## Предпосылки
 
 Сначала заверши модуль «Кашф и тяжелейшие случаи» и его итоговый тест.

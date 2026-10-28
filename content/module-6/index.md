@@ -23,6 +23,8 @@ status: certified
 8. **[Один точный проход: протокол 25 минут и четыре маркера](/content/module-11/protokol-odnogo-chteniya.md)**
 9. **[Дистанционный сеанс и самоисцеление: те же требования, другой адрес](/content/module-11/distancionnyy-seans-i-samoiscelenie.md)**
 
+10. **[Хитаб Исаба: исходный разбор одного чтения и маркеры 4/4](/content/module-6/hitab-odno-chtenie-razbor.md)**
+
 ## Предпосылки
 
 Сначала заверши модуль «Хитаб Исаба: полный цикл» и его итоговый тест.

@@ -17,6 +17,9 @@ status: certified
 2. **[Финальный практикум-симуляция: один случай от Part 0 до защиты](/content/module-11/praktikum-simulyatsiya.md)**
 3. **[Защита двух случаев — итоговый экзамен Модуля 12](/content/module-11/zashchita-dvukh-sluchaev.md)**
 
+4. **[Второе издание: готовность, приём и ведение случая](/content/module-12/vtoroe-izdanie-gotovnost-priyom.md)**
+5. **[Второе издание: супервизия, право и школа лекаря](/content/module-12/vtoroe-izdanie-superviziya-pravo.md)**
+
 ## Предпосылки
 
 Сначала заверши модуль «Профессиональный приём и мастерство» и его итоговый тест.

@@ -177,17 +177,20 @@ export const MODULE_INTRO = {
       ru: [
         "Протоколы по органам и библиотека формул",
         "Один точный проход и окна проверки",
-        "Самоисцеление и дистанционный формат"
+        "Самоисцеление и дистанционный формат",
+        "Исходный разбор одного чтения и маркеры 4/4"
       ],
       en: [
         "Organ protocols and the formula library",
         "One precise pass and verification windows",
-        "Self-healing and remote format"
+        "Self-healing and remote format",
+        "Source analysis of one recitation and the 4/4 markers"
       ],
       uz: [
         "A'zolar protokollari va formulalar kutubxonasi",
         "Bir aniq o'tish va tekshiruv oynalari",
-        "O'zini davolash va masofaviy format"
+        "O'zini davolash va masofaviy format",
+        "Bitta o'qish tahlili va 4/4 belgilari"
       ]
     },
     after: {
@@ -235,17 +238,20 @@ export const MODULE_INTRO = {
       ru: [
         "Части 0–4 разбора случая",
         "Десять критериев и приоритеты",
-        "Спецпротоколы и переоценка"
+        "Спецпротоколы и переоценка",
+        "Исходный кейс по приложениям 7–10 второго издания"
       ],
       en: [
         "Parts 0–4 of case analysis",
         "Ten criteria and priorities",
-        "Special protocols and reassessment"
+        "Special protocols and reassessment",
+        "The source case from appendices 7–10 of the second edition"
       ],
       uz: [
         "Holat tahlilining 0–4 qismlari",
         "O'n mezon va ustuvorliklar",
-        "Maxsus protokollar va qayta baholash"
+        "Maxsus protokollar va qayta baholash",
+        "Ikkinchi nashrning 7–10-ilovalari bo'yicha asl keys"
       ]
     },
     after: {
@@ -322,17 +328,20 @@ export const MODULE_INTRO = {
       ru: [
         "Корень влияния и восемь компонентов",
         "Этика истинного ракыя и границы обещаний",
-        "Конфиденциальность и работа в RUKYA Pro"
+        "Конфиденциальность и работа в RUKYA Pro",
+        "Три столпа, пять элементов намерения и сердечный резервуар"
       ],
       en: [
         "The root of influence and eight components",
         "Ethics of a true raqi and limits of promises",
-        "Confidentiality and work in RUKYA Pro"
+        "Confidentiality and work in RUKYA Pro",
+        "Three pillars, five intention elements and the heart reservoir"
       ],
       uz: [
         "Ta'sir ildizi va sakkiz komponent",
         "Haqiqiy roqiy odobi va va'da chegaralari",
-        "Maxfiylik va RUKYA Proda ishlash"
+        "Maxfiylik va RUKYA Proda ishlash",
+        "Uch ustun, niyatning besh elementi va qalb rezervuari"
       ]
     },
     after: {
@@ -351,17 +360,23 @@ export const MODULE_INTRO = {
       ru: [
         "Паспорт практики и ступени допуска",
         "Полный симуляционный случай",
-        "Три принятых случая и защита двух"
+        "Три принятых случая и защита двух",
+        "Тест готовности, приём и карточка случая",
+        "Супервизия, право и школа лекаря"
       ],
       en: [
         "The practice passport and admission stages",
         "A complete simulated case",
-        "Three accepted cases and defence of two"
+        "Three accepted cases and defence of two",
+        "Readiness test, intake and case record",
+        "Supervision, law and the healer's school"
       ],
       uz: [
         "Amaliyot pasporti va qabul bosqichlari",
         "To'liq simulyatsiya holati",
-        "Uch qabul qilingan holat va ikkitasini himoya qilish"
+        "Uch qabul qilingan holat va ikkitasini himoya qilish",
+        "Tayyorgarlik testi, qabul va holat kartasi",
+        "Nazorat, huquq va tabib maktabi"
       ]
     },
     after: {

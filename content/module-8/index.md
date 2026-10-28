@@ -17,6 +17,8 @@ status: certified
 2. **[Банк программ лечения — 10 эталонов сборки](/content/module-8/bank-programm-lecheniya.md)**
 3. **[Специальные протоколы приёма — восемь специальных приложений](/content/module-11/specialnye-protokoly-priyoma.md)**
 
+4. **[Второе издание: исходный разбор, 10 критериев и учёт результата](/content/module-8/vtoroe-izdanie-razbor-i-kriterii.md)**
+
 ## Предпосылки
 
 Сначала заверши модуль «Очищение, защита и закрепление» и его итоговый тест.

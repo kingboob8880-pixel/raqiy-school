@@ -370,6 +370,11 @@ export const MODULES = [
         title: "Дистанционный сеанс и самоисцеление: те же требования, другой адрес",
         doc: "/content/module-11/distancionnyy-seans-i-samoiscelenie.md",
         exam: "/content/exams/module-11-distancionnyy-seans.md"
+      },
+      {
+        title: "Хитаб Исаба: исходный разбор одного чтения и маркеры 4/4",
+        doc: "/content/module-6/hitab-odno-chtenie-razbor.md",
+        exam: "/content/exams/module-6-hitab-odno-chtenie-razbor.md"
       }
     ]
   },
@@ -485,6 +490,11 @@ export const MODULES = [
         title: "Специальные протоколы приёма — восемь специальных приложений",
         doc: "/content/module-11/specialnye-protokoly-priyoma.md",
         exam: "/content/exams/module-11-specialnye-protokoly-priyoma.md"
+      },
+      {
+        title: "Второе издание: исходный разбор, 10 критериев и учёт результата",
+        doc: "/content/module-8/vtoroe-izdanie-razbor-i-kriterii.md",
+        exam: "/content/exams/module-8-vtoroe-izdanie-razbor-i-kriterii.md"
       }
     ]
   },
@@ -675,6 +685,11 @@ export const MODULES = [
         title: "Защита и конфиденциальность данных пациента в RUKYA Pro",
         doc: "/content/module-11/zashchita-dannykh-patsienta.md",
         exam: "/content/exams/module-11-zashchita-dannykh-patsienta.md"
+      },
+      {
+        title: "Хитаб Исаба: три столпа, пять элементов и сердечный резервуар",
+        doc: "/content/module-11/hitab-vnutrennyaya-rabota.md",
+        exam: "/content/exams/module-11-hitab-vnutrennyaya-rabota.md"
       }
     ]
   },
@@ -700,6 +715,16 @@ export const MODULES = [
         title: "Защита двух случаев — итоговый экзамен Модуля 12",
         doc: "/content/module-11/zashchita-dvukh-sluchaev.md",
         exam: "/content/exams/module-11-zashchita-dvukh-sluchaev.md"
+      },
+      {
+        title: "Второе издание: готовность, приём и ведение случая",
+        doc: "/content/module-12/vtoroe-izdanie-gotovnost-priyom.md",
+        exam: "/content/exams/module-12-vtoroe-izdanie-gotovnost-priyom.md"
+      },
+      {
+        title: "Второе издание: супервизия, право и школа лекаря",
+        doc: "/content/module-12/vtoroe-izdanie-superviziya-pravo.md",
+        exam: "/content/exams/module-12-vtoroe-izdanie-superviziya-pravo.md"
       }
     ]
   }

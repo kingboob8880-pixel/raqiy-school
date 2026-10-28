@@ -126,8 +126,8 @@ test("zaxab: у каждой книги есть экзамен и задани�
   const assignments = Object.values(ASSIGNMENTS).flat();
   const lessons = MODULES.flatMap((m) => m.lessons);
   assert.equal(MODULES.length, 12);
-  assert.equal(lessons.length, 116);
-  assert.equal(sourceMap.newSources.length, 10);
+  assert.equal(lessons.length, 121);
+  assert.equal(sourceMap.newSources.length, 15);
   for (const m of MODULES) {
     assert.deepEqual([...sourceMap.modules.find((x) => x.id === m.id).lessons], m.lessons.map((l) => l.doc), `source-map модуля ${m.id}`);
   }
