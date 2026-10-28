@@ -18,16 +18,16 @@ const EXPECTED = {
   6: ["Хитаб Исаба: зоны и сеанс", 10],
   7: ["Очищение, защита и закрепление", 16],
   8: ["Программа по 10 критериям", 4],
-  9: ["Родовые и семейные поражения", 7],
+  9: ["Супружеские и особые состояния", 2],
   10: ["Кашф и тяжелейшие случаи", 9],
   11: ["Профессиональный приём и мастерство", 17],
   12: ["Супервизия и аттестация", 5],
 };
 
-test("реестр zaxab-2026: 12 модулей, 121 книга и правильные уровни", async () => {
+test("реестр zaxab-2026: 12 модулей, 116 книг и правильные уровни", async () => {
   const { MODULES, computeAchievements } = await import(pathToFileURL(path.join(ROOT, "pages/js/modules-data.js")).href);
   assert.equal(MODULES.length, 12);
-  assert.equal(MODULES.flatMap((m) => m.lessons).length, 121);
+  assert.equal(MODULES.flatMap((m) => m.lessons).length, 116);
   assert.deepEqual(MODULES.map((m) => m.id), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
   for (const m of MODULES) {
     assert.deepEqual([m.title, m.lessons.length], EXPECTED[m.id]);
@@ -92,12 +92,12 @@ test("все экзамены курса валидны: один правиль
     assert.equal((text.match(/^- \[x\]/gm) || []).length, questions, f);
     assert.ok((text.match(/^- \[ \]/gm) || []).length >= questions * 3, f);
   }
-  assert.equal(checked, 121);
+  assert.equal(checked, 116);
 });
 
-test("итоговые тесты: 150 вопросов, все модули и корректные индексы ответов", async () => {
+test("итоговые тесты: 144 вопросов, все модули и корректные индексы ответов", async () => {
   const { QUIZZES } = await import(pathToFileURL(path.join(ROOT, "pages/js/quiz-data.js")).href);
-  assert.equal(Object.values(QUIZZES).flat().length, 150);
+  assert.equal(Object.values(QUIZZES).flat().length, 144);
   for (const id of Object.keys(EXPECTED)) {
     assert.ok(QUIZZES[id].length >= 3, `мало вопросов в модуле ${id}`);
     for (const q of QUIZZES[id]) {
@@ -126,6 +126,6 @@ test("сгенерированные данные и public содержат н�
     assert.ok(fs.existsSync(path.join(ROOT, "public", n.exam.slice(1))), `public без ${n.exam}`);
   }
   assert.ok(course.includes("Программа по 10 критериям"));
-  assert.ok(course.includes("Родовые и семейные поражения"));
+  assert.ok(course.includes("Супружеские и особые состояния"));
   assert.ok(course.includes("Кашф и тяжелейшие случаи"));
 });

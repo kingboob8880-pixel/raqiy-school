@@ -500,7 +500,7 @@ export const MODULES = [
   },
   {
     id: 9,
-    title: "Родовые и семейные поражения",
+    title: "Супружеские и особые состояния",
     level: "Продвинутый",
     status: "certified",
     doc: "/content/module-9/index.md",
@@ -512,34 +512,9 @@ export const MODULES = [
         exam: "/content/exams/module-5-dua-strasti.md"
       },
       {
-        title: "Особые состояния: истихваз, рабт, родовое, колдовство смерти и дом",
+        title: "Особые состояния: истихваз, рабт, сихр аль-маут, ПНС и дом",
         doc: "/content/module-11/osobye-sostoyaniya.md",
         exam: "/content/exams/module-11-osobye-sostoyaniya.md"
-      },
-      {
-        title: "Наследственная болезнь — определение, признаки и механизм",
-        doc: "/content/module-9/nasledstvennaya-bolezn-1.md",
-        exam: "/content/exams/module-9-nasledstvennaya-bolezn-1.md"
-      },
-      {
-        title: "Наследственная болезнь — наблюдение, способности и формы",
-        doc: "/content/module-9/nasledstvennaya-bolezn-2.md",
-        exam: "/content/exams/module-9-nasledstvennaya-bolezn-2.md"
-      },
-      {
-        title: "Наследственная болезнь — лечение и программа источника",
-        doc: "/content/module-9/nasledstvennaya-bolezn-3.md",
-        exam: "/content/exams/module-9-nasledstvennaya-bolezn-3.md"
-      },
-      {
-        title: "Родовые духовные заболевания — виды и механизмы",
-        doc: "/content/module-9/rodovye-zabolevaniya-1.md",
-        exam: "/content/exams/module-9-rodovye-zabolevaniya-1.md"
-      },
-      {
-        title: "Родовые духовные заболевания — диагностика и лечение",
-        doc: "/content/module-9/rodovye-zabolevaniya-2.md",
-        exam: "/content/exams/module-9-rodovye-zabolevaniya-2.md"
       }
     ]
   },
