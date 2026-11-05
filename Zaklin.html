@@ -392,7 +392,7 @@ h2.in::after{width:90px}
   footer.bookfoot{max-width:none}
 }
 
-/* ===== Листы-страницы (прозрачные, фон как в Xitab_isaba) ===== */
+/* ===== Листы-страницы: экран без фона, печать с рамкой ===== */
 .sheet {
   position: relative;
   background: transparent;
@@ -412,6 +412,7 @@ h2.in::after{width:90px}
     width: 210mm; height: 297mm; max-width: none;
     margin: 0; padding: 28mm 29mm 26mm 29mm;
     border-radius: 0; box-shadow: none;
+    background: url('background-pages.png') center / 105.6% 105.6% no-repeat;
     overflow: hidden;
     break-after: page; page-break-after: always;
     break-inside: avoid; page-break-inside: avoid;
