@@ -427,6 +427,28 @@ h2.in::after{width:90px}
   footer.bookfoot { display: none !important; }
   .chapter h3 { margin-top: 0; }
 }
+
+/* ===== Фон в стиле Xitab_isaba (крем + золотые свечения) ===== */
+@media screen {
+  body { background: #f5f0e6 !important; }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .5;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(169,131,75,.10), transparent 42%),
+      radial-gradient(circle at 88% 2%, rgba(15,81,50,.08), transparent 38%),
+      radial-gradient(circle at 50% 110%, rgba(169,131,75,.07), transparent 55%);
+  }
+  html[data-theme="dark"] body { background: #0f130f !important; }
+  html[data-theme="dark"] body::before { opacity: .35; }
+}
+@media print {
+  body::before { display: none !important; }
+}
 </style>
 </head>
 <body>
